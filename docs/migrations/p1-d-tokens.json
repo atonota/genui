@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "package": "p1-d-tokens",
+  "date": "2026-10-15",
+  "summary": "/token-standards/ and /tokens/ merge into /tokens/. Token values are generated on /tokens/; normative rule prose lives on /standards/. /token-standards/ is a redirect page whose mapping is exported by docs/src/data/token-redirects.ts.",
+  "sections": [
+    { "oldRoute": "/token-standards/", "oldId": "token-catalog", "newRoute": "/tokens/", "newId": "token-catalog", "reason": "Catalog generated from tokenDefinitions with a dynamic count keeps every id, label, CSS binding, defaults, unit, limits, options and description." },
+    { "oldRoute": "/token-standards/", "oldId": "token-group-colors", "newRoute": "/tokens/", "newId": "token-group-colors", "reason": "Group table generated from tokenDefinitions with the same id." },
+    { "oldRoute": "/token-standards/", "oldId": "token-group-border", "newRoute": "/tokens/", "newId": "token-group-border", "reason": "Group table generated from tokenDefinitions with the same id." },
+    { "oldRoute": "/token-standards/", "oldId": "token-group-spacing", "newRoute": "/tokens/", "newId": "token-group-spacing", "reason": "Group table generated from tokenDefinitions with the same id." },
+    { "oldRoute": "/token-standards/", "oldId": "token-group-insets", "newRoute": "/tokens/", "newId": "token-group-insets", "reason": "Group table generated from tokenDefinitions with the same id." },
+    { "oldRoute": "/token-standards/", "oldId": "token-group-radius", "newRoute": "/tokens/", "newId": "token-group-radius", "reason": "Group table generated from tokenDefinitions with the same id." },
+    { "oldRoute": "/token-standards/", "oldId": "token-group-size", "newRoute": "/tokens/", "newId": "token-group-size", "reason": "Group table generated from tokenDefinitions with the same id." },
+    { "oldRoute": "/token-standards/", "oldId": "token-group-typography", "newRoute": "/tokens/", "newId": "token-group-typography", "reason": "Group table generated from tokenDefinitions with the same id." },
+    { "oldRoute": "/token-standards/", "oldId": "token-group-shadow", "newRoute": "/tokens/", "newId": "token-group-shadow", "reason": "Group table generated from tokenDefinitions with the same id; shadow geometry is rendered as resolved recipes in /tokens/#shadow-values." },
+    { "oldRoute": "/token-standards/", "oldId": "token-group-density", "newRoute": "/tokens/", "newId": "token-group-density", "reason": "Group table generated from tokenDefinitions with the same id." },
+    { "oldRoute": "/token-standards/", "oldId": "token-group-surface", "newRoute": "/tokens/", "newId": "token-group-surface", "reason": "Group table generated from tokenDefinitions with the same id." },
+    { "oldRoute": "/token-standards/", "oldId": "token-group-overlay", "newRoute": "/tokens/", "newId": "token-group-overlay", "reason": "Group table generated from tokenDefinitions with the same id; replaces both separate overlay token tables." },
+    { "oldRoute": "/token-standards/", "oldId": "using-tokens", "newRoute": "/tokens/", "newId": "using-tokens", "reason": "CSS variable usage, CSS example, export shape, import and storage notes, sources table and status note kept with the same id." },
+    { "oldRoute": "/token-standards/", "oldId": "measurement-scales", "newRoute": "/standards/", "newId": "layout", "reason": "Rhythm and shared inset prose is normative; redirect lands on the legacy alias measurement-scales. Generated measurement policy rows stay on /tokens/#measurement-values." },
+    { "oldRoute": "/token-standards/", "oldId": "surface-states", "newRoute": "/standards/", "newId": "surfaces", "reason": "Surface, state independence and shadow rules are normative (surfaces and interaction-states); redirect lands on the legacy alias surface-states. Generated state axes, surface and shadow recipes stay on /tokens/#state-values, #surface-values and #shadow-values." },
+    { "oldRoute": "/token-standards/", "oldId": "motion-focus", "newRoute": "/standards/", "newId": "motion", "reason": "Motion and focus rules are normative (motion and focus); redirect lands on the legacy alias motion-focus. Generated easing, delay and durations stay on /tokens/#motion-values." },
+    { "oldRoute": "/token-standards/", "oldId": "layers", "newRoute": "/standards/", "newId": "layers", "reason": "Stacking versus elevation prose is normative. Generated layer order stays on /tokens/#layer-values." },
+    { "oldRoute": "/token-standards/", "oldId": "overlay-standard", "newRoute": "/standards/", "newId": "layers", "reason": "Overlay scope, scrim neutrality, stacking and callers, Theme Builder compatibility, status and new-component prose are rules; redirect lands on the legacy alias overlay-standard. Overlay values stay on /tokens/#token-group-overlay, #overlay-motion-aliases and #overlay-compatibility-aliases." },
+    { "oldRoute": "/tokens/", "oldId": "colors", "newRoute": "/color-system/", "newId": null, "reason": "Approved color family presets with edge colors and the family composition prose move to the color system page; its package owner sets the id. Color token values stay on /tokens/#token-group-colors." },
+    { "oldRoute": "/tokens/", "oldId": "typography", "newRoute": "/standards/", "newId": "typography", "reason": "Font, weight, minimum size and Ant Design pixel prose is normative. Typography token values stay on /tokens/#token-group-typography." },
+    { "oldRoute": "/tokens/", "oldId": "size-radius", "newRoute": "/standards/", "newId": "size-radius", "reason": "Radius and content growth prose is normative. Generated size variants stay on /tokens/#control-sizes and radius tokens on /tokens/#token-group-radius." },
+    { "oldRoute": "/tokens/", "oldId": "motion-focus", "newRoute": "/standards/", "newId": "motion", "reason": "Motion, opacity, layer, focus and verification prose is normative (motion and focus). The duration subset with human labels is replaced by the full motion.json table on /tokens/#motion-values keyed by duration id." },
+    { "oldRoute": "/tokens/", "oldId": "overlay", "newRoute": "/tokens/", "newId": "token-group-overlay", "reason": "Overlay token values are in the generated catalog group; motion aliases in /tokens/#overlay-motion-aliases; overlay rule prose on /standards/#layers." }
+  ],
+  "removedRepetitions": [
+    { "content": "Focus modality paragraph (ringless focus, Tab-only visible mode, forced-colors CanvasText outline)", "foundAt": ["/tokens/#motion-focus", "/token-standards/#motion-focus"], "keptAt": "/standards/#focus" },
+    { "content": "Light and dark atomic palette commit paragraph", "foundAt": ["/tokens/#motion-focus", "/token-standards/#motion-focus"], "keptAt": "/standards/#motion" },
+    { "content": "Reduced motion and immediate value, selection, ARIA and focus update bullets", "foundAt": ["/tokens/#motion-focus", "/token-standards/#motion-focus"], "keptAt": "/standards/#motion" },
+    { "content": "Motion durations table", "foundAt": ["/tokens/#motion-focus", "/token-standards/#motion-focus"], "keptAt": "/tokens/#motion-values" },
+    { "content": "Three overlay scope paragraphs (covered layers, sharp trigger, exclusions, preserved behavior)", "foundAt": ["/tokens/#overlay", "/token-standards/#overlay-standard"], "keptAt": "/standards/#layers" },
+    { "content": "Overlay tokens table, also present in the overlay catalog group", "foundAt": ["/tokens/#overlay", "/token-standards/#overlay-standard", "/token-standards/#token-group-overlay"], "keptAt": "/tokens/#token-group-overlay" },
+    { "content": "Overlay generated-table note and scrim neutrality paragraph", "foundAt": ["/tokens/#overlay", "/token-standards/#overlay-standard"], "keptAt": "/standards/#layers" },
+    { "content": "Overlay motion aliases table", "foundAt": ["/tokens/#overlay", "/token-standards/#overlay-standard"], "keptAt": "/tokens/#overlay-motion-aliases" },
+    { "content": "Px unit sentence with the hand-typed boundary width range 0 to 6", "foundAt": ["/token-standards/#token-catalog"], "keptAt": "/tokens/#token-group-border (generated Unit, Minimum and Maximum columns)" },
+    { "content": "--surface-depth versus --surface binding paragraph", "foundAt": ["/token-standards/#token-catalog"], "keptAt": "/tokens/#token-group-surface (CSS binding column) and /standards/#surfaces" }
+  ],
+  "notes": [
+    "/standards/ must expose the legacy alias ids measurement-scales, surface-states, motion-focus, layers and overlay-standard; the existing navigation test requires the redirect hash to equal the legacy id.",
+    "Token group redirects are generated from tokenDefinitions, so new groups redirect automatically.",
+    "Old in-page ids on /tokens/ (colors, typography, size-radius, motion-focus, overlay) no longer exist on /tokens/; their content locations are recorded above.",
+    "docs/src/locales/tr/foundations-tokens.json holds Turkish for new prose and rendered labels; token labels, descriptions and states.ts metadata keep their existing Turkish sources."
+  ]
+}

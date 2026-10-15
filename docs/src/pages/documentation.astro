@@ -1,0 +1,381 @@
+---
+import DocsLayout from '../layouts/DocsLayout.astro';
+import DocumentationNav from '../components/DocumentationNav.astro';
+import rules from '../data/documentation-rules.json';
+
+interface DocumentationRule {
+  readonly ruleId: string;
+  readonly severity: string;
+  readonly event: string;
+  readonly condition: string;
+  readonly action: string;
+}
+// The gate's rules JSON owns page kinds; the table publishes its descriptions unchanged.
+const pageKinds: Readonly<
+  Record<
+    string,
+    {
+      readonly description: string;
+      readonly routes?: readonly string[];
+      readonly routePattern?: string;
+    }
+  >
+> = rules.pageKinds;
+const componentSections: readonly string[] = rules.componentSections;
+const sectionLabels: Readonly<Record<string, string>> = rules.sectionLabels;
+const ruleList: readonly DocumentationRule[] = rules.rules;
+
+const sections = [
+  { id: 'page-types', label: 'Page types' },
+  { id: 'section-order', label: 'Component section order' },
+  { id: 'rules', label: 'Rules' },
+  { id: 'source-map', label: 'Source map' },
+  { id: 'admission', label: 'Admission workflow' },
+  { id: 'verification-limits', label: 'Verification limits' },
+] as const;
+
+const sectionPurposes: Readonly<Record<string, string>> = {
+  usage: 'Purpose and when to choose the component.',
+  examples: 'One live demonstration on the shared panel; settings stay in the closed Tweaker.',
+  code: 'Copyable usage code.',
+  astro:
+    'The trusted React-island boundary, a generic Astro example and a link to the shared guide.',
+  api: 'The local API table and the official Ant Design reference.',
+  accessibility: 'Keyboard, naming and focus behavior.',
+  notes: 'Ownership and implementation limits.',
+  resources: 'Concrete source paths and a separate GenUI registration status.',
+};
+const sourceMap = [
+  { kind: 'catalog', label: 'Catalog data', paths: ['docs/src/data/catalog.ts'] },
+  {
+    kind: 'route',
+    label: 'Astro route and layout',
+    paths: ['docs/src/pages/components/[slug].astro', 'docs/src/layouts/DocsLayout.astro'],
+  },
+  { kind: 'adapter', label: 'React adapter', paths: ['docs/src/react/<Component>Demo.tsx'] },
+  {
+    kind: 'styles',
+    label: 'Styles and tokens',
+    paths: [
+      'docs/src/styles/atlas-<component>.css',
+      'docs/src/styles/docs.css',
+      'docs/src/styles/documentation.css',
+    ],
+  },
+  { kind: 'instructions', label: 'Agent instructions', paths: ['docs/AGENTS.md'] },
+  {
+    kind: 'tests',
+    label: 'Tests',
+    paths: ['docs/tests/<component>.test.mjs', 'docs/tests/documentation-presentation.test.mjs'],
+  },
+  {
+    kind: 'genui',
+    label: 'GenUI contract, policy and renderer',
+    paths: [
+      'docs/src/genui/contracts.ts',
+      'docs/src/genui/policy.ts',
+      'docs/src/react/genui/AtlasGenUISurface.tsx',
+    ],
+  },
+] as const;
+const admissionSteps = [
+  'Add the component entry to the catalog data. Its route is derived from its /components/ path; never add it to a route list.',
+  'Supply all eight sections in the shared order, with the shared labels and identical id and data-doc-section values.',
+  'Mount the live demonstration once inside the shared panel and keep presentation settings in the closed Tweaker.',
+  'Keep the API table local and link the official Ant Design reference over https.',
+  'Explain the trusted React-island boundary with a generic Astro example and link the shared guide.',
+  'Name concrete source paths and state the GenUI registration status separately.',
+  'Use AtlasProvider and the shared tokens. Human and AI contributions follow the same motion contract: new custom controls inherit smooth entry and exit through atlas-control, and moving decorative layers are defined separately.',
+  'Run the focused test, the production build and npm run docs:verify, which includes the source motion guard; any error finding fails the build. Source checks do not replace live browser review.',
+] as const;
+---
+
+<DocsLayout
+  title="Documentation standard"
+  description="Page types, section order, build-time rules and the admission workflow for Atlas documentation."
+  slug="documentation"
+>
+  <p class="eyebrow">
+    <span data-i18n="PROJECT / DOCUMENTATION STANDARD">PROJECT / DOCUMENTATION STANDARD</span>
+  </p>
+  <h1>
+    <span class="page-heading-line" data-i18n="Documentation standard">
+      Documentation standard
+    </span>
+  </h1>
+  <p class="lead">
+    <span data-i18n="One contract for every documentation page: page types, section order, rules enforced when the build completes, source locations and the admission workflow for new components.">
+      One contract for every documentation page: page types, section order, rules enforced when the
+      build completes, source locations and the admission workflow for new components.
+    </span>
+  </p>
+  <DocumentationNav items={sections} />
+  <section
+    class="doc-section"
+    id="page-types"
+    data-doc-section="page-types"
+    aria-labelledby="page-types-title"
+  >
+    <h2 id="page-types-title">
+      <span data-i18n="Page types">Page types</span>
+    </h2>
+    <p>
+      <span data-i18n="Every generated page has exactly one kind. A route outside these kinds fails the build.">
+        Every generated page has exactly one kind. A route outside these kinds fails the build.
+      </span>
+    </p>
+    <div
+      class="table-scroll"
+      tabindex="0"
+      role="region"
+      aria-label="Page types"
+      data-i18n-aria-label="Page types"
+    >
+      <table>
+        <thead>
+          <tr>
+            <th>
+              <span data-i18n="Kind">Kind</span>
+            </th>
+            <th>
+              <span data-i18n="Routes">Routes</span>
+            </th>
+            <th>
+              <span data-i18n="Purpose">Purpose</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {Object.entries(pageKinds).map(([kind, definition]) => (
+            <tr>
+              <th scope="row">
+                <code>{kind}</code>
+              </th>
+              <td>
+                {kind === 'component' ? (
+                  <>
+                    <code>{'/components/<slug>/'}</code>{' '}
+                    <span data-i18n="classified by path">classified by path</span>
+                  </>
+                ) : (
+                  (definition.routes ?? []).map(route => <code>{route}</code>)
+                )}
+              </td>
+              <td data-i18n={definition.description}>{definition.description}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  <section
+    class="doc-section"
+    id="section-order"
+    data-doc-section="section-order"
+    aria-labelledby="section-order-title"
+  >
+    <h2 id="section-order-title">
+      <span data-i18n="Component section order">Component section order</span>
+    </h2>
+    <p>
+      <span data-i18n="Every component page uses these sections once, in this order. The section id equals its data-doc-section value and the visible name is unique on the page.">
+        Every component page uses these sections once, in this order. The section id equals its
+        data-doc-section value and the visible name is unique on the page.
+      </span>
+    </p>
+    <ol>
+      {componentSections.map(id => (
+        <li>
+          <strong data-i18n={sectionLabels[id] ?? id}>{sectionLabels[id] ?? id}</strong>{' '}
+          <code>{'#' + id}</code>{' '}
+          {sectionPurposes[id] && (
+            <span data-i18n={sectionPurposes[id]}>{sectionPurposes[id]}</span>
+          )}
+        </li>
+      ))}
+    </ol>
+    <h3>
+      <span data-i18n="Surfaces">Surfaces</span>
+    </h3>
+    <ul>
+      <li>
+        <span data-i18n="Prose stays on the paper surface; pages are not whitened or wrapped in cards.">
+          Prose stays on the paper surface; pages are not whitened or wrapped in cards.
+        </span>
+      </li>
+      <li>
+        <span data-i18n="Each live demonstration area uses one shared panel surface.">
+          Each live demonstration area uses one shared panel surface.
+        </span>
+      </li>
+      <li>
+        <span data-i18n="API tables and code use their own bounded surfaces and scroll inside their containers.">
+          API tables and code use their own bounded surfaces and scroll inside their containers.
+        </span>
+      </li>
+      <li>
+        <span data-i18n="Section links stay visible at 320px, wrap naturally and keep 48px targets.">
+          Section links stay visible at 320px, wrap naturally and keep 48px targets.
+        </span>
+      </li>
+    </ul>
+  </section>
+  <section class="doc-section" id="rules" data-doc-section="rules" aria-labelledby="rules-title">
+    <h2 id="rules-title">
+      <span data-i18n="Rules">Rules</span>
+    </h2>
+    <p>
+      <span data-i18n="Each rule follows event, condition and action. The build gate checks every generated page when the build completes; an error finding fails the build.">
+        Each rule follows event, condition and action. The build gate checks every generated page
+        when the build completes; an error finding fails the build.
+      </span>
+    </p>
+    <div
+      class="table-scroll"
+      tabindex="0"
+      role="region"
+      aria-label="Event, condition and action rules"
+      data-i18n-aria-label="Event, condition and action rules"
+    >
+      <table>
+        <thead>
+          <tr>
+            <th>
+              <span data-i18n="Rule">Rule</span>
+            </th>
+            <th>
+              <span data-i18n="Event">Event</span>
+            </th>
+            <th>
+              <span data-i18n="Condition">Condition</span>
+            </th>
+            <th>
+              <span data-i18n="Action">Action</span>
+            </th>
+            <th>
+              <span data-i18n="Severity">Severity</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {ruleList.map(rule => (
+            <tr data-rule-id={rule.ruleId}>
+              <th scope="row">
+                <code>{rule.ruleId}</code>
+              </th>
+              <td data-i18n={rule.event}>{rule.event}</td>
+              <td data-i18n={rule.condition}>{rule.condition}</td>
+              <td data-i18n={rule.action}>{rule.action}</td>
+              <td data-i18n={rule.severity}>{rule.severity}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  <section
+    class="doc-section"
+    id="source-map"
+    data-doc-section="source-map"
+    aria-labelledby="source-map-title"
+  >
+    <h2 id="source-map-title">
+      <span data-i18n="Source map">Source map</span>
+    </h2>
+    <p>
+      <span data-i18n="Each component page names these source locations in its Source and resources section.">
+        Each component page names these source locations in its Source and resources section.
+      </span>
+    </p>
+    <ul>
+      {sourceMap.map(entry => (
+        <li data-doc-resource={entry.kind}>
+          <span data-i18n={entry.label}>{entry.label}</span>{' '}
+          {entry.paths.map(path => (
+            <code data-doc-source>{path}</code>
+          ))}
+        </li>
+      ))}
+    </ul>
+    <p data-doc-capability-status>
+      <span data-i18n="A catalog entry or React export is not a GenUI capability. The current registry is GENUI_COMPONENT_NAMES in contracts.ts; each component page states its own registration status.">
+        A catalog entry or React export is not a GenUI capability. The current registry is
+        GENUI_COMPONENT_NAMES in contracts.ts; each component page states its own registration
+        status.
+      </span>
+    </p>
+  </section>
+  <section
+    class="doc-section"
+    id="admission"
+    data-doc-section="admission"
+    aria-labelledby="admission-title"
+  >
+    <h2 id="admission-title">
+      <span data-i18n="Admission workflow">Admission workflow</span>
+    </h2>
+    <ol>
+      {admissionSteps.map(step => (
+        <li data-i18n={step}>{step}</li>
+      ))}
+    </ol>
+    <p>
+      <span data-i18n="The rules live in one machine-readable source and are enforced by the build gate:">
+        The rules live in one machine-readable source and are enforced by the build gate:
+      </span>{' '}
+      <code>docs/src/data/documentation-rules.json</code>, <code>tools/docs-presentation.mjs</code>,{' '}
+      <code>docs/astro.config.mjs</code>.
+    </p>
+    <pre class="note"><code>{'node --test docs/tests/documentation-presentation.test.mjs\nnpm run docs:build\nnpm run docs:verify'}</code></pre>
+    <p>
+      <span data-i18n="The full motion rules, the design tokens and the project CONTRIBUTING.md contract apply to every new component:">
+        The full motion rules, the design tokens and the project CONTRIBUTING.md contract apply to
+        every new component:
+      </span>
+    </p>
+    <ul>
+      <li>
+        <a href="/standards/#motion">
+          <span data-i18n="Motion rules">Motion rules</span>
+        </a>
+      </li>
+      <li>
+        <a href="/tokens/">
+          <span data-i18n="Design tokens">Design tokens</span>
+        </a>
+      </li>
+    </ul>
+    <a href="/getting-started/#astro-integration">
+      <span data-i18n="Astro integration guide">Astro integration guide</span>
+    </a>
+  </section>
+  <section
+    class="doc-section"
+    id="verification-limits"
+    data-doc-section="verification-limits"
+    aria-labelledby="verification-limits-title"
+  >
+    <h2 id="verification-limits-title">
+      <span data-i18n="Verification limits">Verification limits</span>
+    </h2>
+    <ul>
+      <li>
+        <span data-i18n="The gate reads generated HTML structure. It does not measure computed styles, layout, focus visibility or contrast.">
+          The gate reads generated HTML structure. It does not measure computed styles, layout,
+          focus visibility or contrast.
+        </span>
+      </li>
+      <li>
+        <span data-i18n="Passing the gate is not browser, device, screen-reader or CI evidence. Record those checks separately as pass, fail or not run.">
+          Passing the gate is not browser, device, screen-reader or CI evidence. Record those checks
+          separately as pass, fail or not run.
+        </span>
+      </li>
+      <li>
+        <span data-i18n="Live demo behavior, translations and GenUI registration are verified by their own tests.">
+          Live demo behavior, translations and GenUI registration are verified by their own tests.
+        </span>
+      </li>
+    </ul>
+  </section>
+</DocsLayout>

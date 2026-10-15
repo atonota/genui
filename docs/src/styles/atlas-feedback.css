@@ -1,0 +1,343 @@
+/* Feedback family: native AntD 6 message, notification, Alert, Modal and Popconfirm.
+   Colors, radius, spacing and motion come from the shared Atlas variables; the
+   layer (--feedback-layer) is set on AtlasFeedbackScope from the central layer order. */
+.atlas-demo {
+  --feedback-offset: var(--space-md);
+  --feedback-inline-size: min(20rem, calc(100vw - 2 * var(--page-gutter)));
+  --feedback-motion-duration: var(--motion-duration-standard);
+}
+.atlas-feedback-demo {
+  min-width: 0;
+}
+.atlas-feedback-scope {
+  display: grid;
+  gap: var(--space-lg);
+  min-width: 0;
+}
+/* Portal targets and holders add no boxes; their layers are fixed or absolute. */
+.atlas-feedback-portal,
+.atlas-feedback-layer {
+  display: contents;
+}
+.atlas-feedback-result {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text);
+}
+.atlas-feedback-stack {
+  display: grid;
+  gap: var(--space-md);
+  min-width: 0;
+}
+.atlas-feedback-list {
+  margin: 0 0 var(--space-md);
+  color: var(--ink);
+}
+.atlas-feedback-icon {
+  flex: none;
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+}
+.atlas-feedback-icon[data-status='info'] {
+  color: var(--accent);
+}
+.atlas-feedback-icon[data-status='success'] {
+  color: var(--success);
+}
+.atlas-feedback-icon[data-status='warning'] {
+  color: var(--warning);
+}
+.atlas-feedback-icon[data-status='error'] {
+  color: var(--error);
+}
+
+/* Toast regions: viewport-fixed frames; layout containment makes each native
+   fixed message list position inside its own frame. */
+.atlas-toast-region {
+  position: fixed;
+  z-index: var(--feedback-layer);
+  inset-block-start: var(--feedback-offset);
+  inline-size: var(--feedback-inline-size);
+  block-size: 0;
+  contain: layout;
+  pointer-events: none;
+}
+.atlas-toast-region[data-toast-placement='top-center'] {
+  inset-inline: 0;
+  margin-inline: auto;
+}
+.atlas-toast-region:is(
+  [data-toast-placement='top-right-top'],
+  [data-toast-placement='top-right-right']
+) {
+  inset-inline-end: var(--page-gutter);
+}
+.atlas-toast-region .ant-message-notice {
+  text-align: center;
+}
+.atlas-toast-region:not([data-toast-placement='top-center']) .ant-message-notice {
+  text-align: end;
+}
+/* Native AntD 6 notice wrapper, named through the documented classNames.wrapper.
+   It starts at the inherited size-profile height and grows with wrapped text. */
+.atlas-toast-region .atlas-toast-content {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  max-inline-size: 100%;
+  min-block-size: var(--atlas-component-height, var(--target-min));
+  padding: var(--space-sm) var(--space-md);
+  color: var(--ink);
+  background: var(--panel);
+  border: 0;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: var(--text);
+  line-height: var(--line-height);
+  text-align: start;
+  pointer-events: auto;
+}
+
+/* Branded toast motion: both directions use the shared duration and Cubic easing. */
+@keyframes atlas-toast-in-top {
+  from {
+    opacity: 0;
+    transform: translateY(calc(-1 * var(--feedback-offset)));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes atlas-toast-out-top {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(calc(-1 * var(--feedback-offset)));
+  }
+}
+@keyframes atlas-toast-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(var(--feedback-offset));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes atlas-toast-out-right {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateX(var(--feedback-offset));
+  }
+}
+.atlas-toast-from-top-appear,
+.atlas-toast-from-top-enter,
+.atlas-toast-from-top-leave,
+.atlas-toast-from-right-appear,
+.atlas-toast-from-right-enter,
+.atlas-toast-from-right-leave {
+  animation-duration: var(--feedback-motion-duration);
+  animation-timing-function: var(--motion-easing);
+  animation-delay: var(--motion-delay);
+  animation-fill-mode: both;
+  animation-play-state: paused;
+}
+.atlas-toast-from-top-appear,
+.atlas-toast-from-top-enter,
+.atlas-toast-from-right-appear,
+.atlas-toast-from-right-enter {
+  opacity: 0;
+}
+.atlas-toast-from-top-appear.atlas-toast-from-top-appear-active,
+.atlas-toast-from-top-enter.atlas-toast-from-top-enter-active {
+  animation-name: atlas-toast-in-top;
+  animation-play-state: running;
+}
+.atlas-toast-from-top-leave.atlas-toast-from-top-leave-active {
+  animation-name: atlas-toast-out-top;
+  animation-play-state: running;
+}
+.atlas-toast-from-right-appear.atlas-toast-from-right-appear-active,
+.atlas-toast-from-right-enter.atlas-toast-from-right-enter-active {
+  animation-name: atlas-toast-in-right;
+  animation-play-state: running;
+}
+.atlas-toast-from-right-leave.atlas-toast-from-right-leave-active {
+  animation-name: atlas-toast-out-right;
+  animation-play-state: running;
+}
+
+/* Notification: central toast layer, bounded borderless panel with the Card radius. */
+.atlas-notification-region .ant-notification {
+  z-index: var(--feedback-layer);
+}
+.atlas-notification-region .ant-notification-notice {
+  inline-size: var(--feedback-inline-size);
+  max-inline-size: 100%;
+  padding: var(--space-md);
+  color: var(--ink);
+  background: var(--panel);
+  border: 0;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: var(--text);
+  line-height: var(--line-height);
+}
+.atlas-notification-region .ant-notification-notice-title {
+  margin-inline-end: var(--target-min);
+  color: var(--ink);
+  font-size: var(--text);
+  font-weight: var(--font-weight-label, 400);
+}
+.atlas-notification-region .ant-notification-notice-description {
+  color: var(--muted);
+  font-size: var(--text);
+}
+.atlas-notification-region .ant-notification-notice-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  margin-block-start: var(--space-sm);
+}
+
+/* Alert: persistent, borderless, tone from shared status variables. */
+.atlas-demo .atlas-alert.ant-alert {
+  --alert-tone: var(--accent);
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  color: var(--ink);
+  background: color-mix(in srgb, var(--alert-tone) 12%, var(--panel));
+  border: 0;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: var(--text);
+  line-height: var(--line-height);
+}
+.atlas-demo .atlas-alert-success.ant-alert {
+  --alert-tone: var(--success);
+}
+.atlas-demo .atlas-alert-warning.ant-alert {
+  --alert-tone: var(--warning);
+}
+.atlas-demo .atlas-alert-error.ant-alert {
+  --alert-tone: var(--error);
+}
+.atlas-demo .atlas-alert .ant-alert-title {
+  color: var(--ink);
+  font-size: var(--text);
+  font-weight: var(--font-weight-label, 400);
+}
+.atlas-demo .atlas-alert .ant-alert-description {
+  color: var(--ink);
+  font-size: var(--text);
+}
+.atlas-demo .atlas-alert .ant-alert-close-icon {
+  position: relative;
+  margin: calc(-1 * var(--space-sm)) calc(-1 * var(--space-sm)) 0 0;
+}
+
+/* Modal: native dialog, Card radius and panel surface. */
+.atlas-feedback-modal .ant-modal-container {
+  color: var(--ink);
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: var(--space-lg);
+  font-family: var(--font-body);
+  font-size: var(--text);
+}
+.atlas-feedback-modal .ant-modal-header {
+  background: transparent;
+}
+.atlas-feedback-modal .ant-modal-title {
+  color: var(--ink);
+  font-size: var(--text-large, 1.125rem);
+  font-weight: var(--font-weight-label, 400);
+}
+.atlas-feedback-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+}
+
+/* Popconfirm: contextual panel with 48px native buttons. */
+.atlas-popconfirm .ant-popover-inner {
+  max-inline-size: var(--feedback-inline-size);
+  padding: var(--space-md);
+  color: var(--ink);
+  background: var(--panel);
+  border-radius: var(--radius);
+}
+.atlas-popconfirm :is(.ant-popconfirm-title, .ant-popconfirm-description) {
+  color: var(--ink);
+  font-size: var(--text);
+}
+.atlas-popconfirm .ant-popconfirm-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  margin-block-start: var(--space-md);
+}
+.atlas-popconfirm .ant-popconfirm-buttons .ant-btn {
+  min-block-size: var(--target-min);
+  margin-inline-start: 0;
+  padding-inline: var(--space-md);
+  font-size: var(--text);
+}
+
+/* Native close buttons: 48px targets, no surrounding ring, immediate bottom cue. */
+.atlas-demo :is(.ant-notification-notice-close, .ant-modal-close, .ant-alert-close-icon) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--target-min);
+  block-size: var(--target-min);
+  color: var(--muted);
+  border-radius: var(--radius);
+}
+.atlas-demo
+  :is(
+    .ant-notification-notice-close,
+    .ant-modal-close,
+    .ant-alert-close-icon,
+    .atlas-popconfirm .ant-btn
+  ):focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+.atlas-demo
+  :is(
+    .ant-notification-notice-close,
+    .ant-modal-close,
+    .ant-alert-close-icon,
+    .atlas-popconfirm .ant-btn
+  ):focus-visible::after {
+  content: '';
+  position: absolute;
+  inset-inline: var(--space-xs);
+  inset-block-end: 0;
+  block-size: var(--focus-marker);
+  background: var(--focus-color);
+  pointer-events: none;
+  transition-property: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atlas-demo {
+    /* Near-zero keeps native animationend lifecycle events firing. */
+    --feedback-motion-duration: 0.01ms;
+  }
+}

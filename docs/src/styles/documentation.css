@@ -1,0 +1,109 @@
+/* Shared documentation presentation: page section links, contents and source resources.
+   Prose stays on the paper canvas; live demonstrations keep the existing panel surface. */
+.documentation-nav[data-doc-nav='sections'] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs) var(--space-sm);
+  margin-block: var(--space-lg) 0;
+  margin-inline-start: calc(-1 * var(--space-sm));
+}
+.documentation-nav[data-doc-nav='sections'] a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--target-min);
+  padding-inline: var(--space-sm);
+  border-radius: var(--radius);
+  color: var(--muted);
+  text-decoration: none;
+}
+@media (any-hover: hover) {
+  .documentation-nav a:hover {
+    background: var(--surface);
+    color: var(--ink);
+  }
+}
+/* One immediate, non-surrounding keyboard marker for both navigation variants. */
+.documentation-nav a:focus {
+  outline: none;
+}
+.documentation-nav a:focus-visible {
+  text-decoration: underline;
+  text-decoration-color: var(--focus-color);
+  text-decoration-thickness: var(--focus-marker);
+  text-underline-offset: 0.25em;
+  text-decoration-skip-ink: none;
+}
+.documentation-link {
+  margin-top: var(--space-lg);
+}
+/* Source paths may wrap; code commands keep their own horizontal scroller. */
+.doc-section [data-doc-source] {
+  display: block;
+  max-inline-size: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.doc-section :is(p, li) > code {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.doc-section pre {
+  max-inline-size: 100%;
+  overflow: auto;
+}
+.doc-section pre > code {
+  white-space: pre;
+  overflow-wrap: normal;
+}
+.documentation-resources {
+  display: grid;
+  gap: var(--space-lg);
+  margin-block: var(--space-lg) 0;
+  padding: 0;
+  list-style: none;
+}
+.documentation-resources li {
+  display: grid;
+  gap: var(--space-xs);
+  margin: 0;
+  min-width: 0;
+}
+.documentation-resources li > span {
+  font-weight: var(--font-weight-label, 600);
+}
+/* Source paths are single long tokens; wrap them inside the list, not the page. */
+.documentation-resources [data-doc-source] {
+  overflow-wrap: anywhere;
+}
+[data-doc-capability-status] {
+  max-inline-size: var(--prose-measure, 65ch);
+  margin-top: var(--space-lg);
+  color: var(--muted);
+}
+/* Major sections keep one rhythm after the content before them. Zero specificity, so sections
+   with their own spacing (.doc-section, .foundation-strip) keep it. */
+:where([data-doc-section]:not(:first-child)) {
+  margin-block-start: var(--space-section-sm, 32px);
+}
+/* Reading prose keeps one shared measure; demos, code, tables and resources keep the page width. */
+:where(:root) {
+  --prose-measure: 65ch;
+}
+.page-grid > article > .lead,
+.doc-section > :is(.section-intro, p[data-i18n]),
+.example-code > p,
+.doc-section:is(
+    [data-doc-section='usage'],
+    [data-doc-section='accessibility'],
+    [data-doc-section='notes']
+  )
+  > ul {
+  max-inline-size: var(--prose-measure, 65ch);
+}
+@media (min-width: 70.625rem) {
+  /* The contents rail replaces the section links from its 1130px breakpoint
+     (layout.css, 70.625rem = 1130px). */
+  .page-grid:has(> [data-doc-nav='toc']) [data-doc-nav='sections'] {
+    display: none;
+  }
+}

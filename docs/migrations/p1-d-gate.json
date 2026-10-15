@@ -1,0 +1,27 @@
+{
+  "id": "p1-d-gate",
+  "date": "2026-10-15",
+  "scope": "Documentation presentation gate page kinds",
+  "changes": [
+    {
+      "route": "/token-standards/",
+      "from": "tokens",
+      "to": "redirect",
+      "canonicalTarget": "/tokens/",
+      "reason": "The route duplicated the tokens classification. It is now a redirect page validated by its canonical link, zero-delay refresh and fallback link."
+    },
+    { "route": "/standards/", "from": null, "to": "ux-standards" },
+    { "route": "/genui/", "from": null, "to": "genui" }
+  ],
+  "legacyFragments": {
+    "owner": "docs/src/data/token-redirects.ts",
+    "note": "Retired /token-standards/ anchors are mapped to /tokens/ or /standards/ by that source. The build gate checks redirect metadata only; fragment behavior is verified by the browser navigation test."
+  },
+  "rules": {
+    "added": ["redirect-metadata-invalid", "redirect-fallback-missing", "redirect-route-missing"],
+    "removed": [],
+    "note": "All existing rules and the eight shared component sections keep their checks."
+  },
+  "astroConfig": "Unchanged. docs/src/pages/token-standards.astro renders the legacy route, so an Astro redirects entry for it would be a duplicate route; the integration reads the redirect contract from docs/src/data/documentation-rules.json.",
+  "contentRemoved": "None. Only the duplicated /token-standards/ classification moved from tokens to redirect."
+}

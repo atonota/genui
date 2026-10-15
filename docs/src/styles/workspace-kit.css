@@ -1,0 +1,65 @@
+.workspace-kit {
+  --kit-column-min: 12rem;
+  --kit-identity-min: 14rem;
+  --kit-editor-min: 16rem;
+  --kit-reading-max: 60rem;
+  display: grid;
+  gap: var(--space-xl);
+  min-width: 0;
+}
+.kit-field {
+  display: grid;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+.kit-field label {
+  color: var(--ink);
+  font-weight: var(--font-weight-medium, 500);
+}
+.kit-required,
+.kit-field-help,
+.kit-field-reason,
+.kit-field-unit {
+  color: var(--muted);
+}
+.kit-field-help,
+.kit-field-error {
+  margin: 0;
+}
+.kit-field-error {
+  color: var(--color-error, var(--primary));
+}
+.kit-field-value {
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+.kit-field-reason {
+  display: block;
+  margin-top: var(--space-xs);
+}
+.kit-field-unavailable {
+  padding-block: var(--space-sm);
+}
+.kit-numeric-field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-width: 0;
+}
+.kit-numeric-field .ant-input-number {
+  flex: 1;
+  min-width: 0;
+}
+.kit-field .ant-select {
+  width: 100%;
+}
+.kit-state-surface {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-sm);
+  padding-block: var(--space-lg);
+}
+.kit-state-surface :is(h4, p) {
+  margin: 0;
+}

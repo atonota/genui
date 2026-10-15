@@ -1,0 +1,237 @@
+/* One native Slider adapter: geometry stays fixed in every pointer/focus state. */
+.atlas-slider.ant-slider {
+  --slider-visible-thumb-size: var(--radio-size, max(32px, 2rem));
+  --slider-hit-size: max(var(--target-min), var(--slider-visible-thumb-size), 2.75rem);
+  --slider-rail-size: 0.5rem;
+  --slider-dot-size: 0.5rem;
+  --slider-thumb-border-width: 2px;
+  --slider-thumb-inset: calc((var(--slider-hit-size) - var(--slider-visible-thumb-size)) / 2);
+  --slider-track-color: var(--accent);
+  --slider-rail-color: var(--field-bg);
+  --slider-thumb-color: var(--panel);
+  --slider-thumb-edge: var(--accent);
+  --slider-disabled-color: var(--muted);
+  min-width: 0;
+  padding: 0;
+  font-family: var(--font-body);
+  font-size: var(--text);
+}
+
+.atlas-slider.ant-slider-horizontal {
+  height: var(--slider-hit-size);
+  margin-inline: calc(var(--slider-hit-size) / 2);
+  margin-block: var(--space-xs);
+}
+.atlas-slider.ant-slider-horizontal.ant-slider-with-marks {
+  margin-block-end: calc(var(--slider-hit-size) + var(--space-md));
+}
+.atlas-slider.ant-slider-vertical {
+  width: var(--slider-hit-size);
+  height: 100%;
+  margin: 0;
+}
+.atlas-slider.ant-slider :is(.ant-slider-rail, .ant-slider-track, .ant-slider-tracks) {
+  border-radius: var(--radius-round);
+  transition:
+    left var(--motion-duration-fast) var(--motion-easing),
+    right var(--motion-duration-fast) var(--motion-easing),
+    top var(--motion-duration-fast) var(--motion-easing),
+    bottom var(--motion-duration-fast) var(--motion-easing),
+    width var(--motion-duration-fast) var(--motion-easing),
+    height var(--motion-duration-fast) var(--motion-easing),
+    background-color var(--motion-duration-feedback) var(--motion-easing);
+}
+.atlas-slider.ant-slider .ant-slider-rail {
+  background-color: var(--slider-rail-color);
+}
+.atlas-slider.ant-slider .ant-slider-track {
+  background-color: var(--slider-track-color);
+}
+.atlas-slider.ant-slider:hover .ant-slider-rail {
+  background-color: var(--slider-rail-color);
+}
+.atlas-slider.ant-slider:hover .ant-slider-track {
+  background-color: var(--slider-track-color);
+}
+.atlas-slider.ant-slider-horizontal :is(.ant-slider-rail, .ant-slider-track, .ant-slider-tracks) {
+  height: var(--slider-rail-size);
+  inset-block-start: calc((var(--slider-hit-size) - var(--slider-rail-size)) / 2);
+}
+.atlas-slider.ant-slider-vertical :is(.ant-slider-rail, .ant-slider-track, .ant-slider-tracks) {
+  width: var(--slider-rail-size);
+  inset-inline-start: calc((var(--slider-hit-size) - var(--slider-rail-size)) / 2);
+}
+.atlas-slider.ant-slider .ant-slider-handle {
+  width: var(--slider-hit-size);
+  height: var(--slider-hit-size);
+  outline: none;
+  transition:
+    left var(--motion-duration-fast) var(--motion-easing),
+    right var(--motion-duration-fast) var(--motion-easing),
+    top var(--motion-duration-fast) var(--motion-easing),
+    bottom var(--motion-duration-fast) var(--motion-easing),
+    opacity var(--motion-duration-feedback) var(--motion-easing);
+}
+.atlas-slider.ant-slider-horizontal .ant-slider-handle {
+  inset-block-start: 0;
+}
+.atlas-slider.ant-slider-vertical .ant-slider-handle {
+  inset-inline-start: 0;
+}
+
+/* Native hover/active/focus grows these pseudos. Reserve the same geometry instead. */
+.atlas-slider.ant-slider .ant-slider-handle::before {
+  box-sizing: border-box;
+  width: var(--slider-hit-size) !important;
+  height: var(--slider-hit-size) !important;
+  inset-inline-start: 0 !important;
+  inset-block-start: 0 !important;
+  border-block-end: var(--focus-marker) solid transparent;
+  background-color: transparent;
+  transition: opacity var(--motion-duration-feedback) var(--motion-easing) !important;
+}
+.atlas-slider.ant-slider .ant-slider-handle::after {
+  box-sizing: border-box;
+  width: var(--slider-visible-thumb-size) !important;
+  height: var(--slider-visible-thumb-size) !important;
+  inset-inline-start: var(--slider-thumb-inset) !important;
+  inset-block-start: var(--slider-thumb-inset) !important;
+  background-color: var(--slider-thumb-color);
+  border: var(--slider-thumb-border-width) solid var(--slider-thumb-edge);
+  border-radius: var(--radius-round);
+  outline: none !important;
+  box-shadow: none !important;
+  transition:
+    background-color var(--motion-duration-feedback) var(--motion-easing),
+    border-color var(--motion-duration-feedback) var(--motion-easing),
+    opacity var(--motion-duration-feedback) var(--motion-easing) !important;
+}
+.atlas-slider.ant-slider .ant-slider-handle:not(.ant-slider-handle-disabled):hover::after,
+.atlas-slider.ant-slider .ant-slider-handle:not(.ant-slider-handle-disabled):active::after {
+  background-color: var(--surface);
+}
+.atlas-slider.ant-slider .ant-slider-handle:focus-visible::before {
+  border-block-end-color: var(--focus-color);
+}
+
+.atlas-slider.ant-slider .ant-slider-dot {
+  width: var(--slider-dot-size);
+  height: var(--slider-dot-size);
+  background-color: var(--panel);
+  border-color: var(--line);
+  transition:
+    background-color var(--motion-duration-feedback) var(--motion-easing),
+    border-color var(--motion-duration-feedback) var(--motion-easing);
+}
+.atlas-slider.ant-slider .ant-slider-dot-active {
+  border-color: var(--slider-track-color);
+}
+.atlas-slider.ant-slider-horizontal .ant-slider-step {
+  height: var(--slider-rail-size);
+  inset-block-start: calc((var(--slider-hit-size) - var(--slider-rail-size)) / 2);
+}
+.atlas-slider.ant-slider-vertical .ant-slider-step {
+  width: var(--slider-rail-size);
+  inset-inline-start: calc((var(--slider-hit-size) - var(--slider-rail-size)) / 2);
+}
+.atlas-slider.ant-slider-horizontal .ant-slider-dot {
+  inset-block-start: calc((var(--slider-rail-size) - var(--slider-dot-size)) / 2);
+}
+.atlas-slider.ant-slider-vertical .ant-slider-dot {
+  inset-inline-start: calc((var(--slider-rail-size) - var(--slider-dot-size)) / 2);
+}
+.atlas-slider.ant-slider .ant-slider-mark-text {
+  color: var(--muted);
+  font-size: var(--text);
+  line-height: var(--line-height);
+  white-space: nowrap;
+  transition: color var(--motion-duration-feedback) var(--motion-easing);
+}
+.atlas-slider.ant-slider .ant-slider-mark-text-active {
+  color: var(--ink);
+}
+.atlas-slider.ant-slider-horizontal .ant-slider-mark {
+  inset-block-start: calc(var(--slider-hit-size) + var(--space-xs));
+}
+.atlas-slider.ant-slider-vertical .ant-slider-mark {
+  inset-inline-start: calc(var(--slider-hit-size) + var(--space-xs));
+  top: 0;
+}
+.atlas-slider.ant-slider-disabled .ant-slider-rail {
+  background-color: var(--slider-rail-color) !important;
+}
+.atlas-slider.ant-slider-disabled .ant-slider-track {
+  background-color: var(--slider-disabled-color) !important;
+}
+.atlas-slider.ant-slider .ant-slider-handle-disabled::after {
+  background-color: var(--surface);
+  border-color: var(--slider-disabled-color);
+  cursor: not-allowed;
+}
+
+.slider-demo {
+  --slider-number-width: 8rem;
+  --slider-vertical-height: 20rem;
+  --slider-vertical-column: 12rem;
+  container-type: inline-size;
+  container-name: slider-demo;
+  min-width: 0;
+}
+.slider-demo-field {
+  display: grid;
+  align-content: start;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+.slider-demo-field output {
+  color: var(--muted);
+  font-size: var(--text);
+  overflow-wrap: normal;
+  word-break: normal;
+}
+.slider-demo-number-row {
+  display: grid;
+  align-items: center;
+  gap: var(--space-md);
+  min-width: 0;
+}
+.slider-demo-number-row .ant-input-number {
+  width: min(100%, var(--slider-number-width));
+}
+.slider-demo-vertical-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--slider-vertical-column)), 1fr));
+  gap: var(--space-xl);
+  min-width: 0;
+}
+.slider-demo-vertical-frame {
+  height: var(--slider-vertical-height);
+  padding-block: calc(var(--target-min) / 2);
+  padding-inline-start: var(--space-sm);
+  min-width: 0;
+}
+
+@container slider-demo (min-width: 28rem) {
+  .slider-demo-number-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, var(--slider-number-width));
+  }
+}
+@media (any-pointer: coarse) {
+  .atlas-slider.ant-slider {
+    --slider-visible-thumb-size: max(44px, var(--radio-size, 2.75rem));
+    --slider-hit-size: max(var(--target-min), var(--slider-visible-thumb-size), 3rem);
+  }
+  .slider-demo-vertical-frame {
+    padding-block: calc(3rem / 2);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .atlas-slider.ant-slider :is(.ant-slider-rail, .ant-slider-track, .ant-slider-tracks),
+  .atlas-slider.ant-slider .ant-slider-handle,
+  .atlas-slider.ant-slider .ant-slider-handle::before,
+  .atlas-slider.ant-slider .ant-slider-handle::after,
+  .atlas-slider.ant-slider .ant-slider-dot,
+  .atlas-slider.ant-slider .ant-slider-mark-text {
+    transition: none !important;
+  }
+}

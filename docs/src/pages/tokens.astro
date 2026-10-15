@@ -1,0 +1,379 @@
+---
+import DocsLayout from '../layouts/DocsLayout.astro';
+import CodeExample from '../components/CodeExample.astro';
+import DocumentationNav from '../components/DocumentationNav.astro';
+import atlas from '../data/atlas.json';
+import motion from '../data/motion.json';
+import { STANDARDS_ROUTE, tokenGroupId } from '../data/token-redirects';
+import { createDefaultRecipe, resolveThemeBuilder, tokenDefinitions } from '../theme-builder/model';
+import { layerOrder, measurementPolicy, stateAxes, surfaceRecipes } from '../theme-builder/states';
+
+// Every value below is read from the definitions, models or motion contract; nothing is retyped.
+type Cell = { text: string; code?: boolean; i18n?: boolean };
+type Row = { key?: string; cells: Cell[] };
+type Table = { section: string; id: string; title: string; head: string[]; rows: Row[] };
+
+// Display names only; ids, bindings, defaults and limits always come from the definitions.
+const groupLabels: Readonly<Record<string, string>> = {
+  colors: 'Colors',
+  border: 'Boundaries',
+  spacing: 'Spacing',
+  insets: 'Insets',
+  radius: 'Radius',
+  size: 'Control height',
+  typography: 'Typography',
+  shadow: 'Shadow',
+  density: 'Density',
+  surface: 'Surface depth',
+  overlay: 'Overlay',
+};
+// Human-readable policy values share translations with states.ts; numbers and CSS stay literal.
+const translatableRuleValues = new Set<unknown>([
+  'bottom indicator',
+  'margin = padding',
+  'light / dark',
+]);
+const code = (text: unknown): Cell => ({ text: String(text), code: true });
+const label = (text: string): Cell => ({ text, i18n: true });
+const empty: Cell = { text: '' };
+const withUnit = (value: unknown, unit: string) =>
+  typeof value === 'number' ? `${value}${unit}` : String(value);
+const table = (
+  section: string,
+  id: string,
+  title: string,
+  head: string[],
+  cells: Cell[][],
+): Table => ({ section, id, title, head, rows: cells.map(row => ({ cells: row })) });
+const values = (id: string, title: string, head: string[], cells: Cell[][]) =>
+  table('token-values', id, title, head, cells);
+
+const recipe = createDefaultRecipe();
+const resolved = {
+  light: resolveThemeBuilder(recipe, 'light').variables,
+  dark: resolveThemeBuilder(recipe, 'dark').variables,
+};
+const overlayMotionAliases = [
+  ['--overlay-open-duration', '--press-duration'],
+  ['--overlay-close-duration', '--release-duration'],
+  ['--overlay-easing', '--motion-easing'],
+];
+const overlayCompatibilityAliases = [
+  ['--dropdown-scrim', '--overlay-scrim'],
+  ['--dropdown-backdrop-blur', '--overlay-backdrop-blur'],
+  ['--dropdown-backdrop-z', '--overlay-scrim-z'],
+  ['--dropdown-trigger-z', '--overlay-trigger-z'],
+];
+const sources = [
+  [
+    'docs/src/theme-builder/definitions.json',
+    'Declares each token id, label, group, CSS binding, light and dark default, unit, limits and options.',
+  ],
+  [
+    'docs/src/theme-builder/model.ts',
+    'Typed model over the definitions, exported as tokenDefinitions; the resolver turns token values into CSS custom properties.',
+  ],
+  [
+    'docs/src/theme-builder/store.ts',
+    'Maintains the applied theme and persists it in this browser. The Builder editor owns the draft.',
+  ],
+  [
+    'docs/src/theme-builder/states.ts',
+    'Read-only metadata for state axes, measurement policy, layer order and surface recipes.',
+  ],
+  ['docs/src/data/motion.json', 'Shared easing, durations and delay.'],
+];
+
+const catalog: Table[] = [...new Set(tokenDefinitions.map(definition => definition.group))].map(
+  group => ({
+    section: 'token-catalog',
+    id: tokenGroupId(group),
+    title: groupLabels[group] ?? group,
+    head: [
+      'Token',
+      'Role id',
+      'CSS binding',
+      'Light default',
+      'Dark default',
+      'Unit',
+      'Minimum',
+      'Maximum',
+      'Step',
+      'Options',
+      'Description',
+    ],
+    rows: tokenDefinitions
+      .filter(definition => definition.group === group)
+      .map(definition => ({
+        key: definition.id,
+        cells: [
+          label(definition.label),
+          code(definition.id),
+          code(definition.css),
+          code(withUnit(definition.defaults.light, definition.unit)),
+          code(withUnit(definition.defaults.dark, definition.unit)),
+          definition.unit ? code(definition.unit) : label('No unit'),
+          ...[definition.min, definition.max, definition.step].map(bound =>
+            bound === undefined ? empty : code(withUnit(bound, definition.unit)),
+          ),
+          definition.options ? code(definition.options.join(', ')) : empty,
+          label(definition.description),
+        ],
+      })),
+  }),
+);
+
+const tables: Table[] = [
+  ...catalog,
+  values(
+    'measurement-values',
+    'Measurement policy',
+    ['Rule', 'Value', 'Description'],
+    measurementPolicy.map(rule => [
+      label(rule.label),
+      { text: String(rule.value), code: true, i18n: translatableRuleValues.has(rule.value) },
+      label(rule.description),
+    ]),
+  ),
+  values(
+    'control-sizes',
+    'Control sizes',
+    ['Size', 'Height', 'Horizontal padding'],
+    atlas.decisions.buttons.size_variants.map(size => [
+      code(size.value),
+      code(`${size.height_px}px`),
+      code(`${size.padding_inline_px}px`),
+    ]),
+  ),
+  values(
+    'state-values',
+    'State axes',
+    ['Axis', 'Role id', 'Mechanism', 'Values'],
+    stateAxes.map(axis => [
+      label(axis.label),
+      code(axis.id),
+      label(axis.description),
+      code(axis.values.join(', ')),
+    ]),
+  ),
+  values(
+    'surface-values',
+    'Surface recipes',
+    ['Recipe', 'Role id', 'Description'],
+    surfaceRecipes.map(surface => [
+      label(surface.label),
+      code(surface.id),
+      label(surface.description),
+    ]),
+  ),
+  values(
+    'shadow-values',
+    'Shadow recipes',
+    ['Token', 'CSS binding', 'Light default recipe', 'Dark default recipe'],
+    tokenDefinitions
+      .filter(definition => definition.geometry)
+      .map(definition => [
+        label(definition.label),
+        code(definition.css),
+        code(resolved.light[definition.css]),
+        code(resolved.dark[definition.css]),
+      ]),
+  ),
+  values(
+    'motion-values',
+    'Motion durations',
+    ['Motion token', 'Value'],
+    [
+      [code('easing'), code(motion.easing)],
+      [code('delay'), code(`${motion.delayMs} ms`)],
+      ...Object.entries(motion.durationMs).map(([id, ms]) => [code(id), code(`${ms} ms`)]),
+    ],
+  ),
+  values(
+    'layer-values',
+    'Layer order',
+    ['Layer', 'Role id', 'Stacking value'],
+    layerOrder.map(layer => [label(layer.label), code(layer.id), code(layer.value)]),
+  ),
+  values(
+    'overlay-motion-aliases',
+    'Overlay motion aliases',
+    ['Overlay alias', 'Central source'],
+    overlayMotionAliases.map(pair => pair.map(name => code(name))),
+  ),
+  values(
+    'overlay-compatibility-aliases',
+    'Overlay compatibility aliases',
+    ['Former alias', 'Overlay role'],
+    overlayCompatibilityAliases.map(pair => pair.map(name => code(name))),
+  ),
+  table(
+    'using-tokens',
+    'token-sources',
+    'Token sources',
+    ['Source', 'Responsibility'],
+    sources.map(([path, responsibility]) => [code(path), label(responsibility!)]),
+  ),
+];
+
+const sections = [
+  {
+    id: 'token-catalog',
+    label: 'Token catalog',
+    intro: [
+      'Defaults are shipped presets. They are not the values in your current Builder draft or applied theme.',
+      'Machine ids, CSS variables and values are shown literally and are not translated.',
+      'Where a description disagrees with the listed minimum, maximum, step or options, the listed machine constraints are authoritative.',
+    ],
+  },
+  {
+    id: 'token-values',
+    label: 'Generated values',
+    intro: [
+      'These tables are read from the default recipe, the state metadata, the motion contract and the layer order. Rules for applying them live in the UX standards.',
+    ],
+  },
+  {
+    id: 'using-tokens',
+    label: 'Using tokens',
+    intro: [
+      'Read tokens through their CSS variables. Do not copy default values into components.',
+      "Each scheme object lists every definition id exactly once. Import accepts only known keys with finite values inside each token's bounds. This shape is a summary, not an importable file. Create a complete file with Export JSON in the Theme Builder.",
+      'Themes are stored only in this browser. Nothing is sent to a server.',
+      'These definitions are documented standards. They are not full runtime acceptance or GenUI registrations, and not every CSS binding has been verified in every component at runtime.',
+    ],
+  },
+];
+const lead =
+  'Components read semantic tokens through CSS variables. Every table on this page is generated from the shared token definitions and models during the build; no value is retyped.';
+const exportShape = '{ "version": 1, "light": { … }, "dark": { … } }';
+const cssExample = `.order-field {
+  min-height: var(--size-md);
+  padding-inline: var(--inset-control-md);
+  border: var(--field-border-width) var(--border-style) var(--field-border);
+  border-radius: var(--radius-md);
+  background: var(--field-bg);
+  color: var(--ink);
+  font-size: var(--text-body);
+}`;
+---
+
+<DocsLayout
+  title="Design tokens"
+  description="Every token definition with its CSS binding, defaults and limits, generated from the shared definitions."
+  slug="tokens"
+>
+  <p class="eyebrow">
+    <span data-i18n="FOUNDATIONS / DESIGN TOKENS">FOUNDATIONS / DESIGN TOKENS</span>
+  </p>
+  <h1>
+    <span class="page-heading-line" data-i18n="Shared source.">
+      Shared source.
+    </span>
+    <br />
+    <span>
+      <span data-i18n="Consistent behavior.">Consistent behavior.</span>
+    </span>
+  </h1>
+  <p class="lead">
+    <span data-i18n={lead}>{lead}</span>
+  </p>
+  <p>
+    <a href={STANDARDS_ROUTE}>
+      <span data-i18n="Rules for using tokens: UX standards">
+        Rules for using tokens: UX standards
+      </span>
+    </a>
+    {' · '}
+    <a href="/color-system/">
+      <span data-i18n="Approved color families: Color system">
+        Approved color families: Color system
+      </span>
+    </a>
+    {' · '}
+    <a href="/theme-builder/">
+      <span data-i18n="Edit tokens in Theme Builder">Edit tokens in Theme Builder</span>
+    </a>
+  </p>
+  <DocumentationNav items={sections} />
+  {sections.map(section => (
+    <section
+      id={section.id}
+      class="doc-section"
+      data-doc-section={section.id}
+      aria-labelledby={`${section.id}-title`}
+    >
+      <h2 id={`${section.id}-title`}>
+        <span data-i18n={section.label}>{section.label}</span>
+      </h2>
+      {section.intro.map(text => (
+        <p>
+          <span data-i18n={text}>{text}</span>
+        </p>
+      ))}
+      {section.id === 'token-catalog' && (
+        <p>
+          <span data-i18n="Definitions:">Definitions:</span> <code>{tokenDefinitions.length}</code>
+        </p>
+      )}
+      {section.id === 'using-tokens' && (
+        <>
+          <CodeExample code={cssExample} title="Read tokens as CSS variables" />
+          <p>
+            <span data-i18n="An exported theme has this shape:">
+              An exported theme has this shape:
+            </span>{' '}
+            <code>{exportShape}</code>
+          </p>
+        </>
+      )}
+      {tables
+        .filter(item => item.section === section.id)
+        .map(item => (
+          <>
+            <h3 id={item.id}>
+              <span data-i18n={item.title}>{item.title}</span>
+            </h3>
+            <div
+              class="table-scroll"
+              role="region"
+              aria-label={item.title}
+              data-i18n-aria-label={item.title}
+              tabindex="0"
+            >
+              <table>
+                <thead>
+                  <tr>
+                    {item.head.map(heading => (
+                      <th>
+                        <span data-i18n={heading}>{heading}</span>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {item.rows.map(row => (
+                    <tr data-token-definition={row.key}>
+                      {row.cells.map((cell, index) => {
+                        const Tag = index === 0 ? 'th' : 'td';
+                        const i18n = cell.i18n ? cell.text : undefined;
+                        return (
+                          <Tag scope={index === 0 ? 'row' : undefined}>
+                            {cell.code ? (
+                              <code data-i18n={i18n}>{cell.text}</code>
+                            ) : (
+                              <span data-i18n={i18n}>{cell.text}</span>
+                            )}
+                          </Tag>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        ))}
+    </section>
+  ))}
+</DocsLayout>

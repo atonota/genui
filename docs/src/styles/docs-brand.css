@@ -1,0 +1,100 @@
+/* Loaded by DocsLayout only. Explicit approved palettes and the seed preview opt out. */
+body[data-atlas-surface='docs'] .atlas-demo[data-atlas-appearance='docs'] {
+  --button-face: var(--docs-brand-primary);
+  --button-edge: var(--docs-brand-primary-edge);
+  --button-text: var(--docs-brand-on-primary);
+}
+body[data-atlas-surface='docs'] .atlas-demo .ant-btn-primary.css-var-atlas-docs:not(.atlas-button) {
+  --button-face: var(--docs-brand-primary);
+  --button-edge: var(--docs-brand-primary-edge);
+  --button-text: var(--docs-brand-on-primary);
+}
+body[data-atlas-surface='docs'] .atlas-demo .ant-btn-primary.css-var-atlas:not(.atlas-button) {
+  --button-face: var(--docs-approved-button-face);
+  --button-edge: var(--docs-approved-button-edge);
+  --button-text: var(--docs-approved-button-text);
+}
+body[data-atlas-surface='docs']
+  .atlas-demo
+  :is(
+    .ant-btn-primary.css-var-atlas-docs:not(.atlas-button),
+    .atlas-button[data-docs-brand-default='true']
+  ):not(:disabled) {
+  opacity: 1;
+}
+body[data-atlas-surface='docs'] .atlas-demo .atlas-button[data-docs-brand-default='true'] {
+  --button-outlined-ink: var(--docs-brand-action-ink);
+  --button-transparent-ink: var(--docs-brand-action-ink);
+}
+body[data-atlas-surface='docs']
+  .atlas-demo
+  :is(
+    .ant-btn-primary.css-var-atlas-docs:not(.atlas-button),
+    .atlas-button[data-docs-brand-default='true'][data-docs-brand-tone='middle']
+  )::before {
+  transition:
+    inset var(--release-duration) var(--motion-easing),
+    background-color var(--release-duration) var(--motion-easing);
+}
+body[data-atlas-surface='docs']
+  .atlas-demo
+  :is(
+    .ant-btn-primary.css-var-atlas-docs:not(.atlas-button),
+    .atlas-button[data-docs-brand-default='true'][data-docs-brand-tone='middle'][data-fill='solid']:not(
+        .atlas-button-outlined
+      )
+  ):is(:hover, [data-state='hover']):not(:disabled)::before {
+  background-color: var(--docs-brand-primary-hover);
+}
+body[data-atlas-surface='docs']
+  .atlas-demo
+  :is(
+    .ant-btn-primary.css-var-atlas-docs:not(.atlas-button),
+    .atlas-button[data-docs-brand-default='true'][data-docs-brand-tone='middle'][data-fill='solid']:not(
+        .atlas-button-outlined
+      )
+  ):is(:active, [data-pressed='true']):not(:disabled)::before {
+  background-color: var(--docs-brand-primary-active);
+  transition-duration: var(--press-duration);
+}
+body[data-atlas-surface='docs'] a {
+  transition:
+    background-color var(--motion-duration-standard) var(--motion-easing),
+    color var(--motion-duration-standard) var(--motion-easing);
+}
+body[data-atlas-surface='docs'] a:hover {
+  color: var(--docs-brand-accent-hover);
+}
+body[data-atlas-surface='docs'] a:active {
+  color: var(--docs-brand-accent-active);
+}
+body[data-atlas-surface='docs'] .docs-action {
+  background-color: var(--docs-brand-primary);
+  color: var(--docs-brand-on-primary);
+  opacity: 1;
+  transition:
+    background-color var(--motion-duration-button-feedback) var(--motion-easing),
+    color var(--motion-duration-button-feedback) var(--motion-easing);
+}
+body[data-atlas-surface='docs'] .docs-action:hover {
+  background-color: var(--docs-brand-primary-hover);
+  color: var(--docs-brand-on-primary);
+}
+body[data-atlas-surface='docs'] .docs-action:active {
+  background-color: var(--docs-brand-primary-active);
+  color: var(--docs-brand-on-primary);
+}
+@media (prefers-reduced-motion: reduce) {
+  body[data-atlas-surface='docs'] a,
+  body[data-atlas-surface='docs'] .docs-action {
+    transition: none;
+  }
+  body[data-atlas-surface='docs']
+    .atlas-demo
+    :is(
+      .ant-btn-primary.css-var-atlas-docs:not(.atlas-button),
+      .atlas-button[data-docs-brand-default='true']
+    )::before {
+    transition: none;
+  }
+}

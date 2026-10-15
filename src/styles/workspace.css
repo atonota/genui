@@ -1,0 +1,70 @@
+/* Shared offline experimental workspace; no approved component decisions. */
+.workspace-lab{--ws-gap:var(--ff-gap);--ws-section-gap:var(--ff-section-gap);--ws-padding:var(--ff-padding);--ws-radius:var(--button-radius-default);--ws-target:var(--ff-target);--ws-font:var(--ff-font);--ws-heading:var(--ff-heading);--ws-duration:var(--ff-release);--ws-background:var(--panel);--ws-subtle:var(--surface);--ws-ink:var(--ink);--ws-muted:var(--muted);--ws-boundary:var(--line);--ws-active:var(--soft);--ws-focus:var(--ff-focus-color);--ws-focus-inset:0px;--ws-mobile-width:26rem;--ws-placeholder-rest:.7;--ws-placeholder-focus:.5;--ws-table-width:45rem;--ws-id-width:9rem;--ws-customer-width:12rem;--ws-status-width:7rem;--ws-date-width:9rem;--ws-amount-width:8rem;--ws-group-width:12rem;--ws-detail-width:17rem;--ws-field-width:17rem;--ff-field-surface:var(--ff-control-bg);--ff-field-border:var(--ff-boundary);--ff-field-bottom:var(--ff-boundary);--ff-field-end-radius:var(--ff-radius);--ff-field-shadow:0 var(--ff-depth) 0 var(--ff-boundary);font-family:inherit;font-size:var(--ws-font);min-width:0;container-type:inline-size}
+#workspaceLab #workspaceExamples{display:grid;gap:var(--ws-gap);min-width:0}
+#workspaceLab .ws-example{display:grid;gap:var(--ws-gap);min-width:0;padding-block:var(--ws-section-gap);border-block-start:var(--ff-line) solid var(--ws-boundary)}
+#workspaceLab .ws-example>h3{font-size:var(--ws-heading);letter-spacing:var(--button-letter-spacing)}
+#workspaceLab .ws-caption,#workspaceLab .ws-form-status{font-size:var(--ws-font);color:var(--ws-muted);overflow-wrap:break-word;min-width:0}
+#workspaceLab .ws-profile-controls,#workspaceLab .ws-form-modes,#workspaceLab .ws-form-actions,#workspaceLab .ws-record-navigation{display:flex;flex-wrap:wrap;align-items:center;gap:var(--ws-gap);min-width:0}
+#workspaceLab .ws-action{position:relative;min-width:var(--ws-target);min-height:var(--ws-target);padding:var(--ff-choice-pad) var(--ws-padding);font:inherit;font-size:var(--ws-font);line-height:1.5;border:var(--ff-line) solid transparent;border-radius:var(--ws-radius);color:var(--ws-ink);background:var(--ws-subtle);text-align:start;outline:none;opacity:var(--opacity-rest);transition:background-color var(--ws-duration) var(--motion-easing),color var(--ws-duration) var(--motion-easing),opacity var(--ws-duration) var(--motion-easing)}
+#workspaceLab .ws-action:hover:not(:disabled){opacity:var(--opacity-hover)}
+#workspaceLab .ws-action[aria-pressed=true]{background:var(--ws-ink);color:var(--paper)}
+#workspaceLab .ws-action:disabled{color:var(--ws-muted);opacity:var(--opacity-rest)}
+#workspaceLab .ws-action:focus-visible{text-decoration:none}
+#workspaceLab .ws-action:focus-visible::after{content:"";position:absolute;inset-inline-start:0;inset-block-start:var(--ff-choice-pad);width:var(--focus-marker-size);height:var(--button-focus-marker-height);background:currentColor;pointer-events:none}
+#workspaceLab .ws-order-layout{display:grid;grid-template-columns:minmax(0,1fr);min-width:0}
+#workspaceLab .ws-pane{display:grid;grid-template-rows:0fr;min-width:0;opacity:0;transition:grid-template-rows var(--ws-duration) var(--motion-easing),opacity var(--ws-duration) var(--motion-easing)}
+#workspaceLab .ws-pane[data-open=true]{grid-template-rows:1fr;opacity:1}
+#workspaceLab .ws-pane[data-open=false]{pointer-events:none}
+#workspaceLab .ws-pane-content{min-width:0;min-height:0;overflow:hidden;display:flex;flex-direction:column;gap:var(--ws-gap);padding-block:0;transition:padding-block var(--ws-duration) var(--motion-easing)}
+#workspaceLab .ws-pane[data-open=true]>.ws-pane-content{padding-block:var(--ws-gap)}
+/* Immediate focused content is an accessibility exception: never clip or fade its
+   caret/marker during reveal. Unfocused entry and every exit retain normal motion. */
+#workspaceLab .ws-pane[data-open=true]:focus-within,#workspaceLab .ws-pane[data-open=true]:focus-within>.ws-pane-content{transition:color var(--ws-duration) var(--motion-easing)}
+#workspaceLab .ws-heading{margin:0;font-size:var(--ws-font);font-weight:650;outline:none}
+#workspaceLab .ws-heading:focus-visible{text-decoration:underline;text-decoration-thickness:var(--focus-underline-thickness);text-underline-offset:var(--focus-underline-offset)}
+#workspaceLab .ws-group-list{display:grid;gap:var(--ws-gap);min-width:0}
+#workspaceLab .ws-group-list .ws-action{display:flex;align-items:center;justify-content:space-between;gap:var(--ws-gap);width:100%}
+#workspaceLab .ws-count{font-variant-numeric:tabular-nums}
+#workspaceLab .ws-table-scroll{position:relative;min-width:0;max-width:100%;overflow:auto;overscroll-behavior:contain;outline:none;border-radius:var(--ws-radius);border-block-end:var(--focus-marker-size) solid transparent}
+#workspaceLab .ws-table-scroll:focus-visible{border-block-end-color:var(--ws-focus)}
+#workspaceLab .ws-orders-table{width:100%;border-collapse:collapse;font-size:var(--ws-font);color:var(--ws-ink);text-align:start}
+#workspaceLab .ws-orders-table th,#workspaceLab .ws-orders-table td{padding:var(--ff-choice-pad);font-size:var(--ws-font);text-align:start;vertical-align:top;word-break:normal;overflow-wrap:normal;border-block-end:var(--ff-line) solid var(--ws-boundary)}
+#workspaceLab .ws-orders-table th{font-weight:650}
+#workspaceLab .ws-order-row{background:transparent;transition:background-color var(--ws-duration) var(--motion-easing)}
+#workspaceLab .ws-order-row[data-active=true]{background:var(--ws-active)}
+#workspaceLab .ws-open-order{background:transparent;color:var(--ws-ink);font-weight:600;white-space:nowrap}
+#workspaceLab .ws-empty{color:var(--ws-muted);padding-block:var(--ws-gap);font-size:var(--ws-font)}
+#workspaceLab .ws-detail-content{display:grid;gap:var(--ws-gap);min-width:0}
+#workspaceLab .ws-record-id{font-weight:650;font-size:var(--ws-font)}
+#workspaceLab .ws-details{display:grid;gap:var(--ws-gap);margin:0;font-size:var(--ws-font);min-width:0}
+#workspaceLab .ws-details>div{display:grid;gap:var(--ff-choice-pad);min-width:0}
+#workspaceLab .ws-details dt{font-weight:600;color:var(--ws-muted)}
+#workspaceLab .ws-details dd{margin:0;overflow-wrap:break-word}
+#workspaceLab .ws-form{display:grid;gap:var(--ws-gap);min-width:0}
+#workspaceLab .ws-form .ws-pane-content{display:grid;align-content:start}
+#workspaceLab .ws-form .ff-field{min-width:0}
+/* Keep the inherited single field marker inside the collapsing pane clip. */
+#workspaceLab .ff-control-wrap:has(:focus-visible)::after{inset-inline-start:var(--ws-focus-inset)}
+#workspaceLab .ff-control::placeholder{opacity:var(--ws-placeholder-rest);transition:opacity var(--ws-duration) var(--motion-easing)}
+#workspaceLab .ff-control:focus::placeholder,#workspaceLab .ff-control:active::placeholder{opacity:var(--ws-placeholder-focus)}
+#workspaceLab .ws-form-actions{padding-block:var(--ws-gap)}
+#workspaceLab[data-profile=mobile] .ws-example{width:100%;max-width:var(--ws-mobile-width);margin-inline:auto}
+#workspaceLab[data-profile=mobile] .ws-orders-table,#workspaceLab[data-profile=mobile] .ws-orders-table tbody{display:block;min-width:0}
+#workspaceLab[data-profile=mobile] .ws-orders-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+#workspaceLab[data-profile=mobile] .ws-order-row{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--ff-choice-pad);padding-block:var(--ws-gap);border-block-end:var(--ff-line) solid var(--ws-boundary)}
+#workspaceLab[data-profile=mobile] .ws-orders-table td{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--ff-choice-pad);border:0;padding:0 var(--ff-choice-pad)}
+#workspaceLab[data-profile=mobile] .ws-orders-table td::before{content:attr(data-ws-label);font-size:var(--ws-font);color:var(--ws-muted);font-weight:550}
+#workspaceLab[data-profile=mobile] .ws-orders-table td:first-child::before{content:none}
+#workspaceLab[data-profile=mobile] .ws-open-order{width:100%}
+#workspaceLab[data-profile=desktop] .ws-order-layout{gap:var(--ws-gap)}
+#workspaceLab[data-profile=desktop] .ws-orders-table{min-width:var(--ws-table-width)}
+#workspaceLab[data-profile=desktop] .ws-orders-table th:nth-child(1){min-width:var(--ws-id-width)}
+#workspaceLab[data-profile=desktop] .ws-orders-table th:nth-child(2){min-width:var(--ws-customer-width)}
+#workspaceLab[data-profile=desktop] .ws-orders-table th:nth-child(3){min-width:var(--ws-status-width)}
+#workspaceLab[data-profile=desktop] .ws-orders-table th:nth-child(4){min-width:var(--ws-date-width)}
+#workspaceLab[data-profile=desktop] .ws-orders-table th:nth-child(5){min-width:var(--ws-amount-width)}
+@container(min-width:64rem){#workspaceLab[data-profile=desktop] .ws-order-layout{grid-template-columns:minmax(var(--ws-group-width),.7fr) minmax(0,2fr) minmax(var(--ws-detail-width),1fr);align-items:start}#workspaceLab[data-profile=desktop] .ws-form[data-mode=single]{grid-template-columns:repeat(2,minmax(0,1fr))}#workspaceLab[data-profile=desktop] .ws-form[data-mode=single]>:not(.ws-pane){grid-column:1/-1}}
+@media(any-pointer:coarse){.workspace-lab{--ws-target:48px}}
+:root[data-motion=off] #workspaceLab *,:root[data-motion=off] #workspaceLab *::before,:root[data-motion=off] #workspaceLab *::after{transition:none!important;animation:none!important}
+@media(prefers-reduced-motion:reduce){#workspaceLab *,#workspaceLab *::before,#workspaceLab *::after{transition:none!important;animation:none!important}}
+@media(forced-colors:active){.workspace-lab{--ws-focus:Highlight;--ws-active:Canvas;--ws-ink:CanvasText;--ws-muted:CanvasText;--ws-boundary:ButtonText;--ws-subtle:Canvas;--ff-field-surface:Canvas;--ff-control-fg:CanvasText;--ff-field-border:ButtonText;--ff-field-bottom:ButtonText;--ff-focus-color:Highlight}#workspaceLab .ws-action[aria-pressed=true]{background:Highlight;color:HighlightText}#workspaceLab .ws-action:focus-visible::after,#workspaceLab .ws-table-scroll:focus-visible{forced-color-adjust:none}}

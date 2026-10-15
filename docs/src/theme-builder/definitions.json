@@ -1,0 +1,951 @@
+[
+  {
+    "id": "primary",
+    "label": "Primary color",
+    "group": "colors",
+    "kind": "color",
+    "defaults": {
+      "light": "#0099ff",
+      "dark": "#0099ff"
+    },
+    "unit": "",
+    "css": "--primary",
+    "description": "Brand accent color (hex, no unit) exposed globally as --primary for primary buttons, links, active and selected states. Light and dark scheme values are set independently; this role is separate from the success, info, warning, danger and disabled status colors and must not substitute for them. Never use it as a surrounding focus ring; color transitions use the locked Cubic easing."
+  },
+  {
+    "id": "text",
+    "label": "Text",
+    "group": "colors",
+    "kind": "color",
+    "defaults": {
+      "light": "#242622",
+      "dark": "#f2f2f2"
+    },
+    "unit": "",
+    "css": "--ink",
+    "description": "Primary foreground (ink) color for body copy, labels, headings, table cells and entered field values. Hex color, no unit; separate light and dark scheme values resolved globally to --ink. Must keep at least 4.5:1 contrast against panel surfaces and the darker input field surface in both schemes. Scheme role only: success, info, warning, danger and disabled text use their own state tokens, not this one. Minimum 14px text size and focus indication are governed elsewhere; this color never draws a focus ring."
+  },
+  {
+    "id": "muted",
+    "label": "Secondary text",
+    "group": "colors",
+    "kind": "color",
+    "defaults": {
+      "light": "#575a53",
+      "dark": "#b8b8b8"
+    },
+    "unit": "",
+    "css": "--muted",
+    "description": "Hex color for secondary text such as helper text, metadata, captions and placeholders, exposed as --muted with separate light and dark scheme values. It is a neutral text role, not a success, info, warning, danger or disabled state color; disabled text uses its own token. Each scheme value must keep WCAG 2.2 AA text contrast on panel and input field surfaces, and text using it stays at least 14px."
+  },
+  {
+    "id": "canvas",
+    "label": "Canvas",
+    "group": "colors",
+    "kind": "color",
+    "defaults": {
+      "light": "#e6e2d7",
+      "dark": "#191302"
+    },
+    "unit": "",
+    "css": "--paper",
+    "description": "Base application background color behind all panels and content surfaces, emitted as the global CSS variable --paper. Takes a hex color with separate light and dark scheme values; these scheme values are not state colors, so success, info, warning, danger and disabled roles come from their own tokens. Unitless. Panels and raised surfaces sit on this layer; text must stay legible against it, and input fields must remain darker than their panel in both modes."
+  },
+  {
+    "id": "panel",
+    "label": "Panel",
+    "group": "colors",
+    "kind": "color",
+    "defaults": {
+      "light": "#ffffff",
+      "dark": "#2c2c2c"
+    },
+    "unit": "",
+    "css": "--panel",
+    "description": "Raised surface color for panels, sidebars, popovers and dropdown menus, layered above the page background. Unitless hex color with separate light and dark scheme values; scheme roles are independent of success, info, warning, danger and disabled status colors. Input fields must stay darker than the panel in both schemes. Text on the panel must keep readable contrast at the 14px minimum; separate content with spacing rather than decorative borders, and never draw enclosing focus rings."
+  },
+  {
+    "id": "field",
+    "label": "Field interior",
+    "group": "colors",
+    "kind": "color",
+    "defaults": {
+      "light": "#ececec",
+      "dark": "#1b1b1b"
+    },
+    "unit": "",
+    "css": "--field-bg",
+    "description": "Background fill for editable controls such as text inputs, selects and textareas. Hex color with separate light and dark scheme defaults; unitless. Must stay darker than the panel surface in both schemes so fields read as recessed. This is a scheme-only base role: success, info, warning, danger and disabled appearances come from their own state tokens, not this one. Field text (minimum 14px) and placeholders must keep WCAG 2.2 AA contrast on it. Focus uses a single non-enclosing indicator, never a surrounding ring."
+  },
+  {
+    "id": "border",
+    "label": "Field boundary",
+    "group": "colors",
+    "kind": "color",
+    "defaults": {
+      "light": "#747166",
+      "dark": "#858585"
+    },
+    "unit": "",
+    "css": "--field-border",
+    "description": "Resting boundary color for form inputs, selects and table grid lines; a hex color set separately for the light and dark schemes, with no unit. Use only where a boundary is functional, never as decoration. Invalid, disabled and selected states use their own semantic tokens, and this color must never draw an enclosing focus ring."
+  },
+  {
+    "id": "divider",
+    "label": "Divider",
+    "group": "colors",
+    "kind": "color",
+    "defaults": {
+      "light": "#d5dae1",
+      "dark": "#48515d"
+    },
+    "unit": "",
+    "css": "--line",
+    "description": "Color of functional separator lines such as table grid rules, list and section dividers. Set separately for the light and dark color scheme (hex color, no unit). It is a neutral scheme role, not a status color: do not use it for success, info, warning, danger or disabled states. Use it only where a line serves a function; separate content first with spacing and surface hierarchy. Never use it to draw a ring or outline around focused elements."
+  },
+  {
+    "id": "success",
+    "label": "Success",
+    "group": "colors",
+    "kind": "color",
+    "defaults": {
+      "light": "#237804",
+      "dark": "#95de64"
+    },
+    "unit": "",
+    "css": "--success",
+    "description": "Semantic success status color for confirmed, completed or valid outcomes such as success alerts, toasts, badges and positive validation text or icons. Unitless hex color resolved globally as --success, with separate light and dark color-scheme defaults that must keep WCAG 2.2 AA contrast on their surfaces. Color scheme (light/dark) is independent of status role: success stays distinct from info, warning, danger and the disabled availability state, and disabled elements use the disabled role instead. Always pair with text or an icon; never use as the sole indicator or as a focus ring."
+  },
+  {
+    "id": "info",
+    "label": "Information",
+    "group": "colors",
+    "kind": "color",
+    "defaults": {
+      "light": "#005fb3",
+      "dark": "#50bef5"
+    },
+    "unit": "",
+    "css": "--info",
+    "description": "Semantic informational status color exposed as --info for neutral, non-blocking notices: info alerts, banners, badges, inline hints and info icons. Unitless hex color. Scheme (light/dark) is a separate axis from status role: each scheme supplies its own value, while info stays one status role alongside success, warning, danger and disabled, which remain independently available. Info text and icons must keep readable contrast against panel and input surfaces in both schemes. Never use it as a focus ring or enclosing focus outline."
+  },
+  {
+    "id": "warning",
+    "label": "Warning",
+    "group": "colors",
+    "kind": "color",
+    "defaults": {
+      "light": "#874d00",
+      "dark": "#ffd666"
+    },
+    "unit": "",
+    "css": "--warning",
+    "description": "Semantic warning status color (hex value, no unit) for cautionary text, icons, badges and indicators that need attention but are not errors. Scheme and status are separate axes: the light default #874d00 is used on light surfaces and the dark default #ffd666 on dark surfaces, while warning availability is independent of the success, info, danger and disabled roles. Keep readable contrast against its surface, pair it with an icon or text label instead of relying on color alone, and never use it for focus rings or disabled states."
+  },
+  {
+    "id": "danger",
+    "label": "Danger",
+    "group": "colors",
+    "kind": "color",
+    "defaults": {
+      "light": "#a8071a",
+      "dark": "#ff7875"
+    },
+    "unit": "",
+    "css": "--error",
+    "description": "Semantic danger status color, resolved globally to --error. Use for destructive actions, failed validation, invalid fields and error messages. Hex color with no unit. The light and dark values are separate color-scheme defaults; the danger role is independent of the success, info, warning and disabled roles. Must keep WCAG 2.2 AA contrast against panels and input fields in both schemes. Never use it as a surrounding focus ring."
+  },
+  {
+    "id": "disabled-bg",
+    "label": "Disabled surface",
+    "group": "colors",
+    "kind": "color",
+    "defaults": {
+      "light": "#ded9cc",
+      "dark": "#1b1b1b"
+    },
+    "unit": "",
+    "css": "--disabled-bg",
+    "description": "Background fill for controls in the disabled state, such as buttons, input fields, selects and toggles. Hex color with separate light and dark scheme values. The light and dark values are color schemes; disabled is a state role that applies in both, and it is separate from the success, info, warning and danger roles. Pair it with the disabled text color so labels stay readable at the 14px minimum text size. Disabled controls do not show hover or active styling."
+  },
+  {
+    "id": "disabled-text",
+    "label": "Disabled text",
+    "group": "colors",
+    "kind": "color",
+    "defaults": {
+      "light": "#575a53",
+      "dark": "#b8b8b8"
+    },
+    "unit": "",
+    "css": "--disabled-text",
+    "description": "Foreground color for labels, values, placeholders and icons of disabled (unavailable) controls and items. Light and dark values are color-scheme variants of one disabled-availability role, separate from the success, info, warning and danger status roles. Unitless hex color; not used for hover, active, selected or invalid states, and disabled text still keeps the 14px minimum size."
+  },
+  {
+    "id": "border-width",
+    "label": "Boundary width",
+    "group": "border",
+    "kind": "number",
+    "defaults": {
+      "light": 1,
+      "dark": 1
+    },
+    "unit": "px",
+    "css": "--field-border-width",
+    "description": "Fixed pixel thickness of the functional boundary line on form fields (inputs, selects, textareas), resolved to --field-border-width. Integer px from 0 to 6 in 1px steps; 0 removes the line. Same default (1px) in light and dark schemes; one value shared by sm/md/lg field sizes, not a size scale. Width stays constant across default, hover, disabled and invalid states so layout does not shift. Must not be thickened into a surrounding focus ring; keyboard focus uses a separate non-enclosing indicator. Not intended for decorative borders on non-field surfaces.",
+    "min": 0,
+    "max": 6,
+    "step": 1
+  },
+  {
+    "id": "space-local-sm",
+    "label": "Local spacing SM",
+    "group": "spacing",
+    "kind": "number",
+    "defaults": {
+      "light": 12,
+      "dark": 12
+    },
+    "unit": "px",
+    "css": "--space-local-sm",
+    "description": "Small step of the local inset scale (sm/md/lg), in fixed CSS px; defaults to 12px in both light and dark schemes. Sets margin and padding gaps between closely related elements inside one component, such as icon-to-label or label-to-field. Margin and padding reuse this same inset scale, derived from the 4px base rhythm, rather than a separate spacing fork, so keep values on multiples of 4. Allowed range is 12 to 240px, and it should stay at or below the md step. It is spacing only and does not shrink control heights or text size.",
+    "min": 12,
+    "max": 240,
+    "step": 4
+  },
+  {
+    "id": "space-local-md",
+    "label": "Local spacing MD",
+    "group": "spacing",
+    "kind": "number",
+    "defaults": {
+      "light": 16,
+      "dark": 16
+    },
+    "unit": "px",
+    "css": "--space-local-md",
+    "description": "Medium step of the local sm/md/lg spacing group: fixed px gap and inset between closely related elements inside a component (e.g. label-to-field, icon-to-text, internal padding). Derived from the 4px base rhythm (default 16px = 4 x 4px) and reused by both margin and padding insets rather than a separate spacing scale. Same value in light and dark schemes; does not vary by interaction state. Range 12-240px, step 1.",
+    "min": 12,
+    "max": 240,
+    "step": 4
+  },
+  {
+    "id": "space-local-lg",
+    "label": "Local spacing LG",
+    "group": "spacing",
+    "kind": "number",
+    "defaults": {
+      "light": 24,
+      "dark": 24
+    },
+    "unit": "px",
+    "css": "--space-local-lg",
+    "description": "Large step of the local sm/md/lg spacing group, in fixed CSS px. Sets the gap, padding and margin between related elements inside one component or section, e.g. separating field groups or a heading from its content. Margin and padding reuse this value from the shared inset scale built on the 4px base rhythm (default 24 = 6 x 4), not a separate spacing fork; keep values on multiples of 4. Identical in light and dark schemes. Range 12-240, step 1. Spacing only: never reduce text below 14px or control heights below the 48/56/64px minimums to compensate.",
+    "min": 12,
+    "max": 240,
+    "step": 4
+  },
+  {
+    "id": "space-section-sm",
+    "label": "Section spacing SM",
+    "group": "spacing",
+    "kind": "number",
+    "defaults": {
+      "light": 32,
+      "dark": 32
+    },
+    "unit": "px",
+    "css": "--space-section-sm",
+    "description": "Fixed pixel (px) gap between major page sections at the small step of the section spacing scale (SM/MD/LG); use for compact layouts and narrow viewports. Same value in light and dark schemes. Range 12–240 px in 1 px steps; values on the 4 px base rhythm are recommended. Resolves to the --space-section-sm CSS variable.",
+    "min": 12,
+    "max": 240,
+    "step": 4
+  },
+  {
+    "id": "space-section-md",
+    "label": "Section spacing MD",
+    "group": "spacing",
+    "kind": "number",
+    "defaults": {
+      "light": 48,
+      "dark": 48
+    },
+    "unit": "px",
+    "css": "--space-section-md",
+    "description": "Medium (MD) step of the SM/MD/LG section spacing group: the fixed CSS px gap between major page sections and stacked content regions, emitted globally as --space-section-md. Default 48px (12 × the 4px base rhythm) in both light and dark schemes, since spacing does not change with color scheme. Accepts whole px values from 12 to 240 in steps of 1; keep values on 4px multiples to stay on the shared rhythm and keep SM ≤ MD ≤ LG. Layout spacing only: it does not change text size, control heights, padding/margin insets or motion.",
+    "min": 12,
+    "max": 240,
+    "step": 4
+  },
+  {
+    "id": "space-section-lg",
+    "label": "Section spacing LG",
+    "group": "spacing",
+    "kind": "number",
+    "defaults": {
+      "light": 64,
+      "dark": 64
+    },
+    "unit": "px",
+    "css": "--space-section-lg",
+    "description": "Fixed px vertical gap between major page sections; the large step of the section spacing scale (sm/md/lg). Default 64px (16 x 4px base rhythm) in light and dark; set whole px from 12 to 240, preferably multiples of 4 and not below the md step. Layout-only: no state or motion variants; separate from the margin/padding inset scale and not a component spacing decision.",
+    "min": 12,
+    "max": 240,
+    "step": 4
+  },
+  {
+    "id": "space-layout-sm",
+    "label": "Layout spacing SM",
+    "group": "spacing",
+    "kind": "number",
+    "defaults": {
+      "light": 96,
+      "dark": 96
+    },
+    "unit": "px",
+    "css": "--space-layout-sm",
+    "description": "Fixed px gap between major page regions such as sections, stacked layout blocks and page-level groups; the small step of the sm/md/lg layout spacing group. Not a component margin/padding inset; insets use their own scale. Derived from the 4px base rhythm (default 96 = 24 x 4) in both light and dark schemes; keep values on multiples of 4. Range 12-240 px, step 1. Separates content with whitespace instead of borders; must not shrink text or touch targets.",
+    "min": 12,
+    "max": 240,
+    "step": 4
+  },
+  {
+    "id": "space-layout-md",
+    "label": "Layout spacing MD",
+    "group": "spacing",
+    "kind": "number",
+    "defaults": {
+      "light": 144,
+      "dark": 144
+    },
+    "unit": "px",
+    "css": "--space-layout-md",
+    "description": "Medium layout gap, in fixed px, between major page regions and sections (stacked page sections, region gutters). Middle step of the layout sm/md/lg group; keep it between sm and lg. Default 144px follows the 4px base rhythm (36 × 4); prefer multiples of 4 within 12–240. Same value in light and dark schemes and independent of interaction state. Not for component padding or margin, which reuse the inset scale.",
+    "min": 12,
+    "max": 240,
+    "step": 4
+  },
+  {
+    "id": "space-layout-lg",
+    "label": "Layout spacing LG",
+    "group": "spacing",
+    "kind": "number",
+    "defaults": {
+      "light": 240,
+      "dark": 240
+    },
+    "unit": "px",
+    "css": "--space-layout-lg",
+    "description": "Largest step of the sm/md/lg layout spacing group, emitted globally as --space-layout-lg in fixed CSS px. Sets the gap between major page regions and top-level sections. It should not separate controls inside a component, because component margin and padding use the inset scale. The value follows the shared 4px base rhythm, so multiples of 4 are recommended. It is not a separate spacing scale. Range is 12–240 px in steps of 1 px. The default of 240 px is also the maximum, and light and dark schemes use the same value. Keep it greater than or equal to Layout spacing MD. Reduce it on narrow viewports instead of shrinking text or touch targets.",
+    "min": 12,
+    "max": 240,
+    "step": 4
+  },
+  {
+    "id": "inset-control-sm",
+    "label": "Control inset SM",
+    "group": "insets",
+    "kind": "number",
+    "defaults": {
+      "light": 4,
+      "dark": 4
+    },
+    "unit": "px",
+    "css": "--inset-control-sm",
+    "description": "Smallest inner inset for interactive controls (SM step of the SM/MD/LG control inset set), as a fixed px value. Applied as padding or margin around control content; it reuses the shared insets scale derived from the 4px base rhythm rather than a separate spacing scale. Same value in light and dark schemes. Range 4-120 px, step 1; prefer multiples of 4 to stay on rhythm. Does not reduce control height (minimum 48 px) or text size (minimum 14 px).",
+    "min": 4,
+    "max": 120,
+    "step": 4
+  },
+  {
+    "id": "inset-control-md",
+    "label": "Control inset MD",
+    "group": "insets",
+    "kind": "number",
+    "defaults": {
+      "light": 8,
+      "dark": 8
+    },
+    "unit": "px",
+    "css": "--inset-control-md",
+    "description": "Medium step of the sm/md/lg control inset group: fixed px inner padding between a control's edge and its content (inputs, selects, buttons, toggles), also reused for control margins. Part of the shared inset scale on the 4px base rhythm (default 8 = 2 × 4), not a separate spacing scale. Same value in light and dark schemes and across all interaction states. Range 4–120 px, step 1. Does not reduce the 48/56/64 px control minimum heights or the 14 px minimum text size.",
+    "min": 4,
+    "max": 120,
+    "step": 4
+  },
+  {
+    "id": "inset-control-lg",
+    "label": "Control inset LG",
+    "group": "insets",
+    "kind": "number",
+    "defaults": {
+      "light": 12,
+      "dark": 12
+    },
+    "unit": "px",
+    "css": "--inset-control-lg",
+    "description": "Fixed px inner padding for large (LG) controls such as inputs, selects and buttons; the LG step of the sm/md/lg control inset group. Default 12px (3 × the 4px base rhythm) in both light and dark schemes. It reuses the shared inset scale for control padding and margin, so it is not a separate spacing fork. Keep it constant across hover, active, focus-visible, disabled, selected and invalid states so layout does not shift. It must not reduce control height below the 48/56/64px minimums or text below 14px. Range 4–120px, step 1.",
+    "min": 4,
+    "max": 120,
+    "step": 4
+  },
+  {
+    "id": "inset-container-sm",
+    "label": "Container inset SM",
+    "group": "insets",
+    "kind": "number",
+    "defaults": {
+      "light": 16,
+      "dark": 16
+    },
+    "unit": "px",
+    "css": "--inset-container-sm",
+    "description": "Small step of the container inset scale (sm/md/lg): a fixed px value applied as inner padding or outer margin of compact containers such as panels, sections and grouped content. Margin and padding reuse this shared inset scale built on the 4px base rhythm rather than a separate spacing fork; keep values on 4px multiples and at or below the md step. Identical in light and dark schemes (default 16 px); range 4 to 120 px in 1 px steps.",
+    "min": 4,
+    "max": 120,
+    "step": 4
+  },
+  {
+    "id": "inset-container-md",
+    "label": "Container inset MD",
+    "group": "insets",
+    "kind": "number",
+    "defaults": {
+      "light": 24,
+      "dark": 24
+    },
+    "unit": "px",
+    "css": "--inset-container-md",
+    "description": "Medium container inset in fixed px (default 24 = 6 × the 4px base rhythm), applied as inner padding and outer margin of panels, cards and page sections. Middle step of the container sm/md/lg inset scale; margin and padding reuse this inset scale rather than a separate spacing scale. Same value in light and dark schemes and independent of interaction state. Accepts 4–120px in 1px steps; keep values on 4px multiples and between the sm and lg steps.",
+    "min": 4,
+    "max": 120,
+    "step": 4
+  },
+  {
+    "id": "inset-container-lg",
+    "label": "Container inset LG",
+    "group": "insets",
+    "kind": "number",
+    "defaults": {
+      "light": 32,
+      "dark": 32
+    },
+    "unit": "px",
+    "css": "--inset-container-lg",
+    "description": "Large container inset in fixed CSS px, applied as padding (and reused for margin) inside wide surfaces such as page sections, panels and dialogs. Largest step of the container sm/md/lg inset group, derived from the 4px base rhythm (default 32 = 8 × 4) rather than a separate spacing scale. Same value in light and dark schemes; integer px from 4 to 120 in steps of 1; keep it at or above the md step so the group stays ordered, and prefer multiples of 4.",
+    "min": 4,
+    "max": 120,
+    "step": 4
+  },
+  {
+    "id": "inset-page-sm",
+    "label": "Page inset SM",
+    "group": "insets",
+    "kind": "number",
+    "defaults": {
+      "light": 48,
+      "dark": 48
+    },
+    "unit": "px",
+    "css": "--inset-page-sm",
+    "description": "Fixed px page-level padding between the page edge and its content for the small (sm) size; md and lg page insets are separate tokens. Part of the shared inset scale used for both margin and padding, derived from the 4px base rhythm, so keep values multiples of 4. Same value in light and dark schemes; no interactive state variants. Does not imply approval of component design decisions.",
+    "min": 4,
+    "max": 120,
+    "step": 4
+  },
+  {
+    "id": "inset-page-md",
+    "label": "Page inset MD",
+    "group": "insets",
+    "kind": "number",
+    "defaults": {
+      "light": 80,
+      "dark": 80
+    },
+    "unit": "px",
+    "css": "--inset-page-md",
+    "description": "Medium tier of the page inset scale (sm/md/lg): fixed px padding or margin between the page edge and its main content regions. Default 80px (20 x 4px base rhythm) in both light and dark schemes; allowed range 4-120px in 1px steps. Page margin and padding reuse this insets scale instead of a separate spacing scale. Keep values on the 4px rhythm and between the sm and lg page insets.",
+    "min": 4,
+    "max": 120,
+    "step": 4
+  },
+  {
+    "id": "inset-page-lg",
+    "label": "Page inset LG",
+    "group": "insets",
+    "kind": "number",
+    "defaults": {
+      "light": 120,
+      "dark": 120
+    },
+    "unit": "px",
+    "css": "--inset-page-lg",
+    "description": "Outer page margin and padding for the large (lg) layout tier, in fixed CSS px. Part of the sm/md/lg page inset group on the shared insets scale derived from the 4px base rhythm; margin and padding both reuse this value, not a separate spacing scale. Keep it a multiple of 4 and not smaller than the md page inset. Same value in light and dark schemes; range 4–120 px, step 1, default 120 px.",
+    "min": 4,
+    "max": 120,
+    "step": 4
+  },
+  {
+    "id": "radius-sm",
+    "label": "Radius SM",
+    "group": "radius",
+    "kind": "number",
+    "defaults": {
+      "light": 5,
+      "dark": 5
+    },
+    "unit": "px",
+    "css": "--radius-sm",
+    "description": "Small corner radius in fixed CSS px, written to --radius-sm. Smallest step of the sm/md/lg radius group, intended for compact surfaces such as tags, badges, checkboxes and inline controls. Integer from 0 to 32 px in 1 px steps; 0 gives square corners. Default 5 px in both light and dark schemes, the same factory value as the general Radius MD role; the value does not change across interaction states and is edited independently of Radius MD and LG.",
+    "min": 0,
+    "max": 32,
+    "step": 1
+  },
+  {
+    "id": "radius-md",
+    "label": "Radius MD",
+    "group": "radius",
+    "kind": "number",
+    "defaults": {
+      "light": 5,
+      "dark": 5
+    },
+    "unit": "px",
+    "css": "--radius-md",
+    "description": "Medium corner radius in fixed CSS px (whole numbers 0–32, step 1; default 5 in both light and dark schemes), exposed globally as --radius-md. The general corner role, also exposed as --radius: field wells, their slot actions and buttons without an explicit corner all read it. Radius SM and LG are independent companions, not an ordered scale. The value is constant across hover, active, selected, disabled and invalid states; it does not decide which components use it.",
+    "min": 0,
+    "max": 32,
+    "step": 1
+  },
+  {
+    "id": "radius-lg",
+    "label": "Radius LG",
+    "group": "radius",
+    "kind": "number",
+    "defaults": {
+      "light": 5,
+      "dark": 5
+    },
+    "unit": "px",
+    "css": "--radius-lg",
+    "description": "Fixed px corner radius for large surfaces such as panels, dialogs, popovers and grouped containers; the largest step of the sm/md/lg radius scale. Integer 0–32 px, step 1; default 5 px in light and dark schemes, the same factory value as the general Radius MD role; it is edited independently of Radius SM and MD. Shape only; it does not imply component approval and must not be used to draw focus rings.",
+    "min": 0,
+    "max": 32,
+    "step": 1
+  },
+  {
+    "id": "size-sm",
+    "label": "Control height SM",
+    "group": "size",
+    "kind": "number",
+    "defaults": {
+      "light": 48,
+      "dark": 48
+    },
+    "unit": "px",
+    "css": "--size-sm",
+    "description": "Fixed px height for compact interactive controls (buttons, inputs, select triggers); the SM step of the sm/md/lg control height scale, identical in light and dark modes. 48px is the minimum touch and visible height; text inside stays at least 14px and is never shrunk to fit. Not a spacing, margin or padding value. Height transitions use the locked Cubic motion curve; focus must not render as a surrounding ring.",
+    "min": 48,
+    "max": 128,
+    "step": 4
+  },
+  {
+    "id": "size-md",
+    "label": "Control height MD",
+    "group": "size",
+    "kind": "number",
+    "defaults": {
+      "light": 56,
+      "dark": 56
+    },
+    "unit": "px",
+    "css": "--size-md",
+    "description": "Fixed-pixel outer height of medium (default) interactive controls such as buttons, inputs and selects; the middle step of the sm/md/lg control height group. Accepts 56–128 px in steps of 1, with the same 56 px default in light and dark schemes. Keep it at or above size-sm and at or below size-lg. It sets control height only and never lowers the 14 px minimum text size.",
+    "min": 56,
+    "max": 128,
+    "step": 4
+  },
+  {
+    "id": "size-lg",
+    "label": "Control height LG",
+    "group": "size",
+    "kind": "number",
+    "defaults": {
+      "light": 64,
+      "dark": 64
+    },
+    "unit": "px",
+    "css": "--size-lg",
+    "description": "Fixed outer height in px for large interactive controls such as buttons, inputs and selects; the lg step of the sm/md/lg control-size scale (48/56/64 px minimums), so it must stay at or above 64 px and at or above the md height. The same value applies in light and dark schemes and does not change across hover, active, selected, invalid or disabled states. Contained text stays at least 14 px, and focus is never shown by changing this height or adding a ring.",
+    "min": 64,
+    "max": 128,
+    "step": 4
+  },
+  {
+    "id": "size-compact-sm",
+    "label": "Compact height SM",
+    "group": "size",
+    "kind": "number",
+    "defaults": {
+      "light": 32,
+      "dark": 32
+    },
+    "unit": "px",
+    "css": "--size-compact-sm",
+    "description": "Fixed px height for compact rows such as pills, chips, checkboxes, radios, switches, slider and cascader rows; the SM step of the compact sm/md/lg height family that follows the shared Component size profile through --atlas-compact-height. Regular controls and avatars keep the 48/56/64 family. Same value in light and dark schemes; range 24-96 px in 4 px steps, ordered sm ≤ md ≤ lg. Text inside stays at least 14px.",
+    "min": 24,
+    "max": 96,
+    "step": 4
+  },
+  {
+    "id": "size-compact-md",
+    "label": "Compact height MD",
+    "group": "size",
+    "kind": "number",
+    "defaults": {
+      "light": 40,
+      "dark": 40
+    },
+    "unit": "px",
+    "css": "--size-compact-md",
+    "description": "Fixed px height for compact rows at the MD step of the compact sm/md/lg height family (default 40). Pills, chips, selection controls and compact list rows read it through --atlas-compact-height when the shared size profile is md. Same value in light and dark schemes; range 24-96 px in 4 px steps, at or above Compact height SM and at or below Compact height LG. Text inside stays at least 14px.",
+    "min": 24,
+    "max": 96,
+    "step": 4
+  },
+  {
+    "id": "size-compact-lg",
+    "label": "Compact height LG",
+    "group": "size",
+    "kind": "number",
+    "defaults": {
+      "light": 48,
+      "dark": 48
+    },
+    "unit": "px",
+    "css": "--size-compact-lg",
+    "description": "Fixed px height for compact rows at the LG step of the compact sm/md/lg height family (default 48). Compact rows read it through --atlas-compact-height when the shared size profile is lg. Same value in light and dark schemes; range 24-96 px in 4 px steps, at or above Compact height MD. Text inside stays at least 14px.",
+    "min": 24,
+    "max": 96,
+    "step": 4
+  },
+  {
+    "id": "text-body",
+    "label": "Body text",
+    "group": "typography",
+    "kind": "number",
+    "defaults": {
+      "light": 14,
+      "dark": 14
+    },
+    "unit": "px",
+    "css": "--text-body",
+    "description": "Base font size in fixed CSS px for body content: paragraphs, table cells, form control values, helper and error text. GenUI allows 12–48 px in 1 px steps; the standard default remains 14 px and ideal reading size is 16 px. Light and dark defaults match. Headings and labels use their own tokens; never lower the host root font size to bypass the scoped 12 px floor.",
+    "min": 12,
+    "max": 48,
+    "step": 1
+  },
+  {
+    "id": "text-label",
+    "label": "Label text",
+    "group": "typography",
+    "kind": "number",
+    "defaults": {
+      "light": 14,
+      "dark": 14
+    },
+    "unit": "px",
+    "css": "--text-label",
+    "description": "Font size in fixed CSS px for form field labels, control captions and short metadata labels, resolved through --text-label. GenUI allows 12–48 px in 1 px steps with a scoped 12 px minimum; the default stays 14 px in both light and dark schemes. This is a single typography size token with no sm/md/lg variants.",
+    "min": 12,
+    "max": 48,
+    "step": 1
+  },
+  {
+    "id": "text-helper",
+    "label": "Helper text",
+    "group": "typography",
+    "kind": "number",
+    "defaults": {
+      "light": 14,
+      "dark": 14
+    },
+    "unit": "px",
+    "css": "--text-helper",
+    "description": "Font size in fixed CSS px for supporting helper text, hints, format guidance and character counts. GenUI allows 12–48 px in 1 px steps; overrides must respect the scoped 12 px floor. Light and dark schemes retain the same 14 px default. This standalone size does not change color, motion or focus styling.",
+    "min": 12,
+    "max": 48,
+    "step": 1
+  },
+  {
+    "id": "text-table",
+    "label": "Table text",
+    "group": "typography",
+    "kind": "number",
+    "defaults": {
+      "light": 14,
+      "dark": 14
+    },
+    "unit": "px",
+    "css": "--text-table",
+    "description": "Font size in fixed CSS px for data table body cells and column headers, applied through --text-table. GenUI allows 12–48 px in 1 px steps with a scoped 12 px floor; both schemes retain the 14 px default. This is a single typography role, not an sm/md/lg group. On narrow viewports the table scrolls inside its own container instead of reducing this size; headers and long model names wrap only between words.",
+    "min": 12,
+    "max": 48,
+    "step": 1
+  },
+  {
+    "id": "text-heading",
+    "label": "Heading text",
+    "group": "typography",
+    "kind": "number",
+    "defaults": {
+      "light": 24,
+      "dark": 24
+    },
+    "unit": "px",
+    "css": "--text-heading",
+    "description": "Fixed CSS px size for page, section and panel headings, emitted as --text-heading. Defaults remain 24px in both schemes; GenUI permits 12–48 in 1px steps with a scoped 12px floor. Resolved headings stay at or above body text to preserve hierarchy. Sets size only, not color or weight.",
+    "min": 12,
+    "max": 48,
+    "step": 1
+  },
+  {
+    "id": "text-code",
+    "label": "Code text",
+    "group": "typography",
+    "kind": "number",
+    "defaults": {
+      "light": 14,
+      "dark": 14
+    },
+    "unit": "px",
+    "css": "--text-code",
+    "description": "Font size in fixed CSS px for inline code, code blocks and snippets. GenUI permits 12–48px in 1px steps with a scoped 12px floor; both schemes retain the 14px default. Not a spacing, motion or focus value.",
+    "min": 12,
+    "max": 48,
+    "step": 1
+  },
+  {
+    "id": "font-weight",
+    "label": "Font weight",
+    "group": "typography",
+    "kind": "number",
+    "defaults": {
+      "light": 400,
+      "dark": 400
+    },
+    "unit": "",
+    "css": "--font-weight-body",
+    "description": "Editable GenUI body font weight for Outfit, emitted as --font-weight-body. Both schemes default to 400. Unitless range 300–900 in steps of 100; weights below 300 are rejected. Does not change host typography or font-size defaults.",
+    "min": 300,
+    "max": 900,
+    "step": 100
+  },
+  {
+    "id": "shadow-sm",
+    "label": "Shadow SM",
+    "group": "shadow",
+    "kind": "number",
+    "defaults": {
+      "light": 6,
+      "dark": 6
+    },
+    "unit": "px",
+    "css": "--shadow-sm",
+    "description": "Small step of the sm/md/lg elevation scale for subtly raised surfaces. The edited value is the blur radius in fixed px (0-32, step 1, default 6 in light and dark schemes). Fixed geometry: x 0px, y 1px, spread 0px, color #000000 at 0.1 opacity, outer (not inset), resolving to box-shadow: 0 1px <value>px 0 rgba(0,0,0,0.1). It only expresses surface separation; it is not a focus indicator or ring and does not signal selected or disabled states.",
+    "geometry": {
+      "x": 0,
+      "y": 1,
+      "spread": 0,
+      "color": "#000000",
+      "opacity": 0.1,
+      "inset": false
+    },
+    "min": 0,
+    "max": 32,
+    "step": 1
+  },
+  {
+    "id": "shadow-md",
+    "label": "Shadow MD",
+    "group": "shadow",
+    "kind": "number",
+    "defaults": {
+      "light": 12,
+      "dark": 12
+    },
+    "unit": "px",
+    "css": "--shadow-md",
+    "description": "Blur radius in fixed px (not scaled by root font size) for the medium elevation step of the sm/md/lg shadow group, used for raised surfaces such as popovers and floating panels. Resolves --shadow-md with complete geometry: x 0px, y 2px, blur = this value, spread 0px, color #000000 at 0.12 opacity, outer (not inset). Range 0-32px in steps of 1; light and dark schemes each default to 12. Not a focus indicator.",
+    "geometry": {
+      "x": 0,
+      "y": 2,
+      "spread": 0,
+      "color": "#000000",
+      "opacity": 0.12,
+      "inset": false
+    },
+    "min": 0,
+    "max": 32,
+    "step": 1
+  },
+  {
+    "id": "shadow-lg",
+    "label": "Shadow LG",
+    "group": "shadow",
+    "kind": "number",
+    "defaults": {
+      "light": 20,
+      "dark": 20
+    },
+    "unit": "px",
+    "css": "--shadow-lg",
+    "description": "Blur radius in fixed px for the largest elevation step of the sm/md/lg shadow scale, emitted as --shadow-lg for floating overlays such as dropdown panels, popovers and dialogs. Full geometry: x 0px, y 4px, blur = this value (default 20 in light and dark, range 0-32, step 1), spread 0px, color #000000 at 0.14 opacity, outer shadow (not inset). Conveys elevation only; never use it as a focus ring or state indicator.",
+    "geometry": {
+      "x": 0,
+      "y": 4,
+      "spread": 0,
+      "color": "#000000",
+      "opacity": 0.14,
+      "inset": false
+    },
+    "min": 0,
+    "max": 32,
+    "step": 1
+  },
+  {
+    "id": "density",
+    "label": "Density",
+    "group": "density",
+    "kind": "choice",
+    "defaults": {
+      "light": "standard",
+      "dark": "standard"
+    },
+    "unit": "",
+    "css": "--density",
+    "description": "Global layout density written to --density as a unitless keyword: compact, standard or comfortable. Selects how tightly padding, gaps and margins step along the shared 4px-based inset scale; it does not define a separate spacing scale. In every mode, readable text stays at least 14px and control heights stay at or above the 48px minimum (48/56/64px steps), so only surrounding space changes. Light and dark schemes each hold their own selection; both default to standard.",
+    "options": ["compact", "standard", "comfortable"]
+  },
+  {
+    "id": "surface",
+    "label": "Surface depth",
+    "group": "surface",
+    "kind": "choice",
+    "defaults": {
+      "light": "inset",
+      "dark": "inset"
+    },
+    "unit": "",
+    "css": "--surface-depth",
+    "description": "Sets how panels and content areas show depth. The global resolver writes it to --surface as a keyword with no unit. Only flat, inset and raised are valid. flat: no elevation; areas are separated by spacing and surface color alone. inset: fields and wells sit recessed inside their panel. raised: panels lift above the page through the shared shadow tokens. In every option and in both light and dark schemes, input fields stay darker than the panel they sit on. Defaults: inset for both light and dark. This token does not change sizes, spacing, the 14px minimum text size or motion. It never adds decorative borders or focus rings.",
+    "options": ["flat", "inset", "raised"]
+  },
+  {
+    "id": "border-style",
+    "label": "Boundary style",
+    "group": "border",
+    "kind": "choice",
+    "defaults": {
+      "light": "solid",
+      "dark": "solid"
+    },
+    "unit": "",
+    "css": "--border-style",
+    "description": "Line style for functional boundaries only: form field edges, table grid lines and selected-state outlines. Unitless keyword set per light and dark scheme. \"solid\" draws a continuous line; \"none\" removes boundary lines, so separation must come from spacing, alignment and surface hierarchy, with input fields kept darker than their panel in both modes. Line thickness comes from the border width tokens. Never used to draw surrounding focus rings.",
+    "options": ["none", "solid"]
+  },
+  {
+    "id": "overlay-scrim-color",
+    "label": "Overlay scrim color",
+    "group": "overlay",
+    "kind": "color",
+    "defaults": {
+      "light": "#000000",
+      "dark": "#000000"
+    },
+    "unit": "",
+    "css": "--overlay-scrim-color",
+    "description": "Neutral background dimming color for user-opened layers."
+  },
+  {
+    "id": "overlay-scrim-opacity",
+    "label": "Overlay scrim opacity",
+    "group": "overlay",
+    "kind": "number",
+    "defaults": {
+      "light": 0.12,
+      "dark": 0.24
+    },
+    "unit": "",
+    "css": "--overlay-scrim-opacity",
+    "description": "Background dimming strength while a user-opened layer is active.",
+    "min": 0.01,
+    "max": 0.6,
+    "step": 0.01
+  },
+  {
+    "id": "overlay-backdrop-blur",
+    "label": "Overlay backdrop blur",
+    "group": "overlay",
+    "kind": "number",
+    "defaults": {
+      "light": 1,
+      "dark": 1
+    },
+    "unit": "px",
+    "css": "--overlay-backdrop-blur",
+    "description": "Fixed background blur for user-opened layers.",
+    "min": 1,
+    "max": 1,
+    "step": 1
+  },
+  {
+    "id": "overlay-scrim-z",
+    "label": "Overlay scrim layer",
+    "group": "overlay",
+    "kind": "number",
+    "defaults": {
+      "light": 1040,
+      "dark": 1040
+    },
+    "unit": "",
+    "css": "--overlay-scrim-z",
+    "description": "Base stacking layer for the background scrim.",
+    "min": 1000,
+    "max": 2000,
+    "step": 1
+  },
+  {
+    "id": "overlay-trigger-z",
+    "label": "Overlay trigger layer",
+    "group": "overlay",
+    "kind": "number",
+    "defaults": {
+      "light": 1041,
+      "dark": 1041
+    },
+    "unit": "",
+    "css": "--overlay-trigger-z",
+    "description": "Stacking layer for a clear non-modal trigger.",
+    "min": 1000,
+    "max": 2000,
+    "step": 1
+  },
+  {
+    "id": "overlay-popup-z",
+    "label": "Overlay popup layer",
+    "group": "overlay",
+    "kind": "number",
+    "defaults": {
+      "light": 1050,
+      "dark": 1050
+    },
+    "unit": "",
+    "css": "--overlay-popup-z",
+    "description": "Base stacking layer for non-modal popup panels.",
+    "min": 1000,
+    "max": 2000,
+    "step": 1
+  }
+]

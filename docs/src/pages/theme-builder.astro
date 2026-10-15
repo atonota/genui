@@ -1,0 +1,59 @@
+---
+import DocsLayout from '../layouts/DocsLayout.astro';
+import DocumentationNav from '../components/DocumentationNav.astro';
+import ThemeBuilder from '../react/ThemeBuilder';
+import { extractDemoStyles } from '../ssr/styles';
+const ssrStyles = extractDemoStyles(ThemeBuilder, {
+  dynamicVariableKeys: ['css-var-atlas-theme-preview'],
+  documentation: true,
+});
+---
+
+<DocsLayout
+  title="Theme Builder"
+  description="Edit Atlas theme tokens for light and dark modes, preview them live and export a validated JSON recipe."
+  slug="theme-builder"
+>
+  <Fragment slot="head">
+    <Fragment set:html={ssrStyles} />
+  </Fragment>
+  <article>
+    <p class="eyebrow" data-i18n="FOUNDATIONS / THEME BUILDER">
+      FOUNDATIONS / THEME BUILDER
+    </p>
+    <h1 data-i18n="Theme Builder">Theme Builder</h1>
+    <p
+      class="lead"
+      data-i18n="Adjust Atlas tokens for light and dark modes, preview the result and apply it to these docs. Export the recipe as JSON to reuse it."
+    >
+      Adjust Atlas tokens for light and dark modes, preview the result and apply it to these docs.
+      Export the recipe as JSON to reuse it.
+    </p>
+    <p>
+      <a href="/color-system/" data-i18n="Color system">
+        Color system
+      </a>
+      {' · '}
+      <a href="/tokens/" data-i18n="Design tokens">
+        Design tokens
+      </a>
+    </p>
+    <DocumentationNav items={[{ id: 'theme-editor', label: 'Theme editor' }]} />
+    <section
+      id="theme-editor"
+      class="doc-section"
+      data-doc-section="theme-editor"
+      aria-labelledby="theme-editor-title"
+    >
+      <h2 id="theme-editor-title" data-i18n="Theme editor">
+        Theme editor
+      </h2>
+      <ThemeBuilder client:load />
+      <noscript>
+        <p data-i18n="Theme editing requires JavaScript. Atlas default tokens remain in use.">
+          Theme editing requires JavaScript. Atlas default tokens remain in use.
+        </p>
+      </noscript>
+    </section>
+  </article>
+</DocsLayout>

@@ -1,0 +1,106 @@
+{
+  "id": "p1-d-guides",
+  "date": "2026-10-15",
+  "scope": "Overview, Getting started and Documentation standard pages",
+  "sections": [
+    { "old": "/#component-library", "new": "/#component-library", "status": "kept" },
+    {
+      "old": "/#shared-foundation",
+      "new": "/#shared-foundation",
+      "status": "rewritten",
+      "note": "Stable anchor kept; repeated values replaced by one-sentence links to /tokens/, /standards/, /color-system/, /theme-builder/ and /genui/."
+    },
+    { "old": "/getting-started/#local-development", "new": "/getting-started/#local-development", "status": "kept" },
+    { "old": "/getting-started/#using-components", "new": "/getting-started/#using-components", "status": "kept" },
+    {
+      "old": "/getting-started/#astro-integration",
+      "new": "/getting-started/#astro-integration",
+      "status": "kept",
+      "note": "Single shared guide target linked by every component page; must not move."
+    },
+    { "old": "/getting-started/#production-verification", "new": "/getting-started/#production-verification", "status": "kept" },
+    {
+      "old": "/getting-started/#acceptance-standard",
+      "new": "/documentation/#admission",
+      "status": "merged",
+      "note": "Acceptance requirements merged into the Admission workflow; motion rules move to /standards/#motion. The old id remains on a pointer paragraph inside Production and verification so former links still land on the links."
+    },
+    { "old": "/getting-started/#project-boundaries", "new": "/getting-started/#project-boundaries", "status": "kept" },
+    {
+      "old": "/documentation/#page-types",
+      "new": "/documentation/#page-types",
+      "status": "kept",
+      "note": "Kind purposes now come from pageKinds descriptions in docs/src/data/documentation-rules.json, owned by the build gate."
+    },
+    { "old": "/documentation/#section-order", "new": "/documentation/#section-order", "status": "kept" },
+    { "old": "/documentation/#rules", "new": "/documentation/#rules", "status": "kept" },
+    { "old": "/documentation/#source-map", "new": "/documentation/#source-map", "status": "kept" },
+    {
+      "old": "/documentation/#admission",
+      "new": "/documentation/#admission",
+      "status": "extended",
+      "note": "Receives the merged new component acceptance requirements and links to /standards/#motion and /tokens/."
+    },
+    { "old": "/documentation/#verification-limits", "new": "/documentation/#verification-limits", "status": "kept" }
+  ],
+  "removedDuplicates": [
+    {
+      "from": "/#shared-foundation",
+      "content": "Typography values (Outfit 400 · minimum 300 · 14px / 22px)",
+      "owner": "/tokens/",
+      "reason": "Token values are owned by the design tokens page; repeating them on the overview lets them drift."
+    },
+    {
+      "from": "/#shared-foundation",
+      "content": "Interaction value (Hover 0.9 → 1.0)",
+      "owner": "/standards/",
+      "reason": "Interaction rules are owned by UX standards."
+    },
+    {
+      "from": "/#shared-foundation",
+      "content": "Motion value (EaseInOutCubic · 80 / 140 ms)",
+      "owner": "/standards/#motion",
+      "reason": "Motion rules are owned by UX standards; tokens hold the values."
+    },
+    {
+      "from": "/getting-started/#acceptance-standard",
+      "content": "Normal-state motion rules (no linear or one-way easing, zero duration, disabled transitions or inline overrides; no delayed input or selection; reduced motion; stable dimensions and hit areas on hover)",
+      "owner": "/standards/#motion",
+      "reason": "Motion rules have one published owner; the guide and the admission workflow only link to it."
+    },
+    {
+      "from": "/getting-started/#acceptance-standard",
+      "content": "Shared motion contract, AtlasProvider, atlas-control and docs:verify motion guard requirements",
+      "owner": "/documentation/#admission",
+      "reason": "New component acceptance is one workflow; it now lives in the Admission workflow steps."
+    },
+    {
+      "from": "/documentation/#page-types",
+      "content": "Hard-coded kind purposes in documentation.astro",
+      "owner": "docs/src/data/documentation-rules.json",
+      "reason": "The gate's rules JSON already describes every page kind; the table renders that single source."
+    }
+  ],
+  "retiredStrings": [
+    "Typography",
+    "Outfit 400 · minimum 300 · 14px / 22px",
+    "Interaction",
+    "Motion",
+    "Read the token reference",
+    "FOUNDATIONS / GETTING STARTED",
+    "FOUNDATIONS / DOCUMENTATION STANDARD",
+    "New component acceptance standard",
+    "Human and AI contributions follow the same motion contract. Use AtlasProvider and shared motion tokens. New custom controls inherit smooth entry and exit through atlas-control; define moving decorative layers separately.",
+    "Normal states reject linear or one-way easing, zero duration, disabled transitions and inline motion overrides. Do not delay input or selection. Preserve reduced motion and keep dimensions and hit areas stable on hover.",
+    "npm run docs:verify includes the source motion guard. Source checks do not replace live browser review. See the design tokens and project CONTRIBUTING.md contract.",
+    "Run the focused test and the production build; any error finding fails the build.",
+    "Introduces the library and links to every part.",
+    "Explains setup, usage and the shared Astro integration.",
+    "Lists the shared semantic design tokens.",
+    "Owns the interactive color system workspace.",
+    "Shows explicitly approved decisions.",
+    "Publishes third-party license text.",
+    "Publishes this documentation contract.",
+    "Documents one component with the shared section order."
+  ]
+}

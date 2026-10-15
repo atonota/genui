@@ -1,0 +1,65 @@
+---
+import DocsLayout from '../layouts/DocsLayout.astro';
+import DocumentationNav from '../components/DocumentationNav.astro';
+import atlas from '../data/atlas.json';
+import colorLicense from '../../../node_modules/@ant-design/colors/LICENSE?raw';
+const iconLicenses = Object.entries(atlas.icons).map(([key, library]) => ({
+  id: key + '-license',
+  label: library.label + ' · ' + library.version,
+  license: library.license,
+}));
+const sections = [
+  { id: 'outfit-license', label: 'Outfit' },
+  ...iconLicenses.map(({ id, label }) => ({ id, label })),
+  { id: 'ant-design-colors-license', label: '@ant-design/colors · 8.0.1' },
+];
+---
+
+<DocsLayout
+  title="Third-party licenses"
+  description="License information for Outfit and embedded icons."
+>
+  <h1>
+    <span class="page-heading-line" data-i18n="Third-party licenses">
+      Third-party licenses
+    </span>
+  </h1>
+  <p>
+    <span data-i18n="No new project license has been selected. Package licenses are preserved through their source packages and the lockfile.">
+      No new project license has been selected. Package licenses are preserved through their source
+      packages and the lockfile.
+    </span>
+  </p>
+  <DocumentationNav items={sections} />
+  <section
+    id="outfit-license"
+    class="doc-section"
+    data-doc-section="outfit-license"
+    aria-labelledby="outfit-license-title"
+  >
+    <h2 id="outfit-license-title">Outfit</h2>
+    <p>
+      <span data-i18n="Outfit is distributed under the SIL Open Font License 1.1. The full license text comes from the original atlas font source.">
+        Outfit is distributed under the SIL Open Font License 1.1. The full license text comes from
+        the original atlas font source.
+      </span>
+    </p>
+    <a href="https://github.com/Outfitio/Outfit-Fonts/blob/main/OFL.txt">Outfit OFL 1.1</a>
+    <pre class="license-text"><code>{atlas.outfitLicense}</code></pre>
+  </section>
+  {iconLicenses.map(({ id, label, license }) => (
+    <section id={id} class="doc-section" data-doc-section={id} aria-labelledby={id + '-title'}>
+      <h2 id={id + '-title'}>{label}</h2>
+      <pre class="license-text"><code>{license}</code></pre>
+    </section>
+  ))}
+  <section
+    id="ant-design-colors-license"
+    class="doc-section"
+    data-doc-section="ant-design-colors-license"
+    aria-labelledby="ant-design-colors-license-title"
+  >
+    <h2 id="ant-design-colors-license-title">@ant-design/colors · 8.0.1</h2>
+    <pre class="license-text"><code>{colorLicense}</code></pre>
+  </section>
+</DocsLayout>

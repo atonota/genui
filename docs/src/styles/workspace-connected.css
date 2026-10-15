@@ -1,0 +1,29 @@
+/* Connected gallery layout, delivered only by the owning route. */
+.kit-connected-controls,
+.kit-connected-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.kit-connected-controls .kit-field {
+  flex: 1 1 var(--kit-editor-min);
+}
+.kit-connected-detail {
+  min-width: 0;
+}
+.kit-commit-status {
+  margin: 0;
+  color: var(--muted);
+}
+.kit-connected-inspector {
+  display: grid;
+  gap: var(--space-md);
+  min-width: 0;
+}
+.kit-connected-inspector[data-pinned='true'] > .kit-inspector-tools {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 1;
+  background: var(--panel);
+}

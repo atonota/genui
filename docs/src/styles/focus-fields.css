@@ -1,0 +1,104 @@
+/* FOCUS-01 field and choice keyboard focus. focus-01.css imports this sheet before its
+   generic focus styles and is loaded last. Every cue requires both
+   html[data-input-modality='keyboard'] and :focus-visible, so pointer focus paints
+   nothing beyond hover. Colors, widths and the choice step come from the central roles
+   declared per mode on the root: --focus-bg, --focus-indicator-color,
+   --field-focus-indicator-width and --focus-choice-scale.
+   No outline or ring: field borders keep their rest color while a separate bottom
+   marker, painted as a background layer over the focus surface, carries focus, and a
+   choice scales. Forced colors keep the system-color bottom edge in atlas-input.css. */
+
+/* Fixed rest geometry: unframed field owners always reserve the indicator width on the
+   bottom edge, so keyboard focus only recolors it. :root body outranks the live-preview
+   border-width shorthand; AtlasInputFrame reserves the same edge in atlas-input.css. */
+:root
+  body
+  .atlas-demo
+  :is(.ant-input, .ant-input-affix-wrapper, .ant-input-number, .ant-select, .ant-picker):not(
+    .ant-input-affix-wrapper > input,
+    .atlas-input-frame *
+  ) {
+  border-bottom-width: var(--field-focus-indicator-width) !important;
+}
+
+@media (forced-colors: none) {
+  /* Unframed fields: every border edge keeps its rest color; one separate bottom marker
+     in the indicator color is painted as a background layer over the focus surface. */
+  :root[data-input-modality='keyboard']
+    body
+    .atlas-demo
+    :is(.ant-input, .ant-input-affix-wrapper, .ant-input-number, .ant-select, .ant-picker):is(
+      :focus-visible,
+      :has(:is(input, textarea):focus-visible)
+    ):not(.ant-input-affix-wrapper > input, .atlas-input-frame *) {
+    background-color: var(--focus-bg) !important;
+    background-image: linear-gradient(
+      var(--focus-indicator-color),
+      var(--focus-indicator-color)
+    ) !important;
+    background-position: bottom !important;
+    background-size: 100% var(--field-focus-indicator-width) !important;
+    background-repeat: no-repeat !important;
+  }
+
+  /* AtlasInputFrame: the frame is the single paint owner of its well and marker; its
+     reserved marker position and repeat live in atlas-input.css. */
+  :root[data-input-modality='keyboard']
+    .atlas-input-frame[data-atlas-input]:has(:is(input, textarea):focus-visible) {
+    background-color: var(--focus-bg);
+    background-image: linear-gradient(var(--focus-indicator-color), var(--focus-indicator-color));
+    background-size: 100% var(--field-focus-indicator-width);
+  }
+
+  /* Slot actions are Buttons: keyboard focus fills them with the central focus button
+     roles, outranking the transparent slot reset. Pointer focus keeps the reset. */
+  :root[data-input-modality='keyboard']
+    .atlas-demo
+    :is(
+      .atlas-input-frame[data-atlas-input] .atlas-slot-button.atlas-button,
+      .ant-input-password-icon,
+      .ant-input-clear-icon,
+      .ant-select-clear
+    ):focus-visible {
+    background: var(--focus-button-bg) !important;
+    color: var(--focus-button-ink) !important;
+  }
+}
+
+/* Native Slider focus thickens the handle edge and adds a 6px outline. The rest edge is
+   fixed in every state, so the scale step below is the only focus cue. */
+.atlas-demo .ant-slider-handle::after {
+  box-shadow: 0 0 0 var(--ant-slider-handle-line-width) var(--ant-slider-handle-color) !important;
+}
+.atlas-demo .ant-slider-handle:is(:focus, :focus-visible)::after {
+  outline-style: none !important;
+}
+
+/* The native checkbox input is transparent and never paints focus; drop the empty
+   transparent zero-extent box-shadow its focus state adds, so the scale step on
+   .ant-checkbox below stays the only cue. */
+:root body .ant-checkbox .ant-checkbox-input {
+  box-shadow: none !important;
+}
+
+/* Choices: checkbox, radio, radio button, switch, slider, rate and segmented scale on
+   keyboard focus by the central step. Fill and selection marks stay native. The theme
+   toggle keeps the foundation thumb cue only, never a whole-toggle scale. */
+:root[data-input-modality='keyboard']
+  .atlas-demo
+  :is(
+    .ant-checkbox:has(input:focus-visible),
+    .ant-radio:has(input:focus-visible),
+    .ant-radio-button-wrapper:has(input:focus-visible),
+    .ant-switch:focus-visible,
+    .ant-slider-handle:focus-visible,
+    .ant-segmented-item:has(input:focus-visible) .ant-segmented-item-label,
+    .ant-segmented:focus-visible
+      :is(.ant-segmented-item-selected, .ant-segmented-item-selected-text)
+      .ant-segmented-item-label,
+    .ant-rate-star:has(> :focus-visible),
+    .ant-rate:focus-visible .ant-rate-star-focused,
+    .ant-rate:focus-visible:not(:has(.ant-rate-star-focused)) .ant-rate-star:first-child
+  ) {
+  scale: var(--focus-choice-scale);
+}

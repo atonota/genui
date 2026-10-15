@@ -1,0 +1,154 @@
+---
+import DocsLayout from '../layouts/DocsLayout.astro';
+import DocumentationNav from '../components/DocumentationNav.astro';
+import ColorSystemDemo from '../react/color/ColorSystemDemo';
+import { extractDemoStyles } from '../ssr/styles';
+import { colorFamilyVariableKeys } from '../data/color-preview';
+import { tokenColorPresets } from '../data/button-palette';
+import colorStyles from '../styles/color-system.css?url';
+import sliderStyles from '../styles/slider.css?url';
+const ssrStyles = extractDemoStyles(ColorSystemDemo, {
+  dynamicVariableKeys: ['css-var-atlas-color-preview', ...colorFamilyVariableKeys],
+  documentation: true,
+});
+const sections = [
+  { id: 'color-lab', label: 'Color workspace' },
+  { id: 'color-rules', label: 'How the color system works' },
+  { id: 'approved-color-families', label: 'Approved color families' },
+];
+---
+
+<DocsLayout
+  title="Color system"
+  description="Choose an HWB seed, inspect the Ant Design palette, test Atlas controls with the same color and review the generated color families."
+  slug="color-system"
+>
+  <Fragment slot="head">
+    <Fragment set:html={ssrStyles} />
+    <link rel="stylesheet" href={colorStyles} />
+    <link rel="stylesheet" href={sliderStyles} />
+  </Fragment>
+  <div class="page-grid">
+    <article>
+      <p class="eyebrow" data-i18n="FOUNDATIONS / COLOR SYSTEM">
+        FOUNDATIONS / COLOR SYSTEM
+      </p>
+      <h1 data-i18n="Color system">Color system</h1>
+      <p
+        class="lead"
+        data-i18n="Choose a color with HWB. Ant Design derives the palette and interaction colors from the exact HEX seed."
+      >
+        Choose a color with HWB. Ant Design derives the palette and interaction colors from the
+        exact HEX seed.
+      </p>
+      <p>
+        <a href="/theme-builder/" data-i18n="Theme Builder">
+          Theme Builder
+        </a>
+        {' · '}
+        <a href="/tokens/" data-i18n="Design tokens">
+          Design tokens
+        </a>
+      </p>
+      <DocumentationNav items={sections} />
+      <section
+        id="color-lab"
+        class="doc-section"
+        data-doc-section="color-lab"
+        aria-labelledby="color-lab-title"
+      >
+        <h2 id="color-lab-title" data-i18n="Color workspace">
+          Color workspace
+        </h2>
+        <p data-i18n="Explore a local preview. Export the chosen settings to use them in a project; changing this preview does not replace approved Atlas palettes.">
+          Explore a local preview. Export the chosen settings to use them in a project; changing
+          this preview does not replace approved Atlas palettes.
+        </p>
+        <div class="live-preview">
+          <ColorSystemDemo documentation client:load />
+        </div>
+        <noscript>
+          <p data-i18n="Color editing requires JavaScript. The initial palette and system description remain readable.">
+            Color editing requires JavaScript. The initial palette and system description remain
+            readable.
+          </p>
+        </noscript>
+      </section>
+      <section
+        id="color-rules"
+        class="doc-section"
+        data-doc-section="color-rules"
+        aria-labelledby="color-rules-title"
+      >
+        <h2 id="color-rules-title" data-i18n="How the color system works">
+          How the color system works
+        </h2>
+        <ol>
+          <li data-i18n="Detailed hue and preset colors share one selection. Switching methods preserves the color.">
+            Detailed hue and preset colors share one selection. Switching methods preserves the
+            color.
+          </li>
+          <li data-i18n="The fine hue window spans 72 degrees around a stable center and wraps through zero.">
+            The fine hue window spans 72 degrees around a stable center and wraps through zero.
+          </li>
+          <li data-i18n="Whiteness and blackness stay independent. At or above a combined 100 percent, their proportions are normalized for calculation and hue has no effect.">
+            Whiteness and blackness stay independent. At or above a combined 100 percent, their
+            proportions are normalized for calculation and hue has no effect.
+          </li>
+          <li data-i18n="The selected sRGB HEX is passed directly to colorPrimary. No web-safe mapping or alternative palette algorithm is applied.">
+            The selected sRGB HEX is passed directly to colorPrimary. No web-safe mapping or
+            alternative palette algorithm is applied.
+          </li>
+          <li data-i18n="The dark algorithm may derive a different rendered primary color. The seed and resolved token are shown separately.">
+            The dark algorithm may derive a different rendered primary color. The seed and resolved
+            token are shown separately.
+          </li>
+        </ol>
+        <p>
+          <a href="https://www.w3.org/TR/css-color-4/#the-hwb-notation">CSS Color 4 · HWB</a>
+          {' · '}
+          <a href="https://ant.design/docs/react/customize-theme/">Ant Design · Theme tokens</a>
+        </p>
+      </section>
+      <section
+        id="approved-color-families"
+        class="doc-section"
+        data-doc-section="approved-color-families"
+        aria-labelledby="approved-color-families-title"
+      >
+        <h2 id="approved-color-families-title" data-i18n="Approved color families">
+          Approved color families
+        </h2>
+        <p>
+          <span data-i18n="Families:">Families:</span> <code>{tokenColorPresets.length}</code>
+        </p>
+        <p data-i18n="This list is generated from the same palette model that Buttons, Pill and Design tokens use. Changing the workspace above does not change it.">
+          This list is generated from the same palette model that Buttons, Pill and Design tokens
+          use. Changing the workspace above does not change it.
+        </p>
+        <p data-i18n="All Color system presets, including purple, are shared with Button color families. Hue families use 80% pure hue, 10% white and 10% black. Edge and pastel roles come from the installed Ant Design color generator.">
+          All Color system presets, including purple, are shared with Button color families. Hue
+          families use 80% pure hue, 10% white and 10% black. Edge and pastel roles come from the
+          installed Ant Design color generator.
+        </p>
+        <p data-i18n="Grey and black families keep 80% of their source composition plus 10% white and 10% black. This preserves distinct neutral colors, including warm and cool blacks.">
+          Grey and black families keep 80% of their source composition plus 10% white and 10% black.
+          This preserves distinct neutral colors, including warm and cool blacks.
+        </p>
+        <div class="token-grid">
+          {tokenColorPresets.map(palette => (
+            <div data-token-preset={palette.value}>
+              <h3 data-i18n={palette.label}>{palette.label}</h3>
+              <div class="swatch" style={{ background: palette.color }}></div>
+              <code>{palette.color}</code>
+              <p>
+                <span data-i18n="Edge:">Edge:</span> <code>{palette.dark}</code>
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </article>
+    <DocumentationNav items={sections} variant="toc" />
+  </div>
+</DocsLayout>

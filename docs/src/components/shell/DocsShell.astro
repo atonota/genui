@@ -1,0 +1,132 @@
+---
+/**
+ * Documentation shell: header, navigation sidebar, main column and footer.
+ *
+ * DOM placement shared with installDocsShell (./docs-shell) and ./layout.css:
+ * - `[data-docs-shell]` is the root and paints the default shell surface.
+ * - `button[data-docs-menu-toggle]` sits in the header and controls the drawer.
+ * - `dialog#docs-navigation-drawer[data-docs-drawer]` is the first child of the `.docs-shell`
+ *   grid. In SSR it only holds `[data-docs-drawer-header]` with `[data-docs-menu-close]` and an
+ *   empty `[data-docs-drawer-body]`; it has no `open` attribute, so it takes no grid slot.
+ * - The single `aside.sidebar` (navigation and note) follows the dialog, before `main#content`,
+ *   rendered once and never duplicated. Without the helper it stays inline; the helper moves it
+ *   into the Drawer body below the sidebar breakpoint and back to its place above it.
+ */
+import AtlasIcon from '../../react/AtlasIcon';
+import DocsNav from './DocsNav.astro';
+import './shell.css';
+import './layout.css';
+interface Props {
+  slug?: string;
+}
+const { slug = '' } = Astro.props;
+---
+
+<div class="docs-root" data-docs-shell>
+  <header class="docs-header">
+    <button
+      type="button"
+      class="docs-menu-toggle"
+      data-docs-menu-toggle
+      aria-controls="docs-navigation-drawer"
+      aria-expanded="false"
+    >
+      <span data-i18n="Menu">Menu</span>
+    </button>
+    <a class="wordmark" href="/" aria-label="GenUI home" data-i18n-aria-label="GenUI home">
+      Gen<span>UI</span>
+    </a>
+    <span class="header-meta">Flat 2.0 · Ant Design 6.6.6</span>
+    <div class="locale-controls" role="group" aria-label="Language" data-i18n-aria-label="Language">
+      <button
+        type="button"
+        class="locale-option"
+        data-locale-button="en"
+        aria-pressed="true"
+        aria-label="EN · English"
+        data-i18n-aria-label="EN · English"
+      >
+        EN
+      </button>
+      <button
+        type="button"
+        class="locale-option"
+        data-locale-button="tr"
+        aria-pressed="false"
+        aria-label="TR · Turkish"
+        data-i18n-aria-label="TR · Turkish"
+      >
+        TR
+      </button>
+    </div>
+    <button
+      type="button"
+      class="theme-toggle"
+      data-theme-toggle
+      role="switch"
+      aria-label="Dark theme"
+      data-i18n-aria-label="Dark theme"
+      aria-checked="false"
+    >
+      <span class="theme-toggle-thumb atlas-motion-layer" aria-hidden="true"></span>
+      <span class="theme-toggle-icon" aria-hidden="true">
+        <AtlasIcon name="sun" />
+      </span>
+      <span class="theme-toggle-icon" aria-hidden="true">
+        <AtlasIcon name="moon" />
+      </span>
+    </button>
+    <script is:inline data-theme-control-bootstrap>
+      document
+        .querySelector('[data-theme-toggle]')
+        ?.setAttribute('aria-checked', String(document.documentElement.dataset.theme === 'dark'));
+    </script>
+    <a class="header-link" href="/getting-started/">
+      <span data-i18n="Getting started">Getting started</span>
+    </a>
+  </header>
+  <p class="locale-status" data-locale-status role="status" hidden></p>
+  <div class="docs-shell">
+    <dialog
+      id="docs-navigation-drawer"
+      class="docs-drawer"
+      data-docs-drawer
+      aria-label="Documentation"
+      data-i18n-aria-label="Documentation"
+    >
+      <div data-docs-drawer-header>
+        <button type="button" class="docs-menu-close" data-docs-menu-close>
+          <span data-i18n="Close menu">Close menu</span>
+        </button>
+      </div>
+      <div data-docs-drawer-body></div>
+    </dialog>
+    <aside class="sidebar">
+      <DocsNav slug={slug} />
+      <p class="sidebar-note">
+        <span data-i18n="One language, shared tokens.">One language, shared tokens.</span>
+        <br />
+        <span data-i18n="Components built on real Ant Design.">
+          Components built on real Ant Design.
+        </span>
+      </p>
+    </aside>
+    <main id="content" class="docs-main" tabindex="-1">
+      <slot />
+    </main>
+  </div>
+  <footer class="docs-footer">
+    <span data-i18n="GenUI · Technical component documentation">
+      GenUI · Technical component documentation
+    </span>
+    <a href="/licenses/">
+      <span data-i18n="Third-party licenses">Third-party licenses</span>
+    </a>
+  </footer>
+</div>
+
+<script>
+  import { installDocsShell } from './docs-shell';
+
+  installDocsShell(document);
+</script>

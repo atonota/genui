@@ -1,0 +1,120 @@
+/* Ant Design 6.6.6 Wave: expanding decorative shadow, then removal. This shared
+   controller replaces the native effect so nested controls cannot emit two waves.
+   Click feedback is finite presentation; keyboard focus remains a separate edge. */
+:root {
+  --click-feedback-spread: 0.375rem;
+  --click-feedback-opacity: 0.4;
+  --click-feedback-layer: 10000;
+  --readonly-indicator-size: 1.25rem;
+  /* Exact regular paths from @phosphor-icons/core 2.1.1, MIT; only fill/size adapt.
+     https://cdn.jsdelivr.net/npm/@phosphor-icons/core@2.1.1/assets/regular/lock-simple.svg
+     https://cdn.jsdelivr.net/npm/@phosphor-icons/core@2.1.1/assets/regular/prohibit.svg */
+  --readonly-cursor:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 256 256' fill='%23242622'%3E%3Cpath d='M208,80H176V56a48,48,0,0,0-96,0V80H48A16,16,0,0,0,32,96V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V96A16,16,0,0,0,208,80ZM96,56a32,32,0,0,1,64,0V80H96ZM208,208H48V96H208V208Z'/%3E%3C/svg%3E")
+      16 16,
+    text;
+  --busy-cursor:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 256 256' fill='%23242622'%3E%3Cpath d='M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm88,104a87.56,87.56,0,0,1-20.41,56.28L71.72,60.4A88,88,0,0,1,216,128ZM40,128A87.56,87.56,0,0,1,60.41,71.72L184.28,195.6A88,88,0,0,1,40,128Z'/%3E%3C/svg%3E")
+      16 16,
+    not-allowed;
+}
+:root[data-theme='dark'] {
+  --readonly-cursor:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 256 256' fill='%23f2f2f2'%3E%3Cpath d='M208,80H176V56a48,48,0,0,0-96,0V80H48A16,16,0,0,0,32,96V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V96A16,16,0,0,0,208,80ZM96,56a32,32,0,0,1,64,0V80H96ZM208,208H48V96H208V208Z'/%3E%3C/svg%3E")
+      16 16,
+    text;
+  --busy-cursor:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 256 256' fill='%23f2f2f2'%3E%3Cpath d='M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm88,104a87.56,87.56,0,0,1-20.41,56.28L71.72,60.4A88,88,0,0,1,216,128ZM40,128A87.56,87.56,0,0,1,60.41,71.72L184.28,195.6A88,88,0,0,1,40,128Z'/%3E%3C/svg%3E")
+      16 16,
+    not-allowed;
+}
+.atlas-click-feedback {
+  position: fixed;
+  z-index: var(--click-feedback-layer);
+  display: block;
+  box-sizing: border-box;
+  pointer-events: none;
+  background: transparent;
+  color: var(--click-feedback-color, var(--accent));
+  opacity: 0;
+  animation: atlas-click-feedback var(--motion-duration-click-feedback) var(--motion-easing) both;
+}
+@keyframes atlas-click-feedback {
+  0% {
+    box-shadow: 0 0 0 0 currentColor;
+    opacity: 0;
+  }
+  15% {
+    opacity: var(--click-feedback-opacity);
+  }
+  100% {
+    box-shadow: 0 0 0 var(--click-feedback-spread) currentColor;
+    opacity: 0;
+  }
+}
+/* Native selection triggers (Select/TreeSelect/Cascader comboboxes, DatePicker
+   inputs) use readonly to allow choice; only explicit aria-readonly locks them.
+   Disabled controls keep the native cursor: native, fieldset, aria-disabled and
+   disabled wrapper classes are excluded on the element and its ancestors. */
+body[data-atlas-surface='docs']
+  :is(
+    input[readonly]:not([role='combobox'], .ant-picker *),
+    textarea[readonly],
+    [role='combobox'][aria-readonly='true'],
+    .ant-input-affix-wrapper:has(input[readonly]:not(:disabled, [aria-disabled='true'])),
+    .ant-input-number:has(input[readonly]:not(:disabled, [aria-disabled='true']))
+  ):not(
+    :disabled,
+    [aria-disabled='true'],
+    .ant-input-disabled,
+    .ant-input-affix-wrapper-disabled,
+    .ant-input-number-disabled,
+    .ant-input-number-affix-wrapper-disabled,
+    .ant-select-disabled,
+    .ant-picker-disabled,
+    fieldset:disabled *,
+    [aria-disabled='true'] *,
+    .ant-input-affix-wrapper-disabled *,
+    .ant-input-number-disabled *,
+    .ant-input-number-affix-wrapper-disabled *,
+    .ant-select-disabled *,
+    .ant-picker-disabled *
+  ) {
+  cursor: var(--readonly-cursor) !important;
+}
+body[data-atlas-surface='docs'] :is(.atlas-button, .ant-btn)[aria-busy='true'],
+body[data-atlas-surface='docs'] .ant-btn-loading {
+  cursor: var(--busy-cursor) !important;
+}
+body[data-atlas-surface='docs'] :is(.atlas-button, .ant-btn)[aria-busy='true'] *,
+body[data-atlas-surface='docs'] .ant-btn-loading * {
+  cursor: inherit;
+}
+.atlas-readonly-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  pointer-events: none;
+}
+.atlas-readonly-indicator .atlas-icon {
+  width: var(--readonly-indicator-size);
+  height: var(--readonly-indicator-size);
+}
+.atlas-readonly-indicator[hidden] {
+  display: none;
+}
+.atlas-readonly-help {
+  color: var(--muted);
+  font-size: var(--text);
+}
+.atlas-number-stepper-state {
+  display: grid;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .atlas-click-feedback {
+    animation: none;
+  }
+}

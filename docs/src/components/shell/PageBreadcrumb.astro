@@ -1,0 +1,29 @@
+---
+// Shell breadcrumb: ancestor items, then the current page marked with aria-current.
+interface Props {
+  items: readonly { label: string; href?: string }[];
+  current: string;
+}
+const { items, current } = Astro.props;
+---
+
+<nav class="page-breadcrumb" aria-label="Breadcrumb" data-i18n-aria-label="Breadcrumb">
+  <ol>
+    {items.map(item => (
+      <li>
+        {item.href ? (
+          <a href={item.href}>
+            <span data-i18n={item.label}>{item.label}</span>
+          </a>
+        ) : (
+          <span data-i18n={item.label}>{item.label}</span>
+        )}
+      </li>
+    ))}
+    <li>
+      <span aria-current="page" data-i18n={current}>
+        {current}
+      </span>
+    </li>
+  </ol>
+</nav>

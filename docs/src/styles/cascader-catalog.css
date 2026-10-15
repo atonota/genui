@@ -1,0 +1,67 @@
+/* Page hierarchy; component geometry belongs to atlas-cascader.css. */
+.atlas-demo .cascader-catalog {
+  --cascader-reading-width: 760px;
+  --cascader-example-min: 320px;
+  display: grid;
+  gap: var(--space-section);
+  min-width: 0;
+}
+.atlas-demo .cascader-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs) var(--space-xl);
+}
+.atlas-demo .cascader-navigation a {
+  display: flex;
+  align-items: center;
+  min-height: var(--target-min);
+}
+.atlas-demo .cascader-section,
+.atlas-demo .cascader-section > header,
+.atlas-demo .cascader-example,
+.atlas-demo .cascader-summary {
+  display: grid;
+  align-content: start;
+  gap: var(--space-md);
+  min-width: 0;
+}
+.atlas-demo .cascader-section {
+  gap: var(--space-xl);
+  scroll-margin-block-start: var(--space-lg);
+}
+.atlas-demo .cascader-section > header {
+  gap: var(--space-xs);
+  max-width: var(--cascader-reading-width);
+}
+.atlas-demo .cascader-section :is(h3, p, ul) {
+  margin: 0;
+}
+.atlas-demo .cascader-section h3 {
+  font-size: var(--text-section);
+}
+.atlas-demo .cascader-section > header > p:last-child,
+.atlas-demo .cascader-path {
+  color: var(--muted);
+}
+.atlas-demo .cascader-summary {
+  gap: var(--space-xs);
+  padding: var(--space-md);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.atlas-demo .cascader-summary ul {
+  display: grid;
+  gap: var(--space-sm);
+  padding-inline-start: var(--space-lg);
+}
+.atlas-demo .cascader-summary :is(p, li),
+.atlas-demo .cascader-path {
+  overflow-wrap: break-word;
+}
+.atlas-demo .cascader-example-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--cascader-example-min)), 1fr));
+  align-items: start;
+  gap: var(--space-xl);
+  min-width: 0;
+}

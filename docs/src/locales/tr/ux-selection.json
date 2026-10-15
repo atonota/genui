@@ -1,0 +1,13 @@
+{
+  "These are demonstration choices. Selecting them does not buy, change or cancel a subscription.": "Bunlar gösterim amaçlı seçeneklerdir. Seçmek bir aboneliği satın almaz, değiştirmez veya iptal etmez.",
+  "Select available options": "Kullanılabilir seçenekleri seç",
+  "Clear selection": "Seçimi temizle",
+  "{count} of {total} selected": "{total} seçenekten {count} tanesi seçili",
+  "Selected: {label}": "Seçili: {label}",
+  "On: {labels}": "Açık: {labels}",
+  "All settings are off": "Tüm ayarlar kapalı",
+  "Selected": "Seçili",
+  "On": "Açık",
+  "Preview": "Önizleme",
+  "No example features are on.": "Açık örnek özellik yok."
+}

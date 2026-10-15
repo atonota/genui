@@ -1,0 +1,170 @@
+/* Page composition only. Native card skin and purpose structure live in atlas-card.css. */
+.atlas-demo .card-catalog {
+  --card-catalog-column-min: 280px;
+  --card-reading-width: 720px;
+  display: grid;
+  gap: var(--space-section);
+  min-width: 0;
+}
+.atlas-demo .card-catalog :is(h3, h4, h5, p) {
+  margin: 0;
+}
+.atlas-demo .card-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs) var(--space-xl);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.atlas-demo .card-navigation a {
+  display: flex;
+  align-items: center;
+  min-height: var(--target-min);
+}
+.atlas-demo .card-section {
+  display: grid;
+  gap: var(--space-xl);
+  min-width: 0;
+  scroll-margin-block-start: var(--space-lg);
+}
+.atlas-demo .card-section > header {
+  display: grid;
+  gap: var(--space-xs);
+}
+.atlas-demo .card-section h3 {
+  font-size: var(--text-section);
+}
+.atlas-demo .card-section :is(h4, h5) {
+  font-size: var(--text-large);
+  font-weight: var(--font-weight-label);
+}
+.atlas-demo .card-section > header p {
+  max-width: var(--card-reading-width);
+  color: var(--muted);
+}
+.atlas-demo .card-foundation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--card-catalog-column-min)), 1fr));
+  align-items: start;
+  gap: var(--space-xl);
+  min-width: 0;
+}
+.atlas-demo .card-foundation-grid > * {
+  min-width: 0;
+}
+.atlas-demo :is(.card-feedback, .card-caption) {
+  color: var(--muted);
+  max-width: var(--card-reading-width);
+}
+.atlas-demo .card-recipe-pickers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--card-catalog-column-min)), 1fr));
+  gap: var(--space-md);
+  min-width: 0;
+}
+.atlas-demo .card-recipe-pickers label {
+  display: grid;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+.atlas-demo .card-recipe-preview {
+  display: grid;
+  gap: var(--space-md);
+  max-width: var(--card-reading-width);
+  min-width: 0;
+}
+.atlas-demo :is(.card-interaction-stack, .card-interaction-example) {
+  display: grid;
+  gap: var(--space-lg);
+  min-width: 0;
+}
+.atlas-demo .card-interaction-stack {
+  gap: var(--space-section);
+}
+.atlas-demo .card-interaction-example > [data-atlas-card] {
+  max-width: var(--card-reading-width);
+}
+.atlas-demo .card-task-board {
+  display: grid;
+  gap: var(--space-lg);
+  min-width: 0;
+}
+.atlas-demo .card-task-board > section {
+  display: grid;
+  align-content: start;
+  gap: var(--space-md);
+  min-width: 0;
+  padding: var(--space-md);
+  background: var(--surface);
+  border-radius: var(--radius);
+}
+.atlas-demo .card-task-item {
+  display: grid;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+.atlas-demo .card-task-item [data-task-grip] {
+  justify-self: start;
+  touch-action: none;
+}
+.atlas-demo .card-task-board[data-dragging='true'] {
+  cursor: grabbing;
+}
+.atlas-demo .card-state-preview {
+  max-width: var(--card-reading-width);
+  min-width: 0;
+}
+.atlas-demo .card-genui-intro {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-md);
+  max-width: var(--card-reading-width);
+}
+.atlas-demo .card-genui-disclosure {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  min-width: 0;
+  transition-property: grid-template-rows, opacity;
+  transition-duration: var(--transition-duration);
+  transition-timing-function: var(--motion-easing);
+  transition-delay: var(--motion-delay);
+}
+.atlas-demo .card-genui-disclosure[data-open='true'] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.atlas-demo .card-genui-disclosure > div {
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+.card-detail-content {
+  display: grid;
+  gap: var(--space-lg);
+  min-width: 0;
+}
+.card-details-facts {
+  display: grid;
+  gap: var(--space-md);
+  margin: 0;
+  min-width: 0;
+}
+.card-details-facts > div {
+  display: grid;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+.card-details-facts dt {
+  color: var(--muted);
+}
+.card-details-facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+@media (min-width: 1100px) {
+  .atlas-demo .card-task-board {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

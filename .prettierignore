@@ -1,0 +1,6 @@
+# Rendering-sensitive byte contracts and unchanged third-party output
+src/styles/
+src/document.html
+src/vendor/
+tests/fixtures/
+tests/legacy/

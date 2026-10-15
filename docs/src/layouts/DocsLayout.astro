@@ -1,0 +1,200 @@
+---
+import { docsThemeStyleText as themeStyleText } from '../theme';
+import { docsBrandStyleText } from '../data/docs-brand';
+import { docsTypographyStyleText } from '../data/typography';
+import { docsAccessibilityStyleText } from '../data/accessibility';
+import { selectionSizeStyleText } from '../data/selection-sizes';
+import '../styles/docs.css';
+import '../styles/atlas-shadows.css';
+import '../styles/components.css';
+import '../styles/web.css';
+import '../styles/size-profiles.css';
+import '../styles/interaction-feedback.css';
+import '../styles/docs-brand.css';
+import '../styles/docs-accessibility.css';
+import '../styles/documentation.css';
+import '../styles/atlas-input.css';
+import '../styles/theme-builder.css';
+import DocsShell from '../components/shell/DocsShell.astro';
+import '../styles/focus-01.css';
+interface Props {
+  title: string;
+  description: string;
+  slug?: string;
+}
+const { title, description, slug = '' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} data-i18n-content={description} />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <style is:inline set:html={themeStyleText} />
+    <style is:inline data-docs-brand-tokens set:html={docsBrandStyleText} />
+    <style is:inline data-docs-typography set:html={docsTypographyStyleText} />
+    <style is:inline data-docs-accessibility set:html={docsAccessibilityStyleText} />
+    <style is:inline data-selection-sizes set:html={selectionSizeStyleText} />
+    <script is:inline data-theme-bootstrap>
+      (() => {
+        let mode;
+        try {
+          mode = localStorage.getItem('atlas-theme');
+        } catch {}
+        if (mode !== 'light' && mode !== 'dark')
+          mode = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.dataset.theme = mode;
+        document.documentElement.style.colorScheme = mode;
+      })();
+    </script>
+    <title data-i18n={title + ' · GenUI'}>{title} · GenUI</title>
+    <slot name="head" />
+  </head>
+  <body data-atlas-surface="docs">
+    <a class="skip-link" href="#content">
+      <span data-i18n="Skip to content">Skip to content</span>
+    </a>
+    <DocsShell slug={slug}>
+      <slot />
+    </DocsShell>
+    <script>
+      import { installDeferredFeedback } from '../deferred-feedback';
+      import { getThemeSnapshot, setTheme, subscribeTheme } from '../theme';
+      import { initializeThemeBuilder } from '../theme-builder/store';
+      import {
+        getLocaleSnapshot,
+        normalizeSearch,
+        restoreLocale,
+        setLocale,
+        subscribeLocale,
+        translate,
+      } from '../i18n';
+
+      const themeToggle = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+      let disposeFeedback = installDeferredFeedback(document);
+      let disposeThemeBuilder: (() => void) | null = initializeThemeBuilder();
+      const updateThemeToggle = () => {
+        const dark = getThemeSnapshot() === 'dark';
+        themeToggle?.setAttribute('aria-checked', String(dark));
+      };
+      const search = document.querySelector<HTMLInputElement>('#component-search');
+      const filterComponents = () => {
+        const term = normalizeSearch(search?.value ?? '');
+        let visible = 0;
+        document.querySelectorAll<HTMLElement>('[data-component-link]').forEach(item => {
+          const names = (item.dataset.componentLink ?? '') + ' ' + (item.textContent ?? '');
+          item.hidden = !normalizeSearch(names).includes(term);
+          if (!item.hidden) visible++;
+        });
+        document.querySelectorAll<HTMLElement>('.nav-group').forEach(group => {
+          // Foundation groups have no component links; component search must not hide them.
+          if (!group.querySelector('[data-component-link]')) return;
+          group.hidden = !group.querySelector('[data-component-link]:not([hidden])');
+        });
+        const status = document.querySelector<HTMLElement>('#search-status');
+        if (status) status.hidden = visible > 0;
+      };
+      const localeButtons = document.querySelectorAll<HTMLButtonElement>('[data-locale-button]');
+      const localeStatus = document.querySelector<HTMLElement>('[data-locale-status]');
+      const updateLocaleControls = () => {
+        const locale = getLocaleSnapshot();
+        localeButtons.forEach(button => {
+          button.setAttribute('aria-pressed', String(button.dataset.localeButton === locale));
+        });
+        updateThemeToggle();
+        filterComponents();
+      };
+      const showLocaleError = () => {
+        if (!localeStatus) return;
+        localeStatus.dataset.i18n = 'Could not load this language.';
+        localeStatus.textContent = translate('Could not load this language.');
+        localeStatus.hidden = false;
+      };
+      let localeRequest = 0;
+      localeButtons.forEach(button => {
+        button.addEventListener('click', async () => {
+          const locale = button.dataset.localeButton;
+          if (locale !== 'en' && locale !== 'tr') return;
+          const request = ++localeRequest;
+          try {
+            await setLocale(locale);
+            if (request === localeRequest && localeStatus) localeStatus.hidden = true;
+          } catch {
+            if (request === localeRequest) showLocaleError();
+          }
+        });
+      });
+      import { installOverlayBackdrop } from '../overlay-backdrop';
+      import { installInputModality } from '../input-modality';
+      installOverlayBackdrop();
+      // One document-wide modality owner for the page; it stays installed across bfcache restores.
+      installInputModality(document);
+      updateThemeToggle();
+      updateLocaleControls();
+      let unsubscribeTheme = subscribeTheme(updateThemeToggle);
+      let unsubscribeLocale = subscribeLocale(updateLocaleControls);
+      void restoreLocale().catch(() => {
+        if (localeRequest === 0) showLocaleError();
+      });
+      themeToggle?.addEventListener('click', () => {
+        setTheme(getThemeSnapshot() === 'dark' ? 'light' : 'dark');
+      });
+      window.addEventListener('pagehide', () => {
+        disposeFeedback();
+        disposeThemeBuilder?.();
+        disposeThemeBuilder = null;
+        unsubscribeTheme();
+        unsubscribeLocale();
+      });
+      window.addEventListener('pageshow', () => {
+        disposeFeedback();
+        disposeFeedback = installDeferredFeedback(document);
+        disposeThemeBuilder ??= initializeThemeBuilder();
+        unsubscribeTheme();
+        unsubscribeLocale();
+        unsubscribeTheme = subscribeTheme(updateThemeToggle);
+        unsubscribeLocale = subscribeLocale(updateLocaleControls);
+        updateLocaleControls();
+      });
+      search?.addEventListener('input', filterComponents);
+      document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((button, index) => {
+        const status = document.createElement('span');
+        let statusIndex = index;
+        while (document.getElementById(`code-copy-status-${statusIndex}`)) statusIndex++;
+        status.id = `code-copy-status-${statusIndex}`;
+        status.className = 'copy-status';
+        status.setAttribute('role', 'status');
+        status.setAttribute('aria-live', 'polite');
+        status.setAttribute('aria-atomic', 'true');
+        status.setAttribute('aria-label', translate('Code copy status'));
+        status.dataset.i18nAriaLabel = 'Code copy status';
+        button.insertAdjacentElement('afterend', status);
+        button.setAttribute(
+          'aria-describedby',
+          [...new Set([...(button.getAttribute('aria-describedby') ?? '').split(/\s+/), status.id])]
+            .filter(Boolean)
+            .join(' '),
+        );
+        button.addEventListener('click', async () => {
+          const code = button.parentElement?.querySelector('code')?.textContent;
+          if (!code) return;
+          delete status.dataset.i18n;
+          status.textContent = '';
+          let message = 'Copied';
+          try {
+            await navigator.clipboard.writeText(code);
+          } catch {
+            message = 'Select the code to copy';
+          }
+          button.dataset.i18n = message;
+          button.textContent = translate(message);
+          status.dataset.i18n = message;
+          status.textContent = translate(message);
+        });
+      });
+    </script>
+  </body>
+</html>

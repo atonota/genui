@@ -1,0 +1,35 @@
+:root {
+  --shadow-ink: 32, 38, 40;
+  --shadow-contact-alpha: 0.094118;
+  --shadow-soft-alpha: 0.12549;
+  --shadow-diffuse-alpha: 0.12549;
+  --shadow-raised-alpha: 0.141176;
+  --shadow-antd-a: 0.078431;
+  --shadow-antd-b: 0.121569;
+  --shadow-antd-c: 0.05098;
+  --shadow-ambient-alpha: 0.18;
+  --shadow-swatch-width: 1.5rem;
+  --shadow-swatch-height: 1rem;
+  --shadow-flat-layer:
+    0 1px 0 rgba(var(--shadow-ink), 0.070588), 0 2px 0 rgba(var(--shadow-ink), 0.054902),
+    0 3px 0 rgba(var(--shadow-ink), 0.035294);
+  --shadow-long-flat:
+    1px 1px 0 rgba(var(--shadow-ink), 0.043137), 2px 2px 0 rgba(var(--shadow-ink), 0.039216),
+    3px 3px 0 rgba(var(--shadow-ink), 0.035294), 4px 4px 0 rgba(var(--shadow-ink), 0.031373),
+    5px 5px 0 rgba(var(--shadow-ink), 0.023529), 6px 6px 0 rgba(var(--shadow-ink), 0.015686);
+  --shadow-layered-flat:
+    0 1px 0 rgba(var(--shadow-ink), 0.086275), 1px 2px 0 rgba(var(--shadow-ink), 0.062745),
+    1px 3px 0 rgba(var(--shadow-ink), 0.043137), 2px 4px 0 rgba(var(--shadow-ink), 0.023529);
+  --shadow-flat-pressed: 0 1px 0 rgba(var(--shadow-ink), 0.039216);
+  --shadow-layered-pressed: 0 1px 0 rgba(var(--shadow-ink), 0.047059);
+  --shadow-contact: 0 1px 3px rgba(var(--shadow-ink), var(--shadow-contact-alpha));
+  --shadow-soft: 0 3px 8px rgba(var(--shadow-ink), var(--shadow-soft-alpha));
+  --shadow-diffuse: 0 4px 16px rgba(var(--shadow-ink), var(--shadow-diffuse-alpha));
+  --shadow-raised: 0 6px 20px rgba(var(--shadow-ink), var(--shadow-raised-alpha));
+  --shadow-antd:
+    0 6px 16px 0 rgba(0, 0, 0, var(--shadow-antd-a)),
+    0 3px 6px -4px rgba(0, 0, 0, var(--shadow-antd-b)),
+    0 9px 28px 8px rgba(0, 0, 0, var(--shadow-antd-c));
+  --shadow-accent-rgb: 207, 19, 34;
+  --shadow-ambient: 0 2px 8px rgba(var(--shadow-accent-rgb), var(--shadow-ambient-alpha));
+}

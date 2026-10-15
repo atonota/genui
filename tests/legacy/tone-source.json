@@ -1,0 +1,317 @@
+{
+  "status": "source_evidence_and_candidates_only_not_applied",
+  "scope": "Only this evidence JSON was created. Target HTML and tests are outside this agent ownership.",
+  "roleMappingNote": "dark, middle, light and pastel are project tone roles; Ant Design does not prescribe this four-role mapping. Chromatic light level4 and neutral gray6 are candidates, with source alternatives included.",
+  "indexConvention": {
+    "package": "10 array entries indexed 0..9; normalized sourceLevelsOneBased = index+1; .primary = array[5]",
+    "neutralDocumentation": "13 entries keyed 1..13; separate from the package gray/grey preset"
+  },
+  "sources": {
+    "chromatic": {
+      "package": "@ant-design/colors",
+      "version": "8.0.1",
+      "localPackageJson": "/Users/w6x/Developer/genui-saas-panel/node_modules/@ant-design/colors/package.json",
+      "localGeneratedPaletteFile": "/Users/w6x/Developer/genui-saas-panel/node_modules/@ant-design/colors/es/presets.js",
+      "localGeneratedPaletteFileSha256": "86560ae243c9760ba6bbffa3e5184c21fcdd9aa1f245d42a7b4a61444409ee97",
+      "officialVersionPinnedGeneratorUrl": "https://github.com/ant-design/ant-design-colors/blob/%40ant-design%2Fcolors%408.0.1/generate-presets.ts",
+      "officialVersionPinnedGeneratorAlgorithmUrl": "https://github.com/ant-design/ant-design-colors/blob/%40ant-design%2Fcolors%408.0.1/src/generate.ts",
+      "verifiedFrom": "Read installed generated palette arrays; no package installation or package execution."
+    },
+    "neutral": {
+      "repository": "ant-design/ant-design",
+      "versionTag": "5.27.6",
+      "officialVersionPinnedUrl": "https://github.com/ant-design/ant-design/blob/5.27.6/.dumi/theme/common/Color/ColorStyle.tsx",
+      "rawUrl": "https://raw.githubusercontent.com/ant-design/ant-design/5.27.6/.dumi/theme/common/Color/ColorStyle.tsx",
+      "rawFileSha256": "7e7574115ba9804e1a7f07fa95be47eb7fc6989eb857031d55cc41346ae6d3ab",
+      "sourceLines": "7-21",
+      "verifiedFrom": "Read the official tagged source const gray object."
+    }
+  },
+  "preservedExistingValues": {
+    "targetPath": "/Users/w6x/Downloads/buton-atlasi (2).html",
+    "paletteDeclarationSha256AtRead": "f7d25175233cc02f7ed9fbd5ee0155149fbeba2685d7a757a9b03ee7ac70ce94",
+    "values": {
+      "violet": {
+        "color": "#531dab",
+        "dark": "#391085",
+        "tint": "#f9f0ff"
+      },
+      "blue": {
+        "color": "#0958d9",
+        "dark": "#003eb3",
+        "tint": "#e6f4ff"
+      },
+      "teal": {
+        "color": "#006d75",
+        "dark": "#00474f",
+        "tint": "#e6fffb"
+      },
+      "moss": {
+        "color": "#237804",
+        "dark": "#135200",
+        "tint": "#f6ffed"
+      },
+      "clay": {
+        "color": "#ad2102",
+        "dark": "#871400",
+        "tint": "#fff2e8"
+      },
+      "coral": {
+        "color": "#cf1322",
+        "dark": "#a8071a",
+        "tint": "#fff1f0"
+      },
+      "amber": {
+        "color": "#874d00",
+        "dark": "#613400",
+        "tint": "#fffbe6"
+      },
+      "graphite": {
+        "color": "#434343",
+        "dark": "#262626",
+        "tint": "#f5f5f5"
+      }
+    },
+    "preservationRequirement": "Retain each current middle color literal exactly; dark and tint copied without edits in the candidates."
+  },
+  "fourToneCandidates": {
+    "violet": {
+      "family": "purple",
+      "dark": "#391085",
+      "middle": "#531dab",
+      "light": "#b37feb",
+      "pastel": "#f9f0ff",
+      "sourceLevelsOneBased": {
+        "dark": 8,
+        "middle": 7,
+        "light": 4,
+        "pastel": 1
+      },
+      "lightLevel5Alternative": "#9254de"
+    },
+    "blue": {
+      "family": "blue",
+      "dark": "#003eb3",
+      "middle": "#0958d9",
+      "light": "#69b1ff",
+      "pastel": "#e6f4ff",
+      "sourceLevelsOneBased": {
+        "dark": 8,
+        "middle": 7,
+        "light": 4,
+        "pastel": 1
+      },
+      "lightLevel5Alternative": "#4096ff"
+    },
+    "teal": {
+      "family": "cyan",
+      "dark": "#00474f",
+      "middle": "#006d75",
+      "light": "#5cdbd3",
+      "pastel": "#e6fffb",
+      "sourceLevelsOneBased": {
+        "dark": 9,
+        "middle": 8,
+        "light": 4,
+        "pastel": 1
+      },
+      "lightLevel5Alternative": "#36cfc9"
+    },
+    "moss": {
+      "family": "green",
+      "dark": "#135200",
+      "middle": "#237804",
+      "light": "#95de64",
+      "pastel": "#f6ffed",
+      "sourceLevelsOneBased": {
+        "dark": 9,
+        "middle": 8,
+        "light": 4,
+        "pastel": 1
+      },
+      "lightLevel5Alternative": "#73d13d"
+    },
+    "clay": {
+      "family": "volcano",
+      "dark": "#871400",
+      "middle": "#ad2102",
+      "light": "#ff9c6e",
+      "pastel": "#fff2e8",
+      "sourceLevelsOneBased": {
+        "dark": 9,
+        "middle": 8,
+        "light": 4,
+        "pastel": 1
+      },
+      "lightLevel5Alternative": "#ff7a45"
+    },
+    "coral": {
+      "family": "red",
+      "dark": "#a8071a",
+      "middle": "#cf1322",
+      "light": "#ff7875",
+      "pastel": "#fff1f0",
+      "sourceLevelsOneBased": {
+        "dark": 8,
+        "middle": 7,
+        "light": 4,
+        "pastel": 1
+      },
+      "lightLevel5Alternative": "#ff4d4f"
+    },
+    "amber": {
+      "family": "gold",
+      "dark": "#613400",
+      "middle": "#874d00",
+      "light": "#ffd666",
+      "pastel": "#fffbe6",
+      "sourceLevelsOneBased": {
+        "dark": 10,
+        "middle": 9,
+        "light": 4,
+        "pastel": 1
+      },
+      "lightLevel5Alternative": "#ffc53d"
+    },
+    "graphite": {
+      "family": "documentation-neutral-gray",
+      "dark": "#262626",
+      "middle": "#434343",
+      "light": "#bfbfbf",
+      "pastel": "#f5f5f5",
+      "sourceLevelsOneBased": {
+        "dark": 10,
+        "middle": 9,
+        "light": 6,
+        "pastel": 3
+      },
+      "lightLevel5Alternative": "#d9d9d9"
+    }
+  },
+  "chromaticSourceArrays": {
+    "purple": [
+      "#f9f0ff",
+      "#efdbff",
+      "#d3adf7",
+      "#b37feb",
+      "#9254de",
+      "#722ed1",
+      "#531dab",
+      "#391085",
+      "#22075e",
+      "#120338"
+    ],
+    "blue": [
+      "#e6f4ff",
+      "#bae0ff",
+      "#91caff",
+      "#69b1ff",
+      "#4096ff",
+      "#1677ff",
+      "#0958d9",
+      "#003eb3",
+      "#002c8c",
+      "#001d66"
+    ],
+    "cyan": [
+      "#e6fffb",
+      "#b5f5ec",
+      "#87e8de",
+      "#5cdbd3",
+      "#36cfc9",
+      "#13c2c2",
+      "#08979c",
+      "#006d75",
+      "#00474f",
+      "#002329"
+    ],
+    "green": [
+      "#f6ffed",
+      "#d9f7be",
+      "#b7eb8f",
+      "#95de64",
+      "#73d13d",
+      "#52c41a",
+      "#389e0d",
+      "#237804",
+      "#135200",
+      "#092b00"
+    ],
+    "volcano": [
+      "#fff2e8",
+      "#ffd8bf",
+      "#ffbb96",
+      "#ff9c6e",
+      "#ff7a45",
+      "#fa541c",
+      "#d4380d",
+      "#ad2102",
+      "#871400",
+      "#610b00"
+    ],
+    "red": [
+      "#fff1f0",
+      "#ffccc7",
+      "#ffa39e",
+      "#ff7875",
+      "#ff4d4f",
+      "#f5222d",
+      "#cf1322",
+      "#a8071a",
+      "#820014",
+      "#5c0011"
+    ],
+    "gold": [
+      "#fffbe6",
+      "#fff1b8",
+      "#ffe58f",
+      "#ffd666",
+      "#ffc53d",
+      "#faad14",
+      "#d48806",
+      "#ad6800",
+      "#874d00",
+      "#613400"
+    ]
+  },
+  "neutralDocumentationScale": {
+    "1": "#ffffff",
+    "2": "#fafafa",
+    "3": "#f5f5f5",
+    "4": "#f0f0f0",
+    "5": "#d9d9d9",
+    "6": "#bfbfbf",
+    "7": "#8c8c8c",
+    "8": "#595959",
+    "9": "#434343",
+    "10": "#262626",
+    "11": "#1f1f1f",
+    "12": "#141414",
+    "13": "#000000"
+  },
+  "packageGrayAliasEvidence": {
+    "statement": "In @ant-design/colors 8.0.1, gray is an alias of grey, whose seed is #666666. It is not the neutral documentation gray scale; do not replace existing graphite with this generated preset.",
+    "seed": "#666666",
+    "grayEqualsGrey": true,
+    "array": [
+      "#a6a6a6",
+      "#999999",
+      "#8c8c8c",
+      "#808080",
+      "#737373",
+      "#666666",
+      "#404040",
+      "#1a1a1a",
+      "#000000",
+      "#000000"
+    ]
+  },
+  "validation": {
+    "sourcePackageVersion": "pass",
+    "allEightExistingMiddleDarkTintValuesMatchTaskLiterals": "pass",
+    "candidateValuesArePresentInTheirRecordedSourceScales": "pass",
+    "browser": "not_run",
+    "targetEdit": "not_run",
+    "testsEdit": "not_run"
+  }
+}

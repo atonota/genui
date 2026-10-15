@@ -1,0 +1,49 @@
+/* Breadcrumb page reading order; reusable navigation belongs to atlas-breadcrumb.css. */
+.atlas-demo .breadcrumb-catalog {
+  --breadcrumb-reading-width: 720px;
+  display: grid;
+  gap: var(--space-section);
+  min-width: 0;
+}
+.atlas-demo .breadcrumb-catalog :is(h3, p) {
+  margin: 0;
+}
+.atlas-demo .breadcrumb-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs) var(--space-xl);
+}
+.atlas-demo .breadcrumb-navigation a {
+  display: flex;
+  align-items: center;
+  min-height: var(--target-min);
+}
+.atlas-demo .breadcrumb-section {
+  display: grid;
+  gap: var(--space-lg);
+  min-width: 0;
+  scroll-margin-block-start: var(--space-lg);
+}
+.atlas-demo .breadcrumb-section > header {
+  display: grid;
+  gap: var(--space-xs);
+}
+.atlas-demo .breadcrumb-section h3 {
+  font-size: var(--text-section);
+}
+.atlas-demo .breadcrumb-section > header > p:last-child,
+.atlas-demo .breadcrumb-guidance {
+  max-width: var(--breadcrumb-reading-width);
+  color: var(--muted);
+}
+.atlas-demo .breadcrumb-stage {
+  min-width: 0;
+  padding: var(--space-sm);
+  border-radius: var(--radius);
+  background: var(--panel);
+}
+@media (min-width: 640px) {
+  .atlas-demo .breadcrumb-stage {
+    padding: var(--space-lg);
+  }
+}

@@ -1,0 +1,67 @@
+---
+import { components } from '../../data/catalog';
+import { foundationGroups } from '../../data/foundation-navigation';
+import './nav.css';
+
+interface Props {
+  slug: string;
+}
+
+const { slug } = Astro.props;
+const groups = [...new Set(components.map(component => component.category))];
+---
+
+<div class="navigation" id="navigation">
+  <h2 class="navigation-title">
+    <span data-i18n="Component library">Component library</span>
+  </h2>
+  <nav aria-label="Documentation" data-i18n-aria-label="Documentation">
+    <label class="nav-search">
+      <span data-i18n="Find a component">Find a component</span>
+      <input
+        type="search"
+        id="component-search"
+        placeholder="Button, Input, Drawer…"
+        data-i18n-placeholder="Button, Input, Drawer…"
+        autocomplete="off"
+      />
+    </label>
+    {foundationGroups.map(group => (
+      <section class="nav-group">
+        <h2 data-i18n={group.label}>{group.label}</h2>
+        <ul class="nav-foundations">
+          {group.links.map(item => (
+            <li>
+              <a href={item.href} aria-current={slug === item.slug ? 'page' : undefined}>
+                <span data-i18n={item.label}>{item.label}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+    {groups.map(group => (
+      <section class="nav-group">
+        <h2 data-i18n={group}>{group}</h2>
+        <ul>
+          {components
+            .filter(item => item.category === group)
+            .map(item => (
+              <li data-component-link={item.title + ' ' + item.slug}>
+                <a
+                  href={'/components/' + item.slug + '/'}
+                  aria-current={slug === item.slug ? 'page' : undefined}
+                  data-i18n={item.title}
+                >
+                  {item.title}
+                </a>
+              </li>
+            ))}
+        </ul>
+      </section>
+    ))}
+    <p id="search-status" role="status" hidden>
+      <span data-i18n="No results found.">No results found.</span>
+    </p>
+  </nav>
+</div>

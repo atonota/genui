@@ -1,0 +1,4 @@
+{
+  "All 25 Color system presets are shared with Button color families. Hue families use 80% pure hue, 10% white and 10% black. Edge and pastel roles come from the installed Ant Design color generator.": "Renk sistemindeki 25 hazır renk, buton renk aileleriyle ortak kullanılır. Renk tonu aileleri %80 saf renk, %10 beyaz ve %10 siyah kullanır. Alt kenar ve pastel rolleri kurulu Ant Design renk üreticisinden gelir.",
+  "Grey and black families keep 80% of their source composition plus 10% white and 10% black. This preserves distinct neutral colors, including warm and cool blacks.": "Gri ve siyah aileleri, kaynak bileşimlerinin %80'ine %10 beyaz ve %10 siyah ekler. Böylece sıcak ve soğuk siyahlar dahil nötr renklerin farklılıkları korunur."
+}

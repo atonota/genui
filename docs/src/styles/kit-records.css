@@ -1,0 +1,464 @@
+:root {
+  --kit-record-panel-modal-width: 52rem;
+  --kit-record-panel-drawer-width: 34rem;
+  --kit-record-panel-body-height: min(75dvh, calc(100dvh - 8rem));
+}
+.kit-records {
+  --kit-record-gap: var(--section-gap, var(--space-xl));
+  --kit-record-column-min: 14rem;
+  --kit-record-table-width: 36rem;
+  --kit-field-label-width: 13rem;
+  display: grid;
+  gap: var(--kit-record-gap);
+  min-width: 0;
+  max-width: 100%;
+  font-family: var(--font-body);
+  font-size: var(--text);
+}
+.kit-records :is(h2, h3, h4, h5, h6, p, section, div, fieldset, form, nav) {
+  min-width: 0;
+}
+.kit-records :is(h2, h3, h4, h5, h6) {
+  letter-spacing: 0;
+}
+/* Comfortable entry shares the field gap; read-only display stays compact. */
+.kit-record-form,
+.kit-fieldset,
+.kit-review-target,
+.kit-bulk-example,
+.kit-form-section {
+  display: grid;
+  gap: var(--field-gap, var(--space-md));
+  min-width: 0;
+}
+.kit-record-display {
+  display: grid;
+  gap: var(--field-gap-compact, var(--space-sm));
+  min-width: 0;
+}
+.kit-record-display .kit-form-section {
+  gap: var(--field-gap-compact, var(--space-sm));
+}
+/* Fully visible sections separate by more than the fields within them. */
+.kit-records:is([data-form-organization='page'], [data-form-organization='sections'])
+  .kit-form-section
+  + .kit-form-section {
+  margin-block-start: calc(var(--section-gap, var(--space-xl)) - var(--field-gap, var(--space-md)));
+}
+.kit-fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.kit-fieldset legend {
+  padding: 0;
+  margin-block-end: var(--space-md);
+  font-weight: var(--font-weight-label, 600);
+  font-size: var(--text);
+}
+.kit-records .kit-action-row,
+.kit-section-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+}
+/* Mixed heading and action text share one baseline; control-led rows stay centered. */
+.kit-record-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+.kit-record-heading:has(> :is(input[type='checkbox'], .ant-checkbox-wrapper, .atlas-avatar)) {
+  align-items: center;
+}
+.kit-caption {
+  max-inline-size: var(--prose-measure, 65ch);
+  color: var(--muted);
+  font-size: var(--text);
+}
+.kit-disclosure {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows var(--motion-duration-standard) var(--motion-easing),
+    opacity var(--motion-duration-standard) var(--motion-easing);
+}
+.kit-disclosure[data-open='true'] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.kit-disclosure[data-open='false'] {
+  pointer-events: none;
+}
+.kit-disclosure-clip {
+  min-height: 0;
+  overflow: hidden;
+}
+.kit-disclosure[data-open='true']:focus-within {
+  transition: color var(--motion-duration-standard) var(--motion-easing);
+}
+.kit-disclosure[data-open='true']:focus-within .kit-disclosure-clip {
+  overflow: visible;
+}
+.kit-error-summary {
+  display: grid;
+  gap: var(--space-md);
+  padding-inline-start: var(--space-md);
+  border-inline-start: var(--focus-marker) solid var(--error);
+  outline: none;
+}
+.kit-error-summary ul {
+  display: grid;
+  gap: var(--space-sm);
+  padding: 0;
+  list-style: none;
+  margin: 0;
+}
+.kit-error-summary li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+  margin: 0;
+}
+.kit-error-summary:focus h3 {
+  text-decoration: underline;
+  text-decoration-thickness: var(--focus-marker);
+  text-underline-offset: 0.25em;
+}
+.kit-record-form [data-field-key]:focus {
+  outline: none;
+}
+.kit-record-form [data-field-key]:focus-visible label {
+  text-decoration: underline;
+  text-decoration-thickness: var(--focus-marker);
+  text-underline-offset: 0.25em;
+}
+.kit-repeating:focus {
+  outline: none;
+}
+.kit-repeating:focus-visible > h3 {
+  text-decoration: underline;
+  text-decoration-thickness: var(--focus-marker);
+  text-underline-offset: 0.25em;
+}
+.kit-display-fields {
+  display: grid;
+  gap: var(--field-gap-compact, var(--space-sm)) var(--space-lg);
+  margin: 0;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--kit-record-column-min)), 1fr));
+}
+.kit-display-fields > div {
+  min-width: 0;
+}
+.kit-display-fields dt {
+  color: var(--muted);
+}
+.kit-display-fields dd {
+  margin: var(--space-xs) 0 0;
+  max-inline-size: var(--prose-measure, 65ch);
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+.kit-contained-scroll {
+  max-width: 100%;
+  min-width: 0;
+  overflow: auto;
+  border-block-end: var(--focus-marker) solid transparent;
+  outline: none;
+}
+.kit-contained-scroll:focus-visible {
+  border-block-end-color: var(--focus-color);
+}
+.kit-contained-scroll pre,
+pre.kit-contained-scroll {
+  margin: 0;
+  padding: var(--space-md);
+  background: var(--field-bg);
+  font-size: var(--text);
+}
+.kit-review-table {
+  width: 100%;
+  min-width: var(--kit-record-table-width);
+  border-collapse: collapse;
+}
+.kit-review-table :is(th, td) {
+  padding: var(--space-sm);
+  font-variant-numeric: tabular-nums;
+  text-align: start;
+  vertical-align: top;
+  font-size: var(--text);
+  border-block-end: 1px solid var(--line);
+  word-break: normal;
+  overflow-wrap: normal;
+}
+.kit-review-table th {
+  min-width: var(--kit-field-label-width);
+}
+/* Only failed or partial results draw the status boundary; the transparent edge keeps alignment. */
+.kit-result {
+  padding-inline-start: var(--space-md);
+  border-inline-start: var(--focus-marker) solid transparent;
+}
+.kit-result[data-result-state='failed'],
+.kit-result[data-result-state='partial'] {
+  border-inline-start-color: var(--error);
+}
+.kit-attachment-list ul,
+.kit-event-list ol {
+  display: grid;
+  gap: var(--space-lg);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.kit-attachment-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-md);
+  margin: 0;
+}
+.kit-event {
+  display: grid;
+  gap: var(--space-sm);
+}
+.kit-advanced-examples {
+  gap: var(--space-section);
+}
+.kit-bulk-example > label {
+  display: grid;
+  gap: var(--space-xs);
+}
+.kit-records :is(.ant-select, .ant-input-number, .ant-input) {
+  max-width: 100%;
+}
+.kit-record-panel {
+  min-width: 0;
+  width: 100%;
+}
+.kit-panel-heading {
+  outline: none;
+  margin-block-end: var(--space-lg);
+}
+.kit-panel-heading:focus-visible {
+  text-decoration: underline;
+  text-decoration-thickness: var(--focus-marker);
+  text-underline-offset: 0.25em;
+}
+.kit-return-trail ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.kit-return-trail li {
+  display: grid;
+  gap: var(--space-xs);
+  margin: 0;
+  min-width: 0;
+}
+.kit-panel-control {
+  display: grid;
+  gap: var(--space-xs);
+}
+.kit-panel-example {
+  container-name: kit-panel-example;
+  container-type: inline-size;
+}
+.kit-panel-example-stage {
+  display: grid;
+  gap: var(--space-lg);
+  min-width: 0;
+}
+.kit-panel-record-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: start;
+  gap: var(--space-sm);
+  min-width: 0;
+}
+.kit-record-panel-overlay .ant-modal {
+  top: var(--space-sm);
+  max-width: calc(100vw - 2 * var(--space-sm));
+  padding-block-end: var(--space-sm);
+}
+.kit-record-panel-overlay .ant-modal-body {
+  max-block-size: var(--kit-record-panel-body-height);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.kit-record-panel-overlay :is(.ant-modal-body, .ant-drawer-body) {
+  min-width: 0;
+  padding-block-end: max(var(--space-lg), env(safe-area-inset-bottom));
+}
+.kit-record-panel-overlay :is(.ant-modal-container, .ant-drawer-content) {
+  background: var(--panel);
+  color: var(--ink);
+}
+.kit-record-panel-overlay :is(.ant-modal-close, .ant-drawer-close) {
+  min-width: var(--target-min);
+  min-height: var(--target-min);
+  border: 1px solid transparent;
+  text-decoration: none;
+  outline: none;
+  box-shadow: none;
+}
+.kit-record-panel-overlay :is(.ant-modal-close, .ant-drawer-close):focus-visible {
+  outline: none;
+  text-decoration: none;
+  box-shadow: none;
+}
+:root:not([data-input-modality='pointer'])
+  .kit-record-panel-overlay
+  :is(.ant-modal-close, .ant-drawer-close):focus-visible::after {
+  content: '';
+  position: absolute;
+  inset: auto var(--space-xs) 0;
+  height: var(--focus-marker);
+  background: var(--focus-color);
+}
+@container kit-panel-example (min-width: 48rem) {
+  .kit-panel-example-stage[data-panel-layout='split'] {
+    grid-template-columns: minmax(0, 0.6fr) minmax(0, 1.4fr);
+    align-items: start;
+  }
+}
+@media (any-pointer: coarse) {
+  .kit-record-panel-overlay :is(.ant-modal-close, .ant-drawer-close) {
+    min-width: max(var(--target-min), 3rem);
+    min-height: max(var(--target-min), 3rem);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kit-records .kit-disclosure,
+  .kit-record-panel {
+    transition: none;
+  }
+}
+
+/* Display-only wrapping: identifiers in collection/table headers retain natural words. */
+.kit-display-fields dd .kit-field-value {
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+.kit-display-fields dd .atlas-button {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.kit-record-pager,
+.kit-inspector-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.kit-record-panel {
+  container-name: kit-record-panel;
+  container-type: inline-size;
+}
+.kit-record-panel-layout {
+  display: grid;
+  gap: var(--space-lg);
+  min-width: 0;
+}
+.kit-record-split-context,
+.kit-close-confirmation,
+.kit-record-inspector {
+  display: grid;
+  gap: var(--space-md);
+  min-width: 0;
+}
+.kit-record-tabs > [role='tablist'],
+.kit-record-tab {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  min-width: 0;
+}
+.kit-record-tabs {
+  display: grid;
+  gap: var(--space-sm);
+  max-width: 100%;
+}
+.kit-record-inspector {
+  width: min(100%, var(--kit-inspector-width));
+  max-width: 100%;
+}
+.kit-inspector-tools .kit-inspector-width {
+  display: grid;
+  gap: var(--space-xs);
+  min-width: 0;
+  max-width: 100%;
+}
+.kit-inspector-resize {
+  accent-color: var(--focus-color);
+  width: 100%;
+  min-width: 0;
+  min-height: var(--target-min);
+  border: 0;
+  border-block-end: var(--focus-marker) solid transparent;
+  outline: none;
+  transition-property: background-color, color, opacity;
+}
+.kit-inspector-resize:focus-visible {
+  border-block-end-color: var(--focus-color);
+}
+.kit-records .kit-contained-scroll {
+  transition-property: background-color, color, opacity;
+}
+.kit-record-diff {
+  container-name: kit-record-diff;
+  container-type: inline-size;
+}
+@container kit-record-panel (min-width: 48rem) {
+  .kit-record-panel-layout[data-panel-container='split'] {
+    grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
+    align-items: start;
+  }
+}
+@media (min-width: 48rem) {
+  .kit-record-inspector[data-pinned='true'] {
+    position: sticky;
+    inset-block-start: var(--space-lg);
+    align-self: start;
+  }
+}
+@container kit-record-diff (max-width: 35.999rem) {
+  .kit-review-table {
+    display: block;
+    min-width: 0;
+  }
+  .kit-review-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .kit-review-table tbody,
+  .kit-review-table tbody tr {
+    display: grid;
+    min-width: 0;
+    gap: var(--space-sm);
+  }
+  .kit-review-table tbody tr {
+    margin-block-end: var(--space-lg);
+  }
+  .kit-review-table :is(th, td) {
+    min-width: 0;
+    max-width: 100%;
+  }
+  .kit-review-table td::before {
+    content: attr(data-diff-label);
+    display: block;
+    color: var(--muted);
+  }
+}

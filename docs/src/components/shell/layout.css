@@ -1,0 +1,257 @@
+/* Documentation shell layout. The single aside.sidebar sits in the shell grid from the 875px
+   content breakpoint and moves into the native modal menu Drawer below it (docs-shell.ts). Page
+   contents stay a closed disclosure until the 1130px contents rail, which widens at 1290px.
+   Queries use rem so text zoom keeps the narrow layout: 54.6875rem = 875px,
+   70.625rem = 1130px, 80.625rem = 1290px. Surfaces only use the shell and panel roles. */
+:where(:root) {
+  --shell-sidebar-inline-size: var(--sidebar-width, 16rem);
+  --shell-toc-inline-size: var(--toc-width, 10rem);
+  --shell-drawer-inline-size: 20rem;
+  --shell-drawer-edge: var(--target-min);
+  --shell-sticky-offset: var(--space-md);
+}
+[data-docs-shell] {
+  background: var(--shell-bg, var(--paper));
+  color: var(--shell-ink, var(--ink));
+}
+[data-docs-shell] .docs-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--layout-gap);
+}
+/* The painted main column and the inline sidebar inset their content with the central container
+   inset roles. Inside the Drawer the sidebar is no longer a shell child and keeps the Drawer
+   padding only. */
+[data-docs-shell] .docs-main {
+  padding: var(--inset-container-sm, 16px);
+}
+[data-docs-shell] .docs-shell > .sidebar {
+  padding-inline: var(--inset-container-sm, 16px);
+}
+/* Without docs-shell.ts the aside stays inline and the menu button stays hidden; with it the
+   aside lives in the Drawer body below the breakpoint and stays visible when the Drawer opens. */
+[data-docs-shell]:not([data-docs-shell-ready]) [data-docs-menu-toggle] {
+  display: none;
+}
+:is([data-docs-menu-toggle], [data-docs-menu-close]) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  min-block-size: var(--target-min);
+  min-inline-size: var(--target-min);
+  padding-inline: var(--space-sm);
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--panel-bg, var(--panel));
+  color: var(--panel-ink, var(--ink));
+  font: inherit;
+  font-weight: var(--font-weight-label, 600);
+}
+@media (any-hover: hover) {
+  :is([data-docs-menu-toggle], [data-docs-menu-close]):hover {
+    background: var(--shell-bg, var(--surface));
+    color: var(--shell-ink, var(--ink));
+  }
+}
+/* Keyboard focus for these buttons, summaries and links comes from focus-01.css. */
+
+/* Menu Drawer: native modal dialog; the page behind it is inert, Escape and the backdrop
+   close it. Both directions use the central motion tokens, reduced motion sets 0ms. */
+dialog[data-docs-drawer] {
+  position: fixed;
+  inset-block: 0;
+  inset-inline: 0 auto;
+  inline-size: min(var(--shell-drawer-inline-size), calc(100% - var(--shell-drawer-edge)));
+  max-inline-size: none;
+  block-size: 100dvh;
+  max-block-size: none;
+  margin: 0;
+  padding: var(--space-md) var(--page-gutter) var(--space-xl);
+  border: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  background: var(--shell-bg, var(--paper));
+  color: var(--shell-ink, var(--ink));
+  translate: -100% 0;
+  transition-property: translate, overlay, display;
+  transition-duration: var(--transition-duration);
+  transition-timing-function: var(--motion-easing);
+  transition-behavior: allow-discrete;
+}
+dialog[data-docs-drawer][open] {
+  translate: 0 0;
+}
+@starting-style {
+  dialog[data-docs-drawer][open] {
+    translate: -100% 0;
+  }
+}
+/* The backdrop is the shared overlay scrim: neutral token colour, one-pixel blur and the overlay
+   open/close motion roles. It dims the whole page, menu toggle included, never the panel. */
+dialog[data-docs-drawer]::backdrop {
+  background: var(--overlay-scrim);
+  -webkit-backdrop-filter: blur(var(--overlay-backdrop-blur));
+  backdrop-filter: blur(var(--overlay-backdrop-blur));
+  opacity: 0;
+  transition-property: opacity, overlay, display;
+  transition-duration: var(--overlay-close-duration);
+  transition-timing-function: var(--overlay-easing);
+  transition-behavior: allow-discrete;
+}
+dialog[data-docs-drawer][open]::backdrop {
+  opacity: 1;
+  transition-duration: var(--overlay-open-duration);
+}
+@starting-style {
+  dialog[data-docs-drawer][open]::backdrop {
+    opacity: 0;
+  }
+}
+:root:has(dialog[data-docs-drawer]:modal) {
+  overflow: hidden;
+}
+[data-docs-drawer-header] {
+  display: flex;
+  justify-content: flex-end;
+  margin-block-end: var(--space-md);
+}
+
+/* Breadcrumb above the page title. */
+[data-docs-shell] .page-breadcrumb ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 var(--space-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+[data-docs-shell] .page-breadcrumb li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  min-block-size: var(--target-min);
+  margin: 0;
+  color: var(--muted);
+}
+[data-docs-shell] .page-breadcrumb li + li::before {
+  content: '/' / '';
+}
+[data-docs-shell] .page-breadcrumb a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--target-min);
+}
+[data-docs-shell] .page-breadcrumb [aria-current='page'] {
+  color: var(--shell-ink, var(--ink));
+  font-weight: var(--font-weight-label, 600);
+}
+
+/* Page contents: a closed disclosure until the rail breakpoint. */
+[data-docs-shell] .page-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--layout-gap);
+}
+[data-docs-shell] [data-doc-contents] {
+  margin-block: var(--space-lg) 0;
+  border-radius: var(--radius);
+  background: var(--panel-bg, var(--panel));
+  color: var(--panel-ink, var(--ink));
+}
+[data-docs-shell] [data-doc-contents] > summary {
+  min-block-size: var(--target-min);
+  padding: var(--space-sm) var(--space-md);
+  cursor: pointer;
+  font-weight: var(--font-weight-label, 600);
+}
+[data-docs-shell] [data-doc-contents] > [data-doc-nav='sections'] {
+  display: grid;
+  margin: 0;
+  padding: 0 var(--space-xs) var(--space-sm);
+}
+[data-docs-shell] .page-grid > [data-doc-nav='toc'] {
+  display: none;
+}
+[data-docs-shell] .page-grid > [data-doc-nav='toc'] p {
+  font-weight: var(--font-weight-label, 550);
+  margin-block-end: var(--space-xs);
+}
+[data-docs-shell] .page-grid > [data-doc-nav='toc'] a {
+  display: flex;
+  align-items: center;
+  min-block-size: var(--target-min);
+  color: var(--muted);
+  text-decoration: none;
+}
+
+/* Previous and next component in catalog order. */
+[data-docs-shell] .page-neighbors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+[data-docs-shell] .page-neighbors a {
+  display: grid;
+  flex: 1 1 12rem;
+  gap: var(--space-xs);
+  align-content: center;
+  min-block-size: var(--target-min);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius);
+  background: var(--panel-bg, var(--panel));
+  color: var(--panel-ink, var(--ink));
+  text-decoration: none;
+}
+[data-docs-shell] .page-neighbors a > span:first-child {
+  color: var(--muted);
+}
+[data-docs-shell] .page-neighbors a[rel~='next'] {
+  margin-inline-start: auto;
+  text-align: end;
+}
+
+@media (min-width: 54.6875rem) {
+  [data-docs-shell] .docs-shell {
+    grid-template-columns: var(--shell-sidebar-inline-size) minmax(0, 1fr);
+  }
+  [data-docs-shell] .docs-shell > .sidebar {
+    display: block;
+    position: sticky;
+    inset-block-start: var(--shell-sticky-offset);
+    align-self: start;
+    max-block-size: calc(100dvh - 2 * var(--shell-sticky-offset));
+    overflow: auto;
+  }
+  [data-docs-shell] [data-docs-menu-toggle] {
+    display: none;
+  }
+  [data-docs-shell] .docs-main {
+    padding: var(--inset-container-md, 24px);
+  }
+}
+@media (min-width: 70.625rem) {
+  [data-docs-shell] .page-grid:has(> [data-doc-nav='toc']) {
+    grid-template-columns: minmax(0, 1fr) var(--shell-toc-inline-size);
+  }
+  [data-docs-shell] .page-grid > [data-doc-nav='toc'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    position: sticky;
+    inset-block-start: var(--shell-sticky-offset);
+    align-self: start;
+    max-block-size: calc(100dvh - 2 * var(--shell-sticky-offset));
+    overflow: auto;
+  }
+  /* The rail replaces the disclosure; only one set of section links is visible. */
+  [data-docs-shell] .page-grid:has(> [data-doc-nav='toc']) [data-doc-contents] {
+    display: none;
+  }
+}
+@media (min-width: 80.625rem) {
+  :where(:root) {
+    --shell-toc-inline-size: 12rem;
+  }
+}

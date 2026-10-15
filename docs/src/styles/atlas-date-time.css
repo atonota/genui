@@ -1,0 +1,272 @@
+/* Native AntD date/time pickers in Atlas fields. Scoped to the adapter, its portal and the demo.
+   Motion is inherited from the shared .atlas-control contract; no local durations or easings. */
+
+.atlas-date-time {
+  display: grid;
+  gap: var(--space-md);
+  min-inline-size: 0;
+  color: var(--ink);
+}
+
+.atlas-date-time-label {
+  font-size: max(14px, 1em);
+  color: var(--ink);
+}
+
+.atlas-date-time-control {
+  min-inline-size: 0;
+}
+
+.atlas-date-time-help,
+.atlas-date-time-error {
+  margin: 0;
+  font-size: max(14px, 1em);
+}
+
+.atlas-date-time-help {
+  color: var(--muted);
+}
+
+.atlas-date-time-error {
+  color: var(--ant-color-error-text);
+}
+
+.atlas-date-time .ant-picker {
+  inline-size: 100%;
+  min-inline-size: 0;
+  min-block-size: var(--atlas-date-time-height, var(--atlas-component-height));
+  border-radius: var(--radius);
+}
+
+/* Focus paint (border, box-shadow) is excluded so the indicator appears immediately.
+   Specificity outranks the shared control transition; its duration and easing still apply. */
+.atlas-date-time[data-atlas-date-time] .ant-picker.ant-picker,
+.atlas-date-time[data-atlas-date-time] .ant-picker.ant-picker-focused,
+.atlas-date-time[data-atlas-date-time] .ant-picker.ant-picker:focus-within {
+  transition-property: background-color, color;
+}
+
+.atlas-date-time .ant-picker-filled {
+  background: var(--field-bg);
+}
+
+.atlas-date-time .ant-picker-input > input {
+  font-size: max(14px, 1em);
+  color: var(--ink);
+}
+
+/* Ranges keep AntD's active bar under the focused endpoint as their single indicator. */
+.atlas-date-time .ant-picker-range.ant-picker-focused,
+.atlas-date-time .ant-picker-range:focus-within {
+  outline: none;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.atlas-date-time .ant-picker-range .ant-picker-active-bar {
+  background: var(--accent);
+}
+
+/* Focus exception: the active bar is the focus indicator, so it moves and appears immediately. */
+.atlas-date-time[data-atlas-date-time] .ant-picker-range .ant-picker-active-bar {
+  transition-property: none;
+}
+
+/* Popup: bounded to half the viewport left beside the field, so one side always fits
+   after the native flip; content scrolls inside, never the document. */
+.atlas-date-time-popup {
+  --atlas-date-time-popup-block: calc(
+    (100dvh - var(--atlas-date-time-height, var(--atlas-component-height))) / 2 - var(--space-md)
+  );
+  max-inline-size: calc(100vw - 2 * var(--space-md));
+  max-block-size: var(--atlas-date-time-popup-block);
+  overflow: auto;
+  overscroll-behavior: contain;
+  font-size: max(14px, 1em);
+}
+
+.atlas-date-time-popup .ant-picker-panel-container {
+  max-inline-size: calc(100vw - 2 * var(--space-md));
+  max-block-size: var(--atlas-date-time-popup-block);
+  overflow: auto;
+  overscroll-behavior: contain;
+  background: var(--panel);
+  border-radius: var(--radius);
+}
+
+/* Range popups add outer padding around the panel for the arrow. */
+.atlas-date-time-popup.ant-picker-dropdown-range .ant-picker-panel-container {
+  max-block-size: calc(var(--atlas-date-time-popup-block) - var(--space-md));
+}
+
+.atlas-date-time-popup .ant-picker-panel-layout,
+.atlas-date-time-popup .ant-picker-panels,
+.atlas-date-time-popup .ant-picker-datetime-panel {
+  flex-wrap: wrap;
+}
+
+.atlas-date-time-popup
+  :is(
+    .ant-picker-date-panel,
+    .ant-picker-week-panel,
+    .ant-picker-month-panel,
+    .ant-picker-quarter-panel,
+    .ant-picker-year-panel,
+    .ant-picker-decade-panel
+  ) {
+  inline-size: auto;
+}
+
+.atlas-date-time-popup .ant-picker-content {
+  inline-size: auto;
+}
+
+@media (max-width: 40rem) {
+  .atlas-date-time-popup .ant-picker-panel-layout {
+    flex-direction: column;
+  }
+
+  .atlas-date-time-popup .ant-picker-presets {
+    max-inline-size: none;
+  }
+
+  .atlas-date-time-popup .ant-picker-presets ul {
+    block-size: auto;
+  }
+}
+
+/* Hit areas: calendar and time cells at least 32px, buttons at least 48px. */
+.atlas-date-time-popup .ant-picker-cell .ant-picker-cell-inner {
+  min-inline-size: 32px;
+  min-block-size: 32px;
+  block-size: auto;
+  line-height: 32px;
+}
+
+.atlas-date-time-popup .ant-picker-time-panel-cell-inner {
+  min-block-size: 32px;
+  line-height: 32px;
+}
+
+.atlas-date-time-popup .ant-picker-header button,
+.atlas-date-time-popup .ant-picker-footer .ant-btn,
+.atlas-date-time-popup .ant-picker-now-btn,
+.atlas-date-time-popup .ant-picker-presets li {
+  min-inline-size: 48px;
+  min-block-size: 48px;
+}
+
+/* Informative cells: text carries meaning; color only reinforces it. */
+.atlas-date-time-popup .date-time-cell.ant-picker-cell-inner {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  min-inline-size: 48px;
+  min-block-size: 48px;
+  line-height: 1.2;
+}
+
+.atlas-date-time-popup .date-time-cell-note {
+  white-space: nowrap;
+  color: var(--muted);
+}
+
+.atlas-date-time-popup .date-time-cell[data-trend='up'] .date-time-cell-note {
+  color: var(--ant-color-success-text);
+}
+
+.atlas-date-time-popup .date-time-cell[data-trend='down'] .date-time-cell-note {
+  color: var(--ant-color-error-text);
+}
+
+.atlas-date-time-popup .ant-picker-cell-selected .date-time-cell-note {
+  color: inherit;
+}
+
+/* Demo layout: spacing and alignment, no decorative cards. */
+.date-time-example {
+  display: grid;
+  gap: var(--space-md);
+  align-content: start;
+  min-inline-size: 0;
+}
+
+.date-time-example h4 {
+  margin: 0;
+  color: var(--ink);
+}
+
+.date-time-result {
+  margin: 0;
+  color: var(--muted);
+  overflow-wrap: break-word;
+}
+
+.date-time-result output {
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Report date filter: draft fields, explicit Apply/Cancel, applied result. Spacing only, no cards. */
+.date-range-filter {
+  display: grid;
+  gap: var(--space-md);
+  align-content: start;
+  min-inline-size: 0;
+  color: var(--ink);
+}
+
+.date-range-filter-sync,
+.date-range-filter-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: max(14px, 1em);
+  overflow-wrap: break-word;
+}
+
+.date-range-filter-sync time {
+  color: var(--ink);
+}
+
+.date-range-filter-field {
+  display: grid;
+  gap: var(--space-md);
+  min-inline-size: 0;
+}
+
+.date-range-filter-field label {
+  font-size: max(14px, 1em);
+  color: var(--ink);
+}
+
+.date-range-filter-field .ant-select {
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+/* The whole row, label included, is the checkbox hit area. */
+.date-range-filter-compare .ant-checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  inline-size: 100%;
+  min-block-size: 48px;
+  font-size: max(14px, 1em);
+  color: var(--ink);
+}
+
+/* The shared label underline stays the single focus cue; only the native input outline goes. */
+.date-range-filter-compare .ant-checkbox-wrapper input:focus-visible {
+  outline: none;
+}
+
+.date-range-filter-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-md);
+  min-inline-size: 0;
+}
+
+.date-range-filter-actions .date-range-filter-hint {
+  flex: 1 1 100%;
+}

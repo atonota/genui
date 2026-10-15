@@ -1,0 +1,196 @@
+/* Shared by the route-owned Splitter and Data workspace consumers. */
+.atlas-demo .atlas-splitter {
+  --splitter-gutter: var(--splitter-handle-size);
+  --splitter-rail-size: 2px;
+  --splitter-grip-mark-size: 16px;
+  --splitter-grip-mark-gap: 4px;
+  --splitter-stage-height: var(--splitter-stack-height);
+  display: grid;
+  gap: var(--space-md);
+  min-width: 0;
+  max-width: 100%;
+}
+.atlas-demo .atlas-splitter[data-splitter-orientation='horizontal'] {
+  --splitter-stage-height: var(--splitter-wide-height);
+}
+.atlas-demo .atlas-splitter-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-xs) var(--space-lg);
+  min-width: 0;
+}
+.atlas-demo .atlas-splitter-label {
+  color: var(--ink);
+  font-size: var(--text-large);
+}
+.atlas-demo .atlas-splitter-summary,
+.atlas-demo .atlas-splitter-help {
+  color: var(--muted);
+  font-size: var(--text);
+  overflow-wrap: anywhere;
+}
+.atlas-demo .atlas-splitter-help {
+  margin: 0;
+}
+.atlas-demo .atlas-splitter > .atlas-splitter-native {
+  min-width: 0;
+  height: var(--splitter-stage-height);
+  color: var(--ink);
+}
+.atlas-demo .atlas-splitter-native > .ant-splitter-panel {
+  min-width: 0;
+  min-height: 0;
+  flex-shrink: 1;
+  scrollbar-gutter: stable;
+  border-inline-start: var(--focus-marker) solid transparent;
+  outline: none;
+  box-shadow: none;
+  transition-property: flex-basis;
+  transition-duration: var(--motion-duration-standard);
+  transition-timing-function: var(--motion-easing);
+  transition-delay: var(--motion-delay);
+}
+/* A reserved single edge stays visible at the scroll viewport, without a ring
+   or focus-dependent geometry. Focus paint is immediate, outside motion. */
+.atlas-demo .atlas-splitter-native > .ant-splitter-panel:focus-visible {
+  border-inline-start-color: var(--focus-color);
+}
+/* Direct manipulation follows the pointer; programmatic resizing eases both ways. */
+.atlas-demo
+  .atlas-splitter[data-splitter-resizing='true']
+  > .atlas-splitter-native
+  > .ant-splitter-panel {
+  transition-property: var(--control-transition-properties);
+}
+.atlas-demo .atlas-splitter-pane {
+  min-width: 0;
+  min-height: 100%;
+  padding: var(--space-sm);
+  background: var(--panel);
+}
+.atlas-demo .atlas-splitter-native.ant-splitter-horizontal > .ant-splitter-bar {
+  width: var(--splitter-gutter);
+}
+.atlas-demo .atlas-splitter-native.ant-splitter-vertical > .ant-splitter-bar {
+  height: var(--splitter-gutter);
+}
+.atlas-demo .atlas-splitter-native > .ant-splitter-bar > .ant-splitter-bar-dragger {
+  touch-action: none;
+  outline: none;
+  box-shadow: none;
+  transition-property: var(--control-transition-properties);
+  transition-duration: var(--motion-duration-standard);
+  transition-timing-function: var(--motion-easing);
+  transition-delay: var(--motion-delay);
+}
+.atlas-demo
+  .atlas-splitter-native.ant-splitter-horizontal
+  > .ant-splitter-bar
+  > .ant-splitter-bar-dragger {
+  width: var(--splitter-gutter);
+}
+.atlas-demo
+  .atlas-splitter-native.ant-splitter-vertical
+  > .ant-splitter-bar
+  > .ant-splitter-bar-dragger {
+  height: var(--splitter-gutter);
+}
+.atlas-demo .atlas-splitter-native > .ant-splitter-bar > .ant-splitter-bar-dragger::before {
+  background: var(--line);
+  transition-property: var(--control-transition-properties);
+  transition-duration: var(--motion-duration-standard);
+  transition-timing-function: var(--motion-easing);
+  transition-delay: var(--motion-delay);
+}
+.atlas-demo
+  .atlas-splitter-native.ant-splitter-horizontal
+  > .ant-splitter-bar
+  > .ant-splitter-bar-dragger::before {
+  width: var(--splitter-rail-size);
+}
+.atlas-demo
+  .atlas-splitter-native.ant-splitter-vertical
+  > .ant-splitter-bar
+  > .ant-splitter-bar-dragger::before {
+  height: var(--splitter-rail-size);
+}
+.atlas-demo .atlas-splitter-grip {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--splitter-handle-size);
+  height: var(--splitter-handle-size);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--muted);
+  transition-property: var(--control-transition-properties);
+  transition-duration: var(--motion-duration-standard);
+  transition-timing-function: var(--motion-easing);
+  transition-delay: var(--motion-delay);
+}
+.atlas-demo .atlas-splitter-grip > span {
+  width: var(--splitter-grip-mark-size);
+  height: var(--splitter-grip-mark-gap);
+  border-block: var(--splitter-rail-size) solid currentColor;
+}
+.atlas-demo
+  .atlas-splitter-native.ant-splitter-horizontal
+  > .ant-splitter-bar
+  .atlas-splitter-grip
+  > span {
+  width: var(--splitter-grip-mark-gap);
+  height: var(--splitter-grip-mark-size);
+  border-block: 0;
+  border-inline: var(--splitter-rail-size) solid currentColor;
+}
+.atlas-demo
+  .atlas-splitter-native
+  > .ant-splitter-bar
+  > .ant-splitter-bar-dragger:is(:hover, :active)
+  .atlas-splitter-grip,
+.atlas-demo
+  .atlas-splitter[data-splitter-resizing='true']
+  > .atlas-splitter-native
+  > .ant-splitter-bar
+  .atlas-splitter-grip {
+  background: var(--soft);
+  color: var(--ink);
+}
+.atlas-demo
+  .atlas-splitter-native
+  > .ant-splitter-bar
+  > .ant-splitter-bar-dragger:focus-visible
+  .atlas-splitter-grip::after {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block: var(--space-xs);
+  width: var(--focus-marker);
+  background: var(--focus-color);
+  pointer-events: none;
+}
+.atlas-demo .atlas-splitter-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+.atlas-demo .atlas-splitter-actions .atlas-button {
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+}
+@media (any-pointer: coarse) {
+  .atlas-demo .atlas-splitter {
+    --splitter-gutter: max(var(--splitter-handle-size), var(--splitter-coarse-target));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .atlas-demo .atlas-splitter-native > .ant-splitter-panel,
+  .atlas-demo .atlas-splitter-native > .ant-splitter-bar > .ant-splitter-bar-dragger,
+  .atlas-demo .atlas-splitter-native > .ant-splitter-bar > .ant-splitter-bar-dragger::before,
+  .atlas-demo .atlas-splitter-grip {
+    transition-duration: 0ms;
+  }
+}

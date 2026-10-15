@@ -1,0 +1,455 @@
+/* Docs-only Button feedback: 116.667 ms, 30% faster than the previous profile.
+   Override the renderer's inline aliases on the Button owner so face/lip layers
+   inherit the same entry and exit. Opacity is shared with hover; keep it on the
+   same short duration to avoid a slow release on keyboard/touch. The body scope
+   includes portalled actions and excludes stories that also import this sheet. */
+body[data-atlas-surface='docs'] .atlas-demo .atlas-button {
+  --button-duration: var(--motion-duration-button-feedback) !important;
+  --press-duration: var(--motion-duration-button-feedback) !important;
+  --release-duration: var(--motion-duration-button-feedback) !important;
+}
+
+/* Reserve the same border space before, during and after validation. */
+.live-preview {
+  --field-border-width: 1px;
+  --placeholder-opacity: 0.7;
+  --placeholder-active-opacity: 0.5;
+  --input-radius: var(--radius-sm);
+  --checkbox-mark-duration: var(--motion-duration-mark);
+  --checkbox-mark-rest-scale: 0.85;
+  --checkbox-min-size: max(32px, 2rem);
+  --checkbox-auto-size: var(--checkbox-min-size);
+  --checkbox-size: var(--checkbox-auto-size);
+  --checkbox-radius: var(--radius);
+  --checkbox-mark-size: 75%;
+  --checkbox-mixed-size: 30%;
+  --radio-min-size: max(32px, 2rem);
+  --radio-size: var(--radio-min-size);
+  --radio-dot-size: 37.5%;
+  --radio-underline-offset: 0.25em;
+  --switch-content-icon-size: 1.25rem;
+  --switch-content-width: var(--switch-content-icon-size);
+  --switch-content-text-width: 4.5rem;
+  --switch-content-rich-width: 6rem;
+  --switch-content-column-min: 16rem;
+  --switch-off-surface: var(--field-bg);
+  --switch-off-hover-surface: var(--field-hover-bg);
+  --switch-off-text: var(--ink);
+  --number-stepper-action-depth: 0px;
+}
+.live-preview,
+.theme-toggle {
+  --switch-min-height: max(32px, 2rem);
+  --switch-auto-height: var(--switch-min-height);
+  --switch-height: var(--switch-auto-height);
+  --switch-track-padding: max(4px, 0.25rem);
+  --switch-handle-shadow: 0 2px 6px rgba(var(--shadow-ink), calc(var(--shadow-contact-alpha) * 2));
+  --switch-motion-duration: var(--motion-duration-selection);
+  --switch-hover-shadow: var(--shadow-soft);
+}
+.live-preview
+  .atlas-demo
+  :is(.ant-input, .ant-input-affix-wrapper, .ant-input-number, .ant-select):not(
+    .ant-input-affix-wrapper > input,
+    .atlas-input-frame *
+  ) {
+  box-sizing: border-box;
+  border-style: solid !important;
+  /* Every edge rests at the same width; focus is a background marker, not a thick edge. */
+  border-width: var(--field-border-width) !important;
+}
+/* Unframed legacy fields take the central well shadow and edge from components.css;
+   atlas-input.css owns frames. Only the radius is local here. */
+.live-preview
+  .atlas-demo
+  :is(.ant-input, .ant-input-affix-wrapper, .ant-input-number):not(
+    .ant-input-affix-wrapper > input,
+    .atlas-input-frame *
+  ) {
+  border-radius: var(--input-radius);
+}
+.live-preview .atlas-demo :is(input, textarea):not(.atlas-input-frame *)::placeholder {
+  color: var(--ink);
+  opacity: var(--placeholder-opacity);
+  transition: opacity var(--transition-duration) var(--motion-easing);
+}
+.live-preview
+  .atlas-demo
+  :is(input, textarea):not(.atlas-input-frame *):is(:focus, :active)::placeholder {
+  opacity: var(--placeholder-active-opacity);
+}
+@media (prefers-reduced-motion: reduce) {
+  .live-preview .atlas-demo :is(input, textarea)::placeholder {
+    transition: none;
+  }
+}
+.live-preview .atlas-demo .ant-select-multiple .ant-select-content {
+  gap: var(--space-xs);
+}
+.live-preview .atlas-demo .ant-select-multiple .ant-select-content-item {
+  min-width: 0;
+  max-width: 100%;
+  height: auto;
+}
+.live-preview .atlas-demo .ant-select-content-item > span {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Web experiment: immediate native state, one reversible mark transition. */
+.live-preview .atlas-demo .ant-checkbox-wrapper {
+  min-height: max(var(--target-min), var(--checkbox-size));
+  max-width: 100%;
+}
+.live-preview .atlas-demo .ant-checkbox-wrapper.css-var-atlas-docs,
+.live-preview .atlas-demo .ant-radio-wrapper.css-var-atlas-docs {
+  min-inline-size: var(--target-min);
+}
+.live-preview .atlas-demo .ant-checkbox {
+  width: var(--checkbox-size);
+  height: var(--checkbox-size);
+  min-width: var(--checkbox-min-size);
+  min-height: var(--checkbox-min-size);
+  border-radius: var(--checkbox-radius);
+}
+.live-preview .atlas-demo .ant-checkbox:not(.ant-checkbox-indeterminate) {
+  transition-property: background-color, border-color;
+  transition-duration: var(--checkbox-mark-duration);
+  transition-delay: var(--motion-delay);
+}
+.live-preview .atlas-demo .ant-checkbox:not(.ant-checkbox-indeterminate)::after {
+  display: block;
+  top: 50%;
+  inset-inline-start: 50%;
+  width: var(--checkbox-mark-size);
+  height: var(--checkbox-mark-size);
+  border: 0;
+  background-color: var(--ant-color-white);
+  -webkit-mask: url('../assets/phosphor/check.svg') center / contain no-repeat;
+  mask: url('../assets/phosphor/check.svg') center / contain no-repeat;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(var(--checkbox-mark-rest-scale));
+  transition-property: opacity, transform;
+  transition-duration: var(--checkbox-mark-duration);
+  transition-delay: var(--motion-delay);
+  transition-timing-function: var(--motion-easing) !important;
+}
+.live-preview .atlas-demo .ant-checkbox-checked:not(.ant-checkbox-indeterminate)::after {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+.live-preview .atlas-demo .ant-checkbox-indeterminate::after {
+  width: var(--checkbox-mixed-size);
+  height: var(--checkbox-mixed-size);
+}
+.live-preview .atlas-demo .ant-checkbox-disabled:not(.ant-checkbox-indeterminate)::after {
+  background-color: var(--ant-color-text-disabled);
+}
+@media (any-pointer: coarse) {
+  .live-preview {
+    --checkbox-auto-size: max(44px, 2.75rem);
+    --radio-size: max(44px, 2.75rem);
+    --switch-auto-height: max(44px, 2.75rem);
+  }
+}
+
+.live-preview .atlas-demo .ant-radio-wrapper {
+  --radio-selected-color: var(--ant-radio-radio-bg-color);
+  position: relative;
+  min-height: max(var(--target-min), var(--radio-size));
+  max-width: 100%;
+}
+.live-preview .atlas-demo .ant-radio {
+  width: var(--radio-size);
+  height: var(--radio-size);
+  min-width: var(--radio-min-size);
+  min-height: var(--radio-min-size);
+}
+.live-preview .atlas-demo .ant-radio::after {
+  width: var(--radio-dot-size);
+  height: var(--radio-dot-size);
+}
+.live-preview .atlas-demo .ant-radio-wrapper:hover:not(.ant-radio-wrapper-disabled) {
+  --radio-selected-color: var(--ant-color-primary-hover);
+}
+.live-preview .atlas-demo .ant-radio-wrapper-disabled {
+  --radio-selected-color: var(--ant-radio-dot-color-disabled);
+}
+/* Selection keeps its own underline color; keyboard focus scales the radio in
+   focus-fields.css. */
+.live-preview .atlas-demo .ant-radio-wrapper:has(input:checked) > span:last-child {
+  text-decoration-line: underline;
+  text-decoration-color: var(--radio-selected-color);
+  text-decoration-thickness: var(--focus-marker);
+  text-underline-offset: var(--radio-underline-offset);
+}
+
+/* Resolve geometry on the control so manual sizes and native small stay aligned. */
+/* This owner must outrank the two SSR theme-scoped component variable rules. */
+:root[data-theme] .theme-toggle {
+  --switch-height: var(--theme-toggle-height);
+  --switch-min-height: var(--theme-toggle-height);
+}
+/* Explicit examples/native Small keep their own selection profile. Unspecified
+   controls inherit the Tweaker profile, including disabled/busy/content states. */
+:root[data-theme] .live-preview .atlas-demo .ant-switch.css-var-atlas-docs.ant-switch-small,
+:root[data-theme]
+  .live-preview
+  .atlas-demo
+  .ant-switch.css-var-atlas-docs[data-selection-size='sm'] {
+  --switch-height: var(--atlas-selection-height-sm);
+  --switch-min-height: var(--atlas-selection-height-sm);
+}
+:root[data-theme]
+  .live-preview
+  .atlas-demo
+  .ant-switch.css-var-atlas-docs[data-selection-size='md'] {
+  --switch-height: var(--atlas-selection-height-md);
+  --switch-min-height: var(--atlas-selection-height-md);
+}
+:root[data-theme]
+  .live-preview
+  .atlas-demo
+  .ant-switch.css-var-atlas-docs[data-selection-size='lg'] {
+  --switch-height: var(--atlas-selection-height-lg);
+  --switch-min-height: var(--atlas-selection-height-lg);
+}
+:root[data-theme] .live-preview .atlas-demo .ant-switch,
+:root[data-theme] .theme-toggle {
+  /* The handle never drops below the Small track's inner content (80% after the
+     10% padding on each edge), so Small stays an exact outer track and the thumb
+     never protrudes. */
+  --switch-requested-height: max(var(--switch-min-height), var(--switch-height));
+  --switch-handle-min: calc(var(--atlas-selection-height-sm) * 0.8);
+  --switch-handle-size: max(
+    var(--switch-handle-min),
+    calc(var(--switch-requested-height) - var(--switch-track-padding) * 2)
+  );
+  --switch-visible-height: calc(var(--switch-handle-size) + var(--switch-track-padding) * 2);
+  --switch-track-width: calc(var(--switch-visible-height) * 2);
+  --switch-on-hover-color: var(--ant-color-primary-active);
+  --ant-switch-track-height: var(--switch-visible-height);
+  --ant-switch-track-height-sm: var(--switch-visible-height);
+  --ant-switch-track-min-width: var(--switch-track-width);
+  --ant-switch-track-min-width-sm: var(--switch-track-width);
+  --ant-switch-track-padding: var(--switch-track-padding);
+  --ant-switch-handle-size: var(--switch-handle-size);
+  --ant-switch-handle-size-sm: var(--switch-handle-size);
+  --ant-switch-inner-min-margin: calc(var(--switch-handle-size) / 2);
+  --ant-switch-inner-min-margin-sm: calc(var(--switch-handle-size) / 2);
+  --ant-switch-inner-max-margin: calc(var(--switch-handle-size) + var(--switch-track-padding) * 3);
+  --ant-switch-inner-max-margin-sm: calc(
+    var(--switch-handle-size) + var(--switch-track-padding) * 3
+  );
+  --ant-switch-handle-shadow: var(--switch-handle-shadow);
+  --ant-motion-duration-mid: var(--switch-motion-duration);
+  height: var(--switch-visible-height);
+  min-height: var(--switch-visible-height);
+  min-width: var(--switch-track-width);
+  line-height: var(--switch-visible-height);
+  flex-shrink: 0;
+  transition-property: background-color, opacity, box-shadow;
+}
+:root[data-theme] .live-preview .atlas-demo .ant-switch.css-var-atlas-docs,
+:root[data-theme] .theme-toggle {
+  /* Padding follows the requested profile, never the resolved track, so a track
+     grown around the minimum handle keeps its 10% proportion without a cycle. */
+  --switch-track-padding: calc(
+    max(var(--switch-requested-height), var(--switch-handle-min) / 0.8) * 0.1
+  );
+  --switch-content-icon-size: calc(var(--switch-visible-height) * 0.5);
+  --switch-content-text-width: calc(var(--switch-visible-height) * 1.5);
+  --switch-content-rich-width: calc(var(--switch-visible-height) * 2);
+  --switch-content-gap: calc(var(--switch-visible-height) * 0.2);
+}
+:root[data-theme]
+  .live-preview
+  .atlas-demo
+  .ant-switch.css-var-atlas-docs
+  .ant-switch-loading-icon {
+  font-size: var(--switch-content-icon-size);
+  top: calc((var(--switch-handle-size) - var(--switch-content-icon-size)) / 2);
+  line-height: 1;
+}
+/* Transparent hit extension preserves the existing 48px target independently
+   from the new visible 32/40/48px tracks. It never changes layout or thumb travel. */
+.live-preview .atlas-demo .ant-switch.css-var-atlas-docs::after,
+.theme-toggle::before {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  inset-block: min(0px, calc((var(--switch-visible-height) - var(--target-min)) / 2));
+}
+.live-preview .atlas-demo .ant-switch .ant-switch-handle,
+.theme-toggle .atlas-motion-layer.theme-toggle-thumb {
+  inset-inline-start: var(--switch-track-padding);
+  transform: translateX(0);
+  transition-property: inset-inline-start, transform;
+}
+.live-preview .atlas-demo .ant-switch.ant-switch-checked .ant-switch-handle,
+:root[data-theme='dark'] .theme-toggle .atlas-motion-layer.theme-toggle-thumb {
+  inset-inline-start: calc(100% - var(--switch-track-padding));
+  transform: translateX(-100%);
+}
+.live-preview .atlas-demo .ant-switch.ant-switch-checked.ant-switch-rtl .ant-switch-handle,
+:root[data-theme='dark'] .theme-toggle:dir(rtl) .atlas-motion-layer.theme-toggle-thumb {
+  transform: translateX(100%);
+}
+.live-preview .atlas-demo .ant-switch .ant-switch-handle::before {
+  transition-property: inset-inline-start, inset-inline-end, background-color, box-shadow;
+}
+.live-preview .atlas-demo .ant-switch,
+.live-preview .atlas-demo .ant-switch .ant-switch-handle,
+.live-preview .atlas-demo .ant-switch .ant-switch-handle::before,
+.theme-toggle,
+.theme-toggle .atlas-motion-layer.theme-toggle-thumb {
+  transition-duration: var(--switch-motion-duration);
+  transition-timing-function: var(--motion-easing) !important;
+  transition-delay: var(--motion-delay);
+}
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle,
+  .theme-toggle .atlas-motion-layer.theme-toggle-thumb {
+    transition: none;
+  }
+}
+.live-preview .atlas-demo .ant-switch:not(.ant-switch-disabled):not(.ant-switch-loading) {
+  opacity: var(--opacity-rest);
+}
+:root[data-theme='dark'] .live-preview .atlas-demo .ant-switch {
+  --switch-on-hover-color: var(--ant-color-primary-hover);
+}
+@media (any-hover: hover) {
+  .live-preview .atlas-demo .ant-switch:hover:not(.ant-switch-disabled):not(.ant-switch-loading) {
+    opacity: var(--opacity-hover);
+    box-shadow: var(--switch-hover-shadow);
+  }
+  .live-preview
+    .atlas-demo
+    .ant-switch.ant-switch-checked:hover:not(.ant-switch-disabled):not(.ant-switch-loading) {
+    background: var(--switch-on-hover-color);
+  }
+}
+
+/* Both native state layers stay mounted; reserve the longest EN/TR label. */
+.live-preview .atlas-demo .switch-content-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--switch-content-column-min)), 1fr));
+  gap: var(--space-xl);
+}
+.live-preview .atlas-demo .switch-content-variant {
+  display: grid;
+  gap: var(--space-sm);
+  align-content: start;
+  min-width: 0;
+}
+.live-preview .atlas-demo .atlas-switch-with-content.css-var-atlas-docs {
+  --switch-content-width: var(--switch-content-icon-size);
+}
+:root[data-theme] .live-preview .atlas-demo .atlas-switch-with-content {
+  --switch-content-track-width: max(
+    var(--switch-track-width),
+    calc(
+      var(--ant-switch-inner-min-margin) + var(--ant-switch-inner-max-margin) +
+        var(--switch-content-width)
+    )
+  );
+  inline-size: var(--switch-content-track-width);
+  min-inline-size: var(--switch-content-track-width);
+}
+.live-preview .atlas-demo .atlas-switch-with-content[data-switch-content='text'] {
+  --switch-content-width: var(--switch-content-text-width);
+}
+.live-preview .atlas-demo .atlas-switch-with-content[data-switch-content='text-icon'] {
+  --switch-content-width: var(--switch-content-rich-width);
+}
+/* The exact docs blue needs opaque black text, as with documentation Buttons. */
+:root[data-theme]
+  body[data-atlas-surface='docs']
+  .live-preview
+  .atlas-demo[data-atlas-appearance='docs']
+  .atlas-switch-with-content {
+  opacity: 1;
+}
+:root[data-theme] .live-preview .atlas-demo .atlas-switch-with-content:not(.ant-switch-checked) {
+  background-color: var(--switch-off-surface);
+}
+.live-preview .atlas-demo .atlas-switch-state {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--switch-content-gap, var(--space-xs));
+  font-size: var(--text);
+  white-space: nowrap;
+}
+.live-preview .atlas-demo .atlas-switch-state .atlas-icon {
+  width: var(--switch-content-icon-size);
+  height: var(--switch-content-icon-size);
+  flex-shrink: 0;
+}
+:root[data-theme] .live-preview .atlas-demo .atlas-switch-with-content .ant-switch-inner-checked {
+  color: var(--button-text);
+}
+:root[data-theme] .live-preview .atlas-demo .atlas-switch-with-content .ant-switch-inner-unchecked {
+  color: var(--switch-off-text);
+}
+/* Native press margins would nudge the visible label; keep its resting position. */
+:root[data-theme]
+  .live-preview
+  .atlas-demo
+  .atlas-switch-with-content:not(.ant-switch-checked)
+  .ant-switch-inner-unchecked,
+:root[data-theme]
+  .live-preview
+  .atlas-demo
+  .atlas-switch-with-content.ant-switch-checked
+  .ant-switch-inner-checked {
+  margin-inline: 0;
+}
+.live-preview .atlas-demo .atlas-switch-with-content .ant-switch-inner {
+  transition-property: padding-inline-start, padding-inline-end;
+}
+.live-preview .atlas-demo .atlas-switch-with-content .atlas-switch-state-layer {
+  transition-property: margin-inline-start, margin-inline-end;
+}
+.live-preview .atlas-demo .atlas-switch-with-content .ant-switch-inner,
+.live-preview .atlas-demo .atlas-switch-with-content .atlas-switch-state-layer {
+  transition-duration: var(--switch-motion-duration);
+  transition-timing-function: var(--motion-easing) !important;
+  transition-delay: var(--motion-delay);
+}
+@media (any-hover: hover) {
+  :root[data-theme]
+    .live-preview
+    .atlas-demo
+    .atlas-switch-with-content:hover:not(.ant-switch-checked):not(.ant-switch-disabled):not(
+      .ant-switch-loading
+    ) {
+    background-color: var(--switch-off-hover-surface);
+  }
+}
+
+.live-preview .atlas-demo .atlas-number-stepper {
+  --number-stepper-padding: calc(var(--space-xs) / 2);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: var(--number-stepper-padding);
+  border-radius: var(--input-radius);
+}
+.live-preview .atlas-demo .atlas-number-stepper .atlas-button.css-var-atlas-docs {
+  --lip: var(--number-stepper-action-depth);
+  --top-lip: var(--number-stepper-action-depth);
+}
+/* The stepper frame is the single number well; atlas-input.css clears inner paint. */
+.live-preview .atlas-demo .atlas-number-stepper .ant-input-number {
+  width: 100%;
+  min-width: 0;
+}
+.live-preview .atlas-demo .atlas-number-stepper .ant-input-number-input {
+  text-align: center;
+}

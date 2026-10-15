@@ -1,0 +1,366 @@
+---
+import DocsLayout from '../layouts/DocsLayout.astro';
+import DocumentationNav from '../components/DocumentationNav.astro';
+import motion from '../data/motion.json';
+import { tokenDefinitions } from '../theme-builder/model';
+import { stateAxes } from '../theme-builder/states';
+
+// Normative rules only. Values are read from the shared definitions; full tables live on /tokens/.
+type Definition = (typeof tokenDefinitions)[number];
+type Rule = { text: string; values?: string[] };
+type Section = {
+  id: string;
+  label: string;
+  // Former /token-standards/ anchor that resolves inside this section without repeating its rules.
+  alias?: string;
+  rules: Rule[];
+  codesLabel: string;
+  codes: string[];
+  link?: string;
+};
+
+const definitions = new Map<string, Definition>(
+  tokenDefinitions.map(definition => [definition.id, definition] as const),
+);
+const definition = (id: string) => {
+  const found = definitions.get(id);
+  if (!found) throw new Error(`Unknown token definition: ${id}`);
+  return found;
+};
+// Theme-invariant values print once; scheme-specific values print as light / dark.
+const value = (id: string) => {
+  const found = definition(id);
+  const unit = String((found as unknown as Record<string, unknown>).unit ?? '');
+  const [light, dark] = [found.defaults.light, found.defaults.dark].map(item => `${item}${unit}`);
+  return light === dark ? light : `${light} / ${dark}`;
+};
+const bindings = (ids: string[]) => ids.map(id => definition(id).css);
+const groupIds = (...groups: string[]) =>
+  tokenDefinitions.filter(item => groups.includes(item.group)).map(item => item.id);
+const tokensLink = (group: string) => `/tokens/#token-group-${group}`;
+
+const description =
+  'Normative UX rules for every component; values come from the shared token definitions.';
+const lead =
+  'This page states the normative UX rules for every component. Approved values are read from the shared token definitions and listed in full on Design tokens.';
+const status =
+  'These rules record approved decisions. They are not runtime, browser or visual acceptance.';
+
+const sections: Section[] = [
+  {
+    id: 'surfaces',
+    label: 'Surfaces',
+    alias: 'surface-states',
+    rules: [
+      {
+        text: 'Shell, main panel and field are separate color roles read from the shared token definitions. Changing one role never moves another.',
+      },
+      {
+        text: 'The shell canvas is warm. The main panel and fields are neutral greys with equal red, green and blue channels, and fields stay darker than their panel in both themes.',
+      },
+      {
+        text: 'Separate content with spacing, alignment and surface hierarchy first. Borders are functional only: field edges, table grids, selected and invalid states.',
+      },
+      {
+        text: 'Status roles (success, info, warning, danger and disabled) are independent of the light and dark schemes and are always paired with text or an icon.',
+      },
+      {
+        text: 'Shadows express elevation only: controls, popups and modals use the small, medium and large steps. No gradients, textures or decorative long shadows.',
+      },
+      {
+        text: 'Group related fields with a native fieldset and legend instead of wrapping single fields in Cards. An independent record may use a Card; a Card is never nested in a Card.',
+      },
+    ],
+    codesLabel: 'Token bindings:',
+    codes: bindings(['canvas', 'panel', 'field', 'border', 'divider', 'surface']),
+    link: tokensLink('colors'),
+  },
+  {
+    id: 'typography',
+    label: 'Typography',
+    rules: [
+      {
+        text: 'Outfit is the default face for interface and documentation text. Code keeps a monospace face.',
+      },
+      {
+        text: 'Readable text is never smaller than 12 CSS px, including metadata, badges, tooltips, code and error messages. This project decision replaces the former 14 px minimum in the current GenUI rules.',
+      },
+      {
+        text: 'Standard interface text size, read from the token definitions:',
+        values: [value('text-body')],
+      },
+      {
+        text: 'Long reading text uses 16 px. Font weight is never below 300 and defaults to 400.',
+      },
+      {
+        text: "Keep the browser's root font size and zoom. Never shrink text to fit a narrow screen; layouts reflow, wrap between words and scroll tables inside their container.",
+      },
+      {
+        text: 'Letter spacing stays at its natural 0. Prose keeps a readable measure of about 65 characters, and table numbers use tabular digits aligned to the end.',
+      },
+    ],
+    codesLabel: 'Token bindings:',
+    codes: bindings(groupIds('typography')),
+    link: tokensLink('typography'),
+  },
+  {
+    id: 'size-radius',
+    label: 'Size and radius',
+    rules: [
+      {
+        text: 'Standard control and Avatar heights (sm / md / lg):',
+        values: ['size-sm', 'size-md', 'size-lg'].map(value),
+      },
+      {
+        text: 'Compact selection, Pill, Slider, list and Cascader rows use 32, 40 and 48 px. Descriptions grow with their content instead of shrinking.',
+      },
+      {
+        text: 'One shared general radius applies to every size family. Default:',
+        values: [value('radius-md')],
+      },
+      {
+        text: 'An input and its inner slot use exactly the same radius, also after the radius is edited. This replaces the former concentric radius subtraction.',
+      },
+      {
+        text: 'Slot size and inset still follow the nested content-box formula: the control height is the total border-box height, and border, slot inset and slot size derive from the shared size model.',
+      },
+      {
+        text: 'Visible size, hit area, padding and gap are separate values. Text and targets never shrink with a whole component.',
+      },
+    ],
+    codesLabel: 'Token bindings:',
+    codes: bindings(groupIds('size', 'radius')),
+    link: tokensLink('size'),
+  },
+  {
+    id: 'interaction-states',
+    label: 'Interaction states',
+    rules: [
+      {
+        text: 'Hover, pressed, selected, invalid, disabled, read-only and processing are independent states. Disabled, read-only and processing are never merged.',
+      },
+      {
+        text: 'Values, selection, ARIA state and focus update immediately; only the visual presentation transitions.',
+      },
+      {
+        text: 'Hover is never the only way to reach an action. Control bodies and hit areas stay fixed when a state changes.',
+      },
+      {
+        text: 'Disabled controls are unavailable and show no hover or pressed styling. Read-only fields stay focusable, selectable and copyable.',
+      },
+      {
+        text: 'Processing is the single busy state. It blocks repeated activation and never claims a progress percentage it does not know.',
+      },
+    ],
+    codesLabel: 'State axes:',
+    codes: stateAxes.map(axis => axis.id),
+    link: tokensLink('colors'),
+  },
+  {
+    id: 'focus',
+    label: 'Focus',
+    rules: [
+      {
+        text: 'Normal modes never draw a focus ring. Focus is type-specific: fields show one bottom marker, list rows use a 3 px start edge that replaces the 2 px active marker, buttons change fill, links underline and choices change fill or scale.',
+      },
+      {
+        text: 'Visible focus mode starts off. Only Tab and Shift+Tab turn it on; arrow keys, Escape, Enter, Space and typing never do.',
+      },
+      {
+        text: 'While the mode is on, arrow keys move focus inside composite widgets following the APG patterns, Enter and Space keep their native action, and focus returned by a script or a closing dialog stays visible.',
+      },
+      {
+        text: 'Pointer and touch input only hide the indicator. They never remove focus, move the caret or block keyboard access.',
+      },
+      {
+        text: 'One central input-modality state together with :focus-visible drives every indicator. There is no setting or stored preference.',
+      },
+      {
+        text: 'In forced-colors mode, and only while keyboard mode is on and the element matches :focus-visible, a 2 px CanvasText outline is drawn.',
+      },
+    ],
+    codesLabel: 'Focus roles:',
+    codes: [
+      '--focus-bg',
+      '--focus-indicator-color',
+      '--focus-indicator-width',
+      'html[data-input-modality]',
+    ],
+  },
+  {
+    id: 'layers',
+    label: 'Layers',
+    alias: 'overlay-standard',
+    rules: [
+      {
+        text: 'Every user-opened upper layer dims the page behind it with a neutral scrim and a fixed background blur:',
+        values: [value('overlay-backdrop-blur')],
+      },
+      {
+        text: 'This covers Dropdown, Select, AutoComplete, Cascader, date, time and range pickers, rich menus, Popconfirm, Popover, Tooltip, Drawer, Modal and the Tweaker. Toast and Notification are excluded.',
+      },
+      {
+        text: 'Non-modal panels and their bound trigger stay sharp above the scrim. Drawer and Modal blur the whole background, including the trigger.',
+      },
+      {
+        text: 'Tooltip dims the page only while it is actually visible after hover or keyboard focus. Its existing delay is kept, and the tooltip and its trigger stay sharp.',
+      },
+      {
+        text: 'Closing keeps the clip, stacking and trigger cut-out until the fade ends. Native outside click, Escape and focus return are preserved.',
+      },
+      {
+        text: 'Stacking order is separate from shadow elevation. New layered components consume the overlay tokens and join the shared overlay regression table.',
+      },
+    ],
+    codesLabel: 'Token bindings:',
+    codes: bindings(groupIds('overlay')),
+    link: tokensLink('overlay'),
+  },
+  {
+    id: 'motion',
+    label: 'Motion',
+    alias: 'motion-focus',
+    rules: [
+      {
+        text: 'Normal state transitions use one symmetric easing for entry and exit:',
+        values: [motion.easing],
+      },
+      {
+        text: 'Durations are positive in both directions and come from the central motion source, with no initial delay.',
+      },
+      {
+        text: 'Reduced motion makes transitions instant. Typing, the caret and focus indicators are never delayed.',
+      },
+      {
+        text: 'Switching light and dark is an atomic palette commit, not state motion: each mode paints before the first server-rendered frame, with no appearing transition at hydration.',
+      },
+      {
+        text: 'Linear, stepped or one-way easing, zero or none durations and inline motion overrides are not allowed.',
+      },
+    ],
+    codesLabel: 'Motion roles:',
+    codes: ['--motion-easing', '--press-duration', '--release-duration'],
+    link: '/tokens/',
+  },
+  {
+    id: 'layout',
+    label: 'Layout',
+    alias: 'measurement-scales',
+    rules: [
+      {
+        text: 'Start the critical journey at 320 CSS px, then widen through 360, 375 and 390 px, landscape phone, tablet and desktop.',
+      },
+      {
+        text: 'Spacing and insets follow a 4 px base rhythm with small, medium and large steps. Margin and padding reuse the inset scale; there is no separate margin scale.',
+      },
+      {
+        text: 'Space around a group is larger than space within it, and labels sit closer to their own control than to the next field.',
+      },
+      {
+        text: 'Density changes only surrounding space; text sizes and control minimums stay the same.',
+      },
+      {
+        text: 'Wide tables scroll horizontally inside their own container. The page never scrolls sideways, and words are not broken mid-word.',
+      },
+    ],
+    codesLabel: 'Token bindings:',
+    codes: bindings(groupIds('spacing', 'insets', 'density')),
+    link: tokensLink('spacing'),
+  },
+  {
+    id: 'accessibility',
+    label: 'Accessibility',
+    rules: [
+      {
+        text: 'Both themes target WCAG 2.2 AA: text keeps at least 4.5:1 contrast, and functional boundaries and focus cues keep at least 3:1 on their actual surface.',
+      },
+      { text: 'Status, trend and selection are never conveyed by color alone.' },
+      {
+        text: 'Use real headings, labels, legends and native semantics. Accessible names match visible labels, and validation messages stay connected to their fields.',
+      },
+      {
+        text: 'Dropdowns use branded, accessible popups instead of visible native operating-system menus, with keyboard, touch and screen reader support.',
+      },
+      {
+        text: 'Rules and documentation are not proof of conformance. Browser, keyboard, zoom, screen reader and contrast checks are recorded separately.',
+      },
+    ],
+    codesLabel: 'Token bindings:',
+    codes: bindings(['text', 'muted', 'border']),
+    link: tokensLink('colors'),
+  },
+];
+---
+
+<DocsLayout title="UX standards" description={description} slug="standards">
+  <p class="eyebrow">
+    <span data-i18n="FOUNDATIONS / UX STANDARDS">FOUNDATIONS / UX STANDARDS</span>
+  </p>
+  <h1>
+    <span class="page-heading-line" data-i18n="Shared UX rules.">
+      Shared UX rules.
+    </span>
+    <br />
+    <span>
+      <span data-i18n="Values live in tokens.">Values live in tokens.</span>
+    </span>
+  </h1>
+  <p class="lead">
+    <span data-i18n={lead}>{lead}</span>
+  </p>
+  <p>
+    <a href="/tokens/">
+      <span data-i18n="Design tokens">Design tokens</span>
+    </a>
+    {' · '}
+    <a href="/theme-builder/">
+      <span data-i18n="Theme Builder">Theme Builder</span>
+    </a>
+  </p>
+  <p>
+    <span data-i18n={status}>{status}</span>
+  </p>
+  <DocumentationNav items={sections} />
+  {sections.map(section => (
+    <section
+      id={section.id}
+      class="doc-section"
+      data-doc-section={section.id}
+      aria-labelledby={`${section.id}-title`}
+    >
+      <h2 id={`${section.id}-title`}>
+        <span data-i18n={section.label}>{section.label}</span>
+      </h2>
+      <ul id={section.alias}>
+        {section.rules.map(rule => (
+          <li>
+            <span data-i18n={rule.text}>{rule.text}</span>
+            {rule.values?.map((item, index) => (
+              <>
+                {index > 0 ? ' / ' : ' '}
+                <code>{item}</code>
+              </>
+            ))}
+          </li>
+        ))}
+      </ul>
+      <p>
+        <span data-i18n={section.codesLabel}>{section.codesLabel}</span>{' '}
+        {section.codes.map((code, index) => (
+          <>
+            {index > 0 && ', '}
+            <code>{code}</code>
+          </>
+        ))}
+        {section.link && (
+          <>
+            {' · '}
+            <a href={section.link}>
+              <span data-i18n="Values in Design tokens">Values in Design tokens</span>
+            </a>
+          </>
+        )}
+      </p>
+    </section>
+  ))}
+</DocsLayout>

@@ -1,0 +1,86 @@
+/* The Button route owns this reading layout; shared control styles stay unchanged. */
+.atlas-demo .button-catalog {
+  --button-catalog-column-min: 360px;
+  --button-catalog-sample-min: 160px;
+  --button-catalog-nav-min: 120px;
+  display: grid;
+  gap: var(--space-section);
+  min-width: 0;
+}
+.atlas-demo .button-catalog-nav {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--button-catalog-nav-min)), 1fr));
+  gap: var(--space-xs) var(--space-md);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.atlas-demo .button-catalog-nav a {
+  display: flex;
+  align-items: center;
+  min-height: var(--target-min);
+  width: fit-content;
+  max-width: 100%;
+}
+.atlas-demo .button-catalog-section {
+  display: grid;
+  gap: var(--space-xl);
+  min-width: 0;
+  scroll-margin-block-start: var(--space-lg);
+}
+.atlas-demo .button-catalog-section > header {
+  display: grid;
+  gap: var(--space-xs);
+}
+.atlas-demo .button-catalog-section > header > h3 {
+  font-size: var(--text-section);
+}
+.atlas-demo .button-catalog-section > header > p,
+.atlas-demo .button-catalog .example-block > p,
+.atlas-demo .button-catalog .atlas-button-visuals > li > p {
+  color: var(--muted);
+}
+.atlas-demo .button-catalog-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--button-catalog-column-min)), 1fr));
+  align-items: start;
+  gap: var(--space-xl);
+  min-width: 0;
+}
+.atlas-demo
+  .button-catalog
+  :is(.atlas-button-visuals, .atlas-button-states, .atlas-button-dimensions) {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--button-catalog-sample-min)), 1fr));
+  gap: var(--space-lg);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  overflow: visible;
+}
+.atlas-demo .button-catalog .atlas-button-states > li {
+  align-content: start;
+  justify-items: start;
+  gap: var(--space-sm);
+  padding: 0;
+  background: transparent;
+  text-align: start;
+}
+.atlas-demo .button-catalog .atlas-button-visuals > li > p {
+  margin: 0;
+}
+.atlas-demo .button-catalog .example-block > .control-row {
+  align-content: start;
+}
+
+.atlas-demo
+  .button-catalog
+  :is(.button-catalog-nav, .atlas-button-visuals, .atlas-button-states, .atlas-button-dimensions)
+  > li {
+  margin: 0;
+}
+.atlas-demo .button-catalog :is(header, .example-block) > :is(h3, h4, h5, p) {
+  margin: 0;
+}

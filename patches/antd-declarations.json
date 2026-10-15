@@ -1,0 +1,38 @@
+[
+  {
+    "package": "@rc-component/image",
+    "version": "1.10.0",
+    "path": "node_modules/@rc-component/image/es/PreviewGroup.d.ts",
+    "before_sha256": "af6bf86b483eee933366555ec38d289524058c5d879c32c13d6bc018f971bd0b",
+    "after_sha256": "376cc7545b519f27889c4da8a11edf54b097f9e8a0cf636f333fda2aff9d57f4",
+    "old": "export interface GroupPreviewConfig extends InternalPreviewConfig {",
+    "new": "export interface GroupPreviewConfig extends Omit<InternalPreviewConfig, 'imageRender'> {"
+  },
+  {
+    "package": "@rc-component/image",
+    "version": "1.10.0",
+    "path": "node_modules/@rc-component/image/lib/PreviewGroup.d.ts",
+    "before_sha256": "af6bf86b483eee933366555ec38d289524058c5d879c32c13d6bc018f971bd0b",
+    "after_sha256": "376cc7545b519f27889c4da8a11edf54b097f9e8a0cf636f333fda2aff9d57f4",
+    "old": "export interface GroupPreviewConfig extends InternalPreviewConfig {",
+    "new": "export interface GroupPreviewConfig extends Omit<InternalPreviewConfig, 'imageRender'> {"
+  },
+  {
+    "package": "@rc-component/picker",
+    "version": "1.12.2",
+    "path": "node_modules/@rc-component/picker/es/PickerPanel/index.d.ts",
+    "before_sha256": "d42e0e90b8efe93fd58a73878eb2d6a3dc6cfceac2e8632b065d38f4ef3c95aa",
+    "after_sha256": "b940573281cf14e55dfafa1de024f1c700677f603b15df0373abd2029fc4ce2f",
+    "old": "export interface SinglePickerPanelProps<DateType extends object = any> extends BasePickerPanelProps<DateType> {",
+    "new": "export interface SinglePickerPanelProps<DateType extends object = any> extends Omit<BasePickerPanelProps<DateType>, 'defaultValue'> {"
+  },
+  {
+    "package": "@rc-component/picker",
+    "version": "1.12.2",
+    "path": "node_modules/@rc-component/picker/lib/PickerPanel/index.d.ts",
+    "before_sha256": "d42e0e90b8efe93fd58a73878eb2d6a3dc6cfceac2e8632b065d38f4ef3c95aa",
+    "after_sha256": "b940573281cf14e55dfafa1de024f1c700677f603b15df0373abd2029fc4ce2f",
+    "old": "export interface SinglePickerPanelProps<DateType extends object = any> extends BasePickerPanelProps<DateType> {",
+    "new": "export interface SinglePickerPanelProps<DateType extends object = any> extends Omit<BasePickerPanelProps<DateType>, 'defaultValue'> {"
+  }
+]

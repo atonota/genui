@@ -1,0 +1,81 @@
+/* Route-owned field adapters use shared semantic paint, spacing and motion. */
+.kit-date-field {
+  width: 100%;
+  min-width: 0;
+  font-size: var(--text);
+}
+.kit-readonly-value {
+  position: relative;
+  min-width: 0;
+  padding-block: var(--space-sm);
+  color: var(--ink);
+  cursor: var(--readonly-cursor, text);
+  user-select: text;
+}
+.kit-readonly-value:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+.kit-readonly-value:focus-visible::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  height: var(--focus-marker);
+  background: var(--focus-color);
+}
+.kit-readonly-value .kit-field-value {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.kit-readonly-lock {
+  display: inline-flex;
+  margin-inline-end: var(--space-xs);
+  color: var(--muted);
+  vertical-align: middle;
+}
+.kit-readonly-lock .atlas-icon {
+  inline-size: var(--text);
+  block-size: var(--text);
+}
+.kit-field [data-value-state='invalid'] {
+  color: var(--color-error, var(--primary));
+}
+.kit-discard-review {
+  display: grid;
+  gap: var(--space-sm);
+  padding-block: var(--space-md);
+}
+.kit-discard-review p {
+  margin: 0;
+}
+.kit-date-popup {
+  max-width: calc(100vw - var(--space-md));
+  font-size: var(--text);
+}
+.kit-date-popup .ant-picker-panel-layout {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.kit-date-field.ant-picker {
+  transition-property: background-color, color, opacity;
+  transition-duration: var(--transition-duration);
+  transition-timing-function: var(--motion-easing);
+  transition-delay: var(--motion-delay);
+}
+.kit-date-field.ant-picker:not(.ant-picker-status-error):not(.ant-picker-status-warning) {
+  border-color: transparent;
+}
+.kit-date-field.ant-picker:focus-within,
+.kit-date-field.ant-picker:has(input:focus-visible) {
+  outline: none;
+  box-shadow: none;
+}
+.kit-date-field.ant-picker:has(input:focus-visible)::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  height: var(--focus-marker);
+  background: var(--focus-color);
+}

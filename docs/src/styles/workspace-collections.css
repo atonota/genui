@@ -1,0 +1,377 @@
+/* Experimental collection layouts inherit Atlas identity and shared motion tokens. */
+.workspace-lab {
+  --collection-column-id: 11.25rem;
+  --collection-column-customer: 18.75rem;
+  --collection-column-value: 10rem;
+  --collection-column-text: 11.25rem;
+  --collection-column-actions: 13.125rem;
+  --collection-column-select: 4rem;
+  --collection-summary-width: 21rem;
+  --collection-calendar-width: 63rem;
+  --collection-calendar-day-height: 9rem;
+  --collection-timeline-width: 68rem;
+  --collection-timeline-track-width: 28rem;
+  --collection-timeline-track-height: 1.5rem;
+  --collection-grid-line: 1px;
+  --collection-detail-marker: var(--focus-marker);
+}
+.workspace-lab .collection-toolbar,
+.workspace-lab .collection-view-stack,
+.workspace-lab .collection-editor,
+.workspace-lab .collection-bulk-preview {
+  display: grid;
+  gap: var(--space-md);
+  min-width: 0;
+}
+.workspace-lab .collection-toolbar {
+  margin-block-end: var(--space-xl);
+}
+.workspace-lab .collection-control-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: var(--space-md);
+  min-width: 0;
+}
+.workspace-lab .collection-inline,
+.workspace-lab .collection-choice-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+.workspace-lab .collection-content,
+.workspace-lab .collection-active-view {
+  min-width: 0;
+  max-width: 100%;
+}
+.workspace-lab[data-profile='desktop'] .collection-content[data-detail-open='true'] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(
+      min(100%, var(--collection-summary-width)),
+      var(--collection-summary-width)
+    );
+  align-items: start;
+  gap: var(--space-lg);
+}
+.workspace-lab .collection-detail {
+  min-width: 0;
+  padding-inline-start: 0;
+  border-inline-start: 0;
+}
+.workspace-lab[data-profile='mobile'] .collection-detail {
+  padding-inline-start: 0;
+  border-inline-start: 0;
+}
+/* Keyboard focus on the detail region: the focus surface plus one start-edge bar. */
+:root[data-input-modality='keyboard'] .workspace-lab .collection-detail:focus-visible {
+  background-color: var(--focus-bg);
+  box-shadow: inset var(--focus-indicator-width) 0 0 0 var(--focus-indicator-color);
+}
+.workspace-lab
+  :is(
+    .collection-record-list,
+    .collection-tree-list,
+    .collection-pairs-list,
+    .collection-review-list,
+    .collection-agenda
+  ) {
+  display: grid;
+  gap: var(--space-md);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  min-width: 0;
+}
+.workspace-lab .collection-record-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: var(--space-sm);
+  padding-block: var(--space-md);
+  border-block-end: var(--collection-grid-line) solid var(--line);
+}
+.workspace-lab .collection-record-content {
+  display: grid;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+.workspace-lab .collection-record-row[data-active='true'] {
+  background-color: var(--surface);
+}
+.workspace-lab .collection-record-content :is(p, strong, span),
+.workspace-lab .collection-board-item :is(p, strong, span),
+.workspace-lab .collection-pairs-list dd {
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+.workspace-lab .collection-cell-meta {
+  display: block;
+  color: var(--muted);
+  font-size: var(--text);
+}
+.workspace-lab .collection-table-scroll {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+.workspace-lab .collection-table-scroll .ant-table-wrapper,
+.workspace-lab .collection-table-scroll .ant-table-container {
+  min-width: 0;
+  max-width: 100%;
+}
+.workspace-lab .collection-table-scroll .ant-table-content {
+  overflow: visible;
+}
+.workspace-lab .collection-table-scroll :is(.ant-table, .ant-table-cell, .ant-table-empty) {
+  font-size: var(--text);
+  font-family: var(--font-body);
+  line-height: var(--line-height);
+  word-break: normal;
+  overflow-wrap: normal;
+}
+.workspace-lab .collection-table-scroll .ant-table-cell {
+  vertical-align: top;
+  white-space: normal;
+  padding: var(--space-sm);
+}
+/* Data rows take the shared component height; block padding gives way so two-line content
+   fits the base height, and fuller rows still grow instead of clipping. */
+.workspace-lab
+  .collection-table-scroll
+  .ant-table-wrapper
+  .ant-table
+  .ant-table-tbody
+  > tr.ant-table-row
+  > td {
+  box-sizing: border-box;
+  height: var(--atlas-component-height);
+  padding-block: 0;
+  vertical-align: middle;
+}
+.workspace-lab .collection-table-scroll .collection-col-id {
+  min-width: var(--collection-column-id);
+}
+.workspace-lab .collection-table-scroll .collection-col-customer {
+  min-width: var(--collection-column-customer);
+}
+.workspace-lab
+  .collection-table-scroll
+  :is(.collection-col-status, .collection-col-owner, .collection-col-city, .collection-col-due) {
+  min-width: var(--collection-column-text);
+}
+.workspace-lab .collection-table-scroll .collection-col-amount {
+  min-width: var(--collection-column-value);
+  font-variant-numeric: tabular-nums;
+}
+.workspace-lab .collection-table-scroll .collection-col-actions {
+  min-width: var(--collection-column-actions);
+}
+.workspace-lab .collection-table-scroll .ant-table-selection-column {
+  min-width: var(--collection-column-select);
+}
+.workspace-lab .collection-table-scroll .collection-row-active > .ant-table-cell {
+  background-color: var(--surface);
+}
+/* Expand buttons take the shared action fill; AntD's outline gives way outside forced colors. */
+@media (forced-colors: none) {
+  .workspace-lab .collection-table-scroll .ant-table-row-expand-icon:focus-visible {
+    outline: none;
+  }
+}
+:root[data-input-modality='keyboard']
+  .workspace-lab
+  .collection-table-scroll
+  .ant-table-row-expand-icon:focus-visible {
+  border-color: var(--focus-button-bg);
+  background-color: var(--focus-button-bg);
+  color: var(--focus-button-ink);
+}
+.workspace-lab .collection-group {
+  display: grid;
+  gap: var(--space-sm);
+  min-width: 0;
+}
+.workspace-lab .collection-tree-list .collection-tree-list {
+  padding-inline-start: var(--space-md);
+  margin-block-start: var(--space-sm);
+  border-inline-start: var(--collection-grid-line) solid var(--line);
+}
+.workspace-lab .collection-tree-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+.workspace-lab .collection-board {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  align-items: start;
+  gap: var(--space-lg);
+  min-width: 0;
+}
+.workspace-lab .collection-board-column,
+.workspace-lab .collection-board-item {
+  display: grid;
+  gap: var(--space-sm);
+  min-width: 0;
+}
+.workspace-lab .collection-board-column {
+  background-color: var(--surface);
+  padding: var(--space-sm);
+  border-radius: var(--radius);
+}
+.workspace-lab .collection-board-item {
+  padding-block: var(--space-md);
+  border-block-end: var(--collection-grid-line) solid var(--line);
+}
+.workspace-lab .collection-calendar-grid {
+  min-width: var(--collection-calendar-width);
+}
+.workspace-lab :is(.collection-calendar-header, .collection-calendar-week) {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+.workspace-lab .collection-calendar-header > div,
+.workspace-lab .collection-calendar-day {
+  padding: var(--space-xs);
+  border-block-end: var(--collection-grid-line) solid var(--line);
+  border-inline-end: var(--collection-grid-line) solid var(--line);
+}
+.workspace-lab .collection-calendar-header {
+  font-weight: var(--font-weight-label, 600);
+  background-color: var(--surface);
+}
+.workspace-lab .collection-calendar-day {
+  min-height: var(--collection-calendar-day-height);
+  overflow-wrap: break-word;
+}
+.workspace-lab .collection-calendar-day > div {
+  display: grid;
+  gap: var(--space-xs);
+  margin-block-start: var(--space-xs);
+}
+.workspace-lab .collection-timeline-table {
+  min-width: var(--collection-timeline-width);
+}
+.workspace-lab :is(.collection-timeline-table, .collection-comparison-table) {
+  border-collapse: collapse;
+  font-size: var(--text);
+  line-height: var(--line-height);
+  width: 100%;
+}
+.workspace-lab :is(.collection-timeline-table, .collection-comparison-table) :is(th, td) {
+  min-width: var(--collection-column-text);
+  padding: var(--space-sm);
+  border-block-end: var(--collection-grid-line) solid var(--line);
+  text-align: start;
+  vertical-align: top;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+.workspace-lab :is(.collection-timeline-table, .collection-comparison-table) caption {
+  text-align: start;
+  padding-block-end: var(--space-sm);
+  color: var(--muted);
+}
+.workspace-lab .collection-timeline-track {
+  position: relative;
+  min-width: var(--collection-timeline-track-width);
+  height: var(--collection-timeline-track-height);
+  background-color: var(--surface);
+  border-radius: var(--radius-sm);
+}
+.workspace-lab .collection-timeline-bar {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: var(--collection-bar-start);
+  width: var(--collection-bar-width);
+  background-color: var(--primary);
+  border-radius: var(--radius-sm);
+}
+.workspace-lab :is(.collection-agenda, .collection-review-list, .collection-pairs-list) > li {
+  min-width: 0;
+  padding-block: var(--space-md);
+  border-block-end: var(--collection-grid-line) solid var(--line);
+}
+.workspace-lab .collection-pairs-list dl {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-xs);
+}
+.workspace-lab .collection-pairs-list dt {
+  color: var(--muted);
+}
+.workspace-lab .collection-pairs-list dd {
+  margin: 0 0 var(--space-sm);
+}
+.workspace-lab .collection-editor {
+  padding: var(--space-md);
+  background-color: var(--surface);
+  border-radius: var(--radius);
+}
+.workspace-lab .collection-empty {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-md);
+  padding-block: var(--space-xl);
+}
+.workspace-lab .collection-bulk-preview {
+  padding-block-start: var(--space-md);
+  border-block-start: var(--collection-grid-line) solid var(--line);
+}
+@container workspace-stage (max-width: 52rem) {
+  .workspace-lab[data-profile='desktop'] .collection-content[data-detail-open='true'] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .workspace-lab[data-profile='desktop'] .collection-detail {
+    border-inline-start: 0;
+    padding-inline-start: 0;
+  }
+}
+
+.workspace-lab .collection-table-scroll .ant-table-content > table {
+  width: max-content;
+  min-width: 100%;
+}
+.workspace-lab #collection-review-heading:focus-visible {
+  outline: none;
+  text-decoration: underline;
+  text-decoration-thickness: var(--focus-marker);
+  text-underline-offset: 0.25em;
+}
+
+.workspace-lab[data-profile='desktop'] .collection-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 0px;
+  column-gap: 0;
+  transition:
+    grid-template-columns var(--motion-duration-standard) var(--motion-easing),
+    column-gap var(--motion-duration-standard) var(--motion-easing);
+}
+.workspace-lab[data-profile='desktop'] .collection-content[data-detail-open='true'] {
+  grid-template-columns: minmax(0, 1fr) var(--collection-summary-width);
+  column-gap: var(--space-lg);
+}
+@container workspace-stage (max-width: 52rem) {
+  .workspace-lab[data-profile='desktop'] .collection-content,
+  .workspace-lab[data-profile='desktop'] .collection-content[data-detail-open='true'] {
+    grid-template-columns: minmax(0, 1fr);
+    column-gap: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .workspace-lab[data-profile='desktop'] .collection-content {
+    transition: none;
+  }
+}
+
+.workspace-lab .collection-detail {
+  transition-property: background-color, color, opacity;
+}
+
+.workspace-lab .collection-table-scroll .ant-table-row-expand-icon {
+  transition-property: background-color, color, opacity;
+}

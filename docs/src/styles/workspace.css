@@ -1,0 +1,185 @@
+.workspace-lab {
+  --workspace-mobile-width: 27rem;
+  --workspace-table-width: 58rem;
+  --workspace-identity-width: 17rem;
+  --workspace-data-width: 10rem;
+  --workspace-pane-width: 18rem;
+  --workspace-label-width: 12rem;
+  --workspace-gap: var(--space-md);
+  display: grid;
+  gap: var(--workspace-gap);
+  min-width: 0;
+  font-family: var(--font-body);
+  font-size: var(--text);
+}
+.workspace-lab .workspace-stage {
+  container-type: inline-size;
+  container-name: workspace-stage;
+  display: grid;
+  gap: var(--space-lg);
+  min-width: 0;
+  width: 100%;
+}
+.workspace-lab[data-profile='mobile'] .workspace-stage {
+  max-width: var(--workspace-mobile-width);
+  margin-inline: auto;
+}
+/* Adaptive canvas width is independent from the chosen content preview profile. */
+.workspace-lab .workspace-stage:has([data-atlas-splitter]) {
+  max-width: none;
+  margin-inline: 0;
+}
+.workspace-lab .workspace-caption {
+  color: var(--muted);
+  font-size: var(--text);
+}
+.workspace-lab .workspace-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: var(--space-md);
+  min-width: 0;
+}
+.workspace-lab .workspace-controls label {
+  display: grid;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+.workspace-lab .workspace-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  align-items: center;
+}
+.workspace-lab .workspace-scroll {
+  overflow: auto;
+  max-width: 100%;
+  min-width: 0;
+  border-block-end: var(--focus-marker) solid transparent;
+  outline: none;
+}
+.workspace-lab .workspace-scroll:focus-visible {
+  border-block-end-color: var(--focus-color);
+}
+.workspace-lab .workspace-table {
+  width: 100%;
+  min-width: var(--workspace-table-width);
+  border-collapse: collapse;
+}
+.workspace-lab .workspace-table :is(th, td) {
+  font-size: var(--text);
+  padding: var(--space-sm);
+  border-block-end: 1px solid var(--line);
+  text-align: start;
+  vertical-align: top;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+.workspace-lab .workspace-table th:first-child {
+  min-width: var(--workspace-identity-width);
+}
+.workspace-lab .workspace-record-summary {
+  display: grid;
+  gap: var(--space-md);
+  min-width: 0;
+}
+.workspace-lab .workspace-record-summary dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: var(--space-md);
+  margin: 0;
+}
+.workspace-lab .workspace-record-summary dl > div {
+  min-width: 0;
+}
+.workspace-lab .workspace-record-summary dt {
+  color: var(--muted);
+}
+.workspace-lab .workspace-record-summary dd {
+  margin: 0;
+  overflow-wrap: break-word;
+}
+.workspace-lab .workspace-empty {
+  padding-block: var(--space-xl);
+  color: var(--muted);
+}
+.workspace-lab
+  :is(
+    .ant-table,
+    .ant-table-cell,
+    .ant-table-thead,
+    .ant-table-tbody,
+    .ant-table-summary,
+    .ant-pagination,
+    .ant-tabs-tab,
+    .ant-steps-title,
+    .ant-steps-description
+  ) {
+  font-size: var(--text);
+}
+.workspace-lab :is(h3, h4) {
+  letter-spacing: 0;
+}
+@media (any-pointer: coarse) {
+  .workspace-lab {
+    --target-min: 3rem;
+  }
+}
+
+/* Non-modal enter/exit retain a single mounted body; semantics change immediately. */
+.workspace-lab .workspace-disclosure {
+  display: grid;
+  grid-template-rows: 0fr;
+  min-width: 0;
+  opacity: 0;
+  transition:
+    grid-template-rows var(--motion-duration-standard) var(--motion-easing),
+    opacity var(--motion-duration-standard) var(--motion-easing),
+    color var(--motion-duration-standard) var(--motion-easing);
+}
+.workspace-lab .workspace-disclosure[data-open='true'] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.workspace-lab .workspace-disclosure[data-open='false'] {
+  pointer-events: none;
+}
+.workspace-lab .workspace-disclosure-clip {
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+/* Like form disclosures, actual keyboard focus must not be faded or clipped.
+   Only keyboard-visible focus reveals instantly; pointer focus keeps the ongoing
+   positive grid motion so the pressed target does not jump mid-gesture.
+   Unfocused entry and all exits keep the central positive transition. */
+.workspace-lab .workspace-disclosure[data-open='true']:has(:focus-visible) {
+  transition: color var(--motion-duration-standard) var(--motion-easing);
+}
+.workspace-lab
+  .workspace-disclosure[data-open='true']:has(:focus-visible)
+  > .workspace-disclosure-clip {
+  overflow: visible;
+}
+@media (prefers-reduced-motion: reduce) {
+  .workspace-lab .workspace-disclosure {
+    transition: none;
+  }
+}
+
+/* EntityCard owns the peer surface. Keep record identity on its plain list owner. */
+.workspace-lab .kit-record-cards > li:has(> .atlas-card-native) {
+  padding: 0;
+  background: transparent;
+}
+.workspace-lab .kit-record-cards > li[data-active='true'] > .atlas-card-native {
+  background: var(--soft);
+}
+.workspace-lab :is(.collection-record-row, .collection-board-item):has(> .atlas-card-native) {
+  grid-template-columns: minmax(0, 1fr);
+  padding: 0;
+  border-block-end: 0;
+  background: transparent;
+}
+.workspace-lab .collection-record-row[data-active='true'] > .atlas-card-native {
+  background: var(--soft);
+}

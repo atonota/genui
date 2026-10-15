@@ -1,0 +1,286 @@
+.workspace-lab .record-form-demo {
+  --record-form-gap: var(--field-gap, var(--space-md));
+  --record-form-section-gap: var(--section-gap, var(--space-xl));
+  --record-form-padding: var(--space-md);
+  --record-form-boundary: var(--line);
+  --record-form-duration: var(--motion-duration-standard);
+  --record-form-target: var(--target-min);
+  --record-form-control-width: 25rem;
+  min-width: 0;
+  display: grid;
+  gap: var(--record-form-gap);
+  font-size: var(--text);
+}
+.workspace-lab .record-form-settings,
+.workspace-lab .record-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--record-form-gap);
+  min-width: 0;
+}
+.workspace-lab .record-form-mode-control {
+  display: grid;
+  gap: var(--space-xs);
+  width: min(100%, var(--record-form-control-width));
+}
+.workspace-lab .record-form-caption,
+.workspace-lab .record-form-draft-status,
+.workspace-lab .record-form-step-status {
+  max-inline-size: var(--prose-measure, 65ch);
+  color: var(--muted);
+  font-size: var(--text);
+  overflow-wrap: break-word;
+}
+.workspace-lab .record-form-fields {
+  display: grid;
+  gap: var(--record-form-section-gap);
+  min-width: 0;
+  max-width: 100%;
+}
+.workspace-lab .record-form-editor-pane,
+.workspace-lab .record-form-review {
+  display: grid;
+  gap: var(--record-form-gap);
+  min-width: 0;
+}
+/* Read-only review uses the compact field rhythm. */
+.workspace-lab .record-form-review {
+  gap: var(--field-gap-compact, var(--space-sm));
+}
+.workspace-lab .record-form-review > :first-child {
+  margin-block-start: 0;
+}
+.workspace-lab .record-form-review dd {
+  max-inline-size: var(--prose-measure, 65ch);
+  overflow-wrap: anywhere;
+}
+.workspace-lab .record-form-group,
+.workspace-lab .record-form-panel,
+.workspace-lab .record-form-conditional {
+  display: grid;
+  grid-template-rows: 1fr;
+  min-width: 0;
+  opacity: 1;
+  transition:
+    grid-template-rows var(--record-form-duration) var(--motion-easing),
+    opacity var(--record-form-duration) var(--motion-easing);
+}
+.workspace-lab .record-form-group[data-visible='false'],
+.workspace-lab .record-form-panel[data-open='false'],
+.workspace-lab .record-form-conditional[data-open='false'] {
+  grid-template-rows: 0fr;
+  opacity: 0;
+  pointer-events: none;
+}
+.workspace-lab .record-form-group-shell,
+.workspace-lab .record-form-panel-content,
+.workspace-lab .record-form-conditional-content {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+.workspace-lab .record-form-group-shell,
+.workspace-lab .record-form-panel-content {
+  display: grid;
+  gap: var(--record-form-gap);
+}
+/* Actual focused content must not fade or clip during reveal. Unfocused entry
+   and exit keep their positive central geometric and opacity transitions. */
+.workspace-lab .record-form-group[data-visible='true']:focus-within,
+.workspace-lab .record-form-panel[data-open='true']:focus-within,
+.workspace-lab .record-form-conditional[data-open='true']:focus-within {
+  transition: color var(--record-form-duration) var(--motion-easing);
+}
+.workspace-lab .record-form-group[data-visible='true']:focus-within > .record-form-group-shell,
+.workspace-lab .record-form-panel[data-open='true']:focus-within > .record-form-panel-content,
+.workspace-lab
+  .record-form-conditional[data-open='true']:focus-within
+  > .record-form-conditional-content {
+  overflow: visible;
+}
+.workspace-lab .record-form-heading {
+  margin: 0;
+  font-size: var(--text);
+  font-weight: var(--font-weight-label, 650);
+}
+.workspace-lab .record-form-fieldset {
+  position: relative;
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.workspace-lab .record-form-fieldset > .record-form-legend {
+  width: auto;
+  margin: 0 0 var(--record-form-gap);
+  padding: 0;
+  border: 0;
+  color: inherit;
+  font-size: var(--text);
+  font-weight: var(--font-weight-label, 650);
+  line-height: inherit;
+}
+.workspace-lab .record-form-fieldset > .record-form-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+.workspace-lab
+  .record-form-demo:is([data-form-mode='sections'], [data-form-mode='document'])
+  .record-form-group-shell {
+  padding-block: var(--record-form-padding);
+  border-block-start: 1px solid var(--record-form-boundary);
+}
+.workspace-lab .record-form-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+.workspace-lab .record-form-tab,
+.workspace-lab .record-form-accordion-trigger {
+  position: relative;
+  min-height: var(--record-form-target);
+  min-width: var(--record-form-target);
+  padding: var(--space-xs) var(--space-md);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--text);
+  text-align: start;
+  outline: none;
+  transition:
+    background-color var(--record-form-duration) var(--motion-easing),
+    color var(--record-form-duration) var(--motion-easing),
+    opacity var(--record-form-duration) var(--motion-easing);
+}
+.workspace-lab .record-form-tab[aria-selected='true'] {
+  background: var(--ink);
+  color: var(--paper);
+}
+.workspace-lab .record-form-tab:focus-visible::after,
+.workspace-lab .record-form-accordion-trigger:focus-visible::after {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block-start: var(--space-xs);
+  width: var(--focus-marker);
+  height: 1em;
+  background: currentColor;
+  pointer-events: none;
+}
+.workspace-lab .record-form-accordion-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  width: 100%;
+}
+.workspace-lab .record-form-chevron {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 1.25em;
+  height: 1.25em;
+  transform: rotate(0deg);
+  transition: transform var(--record-form-duration) var(--motion-easing);
+}
+.workspace-lab .record-form-accordion-trigger[aria-expanded='true'] .record-form-chevron {
+  transform: rotate(90deg);
+}
+.workspace-lab .record-form-lines {
+  display: grid;
+  gap: var(--record-form-gap);
+  min-width: 0;
+}
+.workspace-lab .record-form-lines > h4,
+.workspace-lab .record-form-line legend {
+  font-size: var(--text);
+  font-weight: var(--font-weight-label, 600);
+}
+.workspace-lab .record-form-line {
+  display: grid;
+  align-items: start;
+  gap: var(--record-form-gap);
+  min-width: 0;
+  margin: 0;
+  padding: var(--record-form-padding) 0;
+  border: 0;
+  border-block-end: 1px solid var(--record-form-boundary);
+}
+.workspace-lab .record-form-line .ant-form-item {
+  min-width: 0;
+  margin: 0;
+}
+.workspace-lab .record-form-total {
+  font-size: var(--text);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--font-weight-label, 650);
+  overflow-wrap: break-word;
+}
+.workspace-lab .record-form-result {
+  display: grid;
+  gap: var(--record-form-gap);
+  min-width: 0;
+  font-size: var(--text);
+  overflow-wrap: break-word;
+}
+.workspace-lab .record-form-preview {
+  display: grid;
+  gap: var(--field-gap-compact, var(--space-sm));
+  margin: 0;
+  min-width: 0;
+}
+.workspace-lab .record-form-preview > div {
+  display: grid;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+.workspace-lab .record-form-preview dt {
+  font-weight: var(--font-weight-label, 600);
+  color: var(--muted);
+}
+.workspace-lab .record-form-preview dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: break-word;
+}
+@container (min-width: 45rem) {
+  .workspace-lab[data-profile='desktop'] .record-form-line {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .workspace-lab[data-profile='desktop']
+    .record-form-demo[data-form-mode='document']
+    .record-form-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .workspace-lab[data-profile='desktop']
+    .record-form-demo[data-form-mode='document']
+    .record-form-group[data-form-group='content'] {
+    grid-column: 1 / -1;
+  }
+}
+@media (any-pointer: coarse) {
+  .workspace-lab .record-form-demo {
+    --record-form-target: 3rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .workspace-lab .record-form-demo *,
+  .workspace-lab .record-form-demo *::before,
+  .workspace-lab .record-form-demo *::after {
+    transition: none;
+    animation: none;
+  }
+}

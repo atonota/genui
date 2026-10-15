@@ -1,0 +1,12 @@
+{
+  "Marketing": "Pazarlama",
+  "Department": "Departman",
+  "Search or create a department": "Departman arayın veya oluşturun",
+  "Create “{name}”": "“{name}” oluştur",
+  "New departments exist only in this example. Nothing is saved to a server.": "Yeni departmanlar yalnızca bu örnekte bulunur. Sunucuya hiçbir şey kaydedilmez.",
+  "Selected department: {name}": "Seçili departman: {name}",
+  "No department selected": "Departman seçilmedi",
+  "Clear department": "Departmanı temizle",
+  "Select or create a department": "Departman seçin veya oluşturun",
+  "Search existing departments or create one for this example. Clearing stays available at all times.": "Mevcut departmanları arayın veya bu örnek için yeni bir departman oluşturun. Temizleme her zaman kullanılabilir."
+}

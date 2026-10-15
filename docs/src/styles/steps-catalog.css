@@ -1,0 +1,119 @@
+/* Steps catalog composition. Native step behavior belongs to atlas-steps.css. */
+.atlas-demo .steps-catalog {
+  --steps-reading-width: 720px;
+  --steps-example-min: 420px;
+  display: grid;
+  gap: var(--space-section);
+  min-width: 0;
+}
+.atlas-demo .steps-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs) var(--space-xl);
+}
+.atlas-demo .steps-navigation a {
+  display: flex;
+  align-items: center;
+  min-height: var(--target-min);
+}
+.atlas-demo .steps-section,
+.atlas-demo .steps-section > header,
+.atlas-demo .steps-stage,
+.atlas-demo .steps-example,
+.atlas-demo .steps-setup-form,
+.atlas-demo .steps-setup-content,
+.atlas-demo .steps-recovery-content,
+.atlas-demo .steps-navigation-content,
+.atlas-demo .steps-field {
+  display: grid;
+  align-content: start;
+  gap: var(--space-md);
+  min-width: 0;
+}
+.atlas-demo .steps-section {
+  gap: var(--space-xl);
+  scroll-margin-block-start: var(--space-lg);
+}
+.atlas-demo .steps-section > header,
+.atlas-demo .steps-field {
+  gap: var(--space-xs);
+}
+.atlas-demo .steps-section :is(h3, h4, p, dl, dd) {
+  margin: 0;
+}
+.atlas-demo .steps-section h3 {
+  font-size: var(--text-section);
+}
+.atlas-demo .steps-section h4 {
+  font-size: var(--text-large);
+}
+.atlas-demo .steps-section > header > p:last-child,
+.atlas-demo .steps-guidance,
+.atlas-demo .steps-navigation-content,
+.atlas-demo .steps-recovery-content {
+  max-width: var(--steps-reading-width);
+}
+.atlas-demo .steps-section > header > p:last-child,
+.atlas-demo .steps-guidance,
+.atlas-demo .steps-summary dt {
+  color: var(--muted);
+}
+.atlas-demo .steps-error {
+  color: var(--error);
+}
+.atlas-demo .steps-stage {
+  gap: var(--space-xl);
+  padding: var(--space-sm);
+  border-radius: var(--radius);
+  background: var(--panel);
+}
+.atlas-demo .steps-setup-form,
+.atlas-demo .steps-summary {
+  max-width: var(--steps-reading-width);
+}
+.atlas-demo .steps-summary {
+  display: grid;
+  gap: var(--space-md);
+}
+.atlas-demo .steps-summary > div {
+  display: grid;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+.atlas-demo .steps-summary dd {
+  overflow-wrap: anywhere;
+}
+.atlas-demo .steps-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.atlas-demo .steps-actions > button {
+  max-width: 100%;
+  white-space: normal;
+}
+.atlas-demo .steps-comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--steps-example-min)), 1fr));
+  align-items: start;
+  gap: var(--space-xl);
+  min-width: 0;
+}
+.atlas-demo .steps-example {
+  gap: var(--space-lg);
+}
+.atlas-demo .steps-example[data-steps-example='centered'] {
+  grid-column: 1 / -1;
+}
+.atlas-demo .steps-setup-form [hidden] {
+  display: none;
+}
+@media (min-width: 640px) {
+  .atlas-demo .steps-stage {
+    padding: var(--space-lg);
+  }
+  .atlas-demo .steps-summary {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  }
+}

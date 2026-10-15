@@ -1,0 +1,124 @@
+---
+import DocsLayout from '../layouts/DocsLayout.astro';
+import DocumentationNav from '../components/DocumentationNav.astro';
+import { components } from '../data/catalog';
+const sections = [
+  { id: 'component-library', label: 'Component library' },
+  { id: 'shared-foundation', label: 'Shared foundation' },
+];
+// Each foundation page owns its values; the overview only links to it.
+const foundations = [
+  {
+    href: '/tokens/',
+    label: 'Design tokens',
+    summary: 'Semantic color, type, spacing, radius and motion tokens.',
+  },
+  {
+    href: '/standards/',
+    label: 'UX standards',
+    summary: 'Interaction, motion and focus rules shared by every component.',
+  },
+  {
+    href: '/color-system/',
+    label: 'Color system',
+    summary: 'Palettes, color roles and contrast behind the shared theme.',
+  },
+  {
+    href: '/theme-builder/',
+    label: 'Theme Builder',
+    summary: 'Explore theme settings built on the shared tokens.',
+  },
+  {
+    href: '/genui/',
+    label: 'GenUI',
+    summary: 'Contracts, policy and the component registry for generated interfaces.',
+  },
+];
+---
+
+<DocsLayout
+  title="Overview"
+  description="Flat 2.0 components: live Ant Design examples, variants and a technical API reference."
+>
+  <p class="eyebrow">
+    <span data-i18n="ATLAS / TECHNICAL DOCUMENTATION">ATLAS / TECHNICAL DOCUMENTATION</span>
+  </p>
+  <h1>
+    <span class="page-heading-line" data-i18n="One language.">
+      One language.
+    </span>
+    <br />
+    <span>
+      <span data-i18n="Components that work together.">Components that work together.</span>
+    </span>
+  </h1>
+  <p class="lead">
+    <span data-i18n="Flat 2.0 surfaces, restrained depth and clear interactions. From design to implementation: live examples, usage code and Ant Design API mappings.">
+      Flat 2.0 surfaces, restrained depth and clear interactions. From design to implementation:
+      live examples, usage code and Ant Design API mappings.
+    </span>
+  </p>
+  <div class="intro-actions">
+    <a class="docs-action" href="/components/button/">
+      <span data-i18n="Explore components">Explore components</span>
+    </a>
+    <a href="/getting-started/">
+      <span data-i18n="Setup and usage">Setup and usage</span>
+    </a>
+  </div>
+  <DocumentationNav items={sections} />
+  <section
+    id="component-library"
+    data-doc-section="component-library"
+    aria-labelledby="component-library-title"
+  >
+    <div class="overview-intro">
+      <h2 id="component-library-title">
+        <span data-i18n="Component library">Component library</span>
+      </h2>
+      <p>
+        <span data-i18n="From basic controls to form flows. Every example uses shared tokens.">
+          From basic controls to form flows. Every example uses shared tokens.
+        </span>
+      </p>
+    </div>
+    <div class="component-index">
+      {components.map((item, index) => (
+        <a href={'/components/' + item.slug + '/'} class="component-link">
+          <span class="component-number">{String(index + 1).padStart(2, '0')}</span>
+          <h3 data-i18n={item.title}>{item.title}</h3>
+          <p data-i18n={item.summary}>{item.summary}</p>
+          <span class="component-cta">
+            <span data-i18n="Examples and API">Examples and API</span>{' '}
+            <span aria-hidden="true">→</span>
+          </span>
+        </a>
+      ))}
+    </div>
+  </section>
+  <section
+    id="shared-foundation"
+    class="foundation-strip"
+    data-doc-section="shared-foundation"
+    aria-labelledby="shared-foundation-title"
+  >
+    <h2 id="shared-foundation-title">
+      <span data-i18n="Shared foundation">Shared foundation</span>
+    </h2>
+    <p>
+      <span data-i18n="Every component builds on five foundation pages; each page owns its own values.">
+        Every component builds on five foundation pages; each page owns its own values.
+      </span>
+    </p>
+    <ul>
+      {foundations.map(item => (
+        <li>
+          <a href={item.href}>
+            <span data-i18n={item.label}>{item.label}</span>
+          </a>{' '}
+          <span data-i18n={item.summary}>{item.summary}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+</DocsLayout>

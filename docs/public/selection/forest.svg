@@ -1,0 +1,18 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 180' width='320' height='180'>
+  <rect width='320' height='180' fill='#e3efe1'/>
+  <circle cx='262' cy='42' r='18' fill='#f2d48c'/>
+  <path d='M0 118 L70 84 L150 112 L230 78 L320 108 V180 H0 Z' fill='#b7d3b0'/>
+  <rect y='140' width='320' height='40' fill='#7fae76'/>
+  <g fill='#5b4636'>
+    <rect x='54' y='128' width='8' height='18'/>
+    <rect x='120' y='122' width='8' height='24'/>
+    <rect x='196' y='130' width='8' height='16'/>
+    <rect x='252' y='124' width='8' height='22'/>
+  </g>
+  <g fill='#3d7550'>
+    <path d='M58 70 L84 130 H32 Z'/>
+    <path d='M124 56 L154 124 H94 Z'/>
+    <path d='M200 80 L224 132 H176 Z'/>
+    <path d='M256 64 L284 126 H228 Z'/>
+  </g>
+</svg>

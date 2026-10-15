@@ -1,0 +1,46 @@
+---
+interface Props {
+  items: readonly { id: string; label: string }[];
+  variant?: 'sections' | 'toc';
+}
+const { items, variant = 'sections' } = Astro.props;
+const name = variant === 'toc' ? 'Contents' : 'On this page';
+// Section links are a closed native disclosure; layout.css hides it beside the desktop
+// contents rail, so only one set of section links is visible at any width.
+---
+
+{variant === 'toc' ? (
+  <nav
+    class="documentation-nav toc"
+    data-doc-nav="toc"
+    aria-label={name}
+    data-i18n-aria-label={name}
+  >
+    <p>
+      <span data-i18n={name}>{name}</span>
+    </p>
+    {items.map(item => (
+      <a href={'#' + item.id}>
+        <span data-i18n={item.label}>{item.label}</span>
+      </a>
+    ))}
+  </nav>
+) : (
+  <details class="documentation-contents" data-doc-contents>
+    <summary>
+      <span data-i18n={name}>{name}</span>
+    </summary>
+    <nav
+      class="documentation-nav"
+      data-doc-nav="sections"
+      aria-label={name}
+      data-i18n-aria-label={name}
+    >
+      {items.map(item => (
+        <a href={'#' + item.id}>
+          <span data-i18n={item.label}>{item.label}</span>
+        </a>
+      ))}
+    </nav>
+  </details>
+)}

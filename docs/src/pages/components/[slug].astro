@@ -1,0 +1,874 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import CodeExample from '../../components/CodeExample.astro';
+import ApiReference from '../../components/ApiReference.astro';
+import DocumentationNav from '../../components/DocumentationNav.astro';
+import PageBreadcrumb from '../../components/shell/PageBreadcrumb.astro';
+import { components } from '../../data/catalog';
+import documentationRules from '../../data/documentation-rules.json';
+import type { GenUIComponentName } from '../../genui/contracts';
+import { WebButtonDemo as ButtonDemo } from '../../react/ButtonDemo';
+import { WebInputDemo as InputDemo } from '../../react/InputDemo';
+import { WebSelectDemo as SelectDemo } from '../../react/SelectDemo';
+import PillDemo from '../../react/PillDemo';
+import CardDemo from '../../react/CardDemo';
+import SplitterDemo from '../../react/SplitterDemo';
+import BreadcrumbDemo from '../../react/BreadcrumbDemo';
+import PaginationDemo from '../../react/PaginationDemo';
+import StepsDemo from '../../react/StepsDemo';
+import AutoCompleteDemo from '../../react/AutoCompleteDemo';
+import CascaderDemo from '../../react/CascaderDemo';
+import DropdownDemo from '../../react/DropdownDemo';
+import { WebCheckboxDemo as CheckboxDemo } from '../../react/CheckboxDemo';
+import { WebRadioDemo as RadioDemo } from '../../react/RadioDemo';
+import { WebSwitchDemo as SwitchDemo } from '../../react/SwitchDemo';
+import SliderDemo from '../../react/SliderDemo';
+import AccordionDemo from '../../react/AccordionDemo';
+import FormDemo from '../../react/FormDemo';
+import DrawerDemo from '../../react/DrawerDemo';
+import EmptyStateDemo from '../../react/EmptyStateDemo';
+import AvatarDemo from '../../react/AvatarDemo';
+import {
+  ToastDemo,
+  AlertDemo,
+  NotificationDemo,
+  ModalDemo,
+  PopconfirmDemo,
+} from '../../react/FeedbackDemo';
+import DateTimeDemo from '../../react/DateTimeDemo';
+import CollectionDemo, { DataTableDemo } from '../../react/workspace/CollectionDemo';
+import RecordDetailsDemo from '../../react/workspace/RecordDetailsDemo';
+import RecordFormsDemo from '../../react/workspace/RecordFormsDemo';
+import ConnectedWorkspace from '../../react/workspace/kit/ConnectedWorkspace';
+import MediaDemo from '../../react/MediaDemo';
+import ContentPatternsDemo from '../../react/ContentPatternsDemo';
+import CarouselDemo from '../../react/CarouselDemo';
+import UploadDemo from '../../react/UploadDemo';
+import RichMenuDemo from '../../react/RichMenuDemo';
+import ChartDemo from '../../react/ChartDemo';
+import ListyDemo from '../../react/ListyDemo';
+import { extractDemoStyles } from '../../ssr/styles';
+import { sourceHref } from '../source/[...path].txt';
+import workspaceStyles from '../../styles/workspace.css?url';
+import collectionStyles from '../../styles/workspace-collections.css?url';
+import detailStyles from '../../styles/workspace-details.css?url';
+import formStyles from '../../styles/workspace-forms.css?url';
+import kitStyles from '../../styles/workspace-kit.css?url';
+import connectedStyles from '../../styles/workspace-connected.css?url';
+import kitCollectionStyles from '../../styles/kit-collections.css?url';
+import kitRecordStyles from '../../styles/kit-records.css?url';
+import sliderStyles from '../../styles/slider.css?url';
+import buttonCatalogStyles from '../../styles/button-catalog.css?url';
+import pillCatalogStyles from '../../styles/pill-catalog.css?url';
+import cardCatalogStyles from '../../styles/card-catalog.css?url';
+import atlasCardStyles from '../../styles/atlas-card.css?url';
+import splitterStyles from '../../styles/atlas-splitter.css?url';
+import splitterCatalogStyles from '../../styles/splitter-catalog.css?url';
+import breadcrumbStyles from '../../styles/atlas-breadcrumb.css?url';
+import breadcrumbCatalogStyles from '../../styles/breadcrumb-catalog.css?url';
+import paginationStyles from '../../styles/atlas-pagination.css?url';
+import paginationCatalogStyles from '../../styles/pagination-catalog.css?url';
+import stepsStyles from '../../styles/atlas-steps.css?url';
+import stepsCatalogStyles from '../../styles/steps-catalog.css?url';
+import autoCompleteStyles from '../../styles/atlas-autocomplete.css?url';
+import autoCompleteCatalogStyles from '../../styles/autocomplete-catalog.css?url';
+import cascaderStyles from '../../styles/atlas-cascader.css?url';
+import cascaderCatalogStyles from '../../styles/cascader-catalog.css?url';
+import dropdownStyles from '../../styles/atlas-dropdown.css?url';
+import dropdownCatalogStyles from '../../styles/dropdown-catalog.css?url';
+import dataEntryCatalogStyles from '../../styles/data-entry-catalog.css?url';
+import feedbackStyles from '../../styles/atlas-feedback.css?url';
+import dateTimeStyles from '../../styles/atlas-date-time.css?url';
+import selectionVariantStyles from '../../styles/atlas-selection-variants.css?url';
+import drawerExtensionStyles from '../../styles/atlas-drawer-extensions.css?url';
+import kitFormFixes from '../../styles/kit-forms-fixes.css?url';
+import avatarStyles from '../../styles/atlas-avatar.css?url';
+import kitIdentityStyles from '../../styles/kit-identity.css?url';
+import mediaStyles from '../../styles/atlas-media.css?url';
+import screenshotStyles from '../../styles/atlas-screenshot.css?url';
+import contentPatternStyles from '../../styles/atlas-content-patterns.css?url';
+import carouselStyles from '../../styles/atlas-carousel.css?url';
+import uploadStyles from '../../styles/atlas-upload.css?url';
+import richMenuStyles from '../../styles/atlas-rich-menu.css?url';
+import chartStyles from '../../styles/atlas-chart.css?url';
+import listyStyles from '../../styles/atlas-listy.css?url';
+export function getStaticPaths() {
+  return components.map(component => ({ params: { slug: component.slug }, props: { component } }));
+}
+const { component } = Astro.props;
+const demos = {
+  button: ButtonDemo,
+  input: InputDemo,
+  select: SelectDemo,
+  pill: PillDemo,
+  card: CardDemo,
+  splitter: SplitterDemo,
+  breadcrumb: BreadcrumbDemo,
+  pagination: PaginationDemo,
+  steps: StepsDemo,
+  autocomplete: AutoCompleteDemo,
+  cascader: CascaderDemo,
+  dropdown: DropdownDemo,
+  checkbox: CheckboxDemo,
+  radio: RadioDemo,
+  switch: SwitchDemo,
+  slider: SliderDemo,
+  accordion: AccordionDemo,
+  form: FormDemo,
+  drawer: DrawerDemo,
+  'empty-state': EmptyStateDemo,
+  avatar: AvatarDemo,
+  toast: ToastDemo,
+  alert: AlertDemo,
+  notification: NotificationDemo,
+  modal: ModalDemo,
+  popconfirm: PopconfirmDemo,
+  'date-time': DateTimeDemo,
+  'data-table': DataTableDemo,
+  'collection-views': CollectionDemo,
+  'record-details': RecordDetailsDemo,
+  'record-forms': RecordFormsDemo,
+  'record-workspace': ConnectedWorkspace,
+  media: MediaDemo,
+  'content-patterns': ContentPatternsDemo,
+  carousel: CarouselDemo,
+  upload: UploadDemo,
+  'rich-menu': RichMenuDemo,
+  chart: ChartDemo,
+  listy: ListyDemo,
+};
+const workspaceSheets: Record<string, { file: string; href: string }> = {
+  'data-table': { file: 'workspace-collections.css', href: collectionStyles },
+  'collection-views': { file: 'workspace-collections.css', href: collectionStyles },
+  'record-details': { file: 'workspace-details.css', href: detailStyles },
+  'record-forms': { file: 'workspace-forms.css', href: formStyles },
+};
+const featureSheet = workspaceSheets[component.slug];
+
+// Route stylesheets in cascade order. The head links and the generated Astro
+// example both read this list, so copied example code loads the route's CSS.
+type RouteSheetRule = readonly [included: boolean, file: string, href: string];
+const slug = component.slug;
+const feedbackRoutes = ['toast', 'alert', 'notification', 'modal', 'popconfirm'];
+const identityRoutes = ['data-table', 'collection-views', 'record-workspace'];
+const kitRoute = Boolean(featureSheet) || slug === 'record-workspace';
+const routeSheetRules: RouteSheetRule[] = [
+  [['slider', 'record-workspace'].includes(slug), 'slider.css', sliderStyles],
+  [slug === 'button', 'button-catalog.css', buttonCatalogStyles],
+  [slug === 'pill', 'pill-catalog.css', pillCatalogStyles],
+  [slug === 'card' || kitRoute || feedbackRoutes.includes(slug), 'atlas-card.css', atlasCardStyles],
+  [slug === 'card', 'card-catalog.css', cardCatalogStyles],
+  [
+    slug === 'splitter' || component.category === 'Data workspace',
+    'atlas-splitter.css',
+    splitterStyles,
+  ],
+  [slug === 'splitter', 'splitter-catalog.css', splitterCatalogStyles],
+  [slug === 'breadcrumb', 'atlas-breadcrumb.css', breadcrumbStyles],
+  [slug === 'breadcrumb', 'breadcrumb-catalog.css', breadcrumbCatalogStyles],
+  [
+    ['pagination', 'record-workspace', 'empty-state'].includes(slug),
+    'atlas-pagination.css',
+    paginationStyles,
+  ],
+  [slug === 'pagination', 'pagination-catalog.css', paginationCatalogStyles],
+  [slug === 'steps', 'atlas-steps.css', stepsStyles],
+  [slug === 'steps', 'steps-catalog.css', stepsCatalogStyles],
+  [slug === 'autocomplete', 'atlas-autocomplete.css', autoCompleteStyles],
+  [slug === 'autocomplete', 'autocomplete-catalog.css', autoCompleteCatalogStyles],
+  [slug === 'cascader', 'atlas-cascader.css', cascaderStyles],
+  [['listy', 'cascader'].includes(slug), 'atlas-listy.css', listyStyles],
+  [slug === 'cascader', 'cascader-catalog.css', cascaderCatalogStyles],
+  [['dropdown', 'rich-menu'].includes(slug), 'atlas-dropdown.css', dropdownStyles],
+  [slug === 'dropdown', 'dropdown-catalog.css', dropdownCatalogStyles],
+  [
+    ['input', 'select', 'checkbox', 'radio', 'switch', 'slider', 'form', 'date-time'].includes(
+      slug,
+    ),
+    'data-entry-catalog.css',
+    dataEntryCatalogStyles,
+  ],
+  [
+    ['checkbox', 'radio', 'switch'].includes(slug),
+    'atlas-selection-variants.css',
+    selectionVariantStyles,
+  ],
+  [slug === 'drawer', 'atlas-drawer-extensions.css', drawerExtensionStyles],
+  [
+    ['avatar', 'content-patterns', ...identityRoutes].includes(slug),
+    'atlas-avatar.css',
+    avatarStyles,
+  ],
+  [feedbackRoutes.includes(slug), 'atlas-feedback.css', feedbackStyles],
+  [slug === 'date-time', 'atlas-date-time.css', dateTimeStyles],
+  [Boolean(featureSheet), 'workspace.css', workspaceStyles],
+  [Boolean(featureSheet), featureSheet?.file ?? '', featureSheet?.href ?? ''],
+  [kitRoute, 'workspace-kit.css', kitStyles],
+  [kitRoute, 'kit-forms-fixes.css', kitFormFixes],
+  [slug === 'record-workspace', 'workspace.css', workspaceStyles],
+  [slug === 'record-workspace', 'workspace-connected.css', connectedStyles],
+  [['record-workspace', 'empty-state'].includes(slug), 'kit-collections.css', kitCollectionStyles],
+  [slug === 'record-workspace', 'kit-records.css', kitRecordStyles],
+  [identityRoutes.includes(slug), 'kit-identity.css', kitIdentityStyles],
+  [['media', 'carousel'].includes(slug), 'atlas-media.css', mediaStyles],
+  [slug === 'media', 'atlas-screenshot.css', screenshotStyles],
+  [slug === 'content-patterns', 'atlas-content-patterns.css', contentPatternStyles],
+  [slug === 'carousel', 'atlas-carousel.css', carouselStyles],
+  [slug === 'upload', 'atlas-upload.css', uploadStyles],
+  [slug === 'rich-menu', 'atlas-rich-menu.css', richMenuStyles],
+  [slug === 'chart', 'atlas-chart.css', chartStyles],
+];
+const routeSheets = routeSheetRules
+  .filter(([included]) => included)
+  .map(([, file, href]) => ({ file, href }))
+  .filter((sheet, index, all) => all.findIndex(other => other.file === sheet.file) === index);
+const ssrStyles = extractDemoStyles(demos[component.slug as keyof typeof demos], {
+  documentation: true,
+});
+
+// Source locations published in each page's resources. Paths are relative to
+// docs/src/react, docs/src/styles, docs/tests, docs/browser and docs/src/data.
+// A route without an entry fails the documentation build gate until its adapter,
+// styles and tests are named.
+interface ComponentSources {
+  island: { module: string; component: string; named?: boolean };
+  adapters?: readonly string[];
+  styles: readonly string[];
+  tests: readonly string[];
+  browserTests?: readonly string[];
+  catalogFiles?: readonly string[];
+  capabilities?: readonly GenUIComponentName[];
+}
+const uxCompletionTests = ['ux-completion.spec.ts'];
+const uxPatternCatalog = ['catalog-ux-patterns.ts'];
+const dataEntry = ['web.css', 'data-entry-catalog.css'];
+const feedbackSources = ['components.css', 'atlas-feedback.css', 'atlas-card.css'];
+const componentSources: Record<string, ComponentSources> = {
+  button: {
+    island: { module: 'ButtonDemo', component: 'WebButtonDemo', named: true },
+    adapters: ['AtlasButton.tsx'],
+    styles: ['button-catalog.css'],
+    tests: ['button-refresh'],
+  },
+  input: {
+    island: { module: 'InputDemo', component: 'WebInputDemo', named: true },
+    adapters: ['NumberStepper.tsx', 'DataEntryCatalog.tsx'],
+    styles: dataEntry,
+    tests: ['patterns', 'data-entry-catalog'],
+  },
+  select: {
+    island: { module: 'SelectDemo', component: 'WebSelectDemo', named: true },
+    adapters: ['AtlasPill.tsx', 'DataEntryCatalog.tsx'],
+    styles: dataEntry,
+    tests: ['patterns', 'data-entry-catalog'],
+  },
+  pill: {
+    island: { module: 'PillDemo', component: 'PillDemo' },
+    adapters: ['AtlasPill.tsx'],
+    styles: ['pill-catalog.css'],
+    tests: ['pill-refresh', 'pill-colors'],
+  },
+  card: {
+    island: { module: 'CardDemo', component: 'CardDemo' },
+    adapters: ['cards/AtlasCard.tsx'],
+    styles: ['atlas-card.css', 'card-catalog.css', 'genui-card-lab.css', 'genui-runtime.css'],
+    tests: ['card', 'card-primitives'],
+    capabilities: ['AtlasEntityCard', 'AtlasMetricCard', 'AtlasPurposeCard'],
+  },
+  splitter: {
+    island: { module: 'SplitterDemo', component: 'SplitterDemo' },
+    adapters: ['AtlasSplitter.tsx'],
+    styles: ['atlas-splitter.css', 'splitter-catalog.css'],
+    tests: ['splitter', 'splitter-page'],
+  },
+  breadcrumb: {
+    island: { module: 'BreadcrumbDemo', component: 'BreadcrumbDemo' },
+    adapters: ['AtlasBreadcrumb.tsx'],
+    styles: ['atlas-breadcrumb.css', 'breadcrumb-catalog.css'],
+    tests: ['breadcrumb'],
+  },
+  pagination: {
+    island: { module: 'PaginationDemo', component: 'PaginationDemo' },
+    adapters: ['AtlasPagination.tsx'],
+    styles: ['atlas-pagination.css', 'pagination-catalog.css'],
+    tests: ['pagination', 'pagination-page'],
+  },
+  steps: {
+    island: { module: 'StepsDemo', component: 'StepsDemo' },
+    adapters: ['AtlasSteps.tsx'],
+    styles: ['atlas-steps.css', 'steps-catalog.css'],
+    tests: ['steps', 'steps-page'],
+  },
+  autocomplete: {
+    island: { module: 'AutoCompleteDemo', component: 'AutoCompleteDemo' },
+    adapters: ['AtlasAutoComplete.tsx'],
+    styles: ['atlas-autocomplete.css', 'autocomplete-catalog.css'],
+    tests: ['autocomplete', 'autocomplete-page'],
+  },
+  cascader: {
+    island: { module: 'CascaderDemo', component: 'CascaderDemo' },
+    adapters: ['AtlasCascader.tsx'],
+    styles: ['atlas-cascader.css', 'cascader-catalog.css'],
+    tests: ['cascader', 'cascader-page'],
+  },
+  dropdown: {
+    island: { module: 'DropdownDemo', component: 'DropdownDemo' },
+    adapters: ['AtlasDropdown.tsx'],
+    styles: ['atlas-dropdown.css', 'dropdown-catalog.css'],
+    tests: ['dropdown-page'],
+  },
+  checkbox: {
+    island: { module: 'CheckboxDemo', component: 'WebCheckboxDemo', named: true },
+    adapters: ['DataEntryCatalog.tsx', 'AtlasSelectionVariants.tsx'],
+    styles: [...dataEntry, 'atlas-selection-variants.css'],
+    tests: ['patterns', 'selection-size'],
+  },
+  radio: {
+    island: { module: 'RadioDemo', component: 'WebRadioDemo', named: true },
+    adapters: ['AtlasSegmented.tsx', 'DataEntryCatalog.tsx', 'AtlasSelectionVariants.tsx'],
+    styles: [...dataEntry, 'atlas-selection-variants.css'],
+    tests: ['patterns', 'selection-size'],
+  },
+  switch: {
+    island: { module: 'SwitchDemo', component: 'WebSwitchDemo', named: true },
+    adapters: ['DataEntryCatalog.tsx', 'AtlasSelectionVariants.tsx'],
+    styles: [...dataEntry, 'atlas-selection-variants.css'],
+    tests: ['patterns', 'selection-size'],
+  },
+  slider: {
+    island: { module: 'SliderDemo', component: 'SliderDemo' },
+    adapters: ['AtlasSlider.tsx', 'DataEntryCatalog.tsx'],
+    styles: ['slider.css', 'data-entry-catalog.css'],
+    tests: ['slider'],
+  },
+  accordion: {
+    island: { module: 'AccordionDemo', component: 'AccordionDemo' },
+    adapters: ['AccordionExamples.tsx'],
+    styles: ['components.css'],
+    tests: ['patterns'],
+  },
+  form: {
+    island: { module: 'FormDemo', component: 'FormDemo' },
+    adapters: ['FormExamples.tsx', 'DataEntryCatalog.tsx'],
+    styles: dataEntry,
+    tests: ['patterns', 'data-entry-catalog'],
+  },
+  drawer: {
+    island: { module: 'DrawerDemo', component: 'DrawerDemo' },
+    adapters: ['DrawerExamples.tsx', 'AtlasOverlay.tsx'],
+    styles: ['components.css', 'atlas-drawer-extensions.css'],
+    tests: ['patterns'],
+  },
+  'empty-state': {
+    island: { module: 'EmptyStateDemo', component: 'EmptyStateDemo' },
+    adapters: ['AtlasEmptyState.tsx'],
+    styles: ['components.css', 'atlas-pagination.css', 'kit-collections.css'],
+    tests: [],
+    browserTests: ['refactoring-ui.spec.ts'],
+    catalogFiles: ['catalog-content.ts'],
+  },
+  avatar: {
+    island: { module: 'AvatarDemo', component: 'AvatarDemo' },
+    adapters: ['AtlasAvatar.tsx'],
+    styles: ['atlas-avatar.css'],
+    tests: [],
+    browserTests: ['refactoring-ui.spec.ts'],
+    catalogFiles: ['catalog-content.ts'],
+  },
+  toast: {
+    island: { module: 'FeedbackDemo', component: 'ToastDemo', named: true },
+    adapters: ['AtlasFeedback.tsx'],
+    styles: feedbackSources,
+    tests: ['patterns'],
+  },
+  alert: {
+    island: { module: 'FeedbackDemo', component: 'AlertDemo', named: true },
+    adapters: ['AtlasFeedback.tsx'],
+    styles: feedbackSources,
+    tests: ['patterns'],
+  },
+  notification: {
+    island: { module: 'FeedbackDemo', component: 'NotificationDemo', named: true },
+    adapters: ['AtlasFeedback.tsx'],
+    styles: feedbackSources,
+    tests: ['patterns'],
+  },
+  modal: {
+    island: { module: 'FeedbackDemo', component: 'ModalDemo', named: true },
+    adapters: ['AtlasFeedback.tsx'],
+    styles: feedbackSources,
+    tests: ['patterns'],
+  },
+  popconfirm: {
+    island: { module: 'FeedbackDemo', component: 'PopconfirmDemo', named: true },
+    adapters: ['AtlasFeedback.tsx'],
+    styles: feedbackSources,
+    tests: ['patterns'],
+  },
+  'date-time': {
+    island: { module: 'DateTimeDemo', component: 'DateTimeDemo' },
+    adapters: ['AtlasDateTime.tsx'],
+    styles: ['atlas-date-time.css', 'data-entry-catalog.css'],
+    tests: ['patterns'],
+  },
+  'data-table': {
+    island: { module: 'workspace/CollectionDemo', component: 'DataTableDemo', named: true },
+    styles: ['workspace.css', 'workspace-collections.css', 'atlas-avatar.css', 'kit-identity.css'],
+    tests: ['workspace', 'kit-collections'],
+  },
+  'collection-views': {
+    island: { module: 'workspace/CollectionDemo', component: 'CollectionDemo' },
+    styles: ['workspace.css', 'workspace-collections.css', 'atlas-avatar.css', 'kit-identity.css'],
+    tests: ['workspace', 'kit-collections'],
+  },
+  'record-details': {
+    island: { module: 'workspace/RecordDetailsDemo', component: 'RecordDetailsDemo' },
+    styles: ['workspace.css', 'workspace-details.css'],
+    tests: ['workspace', 'kit-records'],
+  },
+  'record-forms': {
+    island: { module: 'workspace/RecordFormsDemo', component: 'RecordFormsDemo' },
+    styles: ['workspace.css', 'workspace-forms.css'],
+    tests: ['workspace'],
+  },
+  'record-workspace': {
+    island: { module: 'workspace/kit/ConnectedWorkspace', component: 'ConnectedWorkspace' },
+    styles: [
+      'workspace.css',
+      'workspace-connected.css',
+      'kit-collections.css',
+      'kit-records.css',
+      'atlas-avatar.css',
+      'kit-identity.css',
+    ],
+    tests: ['workspace-kit-core', 'kit-records', 'kit-collections'],
+    browserTests: ['ux-collection.spec.ts'],
+  },
+  media: {
+    island: { module: 'MediaDemo', component: 'MediaDemo' },
+    adapters: ['AtlasMediaFrame.tsx', 'AtlasScreenshot.tsx'],
+    styles: ['atlas-media.css', 'atlas-screenshot.css'],
+    tests: [],
+    browserTests: uxCompletionTests,
+    catalogFiles: uxPatternCatalog,
+  },
+  'content-patterns': {
+    island: { module: 'ContentPatternsDemo', component: 'ContentPatternsDemo' },
+    adapters: ['AtlasIconList.tsx', 'AtlasQuote.tsx', 'AtlasAvatarGroup.tsx', 'AtlasAvatar.tsx'],
+    styles: ['atlas-avatar.css', 'atlas-content-patterns.css'],
+    tests: [],
+    browserTests: uxCompletionTests,
+    catalogFiles: uxPatternCatalog,
+  },
+  carousel: {
+    island: { module: 'CarouselDemo', component: 'CarouselDemo' },
+    adapters: ['AtlasCarousel.tsx', 'AtlasMediaFrame.tsx'],
+    styles: ['atlas-media.css', 'atlas-carousel.css'],
+    tests: [],
+    browserTests: uxCompletionTests,
+    catalogFiles: uxPatternCatalog,
+  },
+  upload: {
+    island: { module: 'UploadDemo', component: 'UploadDemo' },
+    adapters: ['AtlasUpload.tsx'],
+    styles: ['atlas-upload.css'],
+    tests: [],
+    browserTests: uxCompletionTests,
+    catalogFiles: uxPatternCatalog,
+  },
+  'rich-menu': {
+    island: { module: 'RichMenuDemo', component: 'RichMenuDemo' },
+    adapters: ['AtlasRichMenu.tsx', 'AtlasDropdown.tsx'],
+    styles: ['atlas-dropdown.css', 'atlas-rich-menu.css'],
+    tests: [],
+    browserTests: uxCompletionTests,
+    catalogFiles: uxPatternCatalog,
+  },
+  chart: {
+    island: { module: 'ChartDemo', component: 'ChartDemo' },
+    adapters: ['AtlasChart.tsx'],
+    styles: ['atlas-chart.css'],
+    tests: [],
+    browserTests: uxCompletionTests,
+    catalogFiles: uxPatternCatalog,
+  },
+  listy: {
+    island: { module: 'ListyDemo', component: 'ListyDemo' },
+    adapters: ['AtlasListy.tsx', 'AtlasListyItem.tsx'],
+    styles: ['atlas-listy.css'],
+    tests: [],
+    browserTests: ['listy-cascader.spec.ts'],
+    catalogFiles: ['catalog-listy.ts'],
+  },
+};
+const sources: ComponentSources | undefined = componentSources[component.slug];
+const island = sources?.island;
+const styleBinding = (file: string) =>
+  file
+    .slice(0, -'.css'.length)
+    .split('-')
+    .map((part, index) => (index ? part.charAt(0).toUpperCase() + part.slice(1) : part))
+    .join('') + 'Styles';
+const exampleStyleImports = routeSheets.map(
+  sheet => `import ${styleBinding(sheet.file)} from '../styles/${sheet.file}?url';`,
+);
+const exampleHeadLinks = routeSheets.length
+  ? [
+      '  <Fragment slot="head">',
+      ...routeSheets.map(
+        sheet => `    <link rel="stylesheet" href={${styleBinding(sheet.file)}} />`,
+      ),
+      '  </Fragment>',
+    ]
+  : [];
+const astroExample =
+  island &&
+  [
+    '---',
+    '// src/pages/example.astro',
+    "import DocsLayout from '../layouts/DocsLayout.astro';",
+    `import ${island.named ? `{ ${island.component} }` : island.component} from '../react/${island.module}';`,
+    ...exampleStyleImports,
+    '---',
+    '',
+    `<DocsLayout title="${component.title}" description="Static page with one trusted React island.">`,
+    ...exampleHeadLinks,
+    `  <${island.component} documentation client:load />`,
+    '</DocsLayout>',
+  ].join('\n');
+const resourceGroups = [
+  {
+    kind: 'catalog',
+    label: 'Component catalog data',
+    paths: [
+      ...(sources?.catalogFiles ?? []).map(file => 'docs/src/data/' + file),
+      'docs/src/data/catalog.ts',
+    ],
+  },
+  {
+    kind: 'route',
+    label: 'Astro route and layout',
+    paths: [
+      'docs/src/pages/components/[slug].astro',
+      'docs/src/layouts/DocsLayout.astro',
+      'docs/src/components/DocumentationNav.astro',
+    ],
+  },
+  {
+    kind: 'adapter',
+    label: 'React adapters',
+    paths: sources
+      ? [sources.island.module + '.tsx', ...(sources.adapters ?? [])].map(
+          file => 'docs/src/react/' + file,
+        )
+      : [],
+  },
+  {
+    kind: 'styles',
+    label: 'Styles and tokens',
+    paths: [
+      ...(sources?.styles ?? []).map(file => 'docs/src/styles/' + file),
+      'docs/src/styles/docs.css',
+      'docs/src/styles/documentation.css',
+      'docs/src/theme.ts',
+    ],
+  },
+  { kind: 'instructions', label: 'Agent instructions', paths: ['docs/AGENTS.md', 'AGENTS.md'] },
+  {
+    kind: 'tests',
+    label: 'Regression tests',
+    paths: [
+      ...[...(sources?.tests ?? []), 'documentation-presentation'].map(
+        name => 'docs/tests/' + name + '.test.mjs',
+      ),
+      ...(sources?.browserTests ?? []).map(file => 'docs/browser/' + file),
+    ],
+  },
+  {
+    kind: 'genui',
+    label: 'GenUI contracts and trusted renderer',
+    paths: [
+      'docs/src/genui/contracts.ts',
+      'docs/src/genui/policy.ts',
+      'docs/src/react/genui/AtlasGenUISurface.tsx',
+    ],
+  },
+];
+const sectionLabels: Record<string, string> = documentationRules.sectionLabels;
+const sectionItems = documentationRules.componentSections.map(id => ({
+  id,
+  label: sectionLabels[id] ?? id,
+}));
+// Previous and next follow the catalog order used by the navigation.
+const catalogPosition = components.findIndex(item => item.slug === component.slug);
+const previousComponent = catalogPosition > 0 ? components.at(catalogPosition - 1) : undefined;
+const nextComponent = catalogPosition >= 0 ? components.at(catalogPosition + 1) : undefined;
+---
+
+<DocsLayout title={component.title} description={component.summary} slug={component.slug}>
+  <Fragment slot="head">
+    <Fragment set:html={ssrStyles} />
+    {routeSheets.map(sheet => (
+      <link rel="stylesheet" href={sheet.href} />
+    ))}
+  </Fragment>
+  <div class="page-grid">
+    <article>
+      <PageBreadcrumb
+        items={[{ label: 'Components', href: '/' }, { label: component.category }]}
+        current={component.title}
+      />
+      <h1 data-i18n={component.title}>{component.title}</h1>
+      <p class="lead" data-i18n={component.summary}>
+        {component.summary}
+      </p>
+      <div class="component-meta">
+        <span>Ant Design · {component.antdComponent}</span>
+        <a href={component.sourceUrl}>
+          <span data-i18n="Official API reference">Official API reference</span>
+        </a>
+      </div>
+      <DocumentationNav items={sectionItems} />
+      <section
+        id="usage"
+        class="doc-section"
+        data-doc-section="usage"
+        aria-labelledby="usage-title"
+      >
+        <h2 id="usage-title">
+          <span data-i18n="When to use">When to use</span>
+        </h2>
+        <ul>
+          {component.whenToUse.map(item => (
+            <li data-i18n={item}>{item}</li>
+          ))}
+        </ul>
+      </section>
+      <section
+        id="examples"
+        class="doc-section"
+        data-doc-section="examples"
+        aria-labelledby="examples-title"
+      >
+        <h2 id="examples-title">
+          <span data-i18n="Live examples">Live examples</span>
+        </h2>
+        <p class="section-intro">
+          <span data-i18n="Open Tweaker from the middle of the right edge to explore component settings and sizes.">
+            Open Tweaker from the middle of the right edge to explore component settings and sizes.
+          </span>
+        </p>
+        <div class="live-preview" data-doc-demo>
+          {component.slug === 'button' && <ButtonDemo documentation client:load />}
+          {component.slug === 'input' && <InputDemo documentation client:load />}
+          {component.slug === 'select' && <SelectDemo documentation client:load />}
+          {component.slug === 'pill' && <PillDemo documentation client:load />}
+          {component.slug === 'card' && <CardDemo documentation client:load />}
+          {component.slug === 'splitter' && <SplitterDemo documentation client:load />}
+          {component.slug === 'breadcrumb' && <BreadcrumbDemo documentation client:load />}
+          {component.slug === 'pagination' && <PaginationDemo documentation client:load />}
+          {component.slug === 'steps' && <StepsDemo documentation client:load />}
+          {component.slug === 'autocomplete' && <AutoCompleteDemo documentation client:load />}
+          {component.slug === 'cascader' && <CascaderDemo documentation client:load />}
+          {component.slug === 'dropdown' && <DropdownDemo documentation client:load />}
+          {component.slug === 'checkbox' && <CheckboxDemo documentation client:load />}
+          {component.slug === 'radio' && <RadioDemo documentation client:load />}
+          {component.slug === 'switch' && <SwitchDemo documentation client:load />}
+          {component.slug === 'slider' && <SliderDemo documentation client:load />}
+          {component.slug === 'accordion' && <AccordionDemo documentation client:load />}
+          {component.slug === 'form' && <FormDemo documentation client:load />}
+          {component.slug === 'drawer' && <DrawerDemo documentation client:load />}
+          {component.slug === 'empty-state' && <EmptyStateDemo documentation client:load />}
+          {component.slug === 'avatar' && <AvatarDemo documentation client:load />}
+          {component.slug === 'toast' && <ToastDemo documentation client:load />}
+          {component.slug === 'alert' && <AlertDemo documentation client:load />}
+          {component.slug === 'notification' && <NotificationDemo documentation client:load />}
+          {component.slug === 'modal' && <ModalDemo documentation client:load />}
+          {component.slug === 'popconfirm' && <PopconfirmDemo documentation client:load />}
+          {component.slug === 'date-time' && <DateTimeDemo documentation client:load />}
+          {component.slug === 'data-table' && <DataTableDemo documentation client:load />}
+          {component.slug === 'collection-views' && <CollectionDemo documentation client:load />}
+          {component.slug === 'record-details' && <RecordDetailsDemo documentation client:load />}
+          {component.slug === 'record-forms' && <RecordFormsDemo documentation client:load />}
+          {component.slug === 'record-workspace' && (
+            <ConnectedWorkspace documentation client:load />
+          )}
+          {component.slug === 'media' && <MediaDemo documentation client:load />}
+          {component.slug === 'content-patterns' && (
+            <ContentPatternsDemo documentation client:load />
+          )}
+          {component.slug === 'carousel' && <CarouselDemo documentation client:load />}
+          {component.slug === 'upload' && <UploadDemo documentation client:load />}
+          {component.slug === 'rich-menu' && <RichMenuDemo documentation client:load />}
+          {component.slug === 'chart' && <ChartDemo documentation client:load />}
+          {component.slug === 'listy' && <ListyDemo documentation client:load />}
+        </div>
+        <noscript>
+          <p>
+            <span data-i18n="Example interactions require JavaScript. API documentation and usage code remain readable below.">
+              Example interactions require JavaScript. API documentation and usage code remain
+              readable below.
+            </span>
+          </p>
+        </noscript>
+      </section>
+      <section id="code" class="doc-section" data-doc-section="code" aria-labelledby="code-title">
+        <h2 id="code-title">
+          <span data-i18n="Usage code">Usage code</span>
+        </h2>
+        {component.examples.map(example => (
+          <div class="example-code">
+            <h3 data-i18n={example.title}>{example.title}</h3>
+            <p data-i18n={example.description}>{example.description}</p>
+            <CodeExample code={example.code} title={example.title} />
+          </div>
+        ))}
+      </section>
+      <section
+        id="astro"
+        class="doc-section"
+        data-doc-section="astro"
+        aria-labelledby="astro-title"
+      >
+        <h2 id="astro-title">
+          <span data-i18n="Astro integration">Astro integration</span>
+        </h2>
+        <p class="section-intro">
+          <span data-i18n="Astro renders this page as static HTML. The live example is one trusted React island: Astro passes serializable props, while React owns state, events and focus inside the island.">
+            Astro renders this page as static HTML. The live example is one trusted React island:
+            Astro passes serializable props, while React owns state, events and focus inside the
+            island.
+          </span>
+        </p>
+        {astroExample && <CodeExample code={astroExample} title="Astro page with a React island" />}
+        <p class="documentation-link">
+          <a href="/getting-started/#astro-integration">
+            <span data-i18n="Read the Astro integration guide">
+              Read the Astro integration guide
+            </span>
+          </a>
+        </p>
+      </section>
+      <section id="api" class="doc-section" data-doc-section="api" aria-labelledby="api-title">
+        <h2 id="api-title">API</h2>
+        <p class="section-intro">
+          <span data-i18n="Commonly used properties. See the official component reference for the full contract.">
+            Commonly used properties. See the official component reference for the full contract.
+          </span>
+        </p>
+        {component.apiDescription && (
+          <p data-i18n={component.apiDescription}>{component.apiDescription}</p>
+        )}
+        <ApiReference rows={component.api} label={component.title + ' API table'} />
+        {component.nativeApi && (
+          <>
+            <h3 data-i18n="Underlying Ant Design API">Underlying Ant Design API</h3>
+            <p data-i18n="These library settings are used inside the example. They are separate from the Atlas component props above.">
+              These library settings are used inside the example. They are separate from the Atlas
+              component props above.
+            </p>
+            <ApiReference rows={component.nativeApi} label="Ant Design API reference" />
+          </>
+        )}
+        <p class="documentation-link">
+          <a data-doc-official-reference href={component.sourceUrl}>
+            <span data-i18n="Official API reference">Official API reference</span>
+          </a>
+        </p>
+      </section>
+      <section
+        id="accessibility"
+        class="doc-section"
+        data-doc-section="accessibility"
+        aria-labelledby="accessibility-title"
+      >
+        <h2 id="accessibility-title">
+          <span data-i18n="Accessibility">Accessibility</span>
+        </h2>
+        <ul>
+          {component.accessibility.map(item => (
+            <li data-i18n={item}>{item}</li>
+          ))}
+        </ul>
+      </section>
+      <section
+        id="notes"
+        class="doc-section"
+        data-doc-section="notes"
+        aria-labelledby="notes-title"
+      >
+        <h2 id="notes-title">
+          <span data-i18n="Implementation notes">Implementation notes</span>
+        </h2>
+        <ul>
+          {component.notes.map(item => (
+            <li data-i18n={item}>{item}</li>
+          ))}
+        </ul>
+      </section>
+      <section
+        id="resources"
+        class="doc-section"
+        data-doc-section="resources"
+        aria-labelledby="resources-title"
+      >
+        <h2 id="resources-title">
+          <span data-i18n="Source and resources">Source and resources</span>
+        </h2>
+        <ul class="documentation-resources">
+          {resourceGroups.map(group => (
+            <li data-doc-resource={group.kind}>
+              <span data-i18n={group.label}>{group.label}</span>
+              {group.paths.map(path => {
+                const href = sourceHref(path);
+                return href ? (
+                  <a href={href} data-doc-source-link>
+                    <code data-doc-source>{path}</code>
+                  </a>
+                ) : (
+                  <code data-doc-source>{path}</code>
+                );
+              })}
+            </li>
+          ))}
+        </ul>
+        {sources?.capabilities?.length ? (
+          <p data-doc-capability-status>
+            <span data-i18n="Registered GenUI capabilities from this component family:">
+              Registered GenUI capabilities from this component family:
+            </span>{' '}
+            {sources.capabilities.map(name => (
+              <code>{name}</code>
+            ))}
+          </p>
+        ) : (
+          <p data-doc-capability-status>
+            <span data-i18n="No GenUI capability is registered for this component yet. A catalog entry or React export alone is not a GenUI capability.">
+              No GenUI capability is registered for this component yet. A catalog entry or React
+              export alone is not a GenUI capability.
+            </span>
+          </p>
+        )}
+      </section>
+      <nav
+        class="page-neighbors"
+        aria-label="Other components"
+        data-i18n-aria-label="Other components"
+      >
+        {previousComponent && (
+          <a href={'/components/' + previousComponent.slug + '/'} rel="prev">
+            <span data-i18n="Previous">Previous</span>
+            <span data-i18n={previousComponent.title}>{previousComponent.title}</span>
+          </a>
+        )}
+        {nextComponent && (
+          <a href={'/components/' + nextComponent.slug + '/'} rel="next">
+            <span data-i18n="Next">Next</span>
+            <span data-i18n={nextComponent.title}>{nextComponent.title}</span>
+          </a>
+        )}
+      </nav>
+    </article>
+    <DocumentationNav items={sectionItems} variant="toc" />
+  </div>
+</DocsLayout>

@@ -1,0 +1,671 @@
+.color-system-lab {
+  --color-control-min: 19rem;
+  --color-preview-min: 25rem;
+  --color-number-width: 7rem;
+  --color-spectrum-height: 2.25rem;
+  --color-spectrum-segments: 41;
+  --color-window-height: 0.25rem;
+  --color-preset-height: 7.25rem;
+  --color-swatch-height: 5.5rem;
+  --color-preview-padding: var(--space-lg);
+  --color-composition-height: 3rem;
+  --color-composition-marker-size: 0.625rem;
+  display: grid;
+  container-type: inline-size;
+  container-name: color-system;
+  gap: var(--space-section);
+  min-width: 0;
+  font-family: var(--font-body);
+  font-size: var(--text);
+}
+.color-system-lab :is(h2, h3, p, section, div) {
+  min-width: 0;
+}
+.color-system-lab :is(h2, h3) {
+  letter-spacing: 0;
+}
+.color-system-lab :is(.color-workbench-heading, .color-section-heading, .color-channel-footer) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+.color-workbench-grid {
+  display: grid;
+  gap: var(--space-xl);
+  min-width: 0;
+}
+.color-controls,
+.color-results,
+.color-composition,
+.color-export,
+.color-saved {
+  display: grid;
+  align-content: start;
+  gap: var(--space-lg);
+  min-width: 0;
+}
+.color-controls {
+  gap: var(--space-xl);
+  container-type: inline-size;
+  container-name: color-controls;
+}
+.color-system-lab .atlas-segmented {
+  max-width: 100%;
+  overflow-x: auto;
+  font-size: var(--text);
+}
+.color-system-lab .atlas-segmented.color-selection-method {
+  width: 100%;
+  overflow: visible;
+}
+.color-system-lab .atlas-segmented.color-selection-method .ant-segmented-group {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+}
+.color-system-lab .atlas-segmented.color-selection-method .ant-segmented-item {
+  flex: 1 1 0;
+  min-width: 0;
+}
+.color-system-lab .atlas-segmented.color-selection-method .ant-segmented-item-label {
+  white-space: normal;
+  overflow: visible;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+.color-method-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows var(--motion-duration-standard) var(--motion-easing),
+    opacity var(--motion-duration-standard) var(--motion-easing);
+}
+.color-method-panel[data-open='true'] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.color-method-panel[data-open='false'] {
+  pointer-events: none;
+}
+.color-method-clip {
+  overflow: hidden;
+  min-height: 0;
+}
+.color-method-panel[data-open='true']:focus-within {
+  transition: color var(--motion-duration-standard) var(--motion-easing);
+}
+.color-method-panel[data-open='true']:focus-within .color-method-clip {
+  overflow: visible;
+}
+.color-hue-controls {
+  display: grid;
+  gap: var(--space-xl);
+}
+.color-channel {
+  display: grid;
+  gap: var(--space-xs);
+}
+.color-channel-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, var(--color-number-width));
+  align-items: center;
+  gap: var(--space-sm);
+}
+.color-channel-heading label {
+  font-weight: var(--font-weight-label, 550);
+}
+.color-channel-heading .ant-input-number {
+  width: 100%;
+}
+.color-channel-rail {
+  display: grid;
+  gap: var(--space-xs);
+  width: 100%;
+}
+.color-spectrum {
+  display: grid;
+  grid-template-columns: repeat(var(--color-spectrum-segments), minmax(0, 1fr));
+  height: var(--color-spectrum-height);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.color-spectrum span {
+  background: var(--spectrum-color);
+}
+.color-channel-scale {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: var(--text);
+}
+.color-channel-help {
+  color: var(--muted);
+  font-size: var(--text);
+}
+.color-hue-window {
+  position: relative;
+  height: var(--color-window-height);
+  background: var(--surface);
+}
+.color-hue-window span {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: var(--window-left);
+  width: var(--window-width);
+  background: var(--ink);
+  transition:
+    inset-inline-start var(--motion-duration-selection) var(--motion-easing),
+    width var(--motion-duration-selection) var(--motion-easing);
+}
+.color-presets-viewport {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: visible;
+  border-block-end: var(--focus-marker) solid transparent;
+  transition-property: background-color, color, opacity;
+  outline: none;
+}
+.color-presets-viewport:focus-visible {
+  border-block-end-color: var(--focus-color);
+}
+.color-system-lab .color-presets.ant-radio-group {
+  display: grid;
+  --color-preset-rows: 13;
+  grid-template-rows: repeat(var(--color-preset-rows), minmax(var(--color-preset-height), auto));
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: var(--space-xs);
+  width: 100%;
+  min-width: 0;
+}
+.color-system-lab .color-preset.ant-radio-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--space-xs);
+  margin: 0;
+  padding: var(--space-xs) 0.25rem;
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+  min-height: var(--color-preset-height);
+  height: 100%;
+  background: var(--preset-color);
+  color: var(--preset-ink);
+  border-radius: var(--radius);
+}
+/* Column-major order remains shared with arrow-key navigation; every column
+   divides the available panel width equally instead of creating a scroll rail. */
+@container color-controls (min-width: 26rem) {
+  .color-system-lab .color-presets.ant-radio-group {
+    --color-preset-rows: 7;
+  }
+}
+@container color-controls (min-width: 42rem) {
+  .color-system-lab .color-presets.ant-radio-group {
+    --color-preset-rows: 4;
+  }
+}
+@container color-controls (min-width: 58rem) {
+  .color-system-lab .color-presets.ant-radio-group {
+    --color-preset-rows: 3;
+  }
+}
+@container color-controls (min-width: 72rem) {
+  .color-system-lab .color-presets.ant-radio-group {
+    --color-preset-rows: 2;
+  }
+}
+.color-system-lab .color-preset.ant-radio-wrapper > span:last-child {
+  padding: 0;
+  text-align: center;
+  width: 100%;
+  hyphens: manual;
+  overflow-wrap: normal;
+  word-break: normal;
+  font-size: var(--text);
+  line-height: 1.3;
+}
+.color-system-lab .color-preset.ant-radio-wrapper:has(input:checked) > span:last-child {
+  text-decoration-color: var(--preset-ink);
+}
+.color-system-lab .color-preset.ant-radio-wrapper:has(input:focus-visible)::before {
+  inset-block: auto var(--space-xs);
+  inset-inline-start: var(--space-xs);
+  width: calc(100% - var(--space-xs) * 2);
+  height: var(--focus-marker);
+  background: var(--preset-ink);
+}
+.color-system-lab .color-preset .ant-radio {
+  flex-shrink: 0;
+}
+.color-composition-visual {
+  position: relative;
+  padding-block-start: calc(var(--color-composition-marker-size) + var(--space-xs));
+}
+.color-composition-marker {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: clamp(
+    0px,
+    calc(var(--composition-position) - var(--color-composition-marker-size) / 2),
+    calc(100% - var(--color-composition-marker-size))
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--color-composition-marker-size);
+  height: var(--color-composition-marker-size);
+  color: var(--ink);
+  pointer-events: none;
+  opacity: 1;
+  transition:
+    inset-inline-start var(--motion-duration-standard) var(--motion-easing),
+    opacity var(--motion-duration-standard) var(--motion-easing);
+}
+.color-composition-marker[data-visible='false'] {
+  opacity: 0;
+}
+.color-system-lab .color-composition-visual .color-composition-marker svg {
+  width: 100%;
+  height: 100%;
+}
+.color-composition-strip {
+  display: flex;
+  height: var(--color-composition-height);
+  overflow: hidden;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+}
+.color-composition-strip span {
+  width: var(--composition-share);
+  height: 100%;
+  background: var(--composition-color);
+  transition:
+    width var(--motion-duration-standard) var(--motion-easing),
+    background-color var(--motion-duration-standard) var(--motion-easing);
+}
+.color-caption {
+  color: var(--muted);
+  font-size: var(--text);
+}
+.color-state-note {
+  padding-inline-start: var(--space-md);
+  border-inline-start: var(--focus-marker) solid var(--warning);
+  color: var(--ink);
+}
+.color-conversion {
+  display: grid;
+  gap: var(--space-lg);
+}
+.color-seed-surface {
+  display: grid;
+  gap: var(--space-xs);
+  padding: var(--space-lg);
+  min-height: 8rem;
+  border-radius: var(--radius);
+  background: var(--seed-color);
+  color: var(--seed-ink);
+}
+.color-seed-surface code {
+  font-size: var(--text-section);
+}
+.color-conversion-values {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: var(--space-md);
+  margin: 0;
+}
+.color-conversion-values dt {
+  color: var(--muted);
+}
+.color-conversion-values dd {
+  margin: var(--space-xs) 0 0;
+}
+.color-palette {
+  display: grid;
+  gap: var(--space-md);
+}
+.color-palette-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 7.5rem), 1fr));
+  gap: var(--space-xs);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.color-palette-grid li {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-xs);
+  padding: var(--space-sm);
+  min-height: var(--color-swatch-height);
+  background: var(--swatch-color);
+  color: var(--swatch-ink);
+  border-radius: var(--radius-sm);
+  margin: 0;
+}
+.color-seed-preview {
+  border-radius: var(--radius);
+  padding: var(--color-preview-padding);
+  background: var(--panel);
+  color: var(--ink);
+  color-scheme: light;
+}
+.color-seed-preview[data-preview-theme='dark'] {
+  color-scheme: dark;
+}
+.color-preview-content,
+.color-preview-fields {
+  display: grid;
+  gap: var(--space-md);
+}
+.color-preview-fields label {
+  display: grid;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+.color-preview-fields .color-preview-switch {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-md);
+}
+.color-preview-fields .ant-btn {
+  justify-self: start;
+}
+.color-seed-preview .ant-btn-primary {
+  --button-face: var(--color-preview-primary);
+  --button-edge: var(--color-preview-active);
+}
+.color-seed-preview .ant-btn-primary:hover {
+  --button-face: var(--color-preview-hover);
+}
+.color-seed-preview .ant-btn-primary:active {
+  --button-face: var(--color-preview-active);
+}
+.color-seed-preview .color-preview-button::before {
+  transition:
+    inset var(--release-duration) var(--motion-easing),
+    background-color var(--release-duration) var(--motion-easing);
+}
+.color-seed-preview .color-preview-button:active::before {
+  transition-duration: var(--press-duration);
+}
+.color-seed-preview .ant-btn-primary:focus-visible::after {
+  content: '';
+  position: absolute;
+  inset-inline: var(--space-md);
+  inset-block-end: var(--space-xs);
+  height: var(--focus-marker);
+  background: var(--button-text);
+  pointer-events: none;
+}
+.color-seed-preview .atlas-select-popup {
+  background: var(--panel);
+  color: var(--ink);
+}
+.color-token-list {
+  display: grid;
+  gap: var(--space-sm);
+  margin: 0;
+}
+.color-token-list > div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-xs) var(--space-md);
+}
+.color-token-list dt {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+.color-token-list dd {
+  margin: 0;
+}
+.color-contrast[data-contrast-low='true'] {
+  padding-inline-start: var(--space-md);
+  border-inline-start: var(--focus-marker) solid var(--warning);
+}
+.color-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+.color-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  clip-path: inset(50%);
+  overflow: hidden;
+}
+.color-feedback {
+  min-height: 1.6em;
+}
+.color-feedback[role='alert'] {
+  color: var(--error);
+}
+.color-code {
+  max-width: 100%;
+  overflow: auto;
+  margin: 0;
+  padding: var(--space-md);
+  background: var(--field-bg);
+  color: var(--ink);
+  border-radius: var(--radius-sm);
+  border-block-end: var(--focus-marker) solid transparent;
+  outline: none;
+}
+.color-code:focus-visible {
+  border-block-end-color: var(--focus-color);
+}
+.color-saved-list {
+  display: grid;
+  gap: var(--space-md);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.color-saved-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+  padding-block: var(--space-sm);
+  margin: 0;
+}
+.color-saved-swatch {
+  width: var(--target-min);
+  height: var(--target-min);
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+  background: var(--swatch-color);
+}
+@container color-system (min-width: 50rem) {
+  .color-workbench-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (any-pointer: coarse) {
+  .color-system-lab {
+    --color-preset-height: 8rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .color-system-lab .color-method-panel,
+  .color-system-lab .color-hue-window span,
+  .color-system-lab .color-composition-marker,
+  .color-system-lab .color-composition-strip span,
+  .color-system-lab .color-preview-button::before {
+    transition: none;
+  }
+}
+.color-seed-preview .color-preview-button:hover {
+  --button-text: var(--color-preview-hover-ink);
+}
+.color-seed-preview .color-preview-button:active {
+  --button-text: var(--color-preview-active-ink);
+}
+.color-seed-preview .ant-switch-checked:not(.ant-switch-disabled) {
+  background: var(--color-preview-primary);
+}
+.color-seed-preview .ant-switch-checked:hover:not(.ant-switch-disabled) {
+  background: var(--color-preview-hover);
+  --switch-thumb-edge: var(--color-preview-hover-ink);
+}
+.color-seed-preview .ant-switch-checked:active:not(.ant-switch-disabled) {
+  background: var(--color-preview-active);
+  --switch-thumb-edge: var(--color-preview-active-ink);
+}
+.color-seed-preview .ant-switch:not(.ant-switch-checked) {
+  --switch-thumb-edge: var(--control-boundary);
+}
+.color-seed-preview
+  .ant-switch:is(.css-var-atlas-color-preview, [class*='css-var-atlas-color-family-']) {
+  --switch-on-hover-color: var(--color-preview-hover) !important;
+}
+
+/* Foreground selection is calculated on the exact seed. Translucency against
+   the local preview panel can invalidate a passing color pair. */
+.color-seed-preview .color-preview-button:not(:disabled) {
+  opacity: 1;
+}
+body[data-atlas-surface='docs']
+  .color-seed-preview
+  .ant-switch:is(
+    .css-var-atlas-color-preview,
+    [class*='css-var-atlas-color-family-']
+  ).ant-switch-checked:active:not(.ant-switch-disabled) {
+  background: var(--color-preview-active) !important;
+}
+
+/* One composition drives the selected control handles and every hue-offset sample. */
+.color-system-lab .color-channel .atlas-slider,
+.color-system-lab .color-selected-extras .atlas-slider {
+  --slider-track-color: var(--color-live-primary);
+  --slider-thumb-color: var(--color-live-primary);
+  --slider-thumb-edge: var(--color-live-ink);
+}
+.color-family-gallery {
+  --color-family-min: 280px;
+  display: grid;
+  gap: var(--space-xl);
+  min-width: 0;
+}
+.color-family-gallery > header {
+  display: grid;
+  gap: var(--space-xs);
+}
+.color-family-gallery :is(h4, h5, p) {
+  margin: 0;
+}
+.color-family-gallery h4 {
+  font-size: var(--text-large);
+}
+.color-family-gallery h5 {
+  font-size: var(--text);
+}
+.color-family-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--color-family-min)), 1fr));
+  align-items: start;
+  gap: var(--space-xl);
+  min-width: 0;
+}
+.color-preview-family {
+  display: grid;
+  gap: var(--space-md);
+  min-width: 0;
+  align-content: start;
+}
+.color-preview-family > header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-xs);
+  align-items: baseline;
+}
+.color-preview-family > header code {
+  color: var(--muted);
+}
+.color-family-actions,
+.color-family-selection {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+.color-family-selection > label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+.color-family-fields,
+.color-selected-extras {
+  display: grid;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+.color-preview-family .color-family-slider .atlas-slider {
+  --slider-track-color: var(--color-family-seed);
+  --slider-thumb-color: var(--color-family-seed);
+  --slider-thumb-edge: var(--color-family-ink);
+}
+.color-family-action-result:empty {
+  display: none;
+}
+
+/* Live seed paint stays visible while a handle is hovered or being dragged. */
+.color-system-lab
+  .atlas-slider.ant-slider
+  .ant-slider-handle:not(.ant-slider-handle-disabled):is(:hover, :active)::after {
+  background-color: var(--slider-thumb-color);
+}
+
+/* Whiteness and blackness are inputs and share one panel recipe; the calculated
+   composition uses a quieter output surface so settings and results stay apart. */
+.color-group {
+  display: grid;
+  align-content: start;
+  gap: var(--space-md);
+  min-width: 0;
+  padding: var(--space-lg);
+  border-radius: var(--radius);
+  background: var(--panel);
+}
+.color-group[data-color-group='composition'] {
+  background: var(--surface);
+}
+.color-group > h3,
+.color-group-help {
+  margin: 0;
+}
+.color-group-help {
+  color: var(--muted);
+  font-size: var(--text);
+}
+/* Narrow panels move the numeric field below its label instead of squeezing either. */
+.color-group .color-channel-heading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.color-group .color-channel-heading label {
+  flex: 1 1 auto;
+}
+.color-group .color-channel-heading .ant-input-number {
+  flex: 0 1 var(--color-number-width);
+  width: var(--color-number-width);
+  max-width: 100%;
+}
+@container color-controls (max-width: 22rem) {
+  .color-group {
+    padding: var(--space-md);
+  }
+}

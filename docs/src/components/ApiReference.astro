@@ -1,0 +1,51 @@
+---
+import type { ComponentDoc } from '../data/catalog';
+interface Props {
+  rows: ComponentDoc['api'];
+  label: string;
+}
+const { rows, label } = Astro.props;
+---
+
+<div
+  class="table-scroll"
+  tabindex="0"
+  role="region"
+  aria-label={label}
+  data-i18n-aria-label={label}
+>
+  <table>
+    <thead>
+      <tr>
+        <th>
+          <span data-i18n="Property">Property</span>
+        </th>
+        <th>
+          <span data-i18n="Type">Type</span>
+        </th>
+        <th>
+          <span data-i18n="Default value">Default value</span>
+        </th>
+        <th>
+          <span data-i18n="Description">Description</span>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      {rows.map(row => (
+        <tr>
+          <th scope="row">
+            <code>{row.property}</code>
+          </th>
+          <td>
+            <code data-i18n={row.type}>{row.type}</code>
+          </td>
+          <td>
+            <code data-i18n={row.defaultValue}>{row.defaultValue}</code>
+          </td>
+          <td data-i18n={row.description}>{row.description}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>

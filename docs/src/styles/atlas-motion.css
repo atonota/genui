@@ -1,0 +1,15 @@
+:root {
+  --motion-easing: cubic-bezier(0.65, 0, 0.35, 1);
+  --motion-duration-fast: 80ms;
+  --motion-duration-feedback: 140ms;
+  --motion-duration-button-feedback: 116.667ms;
+  --motion-duration-standard: 200ms;
+  --motion-duration-selection: 320ms;
+  --motion-duration-deliberate: 500ms;
+  --motion-duration-mark: 280ms;
+  --motion-duration-spin: 900ms;
+  --motion-duration-pulse: 1200ms;
+  --motion-duration-progress: 1100ms;
+  --motion-duration-click-feedback: 400ms;
+  --motion-delay: 0ms;
+}

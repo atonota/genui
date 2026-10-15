@@ -1,0 +1,72 @@
+/* Pagination reading order. Reusable controls belong to atlas-pagination.css. */
+.atlas-demo .pagination-catalog {
+  --pagination-reading-width: 720px;
+  --pagination-example-min: 360px;
+  display: grid;
+  gap: var(--space-section);
+  min-width: 0;
+}
+.atlas-demo .pagination-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs) var(--space-xl);
+}
+.atlas-demo .pagination-navigation a {
+  display: flex;
+  align-items: center;
+  min-height: var(--target-min);
+}
+.atlas-demo .pagination-section,
+.atlas-demo .pagination-section > header,
+.atlas-demo .pagination-stage,
+.atlas-demo .pagination-state-example,
+.atlas-demo .pagination-surface-example,
+.atlas-demo .pagination-note {
+  display: grid;
+  align-content: start;
+  gap: var(--space-md);
+  min-width: 0;
+}
+.atlas-demo .pagination-section {
+  gap: var(--space-xl);
+  scroll-margin-block-start: var(--space-lg);
+}
+.atlas-demo .pagination-section > header {
+  gap: var(--space-xs);
+}
+.atlas-demo .pagination-section :is(h3, h4, p) {
+  margin: 0;
+}
+.atlas-demo .pagination-section h3 {
+  font-size: var(--text-section);
+}
+.atlas-demo .pagination-section h4 {
+  font-size: var(--text-large);
+}
+.atlas-demo .pagination-section > header > p:last-child,
+.atlas-demo .pagination-guidance {
+  max-width: var(--pagination-reading-width);
+  color: var(--muted);
+}
+.atlas-demo .pagination-stage {
+  padding: var(--space-sm);
+  border-radius: var(--radius);
+  background: var(--panel);
+}
+.atlas-demo .pagination-note {
+  max-width: var(--pagination-reading-width);
+  gap: var(--space-sm);
+}
+.atlas-demo .pagination-availability-grid,
+.atlas-demo .pagination-surfaces-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--pagination-example-min)), 1fr));
+  align-items: start;
+  gap: var(--space-xl);
+  min-width: 0;
+}
+@media (min-width: 640px) {
+  .atlas-demo .pagination-stage {
+    padding: var(--space-lg);
+  }
+}

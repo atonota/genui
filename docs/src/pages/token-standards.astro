@@ -1,0 +1,46 @@
+---
+import { STANDARDS_ROUTE, TOKENS_ROUTE, legacyTokenTargets } from '../data/token-redirects';
+
+// Redirect page only: /tokens/ is canonical and legacy hashes resolve through the shared mapping.
+const targets = legacyTokenTargets();
+const title = 'Token definitions and standards moved';
+---
+
+<!doctype html>
+<html lang="en" data-page-kind="redirect">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>{title}</title>
+    <link rel="canonical" href={TOKENS_ROUTE} />
+    <script is:inline define:vars={{ targets, fallback: TOKENS_ROUTE }}>
+      let id = '';
+      try {
+        id = decodeURIComponent(location.hash.slice(1));
+      } catch {
+        id = '';
+      }
+      location.replace(Object.prototype.hasOwnProperty.call(targets, id) ? targets[id] : fallback);
+    </script>
+    <noscript>
+      <meta http-equiv="refresh" content={`0; url=${TOKENS_ROUTE}`} />
+    </noscript>
+  </head>
+  <body>
+    <main>
+      <h1>
+        <span data-i18n={title}>{title}</span>
+      </h1>
+      <p>
+        <a href={TOKENS_ROUTE}>
+          <span data-i18n="Design tokens">Design tokens</span>
+        </a>
+        {' · '}
+        <a href={STANDARDS_ROUTE}>
+          <span data-i18n="UX standards">UX standards</span>
+        </a>
+      </p>
+    </main>
+  </body>
+</html>

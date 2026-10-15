@@ -1,0 +1,205 @@
+---
+import DocsLayout from '../layouts/DocsLayout.astro';
+import CodeExample from '../components/CodeExample.astro';
+import DocumentationNav from '../components/DocumentationNav.astro';
+const example = `import AtlasButton from './AtlasButton';
+import AtlasProvider from './AtlasProvider';
+
+export default function SaveAction() {
+  return (
+    <AtlasProvider appearance="docs">
+      <AtlasButton text="Save" />
+    </AtlasProvider>
+  );
+}`;
+// #astro-integration is the single shared guide target linked by every component page.
+const sections = [
+  { id: 'local-development', label: 'Local development' },
+  { id: 'using-components', label: 'Using components' },
+  { id: 'astro-integration', label: 'Interaction in Astro' },
+  { id: 'production-verification', label: 'Production and verification' },
+  { id: 'project-boundaries', label: 'Project boundaries' },
+];
+---
+
+<DocsLayout
+  title="Getting started"
+  description="Run the Astro documentation and use Ant Design components with the shared theme."
+  slug="getting-started"
+>
+  <p class="eyebrow">
+    <span data-i18n="START / GETTING STARTED">START / GETTING STARTED</span>
+  </p>
+  <h1>
+    <span class="page-heading-line" data-i18n="Set up once.">
+      Set up once.
+    </span>
+    <br />
+    <span>
+      <span data-i18n="Build with a shared language.">Build with a shared language.</span>
+    </span>
+  </h1>
+  <p class="lead">
+    <span data-i18n="Astro generates static documentation. Live examples are real Ant Design components in React islands.">
+      Astro generates static documentation. Live examples are real Ant Design components in React
+      islands.
+    </span>
+  </p>
+  <DocumentationNav items={sections} />
+  <section
+    id="local-development"
+    class="doc-section"
+    data-doc-section="local-development"
+    aria-labelledby="local-development-title"
+  >
+    <h2 id="local-development-title">
+      <span data-i18n="Local development">Local development</span>
+    </h2>
+    <p>
+      <span data-i18n="Use Node 24.15 or later in the 24.x line, or Node 26+, from the project root. Dependency versions are pinned in the lockfile.">
+        Use Node 24.15 or later in the 24.x line, or Node 26+, from the project root. Dependency
+        versions are pinned in the lockfile.
+      </span>
+    </p>
+    <pre class="note"><code>{'npm ci\nnpm run docs:dev'}</code></pre>
+    <p>
+      <span data-i18n="Documentation runs on the loopback interface:">
+        Documentation runs on the loopback interface:
+      </span>{' '}
+      <code>http://127.0.0.1:4321</code>.
+    </p>
+  </section>
+  <section
+    id="using-components"
+    class="doc-section"
+    data-doc-section="using-components"
+    aria-labelledby="using-components-title"
+  >
+    <h2 id="using-components-title">
+      <span data-i18n="Using components">Using components</span>
+    </h2>
+    <p>
+      <span data-i18n="AtlasProvider shares the theme, English by default, optional Turkish locale, native CSS pixel measurements and disabled wave effect. Documentation uses Outfit (default weight 400, minimum 300), a 14px/22px body baseline and minimum 14px readable text. Project styles live in docs/src/styles/components.css.">
+        AtlasProvider shares the theme, English by default, optional Turkish locale, native CSS
+        pixel measurements and disabled wave effect. Documentation uses Outfit (default weight 400,
+        minimum 300), a 14px/22px body baseline and minimum 14px readable text. Project styles live
+        in docs/src/styles/components.css.
+      </span>
+    </p>
+    <p data-i18n="Use appearance=docs for the documentation’s #0080CC identity. The shared approved theme and explicitly selected palettes retain their own colors.">
+      Use appearance=docs for the documentation’s #0080CC identity. The shared approved theme and
+      explicitly selected palettes retain their own colors.
+    </p>
+    <CodeExample code={example} />
+  </section>
+  <section
+    id="astro-integration"
+    class="doc-section"
+    data-doc-section="astro-integration"
+    aria-labelledby="astro-integration-title"
+  >
+    <h2 id="astro-integration-title">
+      <span data-i18n="Interaction in Astro">Interaction in Astro</span>
+    </h2>
+    <p>
+      <span data-i18n="Each page loads only its own demo island. Its provider and controls remain in one React tree. Documentation and API tables are readable without JavaScript.">
+        Each page loads only its own demo island. Its provider and controls remain in one React
+        tree. Documentation and API tables are readable without JavaScript.
+      </span>
+    </p>
+    <p>
+      <span data-i18n="Pages stay static. A trusted React island hydrates only its own demo and receives serializable props from Astro; never pass functions or untrusted markup across this boundary.">
+        Pages stay static. A trusted React island hydrates only its own demo and receives
+        serializable props from Astro; never pass functions or untrusted markup across this
+        boundary.
+      </span>
+    </p>
+    <CodeExample
+      code={
+        '---\nimport ButtonDemo from "../react/ButtonDemo";\n---\n<ButtonDemo documentation client:load />'
+      }
+      title="Astro example"
+    />
+  </section>
+  <section
+    id="production-verification"
+    class="doc-section"
+    data-doc-section="production-verification"
+    aria-labelledby="production-verification-title"
+  >
+    <h2 id="production-verification-title">
+      <span data-i18n="Production and verification">Production and verification</span>
+    </h2>
+    <pre class="note"><code>{'npm run docs:verify\nnpm run docs:build\nnpm run docs:preview'}</code></pre>
+    <p>
+      <span data-i18n="Production output is written to docs/dist. Component development updates the model, shared theme, examples and API documentation together.">
+        Production output is written to docs/dist. Component development updates the model, shared
+        theme, examples and API documentation together.
+      </span>
+    </p>
+    {/* #acceptance-standard keeps former inbound links; acceptance and motion rules have moved. */}
+    <p id="acceptance-standard">
+      <span data-i18n="New components follow the admission workflow in the documentation standard. Motion and interaction rules live in UX standards.">
+        New components follow the admission workflow in the documentation standard. Motion and
+        interaction rules live in UX standards.
+      </span>
+    </p>
+    <ul>
+      <li>
+        <a href="/documentation/#admission">
+          <span data-i18n="Admission workflow">Admission workflow</span>
+        </a>
+      </li>
+      <li>
+        <a href="/standards/#motion">
+          <span data-i18n="Motion rules">Motion rules</span>
+        </a>
+      </li>
+    </ul>
+  </section>
+  <section
+    id="project-boundaries"
+    class="doc-section"
+    data-doc-section="project-boundaries"
+    aria-labelledby="project-boundaries-title"
+  >
+    <h2 id="project-boundaries-title">
+      <span data-i18n="Project boundaries">Project boundaries</span>
+    </h2>
+    <ul>
+      <li>
+        <span data-i18n="The existing single-file HTML atlas is maintained under src/.">
+          The existing single-file HTML atlas is maintained under src/.
+        </span>
+      </li>
+      <li>
+        <span data-i18n="The documentation Ant Design renderer is a separate runtime; pixel equality with the existing HTML is not claimed.">
+          The documentation Ant Design renderer is a separate runtime; pixel equality with the
+          existing HTML is not claimed.
+        </span>
+      </li>
+      <li>
+        <span data-i18n="Form submissions are local examples and do not write to a server.">
+          Form submissions are local examples and do not write to a server.
+        </span>
+      </li>
+      <li>
+        <span data-i18n="Only explicit user decisions enter the decision model. New components and variant examples remain experimental.">
+          Only explicit user decisions enter the decision model. New components and variant examples
+          remain experimental.
+        </span>
+      </li>
+    </ul>
+  </section>
+  <p>
+    <span data-i18n="Sources:">Sources:</span>
+    <a href="https://docs.astro.build/en/guides/integrations-guide/react/">
+      <span data-i18n="Astro React integration">Astro React integration</span>
+    </a>
+    ,
+    <a href="https://ant.design/docs/react/customize-theme/">
+      <span data-i18n="Ant Design theme contract">Ant Design theme contract</span>
+    </a>
+    .
+  </p>
+</DocsLayout>

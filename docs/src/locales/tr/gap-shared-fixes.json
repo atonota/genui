@@ -1,0 +1,5 @@
+{
+  "Record not found.": "Kayıt bulunamadı.",
+  "Unpin or close a record before opening another tab.": "Başka bir sekme açmadan önce bir kaydın sabitlemesini kaldırın veya kaydı kapatın.",
+  "All Color system presets, including purple, are shared with Button color families. Hue families use 80% pure hue, 10% white and 10% black. Edge and pastel roles come from the installed Ant Design color generator.": "Purple dahil tüm renk sistemi hazır renkleri buton renk aileleriyle ortaktır. Ton aileleri yüzde 80 saf ton, yüzde 10 beyaz ve yüzde 10 siyah kullanır. Kenar ve pastel rolleri kurulu Ant Design renk üreticisinden gelir."
+}

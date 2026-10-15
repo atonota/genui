@@ -1,0 +1,1282 @@
+.atlas-demo {
+  font-family: var(--font-body);
+  font-size: var(--text);
+  color: var(--ink);
+  --button-face: var(--primary);
+  --button-edge: var(--primary-edge);
+  --button-text: #fff;
+  --button-radius: var(--radius);
+  --button-neutral-face: #e8e8e8;
+  --button-neutral-text: #262626;
+  --button-disabled-opacity: 0.42;
+  --button-disabled-grayscale: 0.7;
+  --button-progress-height: 2px;
+  --button-progress-inset: 6px;
+  --button-progress-duration: var(--motion-duration-progress);
+  --button-outline-border-width: 1px;
+  --button-border-width: var(--button-outline-border-width);
+  --pill-min-height: max(32px, 2rem);
+  --pill-close-size: 2rem;
+  --pill-close-icon-size: 1.25rem;
+  --segmented-motion-duration: var(--motion-duration-selection);
+  --control-affix-size: var(--target-min);
+  --control-affix-inset: calc(var(--space-xs) / 2);
+  --control-affix-gap: var(--space-xs);
+  /* Optical glyph size for inline icons; native 20px attributes remain the fallback. */
+  --icon-optical-size: 1.25rem;
+  /* Functional hairline separating light or same-tone images from their surface. */
+  --image-edge-width: 1px;
+  --shadow-layered-flat-8:
+    0 1px 0 rgba(var(--shadow-ink), 0.09), 1px 2px 0 rgba(var(--shadow-ink), 0.08),
+    1px 3px 0 rgba(var(--shadow-ink), 0.07), 2px 4px 0 rgba(var(--shadow-ink), 0.06),
+    2px 5px 0 rgba(var(--shadow-ink), 0.05), 3px 6px 0 rgba(var(--shadow-ink), 0.04),
+    3px 7px 0 rgba(var(--shadow-ink), 0.03), 4px 8px 0 rgba(var(--shadow-ink), 0.02);
+  --shadow-layered-pressed-8: 0 1px 0 rgba(var(--shadow-ink), 0.04);
+}
+/* Native transition:all must not animate the outer geometry of controls. */
+:root[data-theme]
+  .atlas-demo
+  :is(
+    button,
+    input,
+    textarea,
+    .ant-input-affix-wrapper,
+    .ant-select,
+    .ant-input-number,
+    .ant-btn,
+    .ant-checkbox,
+    .ant-radio,
+    .ant-tag,
+    .ant-switch,
+    .ant-segmented,
+    .ant-picker,
+    .atlas-control
+  ) {
+  transition-property: var(--control-transition-properties);
+}
+.atlas-demo .pattern-stack {
+  display: grid;
+  gap: var(--space-xl);
+}
+.atlas-demo .example-block {
+  display: grid;
+  gap: var(--space-md);
+  min-width: 0;
+}
+.atlas-demo .variant-heading {
+  font-size: var(--text-large, 1.125rem);
+  font-weight: var(--font-weight-label, 550);
+}
+.atlas-demo .control-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+.atlas-demo .form-layout-control {
+  display: grid;
+  gap: var(--space-xs);
+  max-width: 20rem;
+}
+.atlas-demo .form-result {
+  padding: var(--space-md);
+  background: var(--soft);
+  border-radius: var(--radius);
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
+.atlas-demo .form-result:empty {
+  padding: 0;
+  background: transparent;
+}
+.atlas-demo .ant-form {
+  max-width: 100%;
+  min-width: 0;
+}
+.atlas-demo .ant-form-item-label > label {
+  font-size: var(--text);
+  height: auto;
+  white-space: normal;
+  line-height: var(--line-height);
+}
+.atlas-demo .ant-form-item-explain,
+.atlas-demo .ant-form-item-extra {
+  font-size: var(--text);
+}
+.atlas-demo .ant-form-inline {
+  gap: var(--space-sm);
+}
+.atlas-demo .ant-form-inline .ant-form-item {
+  min-width: 0;
+  margin-inline-end: 0;
+  flex: 1 1 14rem;
+}
+.atlas-demo .atlas-form-section {
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.atlas-demo .atlas-form-section + .atlas-form-section {
+  margin-block-start: var(--section-gap, var(--space-xl));
+}
+.atlas-demo .atlas-form-section-legend {
+  width: auto;
+  margin: 0 0 var(--space-md);
+  padding: 0;
+  border: 0;
+  color: inherit;
+  font-size: var(--text);
+  font-weight: var(--font-weight-label, 650);
+  line-height: var(--line-height);
+}
+.atlas-demo .ant-form-inline .atlas-form-section {
+  display: flex;
+  flex: 1 1 100%;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  max-width: 100%;
+}
+.atlas-demo .ant-input,
+.atlas-demo .ant-input-affix-wrapper,
+.atlas-demo .ant-input-number,
+.atlas-demo .ant-select {
+  width: 100%;
+  min-width: 0;
+  font-size: var(--text);
+}
+.atlas-demo .ant-select {
+  max-width: 100%;
+}
+/* Filled fields share a lower surface; existing external shadow tokens are unchanged. */
+:root[data-theme='dark'] {
+  --shadow-ink: 0, 0, 0;
+  --field-shadow: var(--shadow-flat-layer);
+}
+/* Unframed legacy fields and native Select paint the same quiet well as
+   AtlasInputFrame: decorative inset edge at the shared width and the central inner
+   shadow. focus-fields.css owns the reserved bottom edge and keyboard focus paint.
+   Provider --atlas-input-* roles win; root --field-* aliases are the fallback. */
+.atlas-demo :is(.ant-input, .ant-input-affix-wrapper, .ant-input-number, .ant-select) {
+  --field-underline: var(--atlas-input-inset-border, var(--field-inset-border, transparent));
+  background-color: var(--field-bg) !important;
+  border-color: var(--atlas-input-inset-border, var(--field-inset-border, transparent)) !important;
+}
+/* One base well shadow for every state: native focus, open and status glows never
+   replace it. Inner affix inputs and framed children paint no well of their own. */
+.atlas-demo
+  :is(.ant-input, .ant-input-affix-wrapper, .ant-input-number, .ant-select):not(
+    .ant-input-affix-wrapper > input,
+    .atlas-input-frame *
+  ) {
+  box-shadow: var(--atlas-input-inner-shadow, var(--field-inner-shadow, none)) !important;
+}
+.atlas-demo :is(.ant-input, .ant-input-affix-wrapper, .ant-input-number, .ant-select):hover {
+  background-color: var(--field-hover-bg) !important;
+}
+@media (any-hover: hover) {
+  .atlas-demo
+    :is(.ant-input, .ant-input-affix-wrapper, .ant-input-number, .ant-select):not(
+      .ant-input-affix-wrapper > input,
+      .atlas-input-frame *
+    ):hover {
+    box-shadow: var(--atlas-input-inner-hover, var(--field-inner-hover, none)) !important;
+  }
+}
+.atlas-demo
+  :is(
+    .ant-input-status-error,
+    .ant-input-affix-wrapper-status-error,
+    .ant-input-number-status-error,
+    .ant-select-status-error
+  ) {
+  border-color: var(--error) !important;
+}
+.atlas-demo
+  :is(
+    .ant-input-status-warning,
+    .ant-input-affix-wrapper-status-warning,
+    .ant-input-number-status-warning,
+    .ant-select-status-warning
+  ) {
+  border-color: var(--warning) !important;
+}
+.atlas-demo .ant-input-affix-wrapper > input.ant-input {
+  background: transparent !important;
+  box-shadow: none;
+  border-bottom-width: 0 !important;
+}
+.atlas-demo .ant-input-search .ant-input-search-btn:not(.ant-btn-primary) {
+  background: var(--field-bg) !important;
+  border-color: transparent !important;
+}
+.atlas-demo :where(.ant-input, .ant-input-affix-wrapper, .ant-select, .ant-input-number) {
+  min-height: var(--field-height);
+}
+.atlas-demo :is(input.ant-input, .ant-input-affix-wrapper, .ant-input-number) {
+  height: var(--field-height);
+}
+.atlas-demo .ant-input-affix-wrapper {
+  padding-block: 0;
+}
+.atlas-demo .ant-input-affix-wrapper > input.ant-input {
+  min-height: 0;
+  height: auto;
+  padding-block: 0;
+  border: 0;
+}
+/* Only the directly focused element resets its outline; owners keep their rest outline
+   width, so pointer focus never changes outline geometry. */
+.atlas-demo :where(.ant-input, .ant-input-affix-wrapper, .ant-select, .ant-input-number):focus {
+  outline: none;
+}
+:root[data-theme]
+  .atlas-demo
+  :is(.ant-input, .ant-input-affix-wrapper, .ant-input-number, .ant-select) {
+  /* The bottom edge carries keyboard focus and changes immediately; the surface and
+     other edges ease. */
+  transition-property:
+    background-color, border-top-color, border-right-color, border-left-color, color, opacity,
+    box-shadow;
+}
+.atlas-demo :is(.ant-input-password-icon, .ant-input-clear-icon) {
+  position: relative;
+  min-width: var(--target-min);
+  min-height: var(--target-min);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.atlas-demo :is(.ant-input-password-icon, .ant-input-clear-icon):focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+.atlas-demo .ant-select:has(> :is(.ant-select-clear, .ant-select-suffix)) {
+  padding-inline-end: calc(
+    var(--control-affix-size) + var(--control-affix-inset) + var(--control-affix-gap)
+  );
+}
+.atlas-demo .ant-select :is(.ant-select-clear, .ant-select-suffix) {
+  position: absolute;
+  top: 50%;
+  width: var(--control-affix-size);
+  height: var(--control-affix-size);
+  min-width: var(--control-affix-size);
+  min-height: var(--control-affix-size);
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inset-inline-end: var(--control-affix-inset);
+  margin: 0;
+  transform: translateY(-50%) translateZ(0);
+  transition-duration: var(--transition-duration);
+}
+.atlas-demo .ant-select-clear:focus-visible {
+  opacity: 1;
+  outline: none;
+  box-shadow: none;
+}
+.atlas-demo .ant-select:has(> .ant-select-clear:focus-visible) > .ant-select-suffix {
+  opacity: 0;
+  pointer-events: none;
+}
+.atlas-demo .ant-select-multiple .ant-select-selection-item {
+  height: auto;
+  min-height: var(--target-min);
+  align-items: center;
+}
+.atlas-demo .ant-select-selection-item-remove {
+  min-width: var(--target-min);
+  min-height: var(--target-min);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.atlas-demo .ant-btn {
+  box-sizing: border-box;
+  border-style: solid !important;
+  border-width: var(--button-border-width) !important;
+  background-clip: padding-box !important;
+  position: relative;
+  isolation: isolate;
+  min-height: max(3rem, var(--control-height));
+  height: auto;
+  max-width: 100%;
+  padding-block: 0.625rem;
+  line-height: 1.2;
+  font-size: var(--text);
+  letter-spacing: 0;
+  white-space: normal;
+  opacity: var(--opacity-rest);
+  transition:
+    opacity var(--release-duration) var(--motion-easing),
+    box-shadow var(--release-duration) var(--motion-easing);
+  box-shadow: none;
+}
+.atlas-demo .ant-btn-sm {
+  min-height: 3rem;
+}
+.atlas-demo .ant-btn-lg {
+  min-height: 3.5rem;
+}
+.atlas-demo .ant-btn:hover:not(:disabled) {
+  opacity: var(--opacity-hover);
+}
+.atlas-demo .ant-btn:is(:active, [data-state='hover'], [data-pressed='true']):not(:disabled) {
+  opacity: var(--opacity-hover);
+}
+.atlas-demo .ant-btn:focus {
+  outline: none;
+}
+.atlas-demo .ant-btn:focus-visible {
+  text-decoration: none;
+}
+.atlas-demo .ant-btn-icon-only .ant-btn-icon {
+  position: static;
+}
+.atlas-demo .atlas-icon-button:focus-visible {
+  text-decoration: none;
+}
+/* Field slot actions keep their marker (focus-fields.css owns slots); every other action
+   takes one fill or text cue from focus-actions.css. */
+:root:not([data-input-modality='pointer'])
+  .atlas-demo
+  .atlas-icon-button.atlas-slot-button:focus-visible
+  .atlas-button-content::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 calc(-1 * var(--space-xs));
+  height: var(--focus-marker);
+  background: currentColor;
+}
+:root:not([data-input-modality='pointer'])
+  .atlas-demo
+  .atlas-slot-button:not(.atlas-icon-button):focus-visible
+  .atlas-button-content::after {
+  content: '';
+  position: absolute;
+  inset-block: 10%;
+  inset-inline-start: calc(-1 * var(--space-xs));
+  width: var(--focus-marker);
+  background: currentColor;
+}
+.atlas-demo .ant-btn:not(.atlas-button-outlined) {
+  border-color: transparent !important;
+}
+.atlas-demo[data-atlas-appearance='docs'] {
+  --button-border-width: 0px;
+}
+.atlas-demo .ant-btn-primary,
+.atlas-demo .atlas-button {
+  --button-outlined-ink: var(--button-edge);
+  --button-transparent-ink: var(--button-transparent-light-ink);
+  --shadow-ambient: 0 2px 8px rgba(var(--shadow-accent-rgb), var(--shadow-ambient-alpha));
+  background: var(--button-body, var(--button-edge)) !important;
+  color: var(--button-text) !important;
+  border-radius: var(--button-radius);
+  box-shadow: var(--button-shadow, none);
+}
+:root[data-theme='dark'] .atlas-demo .atlas-button {
+  --button-outlined-ink: var(--button-outline-ink);
+  --button-transparent-ink: var(--button-outline-ink);
+}
+.atlas-demo :is(.ant-btn-primary, .atlas-button)::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 var(--lip);
+  z-index: -1;
+  background: var(--button-face);
+  border-radius: inherit;
+  transition: inset var(--release-duration) var(--motion-easing);
+  pointer-events: none;
+}
+.atlas-demo :is(.ant-btn-primary, .atlas-button):is(:active, [data-pressed='true'])::before {
+  inset: var(--top-lip) 0 0;
+  transition-duration: var(--press-duration);
+}
+.atlas-demo .atlas-button-lip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: -1;
+}
+.atlas-demo .atlas-button-lip::before,
+.atlas-demo .atlas-button-lip::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  background: var(--button-edge);
+  transition: height var(--release-duration) var(--motion-easing);
+}
+.atlas-demo .atlas-button-lip::before {
+  inset-block-start: 0;
+  height: 0;
+}
+.atlas-demo .atlas-button-lip::after {
+  inset-block-end: 0;
+  height: var(--lip);
+}
+.atlas-demo .atlas-button:is(:active, [data-pressed='true']) .atlas-button-lip::before {
+  height: var(--top-lip);
+  transition-duration: var(--press-duration);
+}
+.atlas-demo .atlas-button:is(:active, [data-pressed='true']) .atlas-button-lip::after {
+  height: 0;
+  transition-duration: var(--press-duration);
+}
+.atlas-demo :is(.ant-btn-primary, .atlas-button):is(:active, [data-pressed='true']) {
+  box-shadow: none;
+  transition-duration: var(--press-duration);
+}
+.atlas-demo :is(.ant-btn-variant-outlined.atlas-button, .atlas-button-outlined) {
+  --button-border-width: var(--button-outline-border-width);
+  border-color: var(--button-border-color, var(--button-edge)) !important;
+}
+.atlas-demo :is(.ant-btn-variant-outlined.atlas-button, .atlas-button-outlined)::before {
+  border-radius: max(0px, calc(var(--button-radius) - 1px));
+}
+.atlas-demo :is(.ant-btn-variant-text, .ant-btn-variant-link).atlas-button {
+  background: transparent !important;
+  color: var(--button-transparent-ink) !important;
+  box-shadow: none;
+}
+.atlas-demo :is(.ant-btn-variant-text, .ant-btn-variant-link).atlas-button::before {
+  content: none;
+}
+.atlas-demo .atlas-button[data-fill='link'] .atlas-button-content > span {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.atlas-demo .ant-btn:disabled {
+  opacity: 0.42;
+}
+.atlas-demo .ant-btn-loading {
+  opacity: 1;
+}
+.atlas-demo .atlas-button:disabled {
+  opacity: var(--button-disabled-opacity);
+  filter: grayscale(var(--button-disabled-grayscale));
+  box-shadow: none;
+}
+.atlas-demo .atlas-button[aria-busy='true'] {
+  opacity: var(--opacity-rest);
+  /* AntD loading blocks activation; keep hit testing so the blocked cursor is visible. */
+  pointer-events: auto;
+}
+.atlas-demo .atlas-button[data-color-preset]:not(:disabled) {
+  /* Preserve the exact shared HWB seed and its verified foreground contrast. */
+  opacity: 1;
+}
+.atlas-demo .atlas-button-progress {
+  position: absolute;
+  inset: auto auto var(--button-progress-inset) 20%;
+  width: 60%;
+  height: var(--button-progress-height);
+  background: currentColor;
+  opacity: 0.7;
+  transform-origin: left;
+  animation: atlas-button-progress var(--button-progress-duration) var(--motion-easing) infinite;
+  pointer-events: none;
+}
+.atlas-demo .ant-checkbox-wrapper,
+.atlas-demo .ant-radio-wrapper {
+  min-height: var(--target-min);
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--text);
+  margin: 0;
+  line-height: var(--line-height);
+  opacity: var(--opacity-rest);
+}
+.atlas-demo .ant-checkbox-wrapper:hover,
+.atlas-demo .ant-radio-wrapper:hover {
+  opacity: var(--opacity-hover);
+}
+.atlas-demo .ant-checkbox-group,
+.atlas-demo .ant-radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+.atlas-demo .ant-checkbox-input:focus-visible + .ant-checkbox-inner,
+.atlas-demo .ant-radio-input:focus-visible + .ant-radio-inner {
+  outline: none;
+  box-shadow: none;
+}
+.atlas-demo .ant-radio-button-wrapper {
+  height: auto;
+  min-height: var(--target-min);
+  line-height: var(--line-height);
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  font-size: var(--text);
+}
+.atlas-demo .ant-radio-button-wrapper:focus-within {
+  box-shadow: none;
+}
+.atlas-demo .atlas-segmented {
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  outline: none;
+}
+.atlas-demo .atlas-segmented .ant-segmented-group {
+  min-width: max-content;
+  flex-wrap: nowrap;
+  gap: 0;
+}
+.atlas-demo .atlas-segmented .ant-segmented-item {
+  min-width: max-content;
+  outline: none;
+  transition-duration: var(--segmented-motion-duration);
+}
+.atlas-demo .atlas-segmented .ant-segmented-item-label {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--target-min);
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--text);
+  line-height: var(--line-height);
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
+.atlas-demo .atlas-segmented :is(.ant-segmented-item-selected, .ant-segmented-thumb) {
+  box-shadow: var(--shadow-soft);
+}
+.atlas-demo .atlas-segmented .ant-segmented-thumb-motion-appear-active {
+  transition-duration: var(--segmented-motion-duration);
+}
+.atlas-demo .atlas-segmented .ant-segmented-item::after {
+  transition-duration: var(--segmented-motion-duration);
+}
+.atlas-demo .ant-switch {
+  min-width: 3rem;
+  font-size: var(--text);
+  margin-block: 0.75rem;
+}
+.atlas-demo label.control-row {
+  min-height: var(--target-min);
+}
+.atlas-demo .ant-switch:focus {
+  outline: none;
+  box-shadow: none;
+}
+.atlas-demo .ant-switch .ant-switch-inner {
+  font-size: var(--text);
+}
+.atlas-demo .ant-collapse {
+  font-size: var(--text);
+}
+.atlas-demo .ant-collapse-header {
+  min-height: var(--control-height);
+  align-items: center !important;
+}
+.atlas-demo .ant-collapse-header:focus {
+  outline: none;
+}
+.atlas-demo .ant-collapse-header:focus-visible .ant-collapse-title {
+  text-decoration: underline;
+  text-decoration-thickness: var(--focus-marker);
+  text-underline-offset: 0.25em;
+}
+.atlas-demo .ant-collapse-content-box {
+  line-height: var(--line-height);
+}
+.atlas-demo .ant-drawer-close {
+  position: relative;
+  min-height: var(--target-min);
+  min-width: var(--target-min);
+  outline: none;
+}
+.atlas-demo .ant-drawer-title {
+  font-size: 1.25rem;
+}
+.atlas-demo .ant-drawer-body {
+  font-size: var(--text);
+  padding: var(--space-lg);
+}
+.atlas-demo .ant-drawer-content-wrapper {
+  max-width: 100vw;
+  max-height: 100dvh;
+  box-shadow: none;
+}
+.atlas-demo .ant-drawer-content {
+  background: var(--panel);
+}
+.atlas-demo :where(.ant-spin, .ant-btn-loading-icon) * {
+  animation-timing-function: var(--motion-easing) !important;
+}
+.atlas-demo .anticon-spin,
+.atlas-select-popup .anticon-spin {
+  animation-duration: var(--motion-duration-spin);
+}
+.atlas-demo,
+.atlas-demo *,
+.atlas-demo *::before,
+.atlas-demo *::after,
+.atlas-select-popup,
+.atlas-select-popup *,
+.atlas-select-popup *::before,
+.atlas-select-popup *::after {
+  transition-timing-function: var(--motion-easing) !important;
+  animation-timing-function: var(--motion-easing) !important;
+}
+.atlas-select-popup {
+  font-family: var(--font-body);
+  font-size: var(--text);
+  background: var(--panel);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft), var(--shadow-flat-layer);
+}
+/* Shared non-modal backdrop. The overlay controller (docs/src/overlay-backdrop.ts) sets
+   data-atlas-overlay-open="true" while a user-opened layer is active and computes
+   --atlas-overlay-clip (clip-path holes for the bound popup + trigger) and
+   --atlas-overlay-active-z (modal-nested stacking). On close only the attribute drops; the
+   clip and z stay until this fade really ends, so the fading scrim keeps the trigger hole.
+   Outside pointer events still reach the native framework dismissal logic: the pseudo
+   never receives pointer events. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: var(--atlas-overlay-active-z, var(--overlay-scrim-z));
+  pointer-events: none;
+  background: transparent;
+  -webkit-backdrop-filter: blur(0);
+  backdrop-filter: blur(0);
+  clip-path: var(--atlas-overlay-clip, none);
+  /* Shared overlay motion roles: close duration at rest, open duration while a layer is
+     active. Fallbacks keep the declaration valid where an alias is not declared. */
+  transition:
+    background-color var(--overlay-close-duration, var(--release-duration))
+      var(--overlay-easing, var(--motion-easing)),
+    -webkit-backdrop-filter var(--overlay-close-duration, var(--release-duration))
+      var(--overlay-easing, var(--motion-easing)),
+    backdrop-filter var(--overlay-close-duration, var(--release-duration))
+      var(--overlay-easing, var(--motion-easing));
+}
+body[data-atlas-overlay-open='true']::before {
+  background: var(--overlay-scrim);
+  -webkit-backdrop-filter: blur(var(--overlay-backdrop-blur));
+  backdrop-filter: blur(var(--overlay-backdrop-blur));
+  transition-duration: var(--overlay-open-duration, var(--press-duration));
+}
+/* Open triggers stay above the scrim layer; only the control itself is lifted, never its Card. */
+.atlas-demo .ant-select-open {
+  z-index: var(--overlay-trigger-z);
+}
+.atlas-demo .ant-picker-focused {
+  z-index: var(--overlay-trigger-z);
+}
+.atlas-demo
+  [aria-expanded='true']:is(.ant-dropdown-trigger, [aria-haspopup='menu'], [aria-haspopup='true']) {
+  position: relative;
+  z-index: var(--overlay-trigger-z);
+}
+/* Non-modal popup panels: base stacking role from the central token. Single-class
+   specificity so an explicit caller inline z-index (or AntD zIndex prop) still wins. */
+.ant-select-dropdown,
+.ant-picker-dropdown,
+.ant-dropdown,
+.ant-popover,
+.ant-cascader-dropdown {
+  z-index: var(--overlay-popup-z);
+}
+/* Modal layers (Drawer/Modal masks across docs, ThemeBuilder and Tweaker) paint with the
+   same neutral scrim and fixed blur tokens. AntD's cssinjs paints the mask through
+   `.ant-drawer .ant-drawer-mask` / `.ant-modal-root .ant-modal-mask` (0,2,0), so a lone
+   `.ant-*-mask` class never wins. The `body` prefix (0,2,1) wins regardless of stylesheet
+   order while leaving the inline/prop z-index, native dismissal and focus flow untouched. */
+body .ant-drawer .ant-drawer-mask,
+body .ant-modal-root .ant-modal-mask {
+  background: var(--overlay-scrim);
+  background-color: var(--overlay-scrim);
+  -webkit-backdrop-filter: blur(var(--overlay-backdrop-blur));
+  backdrop-filter: blur(var(--overlay-backdrop-blur));
+}
+/* Mask motion consumes the shared overlay roles (open/close duration, easing) instead of
+   AntD's component defaults. Drawer masks fade through a transition and Modal masks
+   through the `ant-fade` keyframes, so both longhands are set. */
+body .ant-drawer .ant-drawer-mask-motion-enter-active,
+body .ant-drawer .ant-drawer-mask-motion-appear-active,
+body .ant-modal-root .ant-modal-mask.ant-fade-enter-active,
+body .ant-modal-root .ant-modal-mask.ant-fade-appear-active {
+  animation-duration: var(--overlay-open-duration, var(--press-duration));
+  transition-duration: var(--overlay-open-duration, var(--press-duration));
+  animation-timing-function: var(--overlay-easing, var(--motion-easing));
+  transition-timing-function: var(--overlay-easing, var(--motion-easing));
+}
+body .ant-drawer .ant-drawer-mask-motion-leave-active,
+body .ant-modal-root .ant-modal-mask.ant-fade-leave-active {
+  animation-duration: var(--overlay-close-duration, var(--release-duration));
+  transition-duration: var(--overlay-close-duration, var(--release-duration));
+  animation-timing-function: var(--overlay-easing, var(--motion-easing));
+  transition-timing-function: var(--overlay-easing, var(--motion-easing));
+}
+@media (prefers-reduced-motion: reduce) {
+  body::before {
+    transition: none;
+  }
+  /* Instant: a real 0s, no near-zero stand-in. rc-motion still completes its lifecycle:
+     a 0s keyframe animation fires animationstart/animationend natively (Modal `ant-fade`),
+     and antd's Drawer passes motionDeadline (500ms) to rc-motion, which ends a 0s mask
+     transition that never emits transitionend. */
+  body .ant-drawer .ant-drawer-mask-motion-enter-active,
+  body .ant-drawer .ant-drawer-mask-motion-appear-active,
+  body .ant-drawer .ant-drawer-mask-motion-leave-active,
+  body .ant-modal-root .ant-modal-mask.ant-fade-enter-active,
+  body .ant-modal-root .ant-modal-mask.ant-fade-appear-active,
+  body .ant-modal-root .ant-modal-mask.ant-fade-leave-active {
+    animation-duration: 0s;
+    transition-duration: 0s;
+  }
+  /* Until the deadline settles the leave step the drawer mask is already fully transparent;
+     keep it from swallowing pointer input in that window (AntD does the same for ant-fade). */
+  body .ant-drawer .ant-drawer-mask-motion-leave-active {
+    pointer-events: none;
+  }
+}
+.atlas-select-popup .ant-select-item {
+  font-size: var(--text);
+  min-height: var(--target-min);
+  display: flex;
+  align-items: center;
+  white-space: normal;
+}
+.atlas-demo .button-playground {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-lg);
+}
+.atlas-demo .atlas-button-states {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.atlas-demo .atlas-button-states > li {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: var(--space-lg);
+  padding: var(--space-lg) var(--space-md);
+  min-width: 0;
+  background: var(--panel);
+  text-align: center;
+}
+.atlas-demo .atlas-button-states > li > p {
+  margin: 0;
+  color: var(--muted);
+}
+.atlas-demo .atlas-button-dimensions {
+  --button-dimension-min-width: 12rem;
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(min(100%, var(--button-dimension-min-width)), 1fr)
+  );
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  gap: var(--space-lg);
+}
+.atlas-demo .atlas-button-dimensions > li {
+  display: grid;
+  gap: var(--space-sm);
+  min-width: 0;
+}
+.atlas-demo .atlas-button-dimension-preview {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+.atlas-demo .atlas-button-dimensions > li > p {
+  margin: 0;
+  color: var(--muted);
+}
+.atlas-demo .playground-preview {
+  min-width: 0;
+  min-height: 10rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-lg);
+  background: var(--surface);
+  padding: var(--space-lg);
+  border-radius: var(--radius);
+}
+.atlas-demo .playground-controls {
+  /* Intrinsic columns follow the available panel width, not the viewport. */
+  --playground-control-min: 14rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--playground-control-min)), 1fr));
+  gap: var(--space-md);
+}
+.atlas-demo .playground-controls label,
+.atlas-demo .playground-control {
+  display: grid;
+  gap: var(--space-xs);
+}
+.atlas-demo .state-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-lg);
+}
+.atlas-demo .state-grid > div {
+  display: grid;
+  gap: var(--space-xs);
+}
+.atlas-demo svg.atlas-icon {
+  width: var(--icon-optical-size, 1.25rem);
+  height: var(--icon-optical-size, 1.25rem);
+  fill: currentColor;
+}
+.atlas-demo [data-icon-motion='spin'] {
+  animation: atlas-spin var(--motion-duration-spin) var(--motion-easing) infinite;
+}
+.atlas-demo [data-icon-motion='pulse'] {
+  animation: atlas-pulse var(--motion-duration-pulse) var(--motion-easing) infinite;
+}
+.atlas-demo [data-icon-position='top'] .atlas-button-content,
+.atlas-demo [data-icon-position='bottom'] .atlas-button-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+.atlas-demo [data-icon-position='bottom'] .atlas-icon {
+  order: 1;
+}
+.atlas-demo [data-icon-position='right'] .atlas-icon {
+  order: 1;
+}
+.atlas-demo .atlas-button-content {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+}
+.atlas-demo .atlas-button:is(:active, [data-pressed='true']) {
+  box-shadow: var(--button-pressed-shadow, none);
+}
+.atlas-demo .atlas-button-visuals {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: var(--space-lg);
+}
+.atlas-demo .atlas-button-visuals > li {
+  min-width: 0;
+  display: grid;
+  justify-items: start;
+  gap: var(--space-sm);
+}
+.atlas-demo .atlas-button-group {
+  --button-group-padding: var(--space-xs);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding: var(--button-group-padding);
+  background: var(--soft);
+  border: 0;
+  border-radius: var(--button-group-radius);
+}
+.atlas-demo .atlas-button-group .ant-segmented-group {
+  width: 100%;
+  min-width: 0;
+}
+.atlas-demo .atlas-button-group .ant-segmented-item {
+  flex: 1 1 0;
+  min-width: 0;
+  border-radius: var(--button-group-radius);
+}
+.atlas-demo .atlas-button-group .ant-segmented-item-label {
+  min-width: 0;
+  min-height: var(--button-group-height);
+  padding: var(--space-xs);
+  color: var(--ink);
+  overflow-wrap: normal;
+  word-break: normal;
+}
+.atlas-demo .atlas-button-group :is(.ant-segmented-item-selected, .ant-segmented-thumb) {
+  background: var(--panel);
+  border-radius: var(--button-group-radius);
+  box-shadow: var(--shadow-soft);
+}
+.atlas-demo .atlas-button-group.ant-segmented-disabled .ant-segmented-item-label,
+.atlas-demo .atlas-button-group .ant-segmented-item-disabled .ant-segmented-item-label {
+  color: var(--muted);
+}
+.atlas-demo .atlas-pill-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+.atlas-demo .atlas-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  max-width: 100%;
+  min-width: 0;
+  min-height: var(--pill-height, var(--pill-min-height));
+  margin: 0;
+  padding-block: 0;
+  padding-inline: var(--space-xs);
+  font-size: var(--text);
+  line-height: var(--line-height);
+  border-radius: var(--pill-radius, var(--radius));
+  white-space: normal;
+}
+.atlas-demo .atlas-pill[data-pill-legacy] {
+  color: var(--pill-ink, var(--ink));
+  background: var(--pill-bg, var(--surface));
+  border: 1px solid transparent;
+}
+/* Managed color roles apply only to docs; native semantic styles remain last. */
+.atlas-demo[data-atlas-appearance='docs'] .atlas-pill.ant-tag[data-pill-managed] {
+  color: var(--pill-ink);
+  background: var(--pill-bg);
+  border-color: var(--pill-border);
+}
+.atlas-demo[data-atlas-appearance='docs']
+  .atlas-pill.ant-tag.atlas-pill-checkable[aria-checked='false'] {
+  color: var(--muted);
+  background: transparent;
+  border-color: var(--control-boundary);
+}
+.atlas-demo[data-atlas-appearance='docs']
+  .atlas-pill.ant-tag.atlas-pill-checkable[aria-checked='true'] {
+  border-color: var(--pill-ink);
+}
+/* Visible geometry follows the pill size profile (32/40/48); only the inline extent keeps
+   the target minimum. */
+.atlas-demo .atlas-pill-checkable {
+  min-width: var(--target-min);
+  min-height: var(--pill-height, var(--pill-min-height));
+  position: relative;
+  cursor: pointer;
+}
+/* Hit area, not paint: a transparent, block-centred extension that keeps the effective
+   target at least --target-min tall for every pointer type. Pseudo-element hits resolve to
+   the pill itself, so native activation, tab order and key handling are unchanged; it has no
+   fill, edge or outline. ::after stays the single focus marker. */
+.atlas-demo .atlas-pill-checkable::before {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: 50%;
+  height: max(100%, var(--target-min));
+  transform: translateY(-50%);
+  background: transparent;
+}
+/* Wrapped rows leave room for the extended hit areas so adjacent targets never overlap. */
+.atlas-demo .atlas-pill-list:has(> .atlas-pill-checkable) {
+  row-gap: max(var(--space-xs), calc(var(--target-min) - var(--pill-min-height)));
+}
+.atlas-demo .atlas-pill-checkable:has(.atlas-pill-label:empty) {
+  justify-content: center;
+  gap: 0;
+}
+.atlas-demo .atlas-pill-checkable:has(.atlas-pill-label:empty) > :last-child {
+  margin-inline-start: 0;
+}
+.atlas-demo .atlas-pill-checkable[aria-disabled='true'] {
+  cursor: not-allowed;
+}
+.atlas-demo .atlas-pill-checkable:focus-visible {
+  outline: none;
+}
+.atlas-demo .atlas-pill-checkable:focus-visible::after {
+  content: '';
+  position: absolute;
+  inset-block: 25%;
+  inset-inline-start: 0;
+  width: var(--focus-marker);
+  background: currentColor;
+}
+.atlas-demo .atlas-pill-label {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+.atlas-demo .atlas-pill.ant-tag-hidden {
+  display: none;
+}
+.atlas-demo .atlas-pill .atlas-pill-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--pill-close-size);
+  height: var(--pill-close-size);
+  margin: 0;
+  color: inherit;
+  border-radius: var(--pill-radius, var(--radius));
+  /* Its single inset focus marker must appear and disappear immediately. */
+  transition-property: background-color, border-color, color, opacity;
+}
+.atlas-demo .atlas-pill-close-icon {
+  width: var(--pill-close-icon-size);
+  height: var(--pill-close-icon-size);
+}
+.atlas-demo .atlas-pill .atlas-pill-close:focus-visible {
+  outline: none;
+  text-decoration: none;
+  box-shadow: inset 0 calc(-1 * var(--focus-marker)) 0 currentColor;
+}
+@media (any-pointer: coarse) {
+  .atlas-demo {
+    --pill-close-size: 2.75rem;
+  }
+}
+@keyframes atlas-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+@keyframes atlas-pulse {
+  50% {
+    opacity: 0.65;
+  }
+}
+@keyframes atlas-button-progress {
+  0%,
+  100% {
+    transform: scaleX(0.2);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+@media (min-width: 30rem) {
+  .atlas-demo .atlas-button-states {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 48rem) {
+  .atlas-demo .atlas-button-states {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+/* Controls left and preview right once the playground has room for two columns.
+   A Tweaker-hosted control panel leaves the preview on the full row. */
+@media (min-width: 48rem) {
+  .atlas-demo .button-playground:has(> :not(.playground-preview, p)) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+  .atlas-demo .button-playground > :not(.playground-preview, p) {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .atlas-demo .button-playground:has(> :not(.playground-preview, p)) > .playground-preview {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .atlas-demo .button-playground > p {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 39.999rem) {
+  .atlas-demo .ant-form-horizontal .ant-form-item-row {
+    display: block;
+  }
+  .atlas-demo .ant-form-horizontal .ant-form-item-label {
+    text-align: start;
+    padding-bottom: var(--space-xs);
+  }
+  .atlas-demo .ant-form-horizontal .ant-form-item-label,
+  .atlas-demo .ant-form-horizontal .ant-form-item-control {
+    max-width: 100%;
+    flex: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  body::before {
+    transition: none;
+  }
+  :is(
+    .ant-drawer,
+    .ant-modal-root,
+    .ant-modal,
+    .ant-tooltip,
+    .ant-popover,
+    .ant-picker-dropdown,
+    .ant-message,
+    .ant-notification
+  ),
+  :is(
+      .ant-drawer,
+      .ant-modal-root,
+      .ant-modal,
+      .ant-tooltip,
+      .ant-popover,
+      .ant-picker-dropdown,
+      .ant-message,
+      .ant-notification
+    )
+    *,
+  :is(
+      .ant-drawer,
+      .ant-modal-root,
+      .ant-modal,
+      .ant-tooltip,
+      .ant-popover,
+      .ant-picker-dropdown,
+      .ant-message,
+      .ant-notification
+    )
+    *::before,
+  :is(
+      .ant-drawer,
+      .ant-modal-root,
+      .ant-modal,
+      .ant-tooltip,
+      .ant-popover,
+      .ant-picker-dropdown,
+      .ant-message,
+      .ant-notification
+    )
+    *::after,
+  .atlas-demo,
+  .atlas-demo *,
+  .atlas-demo *::before,
+  .atlas-demo *::after,
+  .atlas-select-popup,
+  .atlas-select-popup *,
+  .atlas-select-popup *::before,
+  .atlas-select-popup *::after {
+    transition-duration: 0s !important;
+    animation: none !important;
+  }
+}
+@media (any-pointer: coarse) {
+  .atlas-demo :is(.ant-btn-sm, .atlas-button[data-size='compact'])::after {
+    content: '';
+    position: absolute;
+    inset: -0.125rem 0;
+  }
+}
+
+.atlas-demo .atlas-segmented .ant-segmented-item-label {
+  min-height: var(--atlas-segmented-height, var(--target-min));
+}
+
+.atlas-demo .kit-date-field {
+  width: 100%;
+  min-width: 0;
+  min-height: var(--field-height);
+  background: var(--field-bg);
+  border-radius: var(--input-radius, var(--radius));
+  font-size: var(--text);
+}
+.atlas-select-popup.kit-date-popup .ant-picker-cell-inner {
+  min-width: 2rem;
+  min-height: 2rem;
+  line-height: 2rem;
+  font-size: var(--text);
+}
+
+.atlas-demo .kit-readonly-value {
+  cursor: var(--readonly-cursor, text);
+}
+
+/* Empty states: native Empty on neutral tokens, a reading measure and no decorative frame. */
+.atlas-demo .atlas-content-examples {
+  display: grid;
+  gap: var(--space-xl);
+  min-width: 0;
+}
+.atlas-demo .atlas-content-examples > section {
+  display: grid;
+  gap: var(--space-md);
+  min-width: 0;
+}
+.atlas-demo .atlas-content-examples :is(h3, p, ul) {
+  margin: 0;
+}
+.atlas-demo .atlas-content-examples ul {
+  padding-inline-start: var(--space-lg);
+}
+/* Programmatic result focus shows one immediate underline, never an enclosing ring. */
+.atlas-demo .atlas-empty-state-result:focus {
+  outline: none;
+  text-decoration: underline;
+  text-decoration-color: var(--focus-color);
+  text-decoration-thickness: var(--focus-marker);
+  text-underline-offset: var(--space-xs);
+  transition: none;
+}
+.atlas-demo .atlas-empty-state {
+  max-inline-size: var(--reading-width, 40rem);
+  margin: 0 auto;
+  padding-block: var(--space-lg);
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  color: var(--ink);
+  font-size: var(--text);
+  line-height: var(--line-height);
+  text-align: center;
+}
+.atlas-demo .atlas-empty-state .ant-empty-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--control-height);
+  margin-block-end: var(--space-sm);
+  color: var(--muted);
+  opacity: 1;
+}
+/* The image slot keeps --control-height; the centred glyph uses an optical icon size. */
+.atlas-demo .atlas-empty-state svg.atlas-icon {
+  width: var(--icon-size, calc(var(--control-height) / 2));
+  height: var(--icon-size, calc(var(--control-height) / 2));
+}
+.atlas-demo .atlas-empty-state .ant-empty-description {
+  color: var(--ink);
+}
+.atlas-demo .atlas-empty-state-text {
+  display: grid;
+  gap: var(--space-xs);
+}
+.atlas-demo .atlas-empty-state-title {
+  margin: 0;
+  font-size: var(--text-large, 1.125rem);
+  font-weight: var(--font-weight-label, 550);
+  line-height: var(--line-height);
+  overflow-wrap: break-word;
+}
+/* Long descriptions wrap start-aligned within a bounded measure; short text stays visually centred. */
+.atlas-demo .atlas-empty-state-description {
+  justify-self: center;
+  max-inline-size: var(--prose-measure, 65ch);
+  margin: 0;
+  color: var(--muted);
+  text-align: start;
+  overflow-wrap: break-word;
+}
+.atlas-demo .atlas-empty-state .ant-empty-footer {
+  display: flex;
+  justify-content: center;
+  margin-block-start: var(--space-md);
+}

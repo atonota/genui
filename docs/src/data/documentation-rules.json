@@ -1,0 +1,329 @@
+{
+  "pageKinds": {
+    "overview": {
+      "label": "Overview",
+      "description": "Library entry point that introduces the catalog and links to every area.",
+      "routes": ["/"]
+    },
+    "guide": {
+      "label": "Getting started guide",
+      "description": "Installation and integration guide, including the shared Astro integration target.",
+      "routes": ["/getting-started/"]
+    },
+    "tokens": {
+      "label": "Design tokens",
+      "description": "Semantic token reference for colour, type, spacing, radius and motion.",
+      "routes": ["/tokens/"]
+    },
+    "ux-standards": {
+      "label": "UX standards",
+      "description": "Normative measurement, surface and state, motion and focus, layer and overlay rules.",
+      "routes": ["/standards/"]
+    },
+    "genui": {
+      "label": "GenUI",
+      "description": "GenUI contract, policy and registration status reference.",
+      "routes": ["/genui/"]
+    },
+    "color-lab": {
+      "label": "Color lab",
+      "description": "Interactive colour system and contrast exploration.",
+      "routes": ["/color-system/", "/theme-builder/"]
+    },
+    "decisions": {
+      "label": "Decisions",
+      "description": "Recorded design and engineering decisions.",
+      "routes": ["/decisions/"]
+    },
+    "legal": {
+      "label": "Licenses",
+      "description": "Third-party license notices.",
+      "routes": ["/licenses/"]
+    },
+    "standard": {
+      "label": "Documentation standard",
+      "description": "Published page types, section order, rules, source map, admission workflow and verification limits.",
+      "routes": ["/documentation/"]
+    },
+    "redirect": {
+      "label": "Legacy redirect",
+      "description": "Retired route that only redirects to its declared canonical target. Legacy fragments are mapped by docs/src/data/token-redirects.ts.",
+      "routes": ["/token-standards/"],
+      "targets": { "/token-standards/": "/tokens/" }
+    },
+    "component": {
+      "label": "Component",
+      "description": "Any generated route of the form /components/<slug>/ is a component page and must pass the full common contract.",
+      "routePattern": "^/components/[a-z0-9]+(?:-[a-z0-9]+)*/$"
+    }
+  },
+  "componentSections": [
+    "usage",
+    "examples",
+    "code",
+    "astro",
+    "api",
+    "accessibility",
+    "notes",
+    "resources"
+  ],
+  "sectionLabels": {
+    "usage": "When to use",
+    "examples": "Live examples",
+    "code": "Usage code",
+    "astro": "Astro integration",
+    "api": "API",
+    "accessibility": "Accessibility",
+    "notes": "Implementation notes",
+    "resources": "Source and resources"
+  },
+  "standardSections": [
+    "page-types",
+    "section-order",
+    "rules",
+    "source-map",
+    "admission",
+    "verification-limits"
+  ],
+  "standardSectionLabels": {
+    "page-types": "Page types",
+    "section-order": "Component section order",
+    "rules": "Rules",
+    "source-map": "Source map",
+    "admission": "Admission workflow",
+    "verification-limits": "Verification limits"
+  },
+  "resources": {
+    "kinds": ["catalog", "route", "adapter", "styles", "instructions", "tests", "genui"],
+    "labels": {
+      "catalog": "Catalog data",
+      "route": "Astro route and layout",
+      "adapter": "React adapter",
+      "styles": "Styles and tokens",
+      "instructions": "AGENTS instructions",
+      "tests": "Tests",
+      "genui": "GenUI contracts and registry"
+    },
+    "requiredSources": {
+      "genui": [
+        "docs/src/genui/contracts.ts",
+        "docs/src/genui/policy.ts",
+        "docs/src/react/genui/AtlasGenUISurface.tsx"
+      ]
+    }
+  },
+  "astroGuide": {
+    "route": "/getting-started/",
+    "target": "astro-integration"
+  },
+  "officialReference": {
+    "protocol": "https:",
+    "hosts": ["ant.design"]
+  },
+  "verification": "The gate inspects generated HTML structure only. It is not browser, computed-style, visual, device or CI evidence.",
+  "rules": [
+    {
+      "ruleId": "page-kind-unknown",
+      "severity": "error",
+      "event": "A generated HTML page is inspected after the Astro build.",
+      "condition": "The route is neither a listed foundation route nor a single-segment component route under /components/.",
+      "action": "Fail the build; add the route to a known page kind or remove it."
+    },
+    {
+      "ruleId": "heading-single-h1",
+      "severity": "error",
+      "event": "A generated HTML page is inspected after the Astro build.",
+      "condition": "The page does not contain exactly one h1.",
+      "action": "Fail the build; keep a single page title."
+    },
+    {
+      "ruleId": "section-unnamed",
+      "severity": "error",
+      "event": "A documentation section is inspected.",
+      "condition": "The section has no non-empty accessible heading name.",
+      "action": "Fail the build; give the section a visible heading."
+    },
+    {
+      "ruleId": "section-name-duplicate",
+      "severity": "error",
+      "event": "A documentation section is inspected.",
+      "condition": "Two sections on the page share the same name.",
+      "action": "Fail the build; give every section an unambiguous name."
+    },
+    {
+      "ruleId": "section-target-duplicate",
+      "severity": "error",
+      "event": "A documentation section is inspected.",
+      "condition": "The section id is used by more than one element on the page.",
+      "action": "Fail the build; every navigation target must exist exactly once."
+    },
+    {
+      "ruleId": "section-id-mismatch",
+      "severity": "error",
+      "event": "A documentation section is inspected.",
+      "condition": "The section id is missing or differs from its data-doc-section key.",
+      "action": "Fail the build; use the section key as its id."
+    },
+    {
+      "ruleId": "navigation-missing",
+      "severity": "error",
+      "event": "Page navigation is inspected.",
+      "condition": "The page has no section links navigation (data-doc-nav sections).",
+      "action": "Fail the build; render the shared section links that stay visible at 320px."
+    },
+    {
+      "ruleId": "navigation-target-missing",
+      "severity": "error",
+      "event": "Page navigation is inspected.",
+      "condition": "A section link or contents link does not point to a documentation section on the page.",
+      "action": "Fail the build; link only to existing section ids."
+    },
+    {
+      "ruleId": "navigation-link-duplicate",
+      "severity": "error",
+      "event": "Page navigation is inspected.",
+      "condition": "One navigation lists the same target more than once.",
+      "action": "Fail the build; list each target once per navigation."
+    },
+    {
+      "ruleId": "navigation-section-unlisted",
+      "severity": "error",
+      "event": "Page navigation is inspected.",
+      "condition": "A documentation section is missing from the section links.",
+      "action": "Fail the build; list every section in the section links."
+    },
+    {
+      "ruleId": "component-section-missing",
+      "severity": "error",
+      "event": "A component page is inspected.",
+      "condition": "A shared component section is absent.",
+      "action": "Fail the build; render every shared component section."
+    },
+    {
+      "ruleId": "component-section-duplicate",
+      "severity": "error",
+      "event": "A component page is inspected.",
+      "condition": "A shared component section appears more than once.",
+      "action": "Fail the build; render each shared section once."
+    },
+    {
+      "ruleId": "component-section-order",
+      "severity": "error",
+      "event": "A component page is inspected.",
+      "condition": "Component sections are out of the shared order or include an undeclared section.",
+      "action": "Fail the build; follow the published component section order."
+    },
+    {
+      "ruleId": "component-demo-empty",
+      "severity": "error",
+      "event": "A component page is inspected.",
+      "condition": "The live examples section has no rendered demonstration.",
+      "action": "Fail the build; mount the existing live demonstration in the examples panel."
+    },
+    {
+      "ruleId": "component-demo-duplicate",
+      "severity": "error",
+      "event": "A component page is inspected.",
+      "condition": "More than one live demonstration area is mounted.",
+      "action": "Fail the build; mount the live demonstration exactly once."
+    },
+    {
+      "ruleId": "component-api-missing",
+      "severity": "error",
+      "event": "A component page is inspected.",
+      "condition": "The API section has no local API table.",
+      "action": "Fail the build; document the component API on its own page."
+    },
+    {
+      "ruleId": "component-api-reference-missing",
+      "severity": "error",
+      "event": "A component page is inspected.",
+      "condition": "The API section has no official reference link.",
+      "action": "Fail the build; keep the official Ant Design reference in the API section."
+    },
+    {
+      "ruleId": "component-api-reference-invalid",
+      "severity": "error",
+      "event": "A component page is inspected.",
+      "condition": "The official reference is not a usable https destination on the official Ant Design domain.",
+      "action": "Fail the build; link to the official https reference."
+    },
+    {
+      "ruleId": "component-astro-incomplete",
+      "severity": "error",
+      "event": "A component page is inspected.",
+      "condition": "The Astro integration section lacks an island example with an import and client directive, or lacks the shared guide link.",
+      "action": "Fail the build; show the trusted React-island example and link to the shared Astro integration guide."
+    },
+    {
+      "ruleId": "component-resources-incomplete",
+      "severity": "error",
+      "event": "A component page is inspected.",
+      "condition": "A resource kind lacks concrete source paths, a required GenUI source is absent, or the capability status is missing.",
+      "action": "Fail the build; name concrete source locations and state the GenUI capability status separately."
+    },
+    {
+      "ruleId": "astro-guide-missing",
+      "severity": "error",
+      "event": "The complete build output is inspected.",
+      "condition": "The getting started guide page was not generated.",
+      "action": "Fail the build; component pages link to that shared guide."
+    },
+    {
+      "ruleId": "astro-guide-target-missing",
+      "severity": "error",
+      "event": "The complete build output is inspected.",
+      "condition": "The getting started guide has no astro-integration target.",
+      "action": "Fail the build; add the shared Astro integration section."
+    },
+    {
+      "ruleId": "astro-guide-target-duplicate",
+      "severity": "error",
+      "event": "The complete build output is inspected.",
+      "condition": "The getting started guide contains more than one astro-integration target.",
+      "action": "Fail the build; keep exactly one shared Astro integration target."
+    },
+    {
+      "ruleId": "foundation-sections-missing",
+      "severity": "error",
+      "event": "A foundation page is inspected.",
+      "condition": "The page has no named documentation sections.",
+      "action": "Fail the build; divide the page into named, navigable sections."
+    },
+    {
+      "ruleId": "standard-section-missing",
+      "severity": "error",
+      "event": "The documentation standard page is inspected.",
+      "condition": "A required standard section is absent.",
+      "action": "Fail the build; publish every standard section."
+    },
+    {
+      "ruleId": "standard-rule-unlisted",
+      "severity": "error",
+      "event": "The documentation standard page is inspected.",
+      "condition": "A declared rule is not published in the rules table.",
+      "action": "Fail the build; publish every declared rule."
+    },
+    {
+      "ruleId": "redirect-metadata-invalid",
+      "severity": "error",
+      "event": "A redirect page is inspected.",
+      "condition": "The page lacks exactly one canonical link and exactly one zero-delay refresh, both pointing to its declared canonical target.",
+      "action": "Fail the build; point the canonical link and the refresh at the declared target."
+    },
+    {
+      "ruleId": "redirect-fallback-missing",
+      "severity": "error",
+      "event": "A redirect page is inspected.",
+      "condition": "The page has no link to its declared canonical target.",
+      "action": "Fail the build; keep a fallback link for clients that do not follow the refresh."
+    },
+    {
+      "ruleId": "redirect-route-missing",
+      "severity": "error",
+      "event": "The complete build output is inspected.",
+      "condition": "A declared redirect route or its canonical target was not generated.",
+      "action": "Fail the build; generate the redirect page and its target, or correct the declared target."
+    }
+  ]
+}

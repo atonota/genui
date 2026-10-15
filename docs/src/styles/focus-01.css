@@ -1,0 +1,118 @@
+@import './focus-fields.css';
+@import './focus-actions.css';
+
+/* FOCUS-01 keyboard focus foundation, imported after every other docs stylesheet.
+   Every focus paint is gated on html[data-input-modality='keyboard'] (set by the central
+   modality bridge) AND :focus-visible, so pointer focus paints nothing beyond hover.
+   Indicators never surround: links underline and recolor, list rows take the focus surface
+   plus one start-edge bar, buttons step their fill by at least 3:1 and fields recolor their
+   fixed bottom edge (focus-fields.css). Forced colors are the only outline exception.
+   --focus-color and --focus-marker stay compatibility aliases; new code uses these roles. */
+:root {
+  --focus-indicator-width: 3px;
+  --field-focus-indicator-width: 2px;
+  --focus-forced-outline-width: 2px;
+  --focus-choice-scale: 1.15;
+  --focus-scroll-padding: calc(var(--space-xl) + var(--target-min));
+  scroll-padding-block: var(--focus-scroll-padding);
+}
+/* Color roles are declared on body under the root theme so var(--accent) resolves after the
+   docs brand override on body (see nav.css). The indicator is --ink on the shell and panel
+   surfaces; button focus text is the focus surface on the --ink fill. */
+:root:not([data-theme]) body,
+:root[data-theme='light'] body {
+  --focus-indicator-color: var(--ink);
+  --focus-bg: color-mix(in srgb, var(--field-bg) 90%, var(--ink) 10%);
+  --focus-link-ink: color-mix(in srgb, var(--accent) 55%, var(--ink));
+  --focus-button-bg: var(--ink);
+  --focus-button-ink: var(--focus-bg);
+  --focus-color: var(--focus-indicator-color);
+  --focus-marker: var(--focus-indicator-width);
+}
+:root[data-theme='dark'] body {
+  --focus-indicator-color: var(--ink);
+  --focus-bg: color-mix(in srgb, var(--field-bg) 90%, var(--ink) 10%);
+  --focus-link-ink: color-mix(in srgb, var(--accent) 55%, var(--ink));
+  --focus-button-bg: var(--ink);
+  --focus-button-ink: var(--focus-bg);
+  --focus-color: var(--focus-indicator-color);
+  --focus-marker: var(--focus-indicator-width);
+}
+/* No outline in any input mode outside forced colors. */
+:focus {
+  outline: none;
+}
+/* Links: underline plus a color step. Sidebar rows use the list treatment in nav.css. */
+:root[data-input-modality='keyboard'] a[href]:not(.navigation a):focus-visible {
+  color: var(--focus-link-ink);
+  text-decoration-line: underline;
+  text-decoration-color: var(--focus-link-ink);
+  text-decoration-thickness: var(--focus-indicator-width);
+  text-underline-offset: 0.25em;
+  text-decoration-skip-ink: none;
+}
+/* List, menu, tree and tab items: the focus surface plus one start-edge bar. */
+:root[data-input-modality='keyboard']
+  :is(
+    [role='option'],
+    [role='menuitem'],
+    [role='menuitemcheckbox'],
+    [role='menuitemradio'],
+    [role='treeitem'],
+    [role='tab']
+  ):focus-visible {
+  background-color: var(--focus-bg);
+  box-shadow: inset var(--focus-indicator-width) 0 0 0 var(--focus-indicator-color);
+}
+/* Documentation buttons, summaries and copy/clear controls: a fill step of at least 3:1 with
+   readable text. Atlas and Ant Design buttons and choice controls take their focus from the
+   component theme and focus-fields.css. */
+:root[data-input-modality='keyboard']
+  :is(
+    button,
+    summary,
+    [role='button'],
+    input[type='button'],
+    input[type='submit'],
+    input[type='reset']
+  ):not(
+    [role='switch'],
+    [role='checkbox'],
+    [role='radio'],
+    [role='tab'],
+    [role='option'],
+    [role='menuitem'],
+    .ant-btn,
+    .atlas-button,
+    .ant-switch
+  ):focus-visible {
+  background-color: var(--focus-button-bg);
+  color: var(--focus-button-ink);
+}
+:root[data-input-modality='keyboard']
+  :is(
+    button,
+    summary,
+    [role='button'],
+    input[type='button'],
+    input[type='submit'],
+    input[type='reset']
+  ):not(
+    [role='switch'],
+    [role='checkbox'],
+    [role='radio'],
+    [role='tab'],
+    [role='option'],
+    [role='menuitem'],
+    .ant-btn,
+    .atlas-button,
+    .ant-switch
+  ):focus-visible
+  * {
+  color: inherit;
+}
+@media (forced-colors: active) {
+  :root[data-input-modality='keyboard'] :focus-visible {
+    outline: var(--focus-forced-outline-width) solid CanvasText;
+  }
+}

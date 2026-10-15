@@ -1,0 +1,236 @@
+/* Shared action menus, including native cascades portaled beside the root popup. */
+.atlas-demo .atlas-dropdown-trigger.ant-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  min-height: max(var(--target-min), var(--atlas-component-height));
+  min-width: var(--target-min);
+  max-width: 100%;
+  height: auto;
+  padding: var(--space-xs) var(--space-md);
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  white-space: normal;
+  text-align: start;
+  transition-property: background-color, color, opacity, box-shadow;
+  transition-duration: var(--motion-duration-standard);
+  transition-timing-function: var(--motion-easing);
+  transition-delay: var(--motion-delay);
+}
+.atlas-demo .atlas-dropdown-trigger.ant-btn:is(:hover, [aria-expanded='true']) {
+  color: var(--ink);
+  background: var(--soft);
+}
+.atlas-dropdown-trigger > span {
+  min-width: 0;
+}
+.atlas-dropdown-chevron {
+  flex: none;
+  transform: rotate(90deg);
+}
+.atlas-demo .atlas-dropdown-trigger.ant-btn:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+.atlas-demo .atlas-dropdown-trigger.ant-btn:focus-visible::before {
+  content: '';
+  position: absolute;
+  inset-block: var(--space-xs);
+  inset-inline-start: 0;
+  width: var(--focus-marker);
+  border-radius: var(--radius-sm);
+  background: var(--focus-color);
+}
+.atlas-dropdown-popup,
+.atlas-dropdown-subpopup {
+  --dropdown-menu-width: 280px;
+  --dropdown-page-inset: var(--space-sm);
+  --dropdown-menu-background: var(--panel);
+  --dropdown-menu-hover: var(--surface);
+  width: min(var(--dropdown-menu-width), calc(100vw - var(--dropdown-page-inset) * 2));
+  min-width: 0;
+  max-width: calc(100vw - var(--dropdown-page-inset) * 2);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--text);
+  line-height: var(--line-height);
+}
+.atlas-dropdown-context {
+  --dropdown-menu-background: var(--soft);
+  --dropdown-menu-hover: var(--surface);
+}
+body :is(.atlas-dropdown-popup, .atlas-dropdown-subpopup) .ant-dropdown-menu,
+body
+  :is(.atlas-dropdown-popup, .atlas-dropdown-subpopup)
+  .ant-dropdown-menu
+  :is(
+    .ant-dropdown-menu-item,
+    .ant-dropdown-menu-submenu-title,
+    .ant-dropdown-menu-title-content,
+    .ant-dropdown-menu-item-group-title,
+    .ant-dropdown-menu-submenu-arrow,
+    .atlas-icon
+  ) {
+  transition-property: background-color, color, opacity, box-shadow, transform;
+  transition-duration: var(--motion-duration-standard);
+  transition-timing-function: var(--motion-easing);
+  transition-delay: var(--motion-delay);
+}
+body :is(.atlas-dropdown-popup, .atlas-dropdown-subpopup) .ant-dropdown-menu {
+  width: 100%;
+  min-width: 0;
+  max-height: calc(100dvh - var(--dropdown-page-inset) * 2);
+  padding: var(--space-xs);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-radius: var(--radius);
+  background: var(--dropdown-menu-background);
+  color: var(--ink);
+  box-shadow: var(--shadow-soft);
+  font: inherit;
+}
+body
+  :is(.atlas-dropdown-popup, .atlas-dropdown-subpopup)
+  .ant-dropdown-menu
+  :is(.ant-dropdown-menu-item, .ant-dropdown-menu-submenu-title) {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  min-height: max(var(--target-min), var(--atlas-component-height));
+  min-width: 0;
+  margin: 0;
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius);
+  color: var(--ink);
+  background: transparent;
+  font: inherit;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+body :is(.atlas-dropdown-popup, .atlas-dropdown-subpopup) .ant-dropdown-menu-title-content {
+  min-width: 0;
+  font: inherit;
+}
+body
+  :is(.atlas-dropdown-popup, .atlas-dropdown-subpopup)
+  .ant-dropdown-menu
+  .ant-dropdown-menu-submenu-title {
+  padding-inline-end: calc(var(--space-md) + var(--space-xl));
+}
+body :is(.atlas-dropdown-popup, .atlas-dropdown-subpopup) .ant-dropdown-menu-item-group-title {
+  padding: var(--space-sm) var(--space-md) var(--space-xs);
+  color: var(--muted);
+  font: inherit;
+}
+body :is(.atlas-dropdown-popup, .atlas-dropdown-subpopup) .ant-dropdown-menu-item-divider {
+  margin: var(--space-xs) 0;
+  border-color: var(--line);
+}
+body
+  :is(.atlas-dropdown-popup, .atlas-dropdown-subpopup)
+  .ant-dropdown-menu
+  :is(
+    .ant-dropdown-menu-item:hover,
+    .ant-dropdown-menu-item-active,
+    .ant-dropdown-menu-submenu-title:hover,
+    .ant-dropdown-menu-submenu-active > .ant-dropdown-menu-submenu-title
+  ) {
+  color: var(--ink);
+  background: var(--dropdown-menu-hover);
+}
+body
+  :is(.atlas-dropdown-popup, .atlas-dropdown-subpopup)
+  .ant-dropdown-menu
+  .ant-dropdown-menu-item-danger {
+  color: var(--error);
+}
+body
+  :is(.atlas-dropdown-popup, .atlas-dropdown-subpopup)
+  .ant-dropdown-menu
+  .ant-dropdown-menu-item-danger:not(.ant-dropdown-menu-item-disabled):is(
+    :hover,
+    .ant-dropdown-menu-item-active
+  ) {
+  color: var(--error);
+  background: var(--dropdown-menu-hover);
+}
+body
+  :is(.atlas-dropdown-popup, .atlas-dropdown-subpopup)
+  .ant-dropdown-menu
+  :is(
+    .ant-dropdown-menu-item-disabled,
+    .ant-dropdown-menu-submenu-disabled > .ant-dropdown-menu-submenu-title
+  ) {
+  color: var(--muted);
+  cursor: not-allowed;
+  opacity: var(--opacity-rest);
+  background: transparent;
+}
+body
+  :is(.atlas-dropdown-popup, .atlas-dropdown-subpopup)
+  .ant-dropdown-menu
+  :is(.ant-dropdown-menu-item, .ant-dropdown-menu-submenu-title):focus-visible {
+  outline: none;
+  box-shadow: none;
+  transition-property: background-color, color, opacity, box-shadow, transform;
+  transition-duration: var(--motion-duration-standard);
+  transition-timing-function: var(--motion-easing);
+  transition-delay: var(--motion-delay);
+}
+body
+  :is(.atlas-dropdown-popup, .atlas-dropdown-subpopup)
+  .ant-dropdown-menu
+  :is(.ant-dropdown-menu-item, .ant-dropdown-menu-submenu-title):focus-visible::after {
+  content: '';
+  position: absolute;
+  inset-block: var(--space-xs);
+  inset-inline-start: 0;
+  width: var(--focus-marker);
+  border-radius: var(--radius-sm);
+  background: var(--focus-color);
+}
+.atlas-dropdown-popup-motion-enter,
+.atlas-dropdown-popup-motion-appear {
+  animation: atlas-dropdown-open var(--motion-duration-standard) var(--motion-easing) both;
+}
+.atlas-dropdown-popup-motion-leave {
+  animation: atlas-dropdown-close var(--motion-duration-standard) var(--motion-easing) both;
+}
+@keyframes atlas-dropdown-open {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes atlas-dropdown-close {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .atlas-dropdown-trigger,
+  .atlas-dropdown-trigger *,
+  .atlas-dropdown-popup,
+  .atlas-dropdown-popup *,
+  .atlas-dropdown-popup *::before,
+  .atlas-dropdown-popup *::after,
+  .atlas-dropdown-subpopup,
+  .atlas-dropdown-subpopup *,
+  .atlas-dropdown-subpopup *::before,
+  .atlas-dropdown-subpopup *::after {
+    transition-duration: 0s !important;
+    animation: none !important;
+  }
+}

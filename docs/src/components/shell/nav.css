@@ -1,0 +1,144 @@
+/* DocsNav: sidebar navigation on every docs page.
+   Row state colors are central role tokens. They are declared on body under the
+   root theme so var(--accent) resolves after the docs brand override that
+   docs-brand.ts applies to body; declared on :root they would freeze the
+   component palette accent instead. Component selectors only consume them. */
+:root:not([data-theme]) body,
+:root[data-theme='light'] body {
+  --nav-item-fg: var(--muted);
+  --nav-item-fg-hover: var(--ink);
+  --nav-item-fg-active: var(--accent);
+  --nav-item-bg-hover: color-mix(in srgb, var(--ink) 7%, var(--paper));
+  --nav-item-bg-active: color-mix(in srgb, var(--accent) 8%, transparent);
+  --nav-item-bg-active-hover: color-mix(in srgb, var(--accent) 10%, transparent);
+  --nav-item-indicator-active: var(--accent);
+}
+:root[data-theme='dark'] body {
+  --nav-item-fg: var(--muted);
+  --nav-item-fg-hover: var(--ink);
+  --nav-item-fg-active: var(--accent);
+  --nav-item-bg-hover: color-mix(in srgb, var(--ink) 8%, var(--paper));
+  --nav-item-bg-active: color-mix(in srgb, var(--accent) 14%, transparent);
+  --nav-item-bg-active-hover: color-mix(in srgb, var(--accent) 20%, transparent);
+  --nav-item-indicator-active: var(--accent);
+}
+.sidebar .navigation-title {
+  margin: 0;
+  font-size: var(--text);
+  font-weight: var(--font-weight-label, 600);
+}
+.sidebar .navigation nav {
+  padding-block: var(--space-md);
+}
+.sidebar .nav-search {
+  display: grid;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-lg);
+}
+.sidebar .nav-search input {
+  width: 100%;
+  min-width: 0;
+  min-height: var(--control-height);
+  padding: var(--space-xs) var(--space-sm);
+  /* Same quiet well as the fields through the root theme aliases; shell.css owns the
+     fixed functional bottom edge and its keyboard-only focus state. */
+  border: 1px solid var(--field-inset-border, transparent);
+  background-color: var(--field-bg);
+  box-shadow: var(--field-inner-shadow, none);
+  border-radius: var(--radius);
+  color: var(--ink);
+}
+@media (any-hover: hover) {
+  .sidebar .nav-search input:hover {
+    box-shadow: var(--field-inner-hover, var(--field-inner-shadow, none));
+  }
+}
+.sidebar .navigation ul {
+  list-style: none;
+  padding: 0;
+  margin: var(--space-xs) 0 var(--space-lg);
+}
+.sidebar .navigation li {
+  margin: 0;
+}
+.sidebar .nav-group h2 {
+  font-size: var(--text);
+  font-weight: var(--font-weight-label, 600);
+  padding-inline: var(--space-sm);
+}
+/* Clickable rows touch; the visible paint lives on ::before, inset 2px on the
+   block axis, so adjacent backgrounds keep a 4px gap without dead zones. */
+.sidebar .navigation li > a {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  min-height: var(--target-min);
+  margin: 0;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: 0;
+  background-color: transparent;
+  color: var(--nav-item-fg);
+  text-decoration: none;
+}
+.sidebar .navigation li > a::before {
+  content: '';
+  position: absolute;
+  inset: 2px 0;
+  z-index: -1;
+  border-radius: var(--radius);
+  background-color: transparent;
+  pointer-events: none;
+  transition: background-color var(--transition-duration) var(--motion-easing);
+}
+.sidebar .navigation li > a::after {
+  content: '';
+  position: absolute;
+  inset-block: 2px;
+  inset-inline-start: 0;
+  inline-size: 2px;
+  background-color: transparent;
+  pointer-events: none;
+  transition: background-color var(--transition-duration) var(--motion-easing);
+}
+.sidebar .navigation li > a:hover {
+  color: var(--nav-item-fg-hover);
+}
+.sidebar .navigation li > a:hover::before {
+  background-color: var(--nav-item-bg-hover);
+}
+.sidebar .navigation li > a[aria-current='page'] {
+  color: var(--nav-item-fg-active);
+  font-weight: var(--font-weight-label, 600);
+}
+.sidebar .navigation li > a[aria-current='page']::before {
+  background-color: var(--nav-item-bg-active);
+}
+.sidebar .navigation li > a[aria-current='page']:hover::before {
+  background-color: var(--nav-item-bg-active-hover);
+}
+.sidebar .navigation li > a[aria-current='page']::after {
+  background-color: var(--nav-item-indicator-active);
+}
+/* Keyboard focus only (html keyboard modality and :focus-visible): the central focus surface
+   on the row and its paint layer plus one --focus-indicator-width start-edge bar that takes
+   priority over the 2px active marker; the active accent text stays. */
+:root[data-input-modality='keyboard'] .sidebar .navigation li > a:focus-visible {
+  background-color: var(--focus-bg);
+  text-decoration: none;
+}
+:root[data-input-modality='keyboard'] .sidebar .navigation li > a:focus-visible::before {
+  background-color: var(--focus-bg);
+}
+:root[data-input-modality='keyboard'] .sidebar .navigation li > a:focus-visible::after {
+  inline-size: var(--focus-indicator-width);
+  background-color: var(--focus-indicator-color);
+}
+@media (min-width: 62rem) {
+  .sidebar .navigation-title {
+    font-size: var(--text-large, 1.125rem);
+  }
+  .sidebar .navigation nav {
+    padding-inline-end: var(--space-md);
+  }
+}

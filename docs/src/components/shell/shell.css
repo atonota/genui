@@ -1,0 +1,226 @@
+/* Documentation shell surfaces. theme.ts declares each role once on :root:
+   --shell-bg/--shell-ink for the shell root, header, sidebar, navigation drawer, table of
+   contents and footer; --panel-bg/--panel-ink for the entire main column; --field-* for
+   editable fields. html and body paint nothing, so overriding one role on :root moves only
+   the regions that read it. Grid, sticky sidebar, drawer placement, TOC geometry and
+   breakpoints live in layout.css; navigation link states live in nav.css. */
+[data-docs-shell] {
+  min-block-size: 100svh;
+  background-color: var(--shell-bg);
+  color: var(--shell-ink);
+}
+.docs-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  margin: auto;
+  padding: var(--space-lg) var(--page-gutter);
+  border-bottom: 1px solid var(--line);
+  background-color: var(--shell-bg);
+  color: var(--shell-ink);
+}
+.wordmark {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 1.5rem;
+  font-weight: var(--font-weight-label, 700);
+}
+.wordmark span {
+  font-size: var(--text);
+  font-weight: var(--font-weight-label, 450);
+  color: var(--muted);
+}
+.header-meta {
+  color: var(--muted);
+  font-size: var(--text);
+  flex: 1;
+}
+.header-link {
+  min-height: var(--target-min);
+  display: flex;
+  align-items: center;
+}
+.docs-menu-toggle,
+.docs-menu-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: max(48px, var(--target-min));
+  min-inline-size: max(48px, var(--target-min));
+  padding: var(--space-xs) var(--space-sm);
+  border: 0;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--shell-ink);
+  font: inherit;
+  font-weight: var(--font-weight-label, 600);
+}
+.locale-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+.locale-option {
+  min-height: var(--target-min);
+  padding: var(--space-xs) var(--space-sm);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-weight: var(--font-weight-label, 600);
+}
+.locale-option[aria-pressed='true'] {
+  background: var(--surface);
+  color: var(--ink);
+}
+.theme-toggle {
+  --theme-toggle-height: var(--atlas-selection-height-md);
+  --theme-toggle-thumb-surface: #ffffff;
+  --theme-toggle-off-surface: var(--field-bg);
+  --theme-toggle-icon-size: 1.25rem;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  inline-size: var(--switch-track-width);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-round);
+  color: var(--ink);
+  background: var(--theme-toggle-off-surface);
+  font: inherit;
+}
+:root[data-theme='dark'] .theme-toggle {
+  background: var(--docs-brand-primary);
+  color: var(--docs-brand-on-primary);
+}
+.atlas-motion-layer.theme-toggle-thumb {
+  position: absolute;
+  inset-block-start: var(--switch-track-padding);
+  inline-size: var(--switch-handle-size);
+  block-size: var(--switch-handle-size);
+  border-radius: var(--radius-round);
+  background: var(--theme-toggle-thumb-surface);
+  box-shadow: var(--switch-handle-shadow);
+  pointer-events: none;
+}
+.theme-toggle-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 0;
+  color: var(--docs-brand-on-primary);
+  pointer-events: none;
+}
+.theme-toggle-icon .atlas-icon {
+  inline-size: var(--theme-toggle-icon-size);
+  block-size: var(--theme-toggle-icon-size);
+}
+@media (any-hover: hover) {
+  .theme-toggle:hover {
+    box-shadow: var(--switch-hover-shadow);
+  }
+}
+/* Keyboard focus scales the thumb by the central choice focus scale; no bottom marker, ring
+   or recolored track edge. */
+:root[data-input-modality='keyboard'] .theme-toggle:focus-visible .theme-toggle-thumb {
+  scale: var(--focus-choice-scale);
+}
+.sidebar {
+  min-inline-size: 0;
+  background-color: var(--shell-bg);
+  color: var(--shell-ink);
+}
+[data-docs-drawer] {
+  border: 0;
+  background-color: var(--shell-bg);
+  color: var(--shell-ink);
+}
+[data-docs-drawer]::backdrop {
+  background: var(--overlay-scrim);
+  -webkit-backdrop-filter: blur(var(--overlay-backdrop-blur));
+  backdrop-filter: blur(var(--overlay-backdrop-blur));
+}
+/* The sidebar search sits outside AtlasProvider and reads the root field roles: the
+   --field-bg fill, the quiet decorative well edge and inner depth on the top and sides, and
+   one fixed --field-focus-indicator-width functional bottom edge in --field-border that keeps
+   at least 3:1 against the fill. Keyboard focus (html keyboard modality and :focus-visible)
+   keeps that edge fixed, fills the well with --focus-bg and paints one separate
+   --field-focus-indicator-width bottom marker in --focus-indicator-color as a background
+   layer; pointer focus paints nothing. */
+[data-docs-shell] .sidebar input[type='search'] {
+  width: 100%;
+  min-width: 0;
+  min-height: var(--control-height);
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--field-inset-border, transparent);
+  border-bottom: var(--field-focus-indicator-width) solid var(--field-border);
+  background-color: var(--field-bg);
+  box-shadow: var(--field-inner-shadow, none);
+  border-radius: var(--radius);
+  color: var(--ink);
+}
+@media (any-hover: hover) {
+  [data-docs-shell] .sidebar input[type='search']:hover {
+    box-shadow: var(--field-inner-hover, var(--field-inner-shadow, none));
+  }
+}
+:root[data-input-modality='keyboard']
+  [data-docs-shell]
+  .sidebar
+  input[type='search']:focus-visible {
+  background-color: var(--focus-bg);
+  background-image: linear-gradient(var(--focus-indicator-color), var(--focus-indicator-color));
+  background-position: bottom;
+  background-size: 100% var(--field-focus-indicator-width);
+  background-repeat: no-repeat;
+}
+.sidebar-note {
+  color: var(--muted);
+  margin-top: var(--space-lg);
+  font-size: var(--text);
+}
+.docs-main {
+  min-inline-size: 0;
+  inline-size: 100%;
+  outline: none;
+  background-color: var(--panel-bg);
+  color: var(--panel-ink);
+}
+/* The skip-link target keeps one immediate, non-surrounding keyboard focus indicator. */
+:root[data-input-modality='keyboard'] .docs-main:focus-visible h1 {
+  text-decoration: underline;
+  text-decoration-color: var(--focus-indicator-color);
+  text-decoration-thickness: var(--focus-indicator-width);
+  text-underline-offset: 0.25em;
+}
+.toc {
+  background-color: var(--shell-bg);
+  color: var(--shell-ink);
+  font-size: var(--text);
+}
+.toc p {
+  font-weight: var(--font-weight-label, 550);
+  margin-bottom: var(--space-xs);
+}
+.toc a {
+  color: var(--muted);
+  text-decoration: none;
+}
+.docs-footer {
+  margin: auto;
+  padding: var(--space-lg) var(--page-gutter);
+  border-top: 1px solid var(--line);
+  display: flex;
+  gap: var(--space-md);
+  justify-content: space-between;
+  flex-wrap: wrap;
+  color: var(--muted);
+  background-color: var(--shell-bg);
+}

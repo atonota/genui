@@ -1,0 +1,117 @@
+{
+  "id": "p1-d-standards",
+  "date": "2026-10-15",
+  "status": "Source proposal. Not runtime, browser, CI or human visual acceptance.",
+  "summary": "Normative UX rule prose moves from the legacy /token-standards/ page to the new /standards/ page (UX standards). Token value tables stay on /tokens/ (Design tokens). The legacy route and its catalog anchors resolve on /tokens/; its rule anchors resolve on /standards/ as aliases inside the matching sections, without duplicated rule text.",
+  "routes": {
+    "rules": "/standards/",
+    "values": "/tokens/",
+    "legacy": "/token-standards/"
+  },
+  "sections": [
+    "surfaces",
+    "typography",
+    "size-radius",
+    "interaction-states",
+    "focus",
+    "layers",
+    "motion",
+    "layout",
+    "accessibility"
+  ],
+  "valueSource": "docs/src/theme-builder/definitions.json through tokenDefinitions; the standards page reads only the values its rules name and links to the /tokens/ tables.",
+  "anchorMap": [
+    {
+      "legacy": "token-catalog",
+      "destination": "/tokens/#token-catalog",
+      "content": "Generated token catalog (values)."
+    },
+    {
+      "legacy": "token-group-<group>",
+      "groups": [
+        "colors",
+        "border",
+        "spacing",
+        "insets",
+        "radius",
+        "size",
+        "typography",
+        "shadow",
+        "density",
+        "surface",
+        "overlay"
+      ],
+      "destination": "/tokens/#token-group-<group>",
+      "content": "Per-group value tables."
+    },
+    {
+      "legacy": "using-tokens",
+      "destination": "/tokens/#using-tokens",
+      "content": "CSS variable usage, theme file shape and source responsibilities."
+    },
+    {
+      "legacy": "measurement-scales",
+      "destination": "/standards/#measurement-scales",
+      "section": "layout",
+      "content": "4 px rhythm, inset reuse for margin and padding, density and reflow rules."
+    },
+    {
+      "legacy": "surface-states",
+      "destination": "/standards/#surface-states",
+      "section": "surfaces",
+      "content": "Surface roles, functional boundaries and shadow use. State-axis prose moved to interaction-states."
+    },
+    {
+      "legacy": "motion-focus",
+      "destination": "/standards/#motion-focus",
+      "section": "motion",
+      "content": "Symmetric easing, positive durations, reduced motion and atomic palette switching. Focus prose moved to focus; the duration table stays on /tokens/."
+    },
+    {
+      "legacy": "layers",
+      "destination": "/standards/#layers",
+      "section": "layers",
+      "content": "Stacking order separate from shadow elevation."
+    },
+    {
+      "legacy": "overlay-standard",
+      "destination": "/standards/#overlay-standard",
+      "section": "layers",
+      "content": "Scrim and 1 px central blur, Tooltip included while visible, Toast and Notification excluded, Drawer/Modal whole-background blur. Overlay token values stay on /tokens/."
+    }
+  ],
+  "ruleChanges": [
+    {
+      "rule": "typography",
+      "before": "Minimum readable text 14 CSS px.",
+      "after": "Latest direct human GenUI decision for this project: minimum 12, standard 14, reading 16 CSS px, weight at least 300. Global instruction files are unchanged."
+    },
+    {
+      "rule": "radius",
+      "before": "Input slot radius derived by concentric subtraction.",
+      "after": "One shared general radius (default from radius-md) for every size family; input and slot use exactly the same radius when edited. The nested content-box size formula is unchanged."
+    },
+    {
+      "rule": "compact sizes",
+      "before": "Selection visual profile 32/40/50 px; Pill 32/40/48 px.",
+      "after": "Compact selection, Pill, Slider, list and Cascader rows 32/40/48 px; descriptions grow. Implementation of profile values belongs to the owning packages."
+    },
+    {
+      "rule": "policy references",
+      "before": "Current rules referenced Token standards.",
+      "after": "Current rules reference UX standards; values reference Design tokens."
+    }
+  ],
+  "unchanged": [
+    "Tab-only central focus mode, ringless type-specific indicators and the narrow forced-colors CanvasText fallback",
+    "Overlay scope, central Cubic motion and shell/panel/field role colors",
+    "Standard controls and Avatar 48/56/64 px",
+    "Eight component documentation sections, frozen 59 packages and the pending live-host decision"
+  ],
+  "history": "Historical logs, evidence paths and receipts that name Token standards or token-standards.astro remain unchanged and labelled history.",
+  "dependencies": [
+    "docs/src/data/documentation-rules.json must list /standards/ under a page kind (owned by another package).",
+    "Navigation groups and the /token-standards/ redirect are owned by the navigation package.",
+    "Register the Turkish dictionary if locale dictionaries are not discovered automatically."
+  ]
+}

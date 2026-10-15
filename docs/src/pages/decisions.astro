@@ -1,0 +1,352 @@
+---
+import DocsLayout from '../layouts/DocsLayout.astro';
+import DocumentationNav from '../components/DocumentationNav.astro';
+import atlas from '../data/atlas.json';
+const decisions = atlas.decisions.buttons;
+const variantGroups = [
+  { label: 'Radius', variants: decisions.radius_variants },
+  { label: 'Width', variants: decisions.width_variants },
+  { label: 'Border', variants: decisions.border_variants },
+  { label: 'States', variants: decisions.state_variants },
+  { label: 'Surface', variants: decisions.fill_variants },
+  { label: 'Color family', variants: decisions.palette_variants },
+  { label: 'Tone', variants: decisions.tone_variants },
+  { label: 'Transition duration', variants: decisions.duration_variants },
+  { label: 'Shadow', variants: decisions.shadow_variants },
+];
+type Variant = { label: string };
+const experimentGroups: { label: string; variants: readonly Variant[] }[] = [
+  { label: 'Width', variants: atlas.experiments.width_variants },
+  { label: 'Color family', variants: atlas.experiments.palette_variants },
+  { label: 'Tone', variants: atlas.experiments.tone_variants },
+  { label: 'Transition duration', variants: atlas.experiments.duration_variants },
+  { label: 'Shadow', variants: atlas.experiments.shadow_variants },
+  { label: 'States', variants: atlas.experiments.state_variants },
+].filter(group => group.variants.length > 0);
+// One line per dated user decision; the linked section owns the full rule and values.
+const decisionLog = [
+  {
+    date: '2026-10-08',
+    scope: 'Typography',
+    summary:
+      'Outfit is the default interface and documentation font; WCAG 2.2 AA is the accessibility standard.',
+    href: '/tokens/#token-group-typography',
+    link: 'Typography tokens',
+  },
+  {
+    date: '2026-10-13',
+    scope: 'Motion',
+    summary:
+      'Every normal visual state change enters and leaves smoothly on the shared symmetric Cubic curve; reduced motion is instant.',
+    href: '/standards/#motion-focus',
+    link: 'Motion and focus',
+  },
+  {
+    date: '2026-10-13',
+    scope: 'Button states',
+    summary:
+      'Default, Hover, Pressed, Disabled and one Processing state are public; Saving, Syncing and Queued are retired.',
+    href: '/components/button/#examples',
+    link: 'Live examples of the approved states',
+  },
+  {
+    date: '2026-10-13',
+    scope: 'Button widths',
+    summary: 'Content, Wide and Full width are approved; Narrow remains an experiment.',
+    href: '/components/button/#button-dimensions-heading',
+    link: 'Live examples of the approved sizes and widths',
+  },
+  {
+    date: '2026-10-13',
+    scope: 'Documentation color',
+    summary:
+      'Documentation primary is #0099ff; Button color families share the Color system presets.',
+    href: '/color-system/#approved-color-families',
+    link: 'Approved color families',
+  },
+  {
+    date: '2026-10-14',
+    scope: 'Typography',
+    summary:
+      'All readable text is at least 14 CSS px, replacing the former 1rem minimum; browser root size and zoom stay intact.',
+    href: '/tokens/#token-group-typography',
+    link: 'Typography tokens',
+  },
+  {
+    date: '2026-10-14',
+    scope: 'Input fields',
+    summary:
+      'The supplied input reference defines the field surface: a darker inset well and one bottom-only keyboard marker, read from central tokens.',
+    href: '/components/input/',
+    link: 'Input component',
+  },
+  {
+    date: '2026-10-14',
+    scope: 'Theme Builder',
+    summary:
+      'Theme Builder runs inside the documentation; recipes are local browser settings, not approved decisions.',
+    href: '/theme-builder/',
+    link: 'Theme Builder',
+  },
+  {
+    date: '2026-10-15',
+    scope: 'Color roles',
+    summary:
+      'Shell, main panel and field colors are isolated roles from one definitions source; fields stay darker than their panel.',
+    href: '/tokens/#token-group-colors',
+    link: 'Color tokens',
+  },
+  {
+    date: '2026-10-15',
+    scope: 'Sidebar search',
+    summary: 'Open: its colors on the dark shell are measured and reported, not recolored.',
+    href: '/standards/#surface-states',
+    link: 'Surfaces and states',
+  },
+  {
+    date: '2026-10-15',
+    scope: 'Focus (FOCUS01)',
+    summary:
+      'Focus is ringless and type-specific and appears only after Tab; forced-colors mode alone adds a 2 px CanvasText outline.',
+    href: '/standards/#motion-focus',
+    link: 'Motion and focus',
+  },
+  {
+    date: '2026-10-15',
+    scope: 'Overlay layers',
+    summary:
+      'Opened upper layers dim the page with a scrim and 1 px blur; Tooltip is included while visible, Toast and Notification are excluded.',
+    href: '/standards/#overlay-standard',
+    link: 'Overlay standard',
+  },
+  {
+    date: '2026-10-15',
+    scope: 'Form grouping',
+    summary: 'Related fields share a fieldset and legend; single fields are not wrapped in Cards.',
+    href: '/components/form/',
+    link: 'Form component',
+  },
+  {
+    date: '2026-10-15',
+    scope: 'Input group',
+    summary:
+      'Control height is the 48/56/64 px border box; input and slot share exactly the same radius, replacing concentric subtraction.',
+    href: '/components/input/',
+    link: 'Input component',
+  },
+  {
+    date: '2026-10-15',
+    scope: 'Radius',
+    summary: 'The default general radius is 5 px for every size family.',
+    href: '/tokens/#token-group-radius',
+    link: 'Radius tokens',
+  },
+  {
+    date: '2026-10-15',
+    scope: 'Size',
+    summary:
+      'Standard controls and Avatar use 48/56/64 px; compact selection, Pill, Slider, list and Cascader rows use 32/40/48 px; descriptions grow.',
+    href: '/tokens/#token-group-size',
+    link: 'Size tokens',
+  },
+  {
+    date: '2026-10-15',
+    scope: 'GenUI typography',
+    summary:
+      'GenUI text uses a 12 px minimum, 14 px standard and 16 px reading size, with font weight of at least 300.',
+    href: '/genui/',
+    link: 'GenUI',
+  },
+];
+const sections = [
+  { id: 'decision-log', label: 'Dated decisions' },
+  { id: 'buttons', label: 'Buttons' },
+  { id: 'experiments', label: 'Experiments' },
+];
+---
+
+<DocsLayout
+  title="Decision log"
+  description="Dated user decisions with links to their rules, the generated Button decision model and separate experiments."
+  slug="decisions"
+>
+  <p class="eyebrow">
+    <span data-i18n="PROJECT / DECISION LOG">PROJECT / DECISION LOG</span>
+  </p>
+  <h1>
+    <span class="page-heading-line" data-i18n="Decision log.">
+      Decision log.
+    </span>
+  </h1>
+  <p class="lead">
+    <span data-i18n="This page records dated user decisions and reads the existing decision model. It does not create new design decisions.">
+      This page records dated user decisions and reads the existing decision model. It does not
+      create new design decisions.
+    </span>
+  </p>
+  <DocumentationNav items={sections} />
+  <section
+    id="decision-log"
+    class="doc-section"
+    data-doc-section="decision-log"
+    aria-labelledby="decision-log-title"
+  >
+    <h2 id="decision-log-title">
+      <span data-i18n="Dated decisions">Dated decisions</span>
+    </h2>
+    <p>
+      <span data-i18n="Each entry gives its date, scope and a one-line summary, and links to the section that holds the full rule or values. A newer entry supersedes an older one in the same scope.">
+        Each entry gives its date, scope and a one-line summary, and links to the section that holds
+        the full rule or values. A newer entry supersedes an older one in the same scope.
+      </span>
+    </p>
+    <div
+      class="table-scroll"
+      role="region"
+      aria-label="Dated decisions"
+      data-i18n-aria-label="Dated decisions"
+      tabindex="0"
+    >
+      <table>
+        <thead>
+          <tr>
+            <th>
+              <span data-i18n="Date">Date</span>
+            </th>
+            <th>
+              <span data-i18n="Scope">Scope</span>
+            </th>
+            <th>
+              <span data-i18n="Decision">Decision</span>
+            </th>
+            <th>
+              <span data-i18n="Details">Details</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {decisionLog.map(entry => (
+            <tr>
+              <td>
+                <time datetime={entry.date}>{entry.date}</time>
+              </td>
+              <th scope="row">
+                <span data-i18n={entry.scope}>{entry.scope}</span>
+              </th>
+              <td>
+                <span data-i18n={entry.summary}>{entry.summary}</span>
+              </td>
+              <td>
+                <a href={entry.href}>
+                  <span data-i18n={entry.link}>{entry.link}</span>
+                </a>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  <section
+    id="buttons"
+    class="doc-section"
+    data-doc-section="buttons"
+    aria-labelledby="buttons-title"
+  >
+    <h2 id="buttons-title">
+      <span data-i18n="Buttons">Buttons</span>
+    </h2>
+    <dl class="token-grid">
+      <div>
+        <dt>
+          <span data-i18n="Direction">Direction</span>
+        </dt>
+        <dd data-i18n={decisions.style}>{decisions.style}</dd>
+      </div>
+      <div>
+        <dt>
+          <span data-i18n="Size">Size</span>
+        </dt>
+        <dd>{decisions.size_variants.map(item => item.height_px + ' px').join(' · ')}</dd>
+      </div>
+      <div>
+        <dt>
+          <span data-i18n="Opacity">Opacity</span>
+        </dt>
+        <dd>
+          <span data-i18n="Normal">Normal</span> {decisions.opacity.normal} · hover{' '}
+          {decisions.opacity.hover}
+        </dd>
+      </div>
+      <div>
+        <dt>
+          <span data-i18n="Letter spacing">Letter spacing</span>
+        </dt>
+        <dd data-i18n={decisions.tracking_variants[0].label}>
+          {decisions.tracking_variants[0].label}
+        </dd>
+      </div>
+      {variantGroups.map(({ label, variants }) => (
+        <div>
+          <dt data-i18n={label}>{label}</dt>
+          <dd>
+            {variants.map((item, index) => (
+              <Fragment>
+                <span data-i18n={item.label}>{item.label}</span>
+                {index < variants.length - 1 ? ' · ' : ''}
+              </Fragment>
+            ))}
+          </dd>
+        </div>
+      ))}
+    </dl>
+    <p>
+      <a href="/components/button/#examples">
+        <span data-i18n="Live examples of the approved states">
+          Live examples of the approved states
+        </span>
+      </a>
+      {' · '}
+      <a href="/components/button/#button-dimensions-heading">
+        <span data-i18n="Live examples of the approved sizes and widths">
+          Live examples of the approved sizes and widths
+        </span>
+      </a>
+    </p>
+  </section>
+  <section
+    id="experiments"
+    class="note"
+    data-doc-section="experiments"
+    aria-labelledby="experiments-title"
+  >
+    <h2 id="experiments-title">
+      <span data-i18n="Experiments">Experiments</span>
+    </h2>
+    <p>
+      <span data-i18n="These experiments are not approved decisions. Experimenting does not finalize a decision.">
+        These experiments are not approved decisions. Experimenting does not finalize a decision.
+      </span>
+    </p>
+    <dl class="token-grid">
+      {experimentGroups.map(({ label, variants }) => (
+        <div>
+          <dt data-i18n={label}>{label}</dt>
+          <dd>
+            {variants.map((item, index) => (
+              <Fragment>
+                <span data-i18n={item.label}>{item.label}</span>
+                {index < variants.length - 1 ? ' · ' : ''}
+              </Fragment>
+            ))}
+          </dd>
+        </div>
+      ))}
+    </dl>
+    <p>
+      <span data-i18n="Icon options, accordion, form and drawer examples are also experiments.">
+        Icon options, accordion, form and drawer examples are also experiments.
+      </span>
+    </p>
+  </section>
+</DocsLayout>

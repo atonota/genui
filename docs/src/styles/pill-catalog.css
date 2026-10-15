@@ -1,0 +1,89 @@
+/* Route-owned layout. The shared Pill itself lives in components.css. */
+.atlas-demo .pill-catalog {
+  --pill-column-min: 240px;
+  --pill-reading-width: 720px;
+  display: grid;
+  gap: var(--space-section);
+  min-width: 0;
+}
+.atlas-demo .pill-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs) var(--space-xl);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.atlas-demo .pill-navigation a {
+  display: flex;
+  align-items: center;
+  min-height: var(--target-min);
+}
+.atlas-demo .pill-section {
+  display: grid;
+  gap: var(--space-xl);
+  min-width: 0;
+  scroll-margin-block-start: var(--space-lg);
+}
+.atlas-demo .pill-section > header {
+  display: grid;
+  gap: var(--space-xs);
+}
+.atlas-demo .pill-section h3 {
+  font-size: var(--text-section);
+}
+.atlas-demo .pill-section h4 {
+  font-size: var(--text-large);
+}
+.atlas-demo .pill-section > header > p,
+.atlas-demo .pill-playground > p {
+  max-width: var(--pill-reading-width);
+  color: var(--muted);
+}
+.atlas-demo .pill-catalog :is(h3, h4, p) {
+  margin: 0;
+}
+.atlas-demo .pill-surface-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--pill-column-min)), 1fr));
+  align-items: start;
+  gap: var(--space-xl);
+  min-width: 0;
+}
+.atlas-demo .pill-surface-grid > * {
+  min-width: 0;
+}
+.atlas-demo .pill-preset-stack {
+  display: grid;
+  gap: var(--space-xl);
+}
+.atlas-demo .pill-playground {
+  display: grid;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  background: var(--surface);
+  border-radius: var(--radius);
+}
+.atlas-demo .pill-semantic-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  padding: var(--space-sm);
+  background: var(--soft);
+  border-radius: var(--radius);
+}
+.atlas-demo .pill-custom-mark {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--pill-close-icon-size);
+  height: var(--pill-close-icon-size);
+  border: 1px solid currentColor;
+  border-radius: var(--radius-pill, 9999px);
+  font-size: var(--text);
+}
+
+.atlas-demo .pill-auto-example {
+  grid-column: 1 / -1;
+}

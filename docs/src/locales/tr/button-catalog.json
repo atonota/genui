@@ -1,0 +1,15 @@
+{
+  "Button example sections": "Buton örneği bölümleri",
+  "Playground": "Deneme alanı",
+  "Action patterns": "Eylem örnekleri",
+  "Surfaces and states": "Yüzey ve durumlar",
+  "Size and shape": "Boyut ve köşe",
+  "Color and depth": "Renk ve gölge",
+  "Icon corners": "İkon köşeleri",
+  "Use Tweaker to change the preview's text, appearance and size.": "Önizlemenin metnini, görünümünü ve boyutunu Tweaker'dan değiştirin.",
+  "Choose a single action, search action or a grouped choice.": "Tekil eylem, arama eylemi veya gruplanmış seçim örneklerini karşılaştırın.",
+  "Compare visual emphasis and interaction states before choosing a style.": "Stil seçmeden önce görsel vurguları ve etkileşim durumlarını karşılaştırın.",
+  "Compare the shared sizes, widths and corners with text and icon actions.": "Ortak boyut, genişlik ve köşeleri metinli ve ikonlu eylemlerle karşılaştırın.",
+  "Color families follow the shared palette. Compare tones and shadows separately.": "Renk aileleri ortak paleti izler. Tonları ve gölgeleri ayrı ayrı karşılaştırın.",
+  "Size, corner and state options are shared with Tweaker. Each icon button has an accessible action name; these examples do not modify data.": "Boyut, köşe ve durum seçenekleri Tweaker ile ortaktır. Her ikon butonunun erişilebilir bir eylem adı vardır; bu örnekler verileri değiştirmez."
+}

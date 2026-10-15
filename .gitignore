@@ -1,0 +1,39 @@
+node_modules/
+dist/
+coverage/
+evidence/sync-state.json
+docs/.astro/
+docs/.checks/
+docs/tests/*.tmp.mjs
+evidence/browser/
+storybook-static/
+
+# Local user-provided reference snapshots and extracted source material.
+evidence/data-workspace-reference-archive/
+# Unlicensed raw reference HTML stays local; docs/references/README.md remains tracked.
+/docs/references/*.html
+
+# Local environment files, credentials and secrets (never commit real values).
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+secrets/
+.secrets/
+credentials/
+
+# Generated evidence, reports, backups, caches and local output.
+/evidence/
+/reports/
+/backups/
+/tmp/
+/output/
+.cache/
+.eslintcache
+.stylelintcache
+*.log
+*.bak
+*.orig
+.DS_Store

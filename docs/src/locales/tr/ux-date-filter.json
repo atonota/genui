@@ -1,0 +1,21 @@
+{
+  "Report date filter": "Rapor tarih filtresi",
+  "Pick a shortcut or your own period, optionally compare it with another period, then apply. The sample report changes only when you apply.": "Bir kısayol ya da kendi döneminizi seçin, isterseniz başka bir dönemle karşılaştırın, ardından uygulayın. Örnek rapor yalnızca uyguladığınızda değişir.",
+  "Sample data available through": "Örnek veriler şu tarihe kadar mevcut:",
+  "Date range shortcut": "Tarih aralığı kısayolu",
+  "Latest available day": "Son veri günü",
+  "Custom": "Özel",
+  "Pick the start, then the end. Days after the last sync are unavailable.": "Önce başlangıcı, sonra bitişi seçin. Son eşitlemeden sonraki günler seçilemez.",
+  "Start date": "Başlangıç tarihi",
+  "End date": "Bitiş tarihi",
+  "Compare with another period": "Başka bir dönemle karşılaştır",
+  "Comparison period": "Karşılaştırma dönemi",
+  "Starts as the previous period of the same length. You can change it.": "Varsayılan olarak aynı uzunluktaki önceki dönemdir. Değiştirebilirsiniz.",
+  "Apply": "Uygula",
+  "Cancel": "İptal",
+  "Choose a start and an end date to apply.": "Uygulamak için başlangıç ve bitiş tarihi seçin.",
+  "Choose both comparison dates to apply.": "Uygulamak için iki karşılaştırma tarihini de seçin.",
+  "Changes are not applied yet.": "Değişiklikler henüz uygulanmadı.",
+  "Applied report period": "Uygulanan rapor dönemi",
+  "{period}, compared with {comparison}": "{period}, karşılaştırma: {comparison}"
+}

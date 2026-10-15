@@ -1,0 +1,52 @@
+{
+  "css": [
+    "src/styles/fonts.css",
+    "src/styles/atlas.css",
+    "src/styles/forms.css",
+    "src/styles/workspace.css"
+  ],
+  "js": [
+    "src/atlas/snapshot.js",
+    "src/i18n/runtime.js",
+    "src/model/decisions.js",
+    "src/model/icons.js",
+    "src/model/axes.js",
+    "src/model/palettes.js",
+    "src/model/presets.js",
+    "src/shared/core.js",
+    "src/button/render.js",
+    "src/compat/button.js",
+    "src/atlas/state.js",
+    "src/atlas/navigation.js",
+    "src/atlas/catalog.js",
+    "src/atlas/studio.js",
+    "src/shared/readout.js",
+    "src/atlas/collections.js",
+    "src/atlas/export.js",
+    "src/vendor/dropdowns.js",
+    "src/forms/model.js",
+    "src/forms/primitives.js",
+    "src/forms/appearance.js",
+    "src/forms/inputs.js",
+    "src/forms/dropdowns.js",
+    "src/forms/choices.js",
+    "src/forms/controller.js",
+    "src/workspace/examples.js",
+    "src/atlas/bootstrap.js"
+  ],
+  "assets": [
+    {
+      "path": "src/assets/outfit-latin-ext.woff2",
+      "sha256": "9e38b3f1575daba3435ef09d33a202585ed5bd204bd0a8c744955c750c2b9091"
+    },
+    {
+      "path": "src/assets/outfit-latin.woff2",
+      "sha256": "92684e4acde79ef07758cd09380b7e01e9824d8b061eddeda046f78c166d7b12"
+    }
+  ],
+  "vendor": {
+    "path": "src/vendor/dropdowns.js",
+    "sha256": "32d1e34d817d874c32c7e09cdfa5d089c7f5558f95c37460b4c041063d891461"
+  },
+  "baseline_sha256": "08d3bf8b41bf49c8e3c1a09a6be5e32d3dec3bb5772f17ae12bc04cda33e6470"
+}

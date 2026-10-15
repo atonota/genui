@@ -1,0 +1,17 @@
+<script>
+  document.documentElement.lang = 'en';
+  (() => {
+    let stored;
+    try {
+      stored = localStorage.getItem('atlas-theme');
+    } catch {}
+    const mode =
+      stored === 'light' || stored === 'dark'
+        ? stored
+        : matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light';
+    document.documentElement.dataset.theme = mode;
+    document.documentElement.style.colorScheme = mode;
+  })();
+</script>

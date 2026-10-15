@@ -1,0 +1,17 @@
+{
+  "easing": "cubic-bezier(0.65, 0, 0.35, 1)",
+  "durationMs": {
+    "fast": 80,
+    "feedback": 140,
+    "button-feedback": 116.667,
+    "standard": 200,
+    "selection": 320,
+    "deliberate": 500,
+    "mark": 280,
+    "spin": 900,
+    "pulse": 1200,
+    "progress": 1100,
+    "click-feedback": 400
+  },
+  "delayMs": 0
+}

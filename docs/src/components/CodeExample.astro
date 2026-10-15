@@ -1,0 +1,26 @@
+---
+import { Code } from 'astro:components';
+import { accessibleCodeTransformers } from '../data/syntax-accessibility';
+interface Props {
+  code: string;
+  title?: string;
+}
+const { code, title = 'Usage code' } = Astro.props;
+---
+
+<details class="code-disclosure">
+  <summary>
+    <span data-i18n={title}>{title}</span>
+  </summary>
+  <div class="code-block">
+    <button class="copy-code" type="button" data-copy data-i18n="Copy code">
+      Copy code
+    </button>
+    <Code
+      code={code}
+      lang="tsx"
+      themes={{ light: 'github-light', dark: 'github-dark' }}
+      transformers={accessibleCodeTransformers}
+    />
+  </div>
+</details>

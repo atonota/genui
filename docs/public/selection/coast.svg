@@ -1,0 +1,11 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 180' width='320' height='180'>
+  <rect width='320' height='180' fill='#e4f0f6'/>
+  <circle cx='70' cy='46' r='20' fill='#f2d48c'/>
+  <rect y='96' width='320' height='84' fill='#6fa3c4'/>
+  <rect y='118' width='320' height='6' fill='#8fbad4'/>
+  <rect y='134' width='320' height='4' fill='#8fbad4'/>
+  <path d='M0 150 Q110 132 210 148 T320 144 V180 H0 Z' fill='#e7d3a8'/>
+  <rect x='227' y='58' width='2' height='36' fill='#4a5a68'/>
+  <path d='M230 60 V90 H254 Z' fill='#fbfbf8'/>
+  <path d='M212 94 H264 L256 104 H220 Z' fill='#4a5a68'/>
+</svg>
