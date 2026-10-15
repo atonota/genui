@@ -48,8 +48,8 @@
     "redirect": {
       "label": "Legacy redirect",
       "description": "Retired route that only redirects to its declared canonical target. Legacy fragments are mapped by docs/src/data/token-redirects.ts.",
-      "routes": ["/token-standards/"],
-      "targets": { "/token-standards/": "/tokens/" }
+      "routes": ["/token-standards/", "/components/"],
+      "targets": { "/token-standards/": "/tokens/", "/components/": "/" }
     },
     "component": {
       "label": "Component",

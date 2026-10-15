@@ -1,0 +1,206 @@
+/* AtlasBadge: geometry from the editable size-badge roles, paint from the shared pill pipeline.
+   Loaded only by the Badge route; every selector stays under .atlas-badge. */
+.atlas-badge {
+  display: inline-flex;
+  align-items: center;
+  max-inline-size: 100%;
+  vertical-align: middle;
+}
+.atlas-badge[data-kind='ribbon'] {
+  display: block;
+}
+.atlas-badge[data-attached] {
+  position: relative;
+}
+/* A standalone dot reserves the full profile box around its small native dot. */
+.atlas-badge[data-kind='dot']:not([data-attached]) {
+  justify-content: center;
+  block-size: var(--badge-height);
+  min-inline-size: var(--badge-height);
+}
+.atlas-badge[data-kind]
+  :is(.ant-badge, .ant-ribbon-wrapper, .ant-ribbon, .ant-ribbon-text, .atlas-badge-body) {
+  font-family: inherit;
+}
+/* Label/count bodies and ribbon strips paint the exact profile height; strings grow, never clip. */
+.atlas-badge[data-kind] :is(.atlas-badge-body, .ant-ribbon) {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  block-size: var(--badge-height);
+  min-inline-size: var(--badge-height);
+  margin: 0;
+  padding-block: 0;
+  padding-inline: calc(var(--badge-height) / 4);
+  font-size: var(--badge-font-size);
+  font-weight: 400;
+  line-height: 1;
+  white-space: nowrap;
+  text-overflow: clip;
+  color: var(--badge-ink);
+  background-color: var(--badge-bg);
+  border: var(--badge-border-width) solid var(--badge-border);
+  box-shadow: none;
+}
+.atlas-badge[data-kind] .atlas-badge-body {
+  border-radius: var(--badge-radius);
+}
+.atlas-badge[data-kind] .ant-ribbon-text {
+  color: inherit;
+  font-size: inherit;
+  font-weight: 400;
+}
+.atlas-badge[data-kind] .ant-ribbon-corner {
+  color: var(--badge-corner);
+}
+/* Native scrolling digits keep the inner line of the profile. */
+.atlas-badge[data-kind]
+  .atlas-badge-body
+  :is(.ant-scroll-number-only, .ant-scroll-number-only-unit) {
+  block-size: calc(var(--badge-height) - 2 * var(--badge-border-width));
+  line-height: calc(var(--badge-height) - 2 * var(--badge-border-width));
+}
+.atlas-badge[data-kind] .atlas-badge-body > [role='img'] {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+.atlas-badge[data-kind] .atlas-badge-body svg {
+  flex: none;
+  inline-size: 1em;
+  block-size: 1em;
+}
+.atlas-badge[data-kind] .ant-badge-dot {
+  box-sizing: border-box;
+  inline-size: calc(var(--badge-height) * 0.3);
+  min-inline-size: 0;
+  block-size: calc(var(--badge-height) * 0.3);
+  background: var(--badge-dot);
+  border: var(--badge-border-width) solid var(--badge-border);
+  border-radius: 50%;
+  box-shadow: none;
+  outline: none;
+}
+/* Close keeps the badge geometry; a transparent pseudo supplies the target-min hit area.
+   Keyboard focus comes from the central Tab-only focus foundation. */
+.atlas-badge[data-kind] .atlas-badge-close {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  color: inherit;
+  font-size: var(--badge-font-size);
+  border-radius: var(--badge-radius);
+}
+.atlas-badge[data-kind] .atlas-badge-close::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  inline-size: var(--target-min);
+  block-size: var(--target-min);
+  transform: translate(-50%, -50%);
+}
+.atlas-badge[data-kind] .atlas-badge-close-icon {
+  inline-size: 1em;
+  block-size: 1em;
+}
+/* Badge page examples: spacing roles separate groups; attached overhangs reserve half a profile. */
+.atlas-badge-demo {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-xs) * 6);
+  min-inline-size: 0;
+}
+.atlas-badge-demo-group {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-xs) * 3);
+  min-inline-size: 0;
+}
+.atlas-badge-demo-group > h3,
+.atlas-badge-demo-row > p,
+.atlas-badge-demo-ribbon-host > :is(h4, p) {
+  margin: 0;
+}
+.atlas-badge-demo-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--space-xs) * 3) calc(var(--space-xs) * 4);
+  min-inline-size: 0;
+}
+.atlas-badge-demo-case {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--space-xs) * 2);
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+/* Native counts overhang their host by half the badge profile on any corner. */
+.atlas-badge-demo .atlas-badge[data-attached] {
+  margin: calc(var(--badge-height) / 2);
+}
+.atlas-badge-demo-case:has(> .atlas-badge[data-kind='ribbon']) {
+  flex: 1 1 100%;
+}
+.atlas-badge-demo .atlas-badge[data-kind='ribbon'] {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+}
+/* Host copy starts below the ribbon strip instead of running under it. */
+.atlas-badge-demo-ribbon-host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding-block: calc(var(--badge-height) + var(--space-xs) * 3) calc(var(--space-xs) * 3);
+}
+/* Attached placements; top-end is the native default. */
+.atlas-badge[data-placement='top-start']
+  .ant-badge:not(.ant-badge-not-a-wrapper)
+  > :is(.ant-scroll-number, .ant-badge-custom-component) {
+  inset-inline-start: 0;
+  inset-inline-end: auto;
+  transform: translate(-50%, -50%);
+  transform-origin: 0 0;
+}
+.atlas-badge[data-placement='bottom-end']
+  .ant-badge:not(.ant-badge-not-a-wrapper)
+  > :is(.ant-scroll-number, .ant-badge-custom-component) {
+  top: auto;
+  bottom: 0;
+  transform: translate(50%, 50%);
+  transform-origin: 100% 100%;
+}
+.atlas-badge[data-placement='bottom-start']
+  .ant-badge:not(.ant-badge-not-a-wrapper)
+  > :is(.ant-scroll-number, .ant-badge-custom-component) {
+  top: auto;
+  bottom: 0;
+  inset-inline-start: 0;
+  inset-inline-end: auto;
+  transform: translate(-50%, 50%);
+  transform-origin: 0 100%;
+}
+/* Native count motion follows the central symmetric timing in both directions. */
+.atlas-badge[data-kind] :is(.ant-badge-zoom-appear, .ant-badge-zoom-enter, .ant-badge-zoom-leave) {
+  animation-duration: var(--motion-duration-deliberate);
+  animation-timing-function: var(--motion-ease-in-out, cubic-bezier(0.65, 0, 0.35, 1));
+}
+.atlas-badge[data-kind] :is(.ant-scroll-number-only, .ant-badge-count, .ant-badge-dot) {
+  transition-duration: var(--motion-duration-deliberate);
+  transition-timing-function: var(--motion-ease-in-out, cubic-bezier(0.65, 0, 0.35, 1));
+}
+@media (prefers-reduced-motion: reduce) {
+  .atlas-badge[data-kind]
+    :is(.ant-badge-zoom-appear, .ant-badge-zoom-enter, .ant-badge-zoom-leave) {
+    animation-duration: 0.01ms;
+  }
+  .atlas-badge[data-kind] :is(.ant-scroll-number-only, .ant-badge-count, .ant-badge-dot) {
+    transition-duration: 0.01ms;
+  }
+}

@@ -26,6 +26,8 @@
   "Insets": "İç boşluklar",
   "Radius": "Köşe yarıçapı",
   "Control height": "Kontrol yüksekliği",
+  "Badge sizes": "Rozet boyutları",
+  "Each exported scheme lists every definition id exactly once. Import accepts known token values under their declared constraints, including approved radius choices and retained valid legacy numeric radii. Older recipes receive only missing defaults; existing custom values are preserved. This shape is a summary, not an importable file. Create a complete file with Export JSON in the Theme Builder.": "Dışa aktarılan her şema her tanım kimliğini tam bir kez listeler. İçe aktarma, onaylı yarıçap seçenekleri ve korunan geçerli eski sayısal yarıçaplar dahil, bilinen token değerlerini beyan edilmiş kısıtları altında kabul eder. Eski tariflere yalnız eksik varsayılanlar eklenir; mevcut özel değerler korunur. Bu biçim bir özettir, içe aktarılabilir dosya değildir. Tam dosyayı Theme Builder'da JSON dışa aktar ile oluşturun.",
   "Typography": "Tipografi",
   "Shadow": "Gölge",
   "Density": "Yoğunluk",

@@ -9,7 +9,7 @@ import { createDefaultRecipe, resolveThemeBuilder, tokenDefinitions } from '../t
 import { layerOrder, measurementPolicy, stateAxes, surfaceRecipes } from '../theme-builder/states';
 
 // Every value below is read from the definitions, models or motion contract; nothing is retyped.
-type Cell = { text: string; code?: boolean; i18n?: boolean };
+type Cell = { text: string; code?: boolean; i18n?: boolean; values?: readonly string[] };
 type Row = { key?: string; cells: Cell[] };
 type Table = { section: string; id: string; title: string; head: string[]; rows: Row[] };
 
@@ -21,6 +21,7 @@ const groupLabels: Readonly<Record<string, string>> = {
   insets: 'Insets',
   radius: 'Radius',
   size: 'Control height',
+  'badge-size': 'Badge sizes',
   typography: 'Typography',
   shadow: 'Shadow',
   density: 'Density',
@@ -116,7 +117,9 @@ const catalog: Table[] = [...new Set(tokenDefinitions.map(definition => definiti
           ...[definition.min, definition.max, definition.step].map(bound =>
             bound === undefined ? empty : code(withUnit(bound, definition.unit)),
           ),
-          definition.options ? code(definition.options.join(', ')) : empty,
+          definition.options
+            ? { ...code(definition.options.join(', ')), values: definition.options }
+            : empty,
           label(definition.description),
         ],
       })),
@@ -238,7 +241,7 @@ const sections = [
     label: 'Using tokens',
     intro: [
       'Read tokens through their CSS variables. Do not copy default values into components.',
-      "Each scheme object lists every definition id exactly once. Import accepts only known keys with finite values inside each token's bounds. This shape is a summary, not an importable file. Create a complete file with Export JSON in the Theme Builder.",
+      'Each exported scheme lists every definition id exactly once. Import accepts known token values under their declared constraints, including approved radius choices and retained valid legacy numeric radii. Older recipes receive only missing defaults; existing custom values are preserved. This shape is a summary, not an importable file. Create a complete file with Export JSON in the Theme Builder.',
       'Themes are stored only in this browser. Nothing is sent to a server.',
       'These definitions are documented standards. They are not full runtime acceptance or GenUI registrations, and not every CSS binding has been verified in every component at runtime.',
     ],
@@ -359,7 +362,15 @@ const cssExample = `.order-field {
                         const i18n = cell.i18n ? cell.text : undefined;
                         return (
                           <Tag scope={index === 0 ? 'row' : undefined}>
-                            {cell.code ? (
+                            {cell.values ? (
+                              <ul class="token-options">
+                                {cell.values.map(value => (
+                                  <li>
+                                    <code>{value}</code>
+                                  </li>
+                                ))}
+                              </ul>
+                            ) : cell.code ? (
                               <code data-i18n={i18n}>{cell.text}</code>
                             ) : (
                               <span data-i18n={i18n}>{cell.text}</span>
@@ -377,3 +388,20 @@ const cssExample = `.order-field {
     </section>
   ))}
 </DocsLayout>
+
+<style>
+  /* One code chip per declared option; spacing and weight come from central tokens. */
+  .token-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--inset-control-sm) var(--inset-control-md);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .token-options code {
+    font-weight: var(--font-weight-body);
+    white-space: nowrap;
+  }
+</style>

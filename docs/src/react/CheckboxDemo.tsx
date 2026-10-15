@@ -20,13 +20,17 @@ export default function CheckboxDemo({
 }: { appearanceControls?: boolean; documentation?: boolean } = {}) {
   const { t } = useI18n();
   const [value, setValue] = useState(['Tasarım']);
-  const [radius, setRadius] = useState('5');
+  // Unset until the user picks a corner, so the general radius role applies.
+  const [radius, setRadius] = useState<string | null>(null);
+  const radiusOptions = [
+    { value: 'inherit', label: 'Use general radius' },
+    ...buttonOptions.radius_variants,
+  ];
   const selectedRadius =
-    buttonOptions.radius_variants.find(item => item.value === radius) ??
-    buttonOptions.radius_variants.find(item => item.value === '5')!;
-  const style = {
-    '--checkbox-radius': selectedRadius.css,
-  } as CSSProperties;
+    radius === null ? undefined : buttonOptions.radius_variants.find(item => item.value === radius);
+  const style = (
+    selectedRadius ? { '--checkbox-radius': selectedRadius.css } : {}
+  ) as CSSProperties;
   const selection = (
     <>
       <Checkbox
@@ -84,10 +88,10 @@ export default function CheckboxDemo({
                   {t('Corner')}
                   <Select
                     id="checkbox-radius"
-                    labelRender={selectedLabel(buttonOptions.radius_variants, t)}
-                    value={radius}
-                    onChange={setRadius}
-                    options={buttonOptions.radius_variants.map(option => ({
+                    labelRender={selectedLabel(radiusOptions, t)}
+                    value={radius ?? 'inherit'}
+                    onChange={value => setRadius(value === 'inherit' ? null : value)}
+                    options={radiusOptions.map(option => ({
                       ...option,
                       label: t(option.label),
                     }))}

@@ -231,3 +231,78 @@ test('neutral warm field surfaces are central, neutral and readable (dark then l
     `neutral field surface regressions (dark then light): ${failures.join(' ; ')}`,
   );
 });
+
+const WELL_SHADOW_VARIABLES = Object.freeze(['--field-inner-shadow', '--atlas-input-inner-shadow']);
+
+test('resolved input wells reuse neutral shadow roles in both themes', async () => {
+  const docs = await loadDocsModules();
+  const { inputSurfaces } = docs.inputSurfaces;
+  const { createDefaultRecipe, resolveThemeBuilder } = docs.model;
+  const shadowRgb = css =>
+    [...String(css).matchAll(/rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*[\d.]+\s*\)/g)].map(
+      match => match.slice(1, 4).map(Number),
+    );
+  const isNeutral = ([r, g, b]) => r === g && g === b;
+  const failures = [];
+  const expect = (condition, message) => {
+    if (!condition) failures.push(message);
+  };
+
+  const factory = createDefaultRecipe();
+  // A valid user edit: legacy 3px corners in both themes and 20px dark body text.
+  const custom = { version: 1, light: { ...factory.light }, dark: { ...factory.dark } };
+  custom.light['radius-md'] = 3;
+  custom.dark['radius-md'] = 3;
+  custom.dark['text-body'] = 20;
+
+  for (const mode of ['dark', 'light']) {
+    const tag = `[${mode}]`;
+    const canonical = inputSurfaces[mode].innerShadow;
+    const canonicalRgb = shadowRgb(canonical);
+    expect(
+      canonicalRgb.length > 0 && canonicalRgb.every(isNeutral),
+      `${tag} inputSurfaces innerShadow ${canonical} must hold neutral rgba entries`,
+    );
+    for (const [label, recipe] of [
+      ['factory', factory],
+      ['custom', custom],
+    ]) {
+      let variables;
+      try {
+        variables = resolveThemeBuilder(recipe, mode).variables;
+      } catch (error) {
+        failures.push(`${tag} ${label} recipe was rejected: ${error.message}`);
+        continue;
+      }
+      for (const name of WELL_SHADOW_VARIABLES) {
+        const actual = variables[name];
+        expect(
+          actual === canonical,
+          `${tag} ${label} ${name} is ${actual}; must reuse inputSurfaces innerShadow ${canonical}`,
+        );
+        const actualRgb = shadowRgb(actual);
+        expect(
+          actualRgb.every(isNeutral) && JSON.stringify(actualRgb) === JSON.stringify(canonicalRgb),
+          `${tag} ${label} ${name} rgb ${JSON.stringify(actualRgb)} must be neutral and equal ${JSON.stringify(canonicalRgb)}`,
+        );
+      }
+      if (label === 'custom') {
+        expect(
+          Number.parseFloat(variables['--radius-md']) === 3,
+          `${tag} custom --radius-md ${variables['--radius-md']} must keep the edited 3px`,
+        );
+        if (mode === 'dark')
+          expect(
+            variables['--font-size-body'] === '20px',
+            `${tag} custom --font-size-body ${variables['--font-size-body']} must keep the edited 20px`,
+          );
+      }
+    }
+  }
+
+  assert.deepStrictEqual(
+    failures,
+    [],
+    `neutral input well regressions (dark then light): ${failures.join(' ; ')}`,
+  );
+});

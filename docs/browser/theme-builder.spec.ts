@@ -118,13 +118,13 @@ async function applyPrimary(page: Page, primary: Locator, value: string) {
   await page.getByRole('button', { name: 'Apply theme', exact: true }).click();
 }
 
-test('theme builder renders 61 token editors at 320px with a darker inner preview field', async ({
+test('theme builder renders 65 token editors at 320px with a darker inner preview field', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 320, height: 720 });
   await openBuilder(page);
 
-  await expect(page.locator('[data-theme-token]')).toHaveCount(61);
+  await expect(page.locator('[data-theme-token]')).toHaveCount(65);
 
   const overflow = await page.evaluate(() => ({
     root: document.documentElement.scrollWidth - document.documentElement.clientWidth,

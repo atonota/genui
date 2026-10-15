@@ -16,6 +16,7 @@ import { TweakerSettings } from './AtlasTweaker';
 import { useAtlasSize } from './AtlasSizeProfile';
 import { useI18n } from './useI18n';
 import { EntityCard, MetricCard, PurposeCard } from './cards';
+import type { CardRadius } from './cards/AtlasCard';
 import {
   CARD_PURPOSES,
   type AtlasCardModel,
@@ -198,7 +199,8 @@ function CardExamples({ documentation }: { documentation: boolean }) {
   const { t } = useI18n();
   const id = useId();
   const profile = useAtlasSize();
-  const [radius, setRadius] = useState<'0' | '3' | '5'>('5');
+  // 'inherit' leaves the corner to the general radius role until a local corner is chosen.
+  const [radius, setRadius] = useState<CardRadius | 'inherit'>('inherit');
   const [outlined, setOutlined] = useState(false);
   const [showMedia, setShowMedia] = useState(true);
   const [showActions, setShowActions] = useState(true);
@@ -272,7 +274,7 @@ function CardExamples({ documentation }: { documentation: boolean }) {
             details: undefined,
           }}
           onAction={inspect}
-          radius={radius}
+          radius={radius === 'inherit' ? undefined : radius}
           outlined={outlined}
         />
       </div>
@@ -565,9 +567,11 @@ function CardExamples({ documentation }: { documentation: boolean }) {
               value={radius}
               onChange={setRadius}
               options={[
+                { value: 'inherit', label: t('Use general radius') },
                 { value: '0', label: t('Square') },
                 { value: '3', label: t('Soft') },
                 { value: '5', label: t('Rounded') },
+                { value: 'pill', label: t('Pill') },
               ]}
             />
           </label>

@@ -1,6 +1,8 @@
-import type { ReactNode } from 'react';
+import { useMemo, type HTMLAttributes, type ReactNode, type Ref } from 'react';
 import { Listy, type ListyProps } from 'antd';
+import type { ListyRef } from 'antd/es/listy';
 import AtlasListyItem from './AtlasListyItem';
+import useListySurface from './useListySurface';
 
 export type AtlasListyEntry = Readonly<{
   key: string;
@@ -9,49 +11,96 @@ export type AtlasListyEntry = Readonly<{
   leading?: ReactNode;
   trailing?: ReactNode;
   disabled?: boolean;
+  /** Controlled state mirrored for styling; hosts own roles, keyboard handling and aria state. */
+  selected?: boolean;
+  interactive?: boolean;
+  /** Plain grouping value a caller's native group key reads. */
+  group?: string;
+  /** Host attributes and handlers; the label, content and state flags above always win. */
+  rowProps?: Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'role'>;
 }>;
 export type AtlasListyPresentation = 'inset' | 'outlined';
+type NativeListyProps = ListyProps<AtlasListyEntry, string>;
+// Native classNames are an object or a callback; the callback receives the installed Listy info.
+type NativeClassNames = NonNullable<NativeListyProps['classNames']>;
+type NativeClassNamesInfo = Parameters<Extract<NativeClassNames, (...args: never[]) => unknown>>;
 export type AtlasListyProps = {
   label: string;
   items: readonly AtlasListyEntry[];
+  /** Explicit presentation; without it the central Listy surface role applies. */
   presentation?: AtlasListyPresentation;
   className?: string;
-  classNames?: ListyProps<AtlasListyEntry, string>['classNames'];
-  styles?: ListyProps<AtlasListyEntry, string>['styles'];
+  classNames?: NativeListyProps['classNames'];
+  styles?: NativeListyProps['styles'];
+  height?: number;
+  virtual?: boolean;
+  sticky?: boolean;
+  group?: NativeListyProps['group'];
+  onScroll?: NativeListyProps['onScroll'];
+  ref?: Ref<ListyRef>;
 };
 
-/** Native Listy owns rendering; every row composes the shared AtlasListyItem. */
+/** Rows a bounded native scroller shows; multiply by useListyRowHeight() for its height. */
+export const ATLAS_LISTY_VISIBLE_ROWS = 6;
+
+const join = (...names: (string | false | undefined)[]) => names.filter(Boolean).join(' ');
+
+/** Native Listy owns rendering, virtualization, grouping and sticky headers; every row composes
+    the shared AtlasListyItem. */
 export default function AtlasListy({
   label,
   items,
-  presentation = 'inset',
+  presentation,
   className,
   classNames,
   styles,
+  height,
+  virtual = false,
+  sticky,
+  group,
+  onScroll,
+  ref,
 }: AtlasListyProps) {
+  const centralSurface = useListySurface();
+  const surface = presentation ?? centralSurface;
+  const data = useMemo(() => [...items], [items]);
   return (
     <div
       className="atlas-listy-frame"
       role="group"
       aria-label={label}
-      data-atlas-listy-presentation={presentation}
+      data-atlas-listy-presentation={surface}
     >
       <Listy<AtlasListyEntry, string>
-        rootClassName={['atlas-listy', `atlas-listy-${presentation}`, className]
-          .filter(Boolean)
-          .join(' ')}
-        items={[...items]}
+        ref={ref}
+        rootClassName={join('atlas-listy', `atlas-listy-${surface}`, className)}
+        items={data}
         rowKey="key"
-        virtual={false}
-        classNames={classNames}
+        virtual={virtual}
+        height={height}
+        sticky={sticky}
+        group={group}
+        onScroll={onScroll}
+        classNames={(...info: NativeClassNamesInfo) => {
+          // Resolve the caller's object or callback with the native info, then compose slot roles.
+          const resolved = typeof classNames === 'function' ? classNames(...info) : classNames;
+          return {
+            ...resolved,
+            item: join('atlas-listy-slot', resolved?.item),
+            groupHeader: join('atlas-listy-group-header', resolved?.groupHeader),
+          };
+        }}
         styles={styles}
         itemRender={item => (
           <AtlasListyItem
+            {...item.rowProps}
             label={item.label}
             description={item.description}
             leading={item.leading}
             trailing={item.trailing}
             disabled={item.disabled}
+            selected={item.selected}
+            interactive={item.interactive}
           />
         )}
       />

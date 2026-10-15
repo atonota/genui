@@ -83,6 +83,53 @@ async function closeTweaker(page: Page, dialog: Locator) {
   await expect(dialog).toBeHidden();
 }
 
+// The general radius is a choice role offered through an accessible combobox.
+const radiusControl = (dialog: Locator) =>
+  dialog.getByRole('combobox', { name: radiusLabel, exact: true });
+
+// AntD Select shows the chosen value on its owner; the search input itself may stay empty.
+const selectOwner = (combo: Locator) =>
+  combo.locator(
+    'xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " ant-select ")][1]',
+  );
+
+// Keyboard choice: Enter opens, ArrowDown walks the active option, Enter commits it.
+async function chooseOption(combo: Locator, value: string) {
+  await combo.focus();
+  if (await combo.evaluate(el => el instanceof HTMLSelectElement)) {
+    await combo.selectOption(value);
+    return;
+  }
+  await combo.press('Enter');
+  await expect(combo).toHaveAttribute('aria-expanded', 'true');
+  const active = () =>
+    combo.evaluate(el => {
+      const id = el.getAttribute('aria-activedescendant');
+      const option = id ? document.getElementById(id) : null;
+      return option
+        ? {
+            id: option.id,
+            text: option.getAttribute('aria-label') ?? option.textContent?.trim() ?? '',
+          }
+        : null;
+    });
+  const seen = new Set<string>();
+  let current = await active();
+  while (current && !seen.has(current.id)) {
+    if (current.text.toLowerCase() === value.toLowerCase()) {
+      await combo.press('Enter');
+      await expect(combo).toHaveAttribute('aria-expanded', 'false');
+      return;
+    }
+    seen.add(current.id);
+    const previous = current.id;
+    await combo.press('ArrowDown');
+    await expect.poll(async () => (await active())?.id).not.toBe(previous);
+    current = await active();
+  }
+  throw new Error(`${value} is not an offered option`);
+}
+
 async function expectEveryTokenEditable(dialog: Locator, route: string) {
   for (const token of tokens) {
     const control = dialog.getByLabel(token.label, { exact: true }).first();
@@ -112,6 +159,10 @@ test('Tweaker edits every token; one radius drives field, slot and button and pe
     page.screenshot({ path: testInfo.outputPath(`tweaker-token-contract-${stage}-${name}.png`) });
   expect(new Set(tokens.map(token => token.id)).size).toBe(tokens.length);
   expect(tokenLabels.size).toBe(tokens.length);
+  expect(
+    tokens.find(token => token.id === 'radius-md'),
+    'the general radius is an approved choice',
+  ).toMatchObject({ kind: 'choice', options: ['0px', '3px', '5px', '100%'] });
 
   await page.clock.install({ time: T0 });
   await page.goto(new URL(inputRoute, origin).href);
@@ -119,8 +170,9 @@ test('Tweaker edits every token; one radius drives field, slot and button and pe
   // The Input Tweaker offers the general radius setting.
   let dialog = await openTweaker(page);
   await shot('input-tweaker-open');
-  const inputRadius = dialog.getByRole('spinbutton', { name: radiusLabel, exact: true });
+  const inputRadius = radiusControl(dialog);
   await expect(inputRadius, 'Input Tweaker offers the general radius setting').toBeVisible();
+  await expect(selectOwner(inputRadius), 'default general radius').toContainText('5px');
   await expectEveryTokenEditable(dialog, 'Input');
   const inputOptions = await specificOptions(dialog);
   expect([...inputOptions], 'Input Tweaker keeps Input-specific options').not.toEqual([]);
@@ -133,9 +185,8 @@ test('Tweaker edits every token; one radius drives field, slot and button and pe
 
   const keysBefore = await storageKeys(page);
   dialog = await openTweaker(page);
-  await inputRadius.fill('3');
-  await inputRadius.press('Enter');
-  await expect(inputRadius).toHaveValue('3');
+  await chooseOption(inputRadius, '3px');
+  await expect(selectOwner(inputRadius)).toContainText('3px');
   await closeTweaker(page, dialog);
   await expect
     .poll(() => measureField(page), { message: 'radius 3 on field and slot' })
@@ -159,7 +210,7 @@ test('Tweaker edits every token; one radius drives field, slot and button and pe
     .toEqual([3, 3, 3, 3]);
   await shot('button-radius-3');
   dialog = await openTweaker(page);
-  await expect(dialog.getByRole('spinbutton', { name: radiusLabel, exact: true })).toHaveValue('3');
+  await expect(selectOwner(radiusControl(dialog))).toContainText('3px');
   await expectEveryTokenEditable(dialog, 'Button');
   const buttonOptions = await specificOptions(dialog);
   expect([...buttonOptions], 'Button Tweaker keeps Button-specific options').not.toEqual([]);
@@ -244,4 +295,122 @@ test('cross-theme: editing a light token keeps the custom dark values', async ({
   await expect
     .poll(stored, { message: 'light edit keeps the custom dark values' })
     .toEqual({ light: 16, dark: 20, density: 'comfortable' });
+});
+
+// Explicit human request (2026-10-16): every documentation component route opens settings of its
+// own in the Tweaker, beside the shared token editors, starting at 320px. Slugs mirror the demos
+// map in docs/src/pages/components/[slug].astro.
+const componentRoutes = [
+  'button',
+  'input',
+  'select',
+  'pill',
+  'card',
+  'splitter',
+  'breadcrumb',
+  'pagination',
+  'steps',
+  'autocomplete',
+  'cascader',
+  'dropdown',
+  'checkbox',
+  'radio',
+  'switch',
+  'slider',
+  'accordion',
+  'form',
+  'drawer',
+  'empty-state',
+  'avatar',
+  'toast',
+  'alert',
+  'notification',
+  'modal',
+  'popconfirm',
+  'date-time',
+  'data-table',
+  'collection-views',
+  'record-details',
+  'record-forms',
+  'record-workspace',
+  'media',
+  'content-patterns',
+  'carousel',
+  'upload',
+  'rich-menu',
+  'chart',
+  'listy',
+  'badge',
+] as const;
+// Interactive controls; disabled ones never count as an offered setting.
+const settingControl =
+  ':is(input:not([type="hidden"]), button, select, [role="switch"], [role="combobox"], [role="checkbox"], [role="radio"]):not(:disabled, [aria-disabled="true"])';
+
+test('every component route Tweaker offers its own settings beside every token editor', async ({
+  page,
+}, testInfo) => {
+  test.setTimeout(300_000);
+  const shot = (name: string) =>
+    page.screenshot({ path: testInfo.outputPath(`tweaker-token-contract-${stage}-${name}.png`) });
+  const overflow = () =>
+    page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    );
+  const visit = async (slug: string) => {
+    await page.goto(new URL(`/components/${slug}/`, origin).href);
+    await expect(page.locator('astro-island[ssr]'), `${slug} island hydrates`).toHaveCount(0);
+  };
+  expect(componentRoutes).toHaveLength(40);
+  expect(new Set(componentRoutes).size).toBe(componentRoutes.length);
+
+  // Soft checks keep the full route table in one report.
+  await page.setViewportSize({ width: 320, height: 800 });
+  for (const slug of componentRoutes) {
+    await visit(slug);
+    expect
+      .soft(await overflow(), `${slug} has no horizontal page overflow at 320px`)
+      .toBeLessThanOrEqual(0);
+    const dialog = await openTweaker(page);
+    expect
+      .soft(await overflow(), `${slug} has no horizontal page overflow with Tweaker open`)
+      .toBeLessThanOrEqual(0);
+    // Registrations exclude the common size control and the shared token editors; Listy's own
+    // parameter is the central Listy surface role.
+    const specific = dialog
+      .locator('.atlas-tweaker-registrations .atlas-tweaker-settings, .atlas-badge-settings')
+      .locator(settingControl);
+    const offered =
+      slug === 'listy'
+        ? specific.or(dialog.getByRole('combobox', { name: 'Listy surface', exact: true }))
+        : specific;
+    await expect
+      .soft(offered.first(), `${slug} Tweaker offers an enabled component-specific setting`)
+      .toBeEnabled({ timeout: 2_000 });
+    const tokenEditors = tokens
+      .map(token => dialog.getByLabel(token.label, { exact: true }))
+      .reduce((all, next) => all.or(next));
+    expect
+      .soft(await tokenEditors.count(), `${slug} Tweaker keeps every token editor`)
+      .toBeGreaterThanOrEqual(tokens.length);
+  }
+
+  // Representative functional setting: Avatar shape drives the rendered avatar's shape prop.
+  await visit('avatar');
+  const dialog = await openTweaker(page);
+  const shape = dialog.getByRole('combobox', { name: 'Avatar shape', exact: true });
+  const avatar = page.locator('[data-doc-demo] [data-avatar-shape]').first();
+  await expect(shape, 'Avatar Tweaker offers the shape setting').toBeEnabled();
+  await expect(avatar).toHaveAttribute('data-avatar-shape', 'circle');
+  await chooseOption(shape, 'square');
+  await expect(avatar, 'square shape reaches the avatar').toHaveAttribute(
+    'data-avatar-shape',
+    'square',
+  );
+  await chooseOption(shape, 'circle');
+  await expect(avatar, 'circle shape returns').toHaveAttribute('data-avatar-shape', 'circle');
+  await shot('avatar-320');
+
+  await page.setViewportSize({ width: 1280, height: 900 });
+  expect(await overflow(), 'Avatar desktop has no horizontal page overflow').toBeLessThanOrEqual(0);
+  await shot('avatar-desktop');
 });

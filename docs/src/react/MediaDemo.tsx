@@ -1,7 +1,8 @@
 import { useId, useState } from 'react';
+import { Select } from 'antd';
 import AtlasProvider from './AtlasProvider';
-import AtlasButton from './AtlasButton';
-import AtlasMediaFrame from './AtlasMediaFrame';
+import AtlasMediaFrame, { type AtlasMediaFrameProps } from './AtlasMediaFrame';
+import { TweakerSettings } from './AtlasTweaker';
 import AtlasScreenshot from './AtlasScreenshot';
 import { useI18n } from './useI18n';
 
@@ -11,12 +12,19 @@ const availablePhoto = '/selection/forest.svg';
 // A recorded 1440 by 1000 CSS pixel capture of the Avatar documentation page.
 const avatarScreenshot = '/examples/atlas-avatar-desktop.png';
 
+type PhotoSource = 'missing' | 'available';
+type MediaFit = NonNullable<AtlasMediaFrameProps['fit']>;
+
 function MediaExamples() {
   const { t } = useI18n();
   const captionTitle = useId();
   const screenshotTitle = useId();
   const unavailableTitle = useId();
+  const sourceId = useId();
+  const fitId = useId();
+  // Presentation only; the example owns both choices, so they survive closing the Tweaker.
   const [src, setSrc] = useState(missingPhoto);
+  const [fit, setFit] = useState<MediaFit>('cover');
   const restored = src === availablePhoto;
   return (
     <div className="atlas-media-demo">
@@ -55,6 +63,7 @@ function MediaExamples() {
         <div className="atlas-media-gallery">
           <AtlasMediaFrame
             src={src}
+            fit={fit}
             alt={t('Forest illustration')}
             caption={t('The frame keeps its space when the image cannot load.')}
           />
@@ -66,10 +75,32 @@ function MediaExamples() {
             )}
           </p>
         )}
-        <AtlasButton
-          text={restored ? t('Use missing photograph') : t('Use available photograph')}
-          onClick={() => setSrc(restored ? missingPhoto : availablePhoto)}
-        />
+        <TweakerSettings title="Media">
+          <div className="atlas-tweaker-token">
+            <label htmlFor={sourceId}>{t('Photograph source')}</label>
+            <Select<PhotoSource>
+              id={sourceId}
+              value={restored ? 'available' : 'missing'}
+              options={[
+                { value: 'missing', label: t('Missing photograph') },
+                { value: 'available', label: t('Available photograph') },
+              ]}
+              onChange={next => setSrc(next === 'available' ? availablePhoto : missingPhoto)}
+            />
+          </div>
+          <div className="atlas-tweaker-token">
+            <label htmlFor={fitId}>{t('Photograph fit')}</label>
+            <Select<MediaFit>
+              id={fitId}
+              value={fit}
+              options={[
+                { value: 'cover', label: t('Cover') },
+                { value: 'contain', label: t('Contain') },
+              ]}
+              onChange={next => setFit(next)}
+            />
+          </div>
+        </TweakerSettings>
         <p className="atlas-media-status" role="status">
           {restored ? t('Available photograph requested') : t('Missing photograph requested')}
         </p>

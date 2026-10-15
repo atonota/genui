@@ -1,5 +1,8 @@
+import { useId, useState } from 'react';
+import { Select } from 'antd';
 import AtlasProvider from './AtlasProvider';
-import AtlasAvatar from './AtlasAvatar';
+import AtlasAvatar, { type AtlasAvatarProps } from './AtlasAvatar';
+import { TweakerSettings } from './AtlasTweaker';
 import { useI18n } from './useI18n';
 
 // Fictional local illustration; no remote asset or user-supplied markup.
@@ -25,15 +28,39 @@ const people: readonly { name: string; src?: string; context: string; standalone
   },
 ];
 
+type AvatarShape = NonNullable<AtlasAvatarProps['shape']>;
+
 function AvatarExamples() {
   const { t } = useI18n();
+  const shapeId = useId();
+  // Presentation only; the example owns the shape, so it survives closing the Tweaker.
+  const [shape, setShape] = useState<AvatarShape>('circle');
   return (
     <section className="atlas-avatar-examples" aria-label={t('Avatar examples')}>
+      <TweakerSettings title="Avatar">
+        <div className="atlas-tweaker-token">
+          <label htmlFor={shapeId}>{t('Avatar shape')}</label>
+          <Select<AvatarShape>
+            id={shapeId}
+            value={shape}
+            options={[
+              { value: 'circle', label: t('Circle') },
+              { value: 'square', label: t('Square') },
+            ]}
+            onChange={next => setShape(next)}
+          />
+        </div>
+      </TweakerSettings>
       <ul className="atlas-avatar-people">
         {people.map(person => (
           <li key={person.context} className="atlas-avatar-person">
             {/* A visible name already identifies the person, so the paired avatar is decorative. */}
-            <AtlasAvatar name={person.name} src={person.src} decorative={!person.standalone} />
+            <AtlasAvatar
+              name={person.name}
+              src={person.src}
+              shape={shape}
+              decorative={!person.standalone}
+            />
             <div className="atlas-avatar-person-text">
               {!person.standalone && (
                 <span className="atlas-avatar-person-name">

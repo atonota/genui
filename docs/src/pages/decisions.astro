@@ -158,6 +158,48 @@ const decisionLog = [
     link: 'GenUI',
   },
 ];
+decisionLog.push(
+  {
+    date: '2026-10-16',
+    scope: 'Badge profiles',
+    summary:
+      'Approved native Badge and Tag profiles have a dedicated Badge size exception; this adds no GenUI registration.',
+    href: '/components/badge/',
+    link: 'Badge component',
+  },
+  {
+    date: '2026-10-16',
+    scope: 'Radius',
+    summary:
+      'Approved shared radius choices replace the numeric editor; valid legacy current values remain unchanged until radius is edited.',
+    href: '/standards/#size-radius',
+    link: 'Size and radius',
+  },
+  {
+    date: '2026-10-16',
+    scope: 'Typography',
+    summary:
+      'Badge and body default to weight 400; the existing minimum weight and project text-size policy remain unchanged.',
+    href: '/standards/#typography',
+    link: 'Typography tokens',
+  },
+  {
+    date: '2026-10-16',
+    scope: 'Contents rail',
+    summary:
+      'The contents rail must retain readable width, token insets and naturally wrapped labels without horizontal page overflow.',
+    href: '/standards/#layout',
+    link: 'Layout',
+  },
+  {
+    date: '2026-10-16',
+    scope: 'GitHub Pages publication',
+    summary:
+      'Publication to atonota.github.io/genui is authorized while the local root is retained; authorization and committed source are not deployment receipts.',
+    href: '/standards/#accessibility',
+    link: 'Evidence boundary',
+  },
+);
 const sections = [
   { id: 'decision-log', label: 'Dated decisions' },
   { id: 'buttons', label: 'Buttons' },

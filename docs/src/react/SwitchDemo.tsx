@@ -1,10 +1,12 @@
 import { useI18n } from './useI18n';
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { Switch } from 'antd';
 import AtlasProvider from './AtlasProvider';
 import AtlasSelectionVariants from './AtlasSelectionVariants';
 import AtlasIcon from './AtlasIcon';
 import DataEntryCatalog from './DataEntryCatalog';
+import { TweakerSettings } from './AtlasTweaker';
+import { selectionSizeProfiles } from '../data/selection-sizes';
 
 function SwitchContentExamples({ documentation = false }: { documentation?: boolean } = {}) {
   const { t } = useI18n();
@@ -97,10 +99,23 @@ export default function SwitchDemo({
 }: { appearanceControls?: boolean; documentation?: boolean } = {}) {
   const { t } = useI18n();
   const [checked, setChecked] = useState(false);
+  const previewDisabledId = useId();
+  const previewLoadingId = useId();
+  // Preview state lives here, so it survives closing the Tweaker and keeps the checked value.
+  const [previewDisabled, setPreviewDisabled] = useState(false);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const selectionHeight = (value: string) =>
+    String(selectionSizeProfiles.find(profile => profile.value === value)!.height_px);
   const basic = (
     <>
       <label className="control-row" htmlFor="switch-notify">
-        <Switch id="switch-notify" checked={checked} onChange={setChecked} />
+        <Switch
+          id="switch-notify"
+          checked={checked}
+          onChange={setChecked}
+          disabled={previewDisabled}
+          loading={previewLoading}
+        />
         {t('Notifications {status}', { status: checked ? t('on') : t('off') })}
       </label>
     </>
@@ -114,7 +129,9 @@ export default function SwitchDemo({
           data-selection-size={appearanceControls ? 'sm' : undefined}
           defaultChecked
         />
-        {t(appearanceControls ? 'Small · 32 px' : 'Compact')}
+        {appearanceControls
+          ? t('Small · {height} px', { height: selectionHeight('sm') })
+          : t('Compact')}
       </label>
       <label className="control-row" htmlFor="switch-medium">
         <Switch
@@ -123,12 +140,14 @@ export default function SwitchDemo({
           data-selection-size={appearanceControls ? 'md' : undefined}
           defaultChecked
         />
-        {t(appearanceControls ? 'Medium · 40 px' : 'Normal')}
+        {appearanceControls
+          ? t('Medium · {height} px', { height: selectionHeight('md') })
+          : t('Normal')}
       </label>
       {appearanceControls && (
         <label className="control-row" htmlFor="switch-large">
           <Switch id="switch-large" size="medium" data-selection-size="lg" defaultChecked />
-          {t('Large · 50 px')}
+          {t('Large · {height} px', { height: selectionHeight('lg') })}
         </label>
       )}
     </>
@@ -162,6 +181,20 @@ export default function SwitchDemo({
       sizeFamily={documentation ? 'selection' : 'component'}
     >
       <div className="pattern-stack" data-switch-preview={appearanceControls ? '' : undefined}>
+        <TweakerSettings title="Switch preview">
+          <label className="control-row" htmlFor={previewDisabledId}>
+            <Switch
+              id={previewDisabledId}
+              checked={previewDisabled}
+              onChange={setPreviewDisabled}
+            />
+            {t('Disable switch preview')}
+          </label>
+          <label className="control-row" htmlFor={previewLoadingId}>
+            <Switch id={previewLoadingId} checked={previewLoading} onChange={setPreviewLoading} />
+            {t('Loading switch preview')}
+          </label>
+        </TweakerSettings>
         {documentation ? (
           <DataEntryCatalog
             slug="switch"

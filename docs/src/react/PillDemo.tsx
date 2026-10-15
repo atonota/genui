@@ -29,7 +29,13 @@ function StatusIcon({ name }: { name: string }) {
 
 export default function PillDemo({ documentation = false }: { documentation?: boolean } = {}) {
   const { t } = useI18n();
-  const [radius, setRadius] = useState('5');
+  // Unset until the user picks a corner, so the general radius role applies.
+  const [radiusChoice, setRadius] = useState<string | null>(null);
+  const radius = radiusChoice ?? undefined;
+  const radiusOptions = [
+    { value: 'inherit', label: 'Use general radius' },
+    ...atlas.decisions.buttons.radius_variants,
+  ];
   const [labels, setLabels] = useState(['Mühendislik', 'Operasyon']);
   const [variant, setVariant] = useState<PillVariant>('filled');
   const [color, setColor] = useState('scheme');
@@ -78,10 +84,10 @@ export default function PillDemo({ documentation = false }: { documentation?: bo
           {t('Corner')}
           <Select
             id="pill-radius"
-            labelRender={selectedLabel(atlas.decisions.buttons.radius_variants, t)}
-            value={radius}
-            onChange={setRadius}
-            options={atlas.decisions.buttons.radius_variants.map(option => ({
+            labelRender={selectedLabel(radiusOptions, t)}
+            value={radiusChoice ?? 'inherit'}
+            onChange={value => setRadius(value === 'inherit' ? null : value)}
+            options={radiusOptions.map(option => ({
               ...option,
               label: t(option.label),
             }))}

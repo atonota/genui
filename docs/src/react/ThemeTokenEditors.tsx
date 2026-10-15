@@ -4,6 +4,13 @@ import AtlasInput from './AtlasInput';
 import AtlasInputNumber from './AtlasInputNumber';
 import AtlasButton from './AtlasButton';
 import { useI18n } from './useI18n';
+import {
+  isRadiusTokenId,
+  radiusChoice,
+  radiusEditValue,
+  radiusSelectOptions,
+  withGeneralRadius,
+} from '../data/radius-options';
 import { getThemeSnapshot, subscribeTheme, type ThemeMode } from '../theme';
 import {
   createDefaultRecipe,
@@ -59,10 +66,10 @@ const families: ReadonlyMap<string, Family> = (() => {
   return byId;
 })();
 
-/** Only the radius group, the user-approved general role, is edited in both modes; every other
+/** Only the radius roles, the user-approved general role, are edited in both modes; every other
  * token edits the displayed mode only and keeps the other mode's custom values. */
 const sharedAcrossModes = (definition: ThemeTokenDefinition): boolean =>
-  definition.group === 'radius';
+  isRadiusTokenId(definition.id);
 
 function editValues(
   values: ThemeValues,
@@ -70,6 +77,8 @@ function editValues(
   value: ThemeTokenValue,
   uniform: boolean,
 ): ThemeValues {
+  // Any radius step edits the one general role: SM, MD and LG move together.
+  if (isRadiusTokenId(id)) return withGeneralRadius(values, value);
   const next: ThemeValues = { ...values, [id]: value };
   const family = families.get(id);
   if (!family || typeof value !== 'number') return next;
@@ -161,13 +170,16 @@ function TokenEditor({
       </span>
     );
   } else {
+    // Radius offers the four shared choices plus a retained legacy px while it is current.
+    const radius = isRadiusTokenId(definition.id);
+    const options = radius ? radiusSelectOptions(value) : (definition.options ?? []);
     control = (
       <Select
         id={id}
         data-theme-token={definition.id}
-        value={value === undefined ? undefined : String(value)}
-        options={(definition.options ?? []).map(option => ({ value: option, label: t(option) }))}
-        onChange={(next: string) => onEdit(next)}
+        value={radius ? radiusChoice(value) : value === undefined ? undefined : String(value)}
+        options={options.map(option => ({ value: option, label: t(option) }))}
+        onChange={(next: string) => onEdit(radius ? radiusEditValue(next) : next)}
       />
     );
   }

@@ -47,6 +47,7 @@ import UploadDemo from '../../react/UploadDemo';
 import RichMenuDemo from '../../react/RichMenuDemo';
 import ChartDemo from '../../react/ChartDemo';
 import ListyDemo from '../../react/ListyDemo';
+import BadgeDemo from '../../react/BadgeDemo';
 import { extractDemoStyles } from '../../ssr/styles';
 import { sourceHref } from '../source/[...path].txt';
 import workspaceStyles from '../../styles/workspace.css?url';
@@ -92,6 +93,7 @@ import uploadStyles from '../../styles/atlas-upload.css?url';
 import richMenuStyles from '../../styles/atlas-rich-menu.css?url';
 import chartStyles from '../../styles/atlas-chart.css?url';
 import listyStyles from '../../styles/atlas-listy.css?url';
+import badgeStyles from '../../styles/atlas-badge.css?url';
 export function getStaticPaths() {
   return components.map(component => ({ params: { slug: component.slug }, props: { component } }));
 }
@@ -136,6 +138,7 @@ const demos = {
   'rich-menu': RichMenuDemo,
   chart: ChartDemo,
   listy: ListyDemo,
+  badge: BadgeDemo,
 };
 const workspaceSheets: Record<string, { file: string; href: string }> = {
   'data-table': { file: 'workspace-collections.css', href: collectionStyles },
@@ -189,13 +192,13 @@ const routeSheetRules: RouteSheetRule[] = [
     dataEntryCatalogStyles,
   ],
   [
-    ['checkbox', 'radio', 'switch'].includes(slug),
+    ['checkbox', 'radio', 'switch', 'listy'].includes(slug),
     'atlas-selection-variants.css',
     selectionVariantStyles,
   ],
   [slug === 'drawer', 'atlas-drawer-extensions.css', drawerExtensionStyles],
   [
-    ['avatar', 'content-patterns', ...identityRoutes].includes(slug),
+    ['avatar', 'content-patterns', 'badge', 'listy', ...identityRoutes].includes(slug),
     'atlas-avatar.css',
     avatarStyles,
   ],
@@ -217,6 +220,7 @@ const routeSheetRules: RouteSheetRule[] = [
   [slug === 'upload', 'atlas-upload.css', uploadStyles],
   [slug === 'rich-menu', 'atlas-rich-menu.css', richMenuStyles],
   [slug === 'chart', 'atlas-chart.css', chartStyles],
+  [slug === 'badge', 'atlas-badge.css', badgeStyles],
 ];
 const routeSheets = routeSheetRules
   .filter(([included]) => included)
@@ -494,11 +498,27 @@ const componentSources: Record<string, ComponentSources> = {
   },
   listy: {
     island: { module: 'ListyDemo', component: 'ListyDemo' },
-    adapters: ['AtlasListy.tsx', 'AtlasListyItem.tsx'],
-    styles: ['atlas-listy.css'],
+    adapters: [
+      'ListyBasicPatterns.tsx',
+      'ListyControlPatterns.tsx',
+      'ListyReorderPattern.tsx',
+      'ListyDataPatterns.tsx',
+      'AtlasListy.tsx',
+      'AtlasListyItem.tsx',
+      'AtlasAvatar.tsx',
+    ],
+    styles: ['atlas-listy.css', 'atlas-avatar.css', 'atlas-selection-variants.css'],
     tests: [],
     browserTests: ['listy-cascader.spec.ts'],
     catalogFiles: ['catalog-listy.ts'],
+  },
+  badge: {
+    island: { module: 'BadgeDemo', component: 'BadgeDemo' },
+    adapters: ['AtlasBadge.tsx', 'AtlasButton.tsx', 'AtlasAvatar.tsx'],
+    styles: ['atlas-badge.css', 'atlas-avatar.css'],
+    tests: [],
+    browserTests: ['badge-radius.spec.ts'],
+    catalogFiles: ['catalog-badge.ts'],
   },
 };
 const sources: ComponentSources | undefined = componentSources[component.slug];
@@ -702,6 +722,7 @@ const nextComponent = catalogPosition >= 0 ? components.at(catalogPosition + 1) 
           {component.slug === 'rich-menu' && <RichMenuDemo documentation client:load />}
           {component.slug === 'chart' && <ChartDemo documentation client:load />}
           {component.slug === 'listy' && <ListyDemo documentation client:load />}
+          {component.slug === 'badge' && <BadgeDemo documentation client:load />}
         </div>
         <noscript>
           <p>

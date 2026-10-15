@@ -1,5 +1,108 @@
 # Astro documentation maintenance contract
 
+## Current authoritative project decision — 16 October 2026
+
+Current project decision; it supersedes older current prose, including the
+61- and 64-definition counts below, while dated entries and receipts stay
+history. Rules belong to `/standards/`, definition-generated values to
+`/tokens/`, behavior to each component page. Do not copy CSS into policy text.
+
+- Tokens: 65 definitions in `src/theme-builder/definitions.json` = prior 61 +
+  3 Badge size heights + 1 `listy-surface`; all 65 editable from the Tweaker on
+  every one of the 40 component pages. Saved 51/57/60/61/64 recipes gain only
+  missing defaults; HEX uppercase canonicalization is unchanged. Native AntD
+  6.6.6 and existing dependencies only; no new package.
+- Sizes: Listy 16 actual patterns on shared `AtlasListyItem`; Listy and
+  Cascader rows compact 32/40/48 px (superseding the earlier Cascader regular
+  48 px statement). Standard Avatar/Button/Input 48/56/64 px; Select items stay
+  regular; rich descriptions grow. Badge outer 20/26/32 px including border,
+  text default 14 px / 400.
+- Radius: choices 0px, 3px, 5px, 100%, factory 5px; one edit sets Input, slot
+  and Button to the same general value in both modes. Valid legacy numeric
+  0..32 values stay exact until a choice. Intentional circle Avatars and
+  explicit legacy gallery corners are preserved. Pill, Card and Checkbox doc
+  defaults inherit the general role; the Button corner control shows
+  `Use general radius` instead of a misleading fixed 5.
+- Tweaker: each page offers its own native props, no fake generic placeholder.
+  Common Size and preview states stay in memory while closed; the shared
+  theme/token recipe persists 30 days under the existing key until history is
+  cleared or it expires. Not every business state is persisted.
+- Typography (repeated direct human project exception; do not re-ask): minimum
+  12 CSS px, default 14, ideal reading 16; weight default 400, minimum 300;
+  Outfit. Global host instruction files are not edited. Listy text defaults to
+  14 px; a custom token may lower it only to 12 px.
+- Surfaces: the input root reuses canonical `inputSurfaces.innerShadow` via the
+  existing resolver, removing the duplicate blue shadow; fields `#ececec` /
+  `#1b1b1b`, panels `#ffffff` / `#2c2c2c`, warm shell unchanged. One functional
+  outer boundary when outlined, decorative inset well edge, no nested field,
+  native border or extra shadow. Native Listy host padding/divider cleared so
+  the outer row owns compact height. Section gap >= 16 px via semantic main
+  spacing; TOC targets a 256 px rail with 16 px padding.
+- Raw reference HTML and 31 images are local reference only, not published or
+  copied; no navy colors. Current neutral GenUI roles stay. No fake AI.
+- Test accounting (frozen authorized scope, not results): source files 80 -> 80,
+  existing `neutral-field-surfaces` 1 -> 2 for the actual blue-shadow
+  regression (only the new case executes). Browser files 26 -> 27: new
+  Badge/radius file 2 cases, docs-spacing 1 -> 2, Listy 1 -> 2, Tweaker 2 -> 3;
+  exactly 5 added cases. The first old Tweaker case is adapted to the choice API
+  and rerun for 30-day retention; other old cases are not rerun. The ignored
+  local Pages control and HTTP alias checks are separate. No new matrix, review
+  round, catalog scan or frozen59 backlog. Logs stay local; one final
+  independent diff review pending. Not runtime, CI or Pages proof.
+- Publication: public MIT GenUI `main` at `atonota/genui`, karacaismail author
+  and committer guard preserved. New work UNCOMMITTED; supplied fresh Pages
+  artifact control reported GREEN, actual Pages deployment NOT YET LIVE. Local
+  http://127.0.0.1:4324/ and https://atonota.github.io/genui stay separate.
+  Source API: Pages-only machine-prefix redaction plus credential fail guard;
+  old intentional Avatar/Media error fixtures stay on an exact allowlist only
+  under that guard. No publication-complete claim; the live-host
+  endpoint/authentication decision stays pending.
+
+## Latest direct human decisions — 2026-10-16
+
+Latest requests supersede older current prose in these scopes, not earlier
+receipts. Rules belong to `/standards/`, definition-generated values to
+`/tokens/`, and native Badge behavior to `/components/badge/`. Preserve eight
+component sections and frozen59. Badge is not a new registry entry.
+
+- Native AntD 6.6.6 Badge count/dot/ribbon and Tag labels/icons/close support
+  use existing semantic colors, focus and motion. Badge heights 20/26/32 px
+  are distinct from compact Pill 32/40/48 px. Target 64 definitions (61 + 3
+  badge-size heights); old recipes gain only missing defaults. Generate tables
+  and rule values from definitions. Add the Badge sizes group label in EN/TR;
+  do not edit the other owner's translation index or Badge documentation.
+- Radius choices are 0px, 3px, 5px and 100%, default 5px. One radius edit
+  updates Input, slot and Button general sm/md/lg in both modes; preserve
+  legacy valid numeric 0..32 values exactly until edited and display retained
+  current values. Preserve independent non-radius roles, including dark body
+  20px. Percentage CSS stays percentage, native numeric fallback is fully round,
+  and intentional circle Avatars remain circles. Badge/body default weight 400
+  does not replace the global/project minimum weight 300; retain 12/14/16 px
+  project typography and Outfit, with no font shrinking.
+- Existing layout standard governs the source owner's TOC repair: reported
+  192px rail/padding zero becomes token gutters >=16px and readable rail
+  >=240px, natural labels, sticky overflow and mobile Details without page
+  overflow. Do not duplicate layout CSS here.
+- Supplied local receipts report `/components` GET 404 -> 200, canonical slash
+  and declared redirect source, plus a 51-page root build PASS. No checks were
+  run in this proposal. Explicit Pages authorization is
+  https://atonota.github.io/genui; retain http://127.0.0.1:4324/ locally.
+  Another owner handles deployment source. Local build, remote commit and
+  actual Pages deploy need separate receipts: committed main proves neither
+  preview nor deployment. Checkpoint 852f882 is earlier; new patches are
+  UNCOMMITTED and new Pages publication is unproven.
+- Current Badge/radius scope is RED, two cases, with source writers running.
+  Keep historical 80 source files/26 browser specs labelled history. Authorized
+  accounting is browser 26 -> 27 with two Badge/radius cases, existing
+  docs-spacing 1 -> 2 for TOC and one local ignored Pages control. This is not
+  permission for an additional test wave, review, matrix, catalog scan or backlog.
+- Hermes native documentation phase produces a read-only SOURCE proposal for
+  master admission. Build metadata is generated after all source integration;
+  do not report premature unknown-token server errors before that build.
+  Preserve MIT/public GenUI, Atlas source APIs/storage keys and karacaismail
+  author/committer guard. No new dependencies, fake AI, screenshot navy palette,
+  DONE/GREEN acceptance or new live-publication claim.
+
 ## Bounded defect closure — latest human summary 2026-10-15
 
 Use one necessary regression per recorded defect and at most one final review

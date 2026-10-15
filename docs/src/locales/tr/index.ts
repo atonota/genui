@@ -56,12 +56,17 @@ import foundationsTools from './foundations-tools.json';
 import foundationsGenUI from './foundations-genui.json';
 import foundationNavigation from './foundation-navigation.json';
 import listy from './listy.json';
+import listyPatterns from './listy-patterns.json';
+import badge from './badge.json';
 import inputTweaker from './input-tweaker.json';
+import tweakerOptions from './tweaker-options.json';
 import { translations as themeBuilderStates } from '../../theme-builder/states';
 
 const messages: Readonly<Record<string, string>> = {
   // First so existing phrase translations keep precedence over the new dictionaries.
   ...listy,
+  ...listyPatterns,
+  ...badge,
   ...overlayStandard,
   ...uxCompletion,
   ...contentUx,
@@ -115,6 +120,7 @@ const messages: Readonly<Record<string, string>> = {
   ...uxDateFilter,
   ...uxDepartmentSelect,
   ...inputTweaker,
+  ...tweakerOptions,
   // Last so the current information architecture overrides legacy phrase translations.
   ...foundationsTokens,
   ...foundationsStandards,

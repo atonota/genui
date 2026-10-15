@@ -156,6 +156,29 @@ Some historical studio/background settings still use native selects; form demos
 use the preserved Zag headless dropdown. Those native settings remain a known
 older styling gap.
 
+## GitHub Pages publication
+
+The documentation is configured for publication at https://atonota.github.io/genui/.
+Local development and plain `npm run docs:build` keep the root base and write `docs/dist`.
+The Pages artifact uses the same pinned build command with one environment flag:
+
+```sh
+GENUI_DOCS_PAGES=1 npm run docs:build
+```
+
+The flag sets the Astro site and `/genui` base and writes a fresh `docs/pages/dist`; it
+never copies `docs/dist` or local review material. The existing presentation gate checks
+canonical root paths first. `tools/docs-pages.mjs` then prefixes authored root-absolute
+HTML, island, refresh, inline script, JavaScript chunk and CSS URLs exactly once, adds
+`.nojekyll`, and fails on private files or missing linked assets. `/` and `/genui/` strings
+in JavaScript or island props change only in explicit URL positions; other uses stay
+unchanged.
+
+`.github/workflows/pages.yml` runs only on pushes to `main` and manual dispatch with Node
+24.21.0, `npm ci`, the flagged `docs:build` and commit-pinned official Pages actions. It
+runs no test suite or browser matrix. Publication is pending until a deployment receipt
+exists; this README claims no workflow run, deployment or Pages setting.
+
 ## License
 
 GenUI is released under the MIT License; see [LICENSE](LICENSE). Embedded Outfit

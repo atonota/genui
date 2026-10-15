@@ -1,7 +1,8 @@
 import { useI18n } from './useI18n';
-import { Select, type SelectProps } from 'antd';
-import { useRef, useState, type ComponentRef } from 'react';
+import { Select, Switch, type SelectProps } from 'antd';
+import { useId, useRef, useState, type ComponentRef } from 'react';
 import AtlasProvider from './AtlasProvider';
+import { TweakerSettings } from './AtlasTweaker';
 import AtlasPill, { AtlasPillColorScope } from './AtlasPill';
 import { normalizeSearch } from '../i18n';
 import { selectedLabel } from './selectedLabel';
@@ -53,6 +54,19 @@ export default function SelectDemo({
   const tags = useRef<ComponentRef<typeof Select>>(null);
   const [multipleValues, setMultipleValues] = useState(['design', 'engineering']);
   const [tagValues, setTagValues] = useState<string[]>([]);
+  // Preview presentation only; values and the department flow keep their own owners.
+  const [clearable, setClearable] = useState(true);
+  const [searchable, setSearchable] = useState(true);
+  const [tagDisplay, setTagDisplay] = useState<'all' | 'responsive'>('all');
+  const settingsId = useId();
+  const maxTagCount = tagDisplay === 'responsive' ? 'responsive' : undefined;
+  const filteredSearch: SelectProps['showSearch'] = searchable
+    ? {
+        optionFilterProp: 'label',
+        filterOption: (input, option) =>
+          normalizeSearch(String(option?.label ?? '')).includes(normalizeSearch(input)),
+      }
+    : false;
   const single = (
     <div className={documentation ? 'example-block' : undefined}>
       <label htmlFor="select-single">{t('Team')}</label>
@@ -62,8 +76,8 @@ export default function SelectDemo({
         options={options}
         labelRender={selectedLabel(options)}
         defaultValue="design"
-        allowClear
-        showSearch={{ optionFilterProp: 'label' }}
+        allowClear={clearable}
+        showSearch={searchable ? { optionFilterProp: 'label' } : false}
         classNames={classNames}
       />
     </div>
@@ -77,18 +91,15 @@ export default function SelectDemo({
           id="select-multiple"
           ref={multiple}
           mode="multiple"
-          showSearch={{
-            optionFilterProp: 'label',
-            filterOption: (input, option) =>
-              normalizeSearch(String(option?.label ?? '')).includes(normalizeSearch(input)),
-          }}
+          maxTagCount={maxTagCount}
+          showSearch={filteredSearch}
           tagRender={pillTags ? renderPill(() => multiple.current?.focus()) : undefined}
           onChange={pillTags ? setMultipleValues : undefined}
           value={pillTags ? multipleValues : undefined}
           options={options}
           labelRender={selectedLabel(options)}
           defaultValue={pillTags ? undefined : ['design', 'engineering']}
-          allowClear
+          allowClear={clearable}
           classNames={classNames}
         />
       </AtlasPillColorScope>
@@ -103,6 +114,7 @@ export default function SelectDemo({
           id="select-tags"
           ref={tags}
           mode="tags"
+          maxTagCount={maxTagCount}
           showSearch={{
             optionFilterProp: 'label',
             filterOption: (input, option) =>
@@ -193,8 +205,42 @@ export default function SelectDemo({
       ))}
     </>
   );
+  // Tags keep search on: typing is how a new tag is entered.
+  const settings = documentation ? (
+    <TweakerSettings title="Select settings">
+      <div className="atlas-tweaker-token">
+        <label htmlFor={`${settingsId}clearable`}>{t('Clearable')}</label>
+        <Switch
+          id={`${settingsId}clearable`}
+          checked={clearable}
+          onChange={checked => setClearable(checked)}
+        />
+      </div>
+      <div className="atlas-tweaker-token">
+        <label htmlFor={`${settingsId}searchable`}>{t('Searchable')}</label>
+        <Switch
+          id={`${settingsId}searchable`}
+          checked={searchable}
+          onChange={checked => setSearchable(checked)}
+        />
+      </div>
+      <div className="atlas-tweaker-token">
+        <label htmlFor={`${settingsId}tag-display`}>{t('Selected values')}</label>
+        <Select
+          id={`${settingsId}tag-display`}
+          value={tagDisplay}
+          options={[
+            { value: 'all', label: t('Show every value') },
+            { value: 'responsive', label: t('Fit to field width') },
+          ]}
+          onChange={(next: string) => setTagDisplay(next === 'responsive' ? 'responsive' : 'all')}
+        />
+      </div>
+    </TweakerSettings>
+  ) : null;
   return (
     <AtlasProvider appearance={documentation ? 'docs' : undefined}>
+      {settings}
       {documentation ? (
         <DataEntryCatalog
           slug="select"

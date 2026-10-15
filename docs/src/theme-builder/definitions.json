@@ -489,49 +489,43 @@
     "id": "radius-sm",
     "label": "Radius SM",
     "group": "radius",
-    "kind": "number",
+    "kind": "choice",
     "defaults": {
-      "light": 5,
-      "dark": 5
+      "light": "5px",
+      "dark": "5px"
     },
-    "unit": "px",
+    "unit": "",
     "css": "--radius-sm",
-    "description": "Small corner radius in fixed CSS px, written to --radius-sm. Smallest step of the sm/md/lg radius group, intended for compact surfaces such as tags, badges, checkboxes and inline controls. Integer from 0 to 32 px in 1 px steps; 0 gives square corners. Default 5 px in both light and dark schemes, the same factory value as the general Radius MD role; the value does not change across interaction states and is edited independently of Radius MD and LG.",
-    "min": 0,
-    "max": 32,
-    "step": 1
+    "description": "Small step of the general corner radius role, written to --radius-sm for compact surfaces such as tags, badges and inline controls. One of four choices: 0px (square), 3px, 5px or 100% (fully rounded; AntD numeric radii use the safe 9999 fallback). Default 5px in both light and dark schemes. Editing any radius step sets Radius SM, MD and LG together in both schemes; recipes saved with a whole px value from 0 to 32 keep it exactly until edited. Constant across interaction states; never a focus ring.",
+    "options": ["0px", "3px", "5px", "100%"]
   },
   {
     "id": "radius-md",
     "label": "Radius MD",
     "group": "radius",
-    "kind": "number",
+    "kind": "choice",
     "defaults": {
-      "light": 5,
-      "dark": 5
+      "light": "5px",
+      "dark": "5px"
     },
-    "unit": "px",
+    "unit": "",
     "css": "--radius-md",
-    "description": "Medium corner radius in fixed CSS px (whole numbers 0–32, step 1; default 5 in both light and dark schemes), exposed globally as --radius-md. The general corner role, also exposed as --radius: field wells, their slot actions and buttons without an explicit corner all read it. Radius SM and LG are independent companions, not an ordered scale. The value is constant across hover, active, selected, disabled and invalid states; it does not decide which components use it.",
-    "min": 0,
-    "max": 32,
-    "step": 1
+    "description": "General corner radius role, exposed globally as --radius-md and --radius: field wells, their slot actions and buttons without an explicit corner all read it. One of four choices: 0px, 3px, 5px or 100% (fully rounded; AntD numeric radii use the safe 9999 fallback). Default 5px in both light and dark schemes. Editing it sets Radius SM, MD and LG together in both schemes; recipes saved with a whole px value from 0 to 32 keep it exactly until edited. Constant across hover, active, selected, disabled and invalid states.",
+    "options": ["0px", "3px", "5px", "100%"]
   },
   {
     "id": "radius-lg",
     "label": "Radius LG",
     "group": "radius",
-    "kind": "number",
+    "kind": "choice",
     "defaults": {
-      "light": 5,
-      "dark": 5
+      "light": "5px",
+      "dark": "5px"
     },
-    "unit": "px",
+    "unit": "",
     "css": "--radius-lg",
-    "description": "Fixed px corner radius for large surfaces such as panels, dialogs, popovers and grouped containers; the largest step of the sm/md/lg radius scale. Integer 0–32 px, step 1; default 5 px in light and dark schemes, the same factory value as the general Radius MD role; it is edited independently of Radius SM and MD. Shape only; it does not imply component approval and must not be used to draw focus rings.",
-    "min": 0,
-    "max": 32,
-    "step": 1
+    "description": "Large step of the general corner radius role, written to --radius-lg for panels, dialogs, popovers and grouped containers. One of four choices: 0px, 3px, 5px or 100% (AntD numeric radii use the safe 9999 fallback). Default 5px in light and dark schemes; editing any radius step sets SM, MD and LG together in both schemes, and saved whole px values from 0 to 32 stay exact until edited. Shape only; never used to draw focus rings.",
+    "options": ["0px", "3px", "5px", "100%"]
   },
   {
     "id": "size-sm",
@@ -628,6 +622,54 @@
     "min": 24,
     "max": 96,
     "step": 4
+  },
+  {
+    "id": "size-badge-sm",
+    "label": "Badge height SM",
+    "group": "badge-size",
+    "kind": "number",
+    "defaults": {
+      "light": 20,
+      "dark": 20
+    },
+    "unit": "px",
+    "css": "--size-badge-sm",
+    "description": "Fixed px outer height of small badges: label and count bodies, ribbon strips and the reserved dot box; the SM step of the badge sm/md/lg height family (default 20). Same value in light and dark schemes; range 20-64 px in 2 px steps, ordered sm ≤ md ≤ lg. Separate from the 48/56/64 control and 32/40/48 compact families; text inside stays at least 14px.",
+    "min": 20,
+    "max": 64,
+    "step": 2
+  },
+  {
+    "id": "size-badge-md",
+    "label": "Badge height MD",
+    "group": "badge-size",
+    "kind": "number",
+    "defaults": {
+      "light": 26,
+      "dark": 26
+    },
+    "unit": "px",
+    "css": "--size-badge-md",
+    "description": "Fixed px outer height of medium badges: label and count bodies, ribbon strips and the reserved dot box; the MD step of the badge sm/md/lg height family (default 26). Same value in light and dark schemes; range 20-64 px in 2 px steps, at or above Badge height SM and at or below Badge height LG. Text inside stays at least 14px.",
+    "min": 20,
+    "max": 64,
+    "step": 2
+  },
+  {
+    "id": "size-badge-lg",
+    "label": "Badge height LG",
+    "group": "badge-size",
+    "kind": "number",
+    "defaults": {
+      "light": 32,
+      "dark": 32
+    },
+    "unit": "px",
+    "css": "--size-badge-lg",
+    "description": "Fixed px outer height of large badges: label and count bodies, ribbon strips and the reserved dot box; the LG step of the badge sm/md/lg height family (default 32). Same value in light and dark schemes; range 20-64 px in 2 px steps, at or above Badge height MD. Text inside stays at least 14px.",
+    "min": 20,
+    "max": 64,
+    "step": 2
   },
   {
     "id": "text-body",
@@ -840,6 +882,20 @@
     "css": "--surface-depth",
     "description": "Sets how panels and content areas show depth. The global resolver writes it to --surface as a keyword with no unit. Only flat, inset and raised are valid. flat: no elevation; areas are separated by spacing and surface color alone. inset: fields and wells sit recessed inside their panel. raised: panels lift above the page through the shared shadow tokens. In every option and in both light and dark schemes, input fields stay darker than the panel they sit on. Defaults: inset for both light and dark. This token does not change sizes, spacing, the 14px minimum text size or motion. It never adds decorative borders or focus rings.",
     "options": ["flat", "inset", "raised"]
+  },
+  {
+    "id": "listy-surface",
+    "label": "Listy surface",
+    "group": "surface",
+    "kind": "choice",
+    "defaults": {
+      "light": "inset",
+      "dark": "inset"
+    },
+    "unit": "",
+    "css": "--listy-surface",
+    "description": "Central presentation of AntD Listy lists and native Cascader popups, written to --listy-surface as a unitless keyword. inset: the list sits in a recessed field well with an inner shadow and no physical frame. outlined: the list owns exactly one functional boundary. Rows never draw borders in either option. Light and dark schemes both default to inset. Never used as a focus ring.",
+    "options": ["inset", "outlined"]
   },
   {
     "id": "border-style",

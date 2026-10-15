@@ -162,21 +162,22 @@ dialog[data-docs-drawer][open]::backdrop {
 }
 [data-docs-shell] [data-doc-contents] > summary {
   min-block-size: var(--target-min);
-  padding: var(--space-sm) var(--space-md);
+  padding: var(--inset-container-sm, 16px);
   cursor: pointer;
   font-weight: var(--font-weight-label, 600);
 }
+/* The disclosure is the only painted enclosure: summary and links share the container-sm inset. */
 [data-docs-shell] [data-doc-contents] > [data-doc-nav='sections'] {
   display: grid;
   margin: 0;
-  padding: 0 var(--space-xs) var(--space-sm);
+  padding: 0 var(--inset-container-sm, 16px) var(--inset-container-sm, 16px);
 }
 [data-docs-shell] .page-grid > [data-doc-nav='toc'] {
   display: none;
 }
 [data-docs-shell] .page-grid > [data-doc-nav='toc'] p {
   font-weight: var(--font-weight-label, 550);
-  margin-block-end: var(--space-xs);
+  margin-block: 0 var(--space-xs);
 }
 [data-docs-shell] .page-grid > [data-doc-nav='toc'] a {
   display: flex;
@@ -232,18 +233,27 @@ dialog[data-docs-drawer][open]::backdrop {
   }
 }
 @media (min-width: 70.625rem) {
+  /* The rail keeps a readable 240px minimum (15rem) and widens to 16rem at 1290px. */
+  :where(:root) {
+    --shell-toc-inline-size: 15rem;
+  }
   [data-docs-shell] .page-grid:has(> [data-doc-nav='toc']) {
     grid-template-columns: minmax(0, 1fr) var(--shell-toc-inline-size);
   }
+  /* The painted rail insets its heading and links with the container-sm role inside its own
+     border box and scrolls on its own when the labels exceed the sticky height. */
   [data-docs-shell] .page-grid > [data-doc-nav='toc'] {
     display: flex;
     flex-direction: column;
     gap: var(--space-xs);
+    box-sizing: border-box;
+    padding: var(--inset-container-sm, 16px);
     position: sticky;
     inset-block-start: var(--shell-sticky-offset);
     align-self: start;
     max-block-size: calc(100dvh - 2 * var(--shell-sticky-offset));
-    overflow: auto;
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
   /* The rail replaces the disclosure; only one set of section links is visible. */
   [data-docs-shell] .page-grid:has(> [data-doc-nav='toc']) [data-doc-contents] {
@@ -252,6 +262,6 @@ dialog[data-docs-drawer][open]::backdrop {
 }
 @media (min-width: 80.625rem) {
   :where(:root) {
-    --shell-toc-inline-size: 12rem;
+    --shell-toc-inline-size: 16rem;
   }
 }

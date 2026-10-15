@@ -9,7 +9,7 @@ export default function PillColorExample({
   radius,
   variant,
 }: {
-  radius: string;
+  radius?: string;
   variant: PillVariant;
 }) {
   const { t } = useI18n();

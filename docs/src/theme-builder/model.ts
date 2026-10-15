@@ -6,12 +6,21 @@ import {
   hexToRgb,
   relativeLuminance,
 } from '../data/color-system';
+import { inputSurfaces } from '../data/input-surfaces';
 import motion from '../data/motion.json';
 import {
   OVERLAY_TOKEN_IDS,
   overlayDefaultValues,
   overlayVariablesFromValues,
 } from '../data/overlay-tokens';
+import {
+  FULL_ROUND_RADIUS_PX,
+  RADIUS_OPTIONS,
+  isLegacyRadius,
+  isRadiusTokenId,
+  radiusCss,
+  radiusPx,
+} from '../data/radius-options';
 import definitionsSource from './definitions.json';
 
 export type ThemeMode = 'light' | 'dark';
@@ -78,16 +87,26 @@ export const COMPACT_THEME_TOKEN_COUNT = COMPACT_SIZE_TOKEN_IDS.length;
 /** Editable weight added after compact heights; older complete recipes gain only its default. */
 export const FONT_WEIGHT_TOKEN_ID = 'font-weight';
 export const FONT_WEIGHT_THEME_TOKEN_COUNT = 1;
+/** Badge heights added after editable weight; complete earlier recipes gain only their defaults. */
+export const BADGE_SIZE_TOKEN_IDS = ['size-badge-sm', 'size-badge-md', 'size-badge-lg'] as const;
+export const BADGE_THEME_TOKEN_COUNT = BADGE_SIZE_TOKEN_IDS.length;
+/** Listy presentation added after badge heights; complete earlier recipes gain only its default. */
+export const LISTY_SURFACE_TOKEN_ID = 'listy-surface';
+export const LISTY_SURFACE_THEME_TOKEN_COUNT = 1;
+export const LISTY_SURFACES = ['inset', 'outlined'] as const;
+export type ListySurface = (typeof LISTY_SURFACES)[number];
 export const THEME_TOKEN_COUNT =
   LEGACY_THEME_TOKEN_COUNT +
   OVERLAY_THEME_TOKEN_COUNT +
   COMPACT_THEME_TOKEN_COUNT +
-  FONT_WEIGHT_THEME_TOKEN_COUNT;
+  FONT_WEIGHT_THEME_TOKEN_COUNT +
+  BADGE_THEME_TOKEN_COUNT +
+  LISTY_SURFACE_THEME_TOKEN_COUNT;
 export const MAX_THEME_RECIPE_BYTES = 32 * 1024;
 export const MIN_TEXT_CONTRAST = 4.5;
 export const MIN_FONT_SIZE_PX = 12;
 /** Fixed shapes are described in the builder but are never definition edits. */
-export const FIXED_RADII = Object.freeze({ none: 0, pill: 9999, circle: '50%' });
+export const FIXED_RADII = Object.freeze({ none: 0, pill: FULL_ROUND_RADIUS_PX, circle: '50%' });
 
 export const THEME_RECIPE_ERRORS = Object.freeze({
   notText: 'Theme JSON must be text.',
@@ -167,6 +186,8 @@ function checkValue(def: ThemeTokenDefinition, value: unknown): ValueCheck {
       return { ok: false, reason: 'must use the #RRGGBB format.' };
     return { ok: true, value: value.toUpperCase() };
   }
+  // Radius roles also keep a legacy whole px number (0-32) exactly until the user edits it.
+  if (isRadiusTokenId(def.id) && isLegacyRadius(value)) return { ok: true, value };
   if (typeof value !== 'string' || !def.options?.includes(value))
     return { ok: false, reason: 'must be one of the listed options.' };
   return { ok: true, value };
@@ -320,6 +341,18 @@ const scaleRole = (prefix: string) =>
     md: requiredRole(`${prefix}-md`, 'number'),
     lg: requiredRole(`${prefix}-lg`, 'number'),
   });
+/** A general radius step offers exactly the shared four choices, in order. */
+const radiusRole = (id: string): ThemeTokenDefinition => {
+  const def = requiredRole(id, 'choice');
+  const options = def.options ?? [];
+  if (
+    !isRadiusTokenId(id) ||
+    options.length !== RADIUS_OPTIONS.length ||
+    RADIUS_OPTIONS.some((option, index) => options[index] !== option)
+  )
+    invalidDefinitions(`${id} must offer ${RADIUS_OPTIONS.join(', ')}`);
+  return def;
+};
 
 // Exact id bindings: a renamed or missing definition fails loudly instead of going inert.
 const roles = Object.freeze({
@@ -339,9 +372,14 @@ const roles = Object.freeze({
   disabledText: requiredRole('disabled-text', 'color'),
   borderWidth: requiredRole('border-width', 'number'),
   borderStyle: requiredRole('border-style', 'choice'),
-  radius: scaleRole('radius'),
+  radius: Object.freeze({
+    sm: radiusRole('radius-sm'),
+    md: radiusRole('radius-md'),
+    lg: radiusRole('radius-lg'),
+  }),
   size: scaleRole('size'),
   sizeCompact: scaleRole('size-compact'),
+  sizeBadge: scaleRole('size-badge'),
   spaceLocal: scaleRole('space-local'),
   spaceSection: scaleRole('space-section'),
   spaceLayout: scaleRole('space-layout'),
@@ -358,6 +396,7 @@ const roles = Object.freeze({
   fontWeight: requiredRole(FONT_WEIGHT_TOKEN_ID, 'number'),
   density: requiredRole('density', 'choice'),
   surfaceDepth: requiredRole('surface', 'choice'),
+  listySurface: requiredRole(LISTY_SURFACE_TOKEN_ID, 'choice'),
   overlayScrimColor: requiredRole('overlay-scrim-color', 'color'),
   overlayScrimOpacity: requiredRole('overlay-scrim-opacity', 'number'),
   overlayBackdropBlur: requiredRole('overlay-backdrop-blur', 'number'),
@@ -367,18 +406,28 @@ const roles = Object.freeze({
 });
 for (const def of Object.values(roles.shadow))
   if (!def.geometry) invalidDefinitions(`${def.id} must declare shadow geometry`);
+// The Listy surface is a fixed two-keyword contract shared with the CSS and the Cascader popup.
+const listySurfaceOptions = roles.listySurface.options ?? [];
+if (
+  listySurfaceOptions.length !== LISTY_SURFACES.length ||
+  LISTY_SURFACES.some((option, index) => listySurfaceOptions[index] !== option)
+)
+  invalidDefinitions(`${LISTY_SURFACE_TOKEN_ID} must offer ${LISTY_SURFACES.join(', ')}`);
 
-// Preserve the exact 51 / 57 / 60 stored generations before editable weight.
+// Preserve the exact 51 / 57 / 60 / 61 / 64 stored generations before the Listy surface.
 // Each complete generation upgrades by adding only its missing defaults.
 const overlayTokenIds: ReadonlySet<string> = new Set(OVERLAY_TOKEN_IDS);
 const compactTokenIds: ReadonlySet<string> = new Set<string>(COMPACT_SIZE_TOKEN_IDS);
+const badgeTokenIds: ReadonlySet<string> = new Set<string>(BADGE_SIZE_TOKEN_IDS);
 const legacyTokenIds: ReadonlySet<string> = new Set(
   tokenDefinitions
     .filter(
       def =>
         !overlayTokenIds.has(def.id) &&
         !compactTokenIds.has(def.id) &&
-        def.id !== FONT_WEIGHT_TOKEN_ID,
+        !badgeTokenIds.has(def.id) &&
+        def.id !== FONT_WEIGHT_TOKEN_ID &&
+        def.id !== LISTY_SURFACE_TOKEN_ID,
     )
     .map(def => def.id),
 );
@@ -389,6 +438,13 @@ const compactGenerationIds: ReadonlySet<string> = new Set([
   ...overlayGenerationIds,
   ...compactTokenIds,
 ]);
+/** Complete recipes saved with editable weight but before badge heights. */
+const weightGenerationIds: ReadonlySet<string> = new Set([
+  ...compactGenerationIds,
+  FONT_WEIGHT_TOKEN_ID,
+]);
+/** Complete recipes saved with badge heights but before the Listy surface. */
+const badgeGenerationIds: ReadonlySet<string> = new Set([...weightGenerationIds, ...badgeTokenIds]);
 if (legacyTokenIds.size !== LEGACY_THEME_TOKEN_COUNT)
   invalidDefinitions(
     `expected ${LEGACY_THEME_TOKEN_COUNT} legacy definitions, found ${legacyTokenIds.size}`,
@@ -453,7 +509,7 @@ function validateMode(mode: ThemeMode, input: unknown): ThemeValues | string {
   return Object.freeze(values);
 }
 
-type StoredGeneration = 'legacy' | 'overlay' | 'compact';
+type StoredGeneration = 'legacy' | 'overlay' | 'compact' | 'weight' | 'badge';
 
 /** An earlier mode holds exactly one previous id set: nothing missing, nothing extra. */
 const hasExactIds = (input: unknown, ids: ReadonlySet<string>): boolean => {
@@ -468,7 +524,11 @@ const storedGeneration = (input: unknown): StoredGeneration | null =>
       ? 'overlay'
       : hasExactIds(input, compactGenerationIds)
         ? 'compact'
-        : null;
+        : hasExactIds(input, weightGenerationIds)
+          ? 'weight'
+          : hasExactIds(input, badgeGenerationIds)
+            ? 'badge'
+            : null;
 
 /** Keeps every stored value as provided and adds only the missing defaults; never mutates. */
 function upgradeStoredMode(mode: ThemeMode, input: unknown, generation: StoredGeneration): unknown {
@@ -478,9 +538,15 @@ function upgradeStoredMode(mode: ThemeMode, input: unknown, generation: StoredGe
     const defaults = overlayDefaultValues(mode);
     for (const id of OVERLAY_TOKEN_IDS) upgraded[id] = defaults[id];
   }
-  if (generation !== 'compact')
+  if (generation === 'legacy' || generation === 'overlay')
     for (const id of COMPACT_SIZE_TOKEN_IDS) upgraded[id] = definitionsById.get(id)?.defaults[mode];
-  upgraded[FONT_WEIGHT_TOKEN_ID] = roles.fontWeight.defaults[mode];
+  // A stored custom weight is kept; only generations before it gain the default.
+  if (generation !== 'weight' && generation !== 'badge')
+    upgraded[FONT_WEIGHT_TOKEN_ID] = roles.fontWeight.defaults[mode];
+  // Stored badge heights are kept; only generations before them gain the defaults.
+  if (generation !== 'badge')
+    for (const id of BADGE_SIZE_TOKEN_IDS) upgraded[id] = definitionsById.get(id)?.defaults[mode];
+  upgraded[LISTY_SURFACE_TOKEN_ID] = roles.listySurface.defaults[mode];
   return upgraded;
 }
 
@@ -537,23 +603,34 @@ export function createDefaultRecipe(): ThemeRecipe {
   return buildDefaultRecipe();
 }
 
-/** Factory corner radii; the general --radius role is Radius MD. */
+/** Listy presentation of an applied recipe in one scheme; without a recipe the default applies. */
+export function listySurfaceOf(
+  recipe: ThemeRecipe | null | undefined,
+  mode: ThemeMode,
+): ListySurface {
+  const value = recipe?.[mode][LISTY_SURFACE_TOKEN_ID] ?? roles.listySurface.defaults[mode];
+  return LISTY_SURFACES.find(surface => surface === value) ?? 'inset';
+}
+
+/** Factory corner radii as AntD numbers (100% maps to the safe full-round value); the general
+    --radius role is Radius MD. */
 export const DEFAULT_RADII = Object.freeze({
-  sm: Number(roles.radius.sm.defaults.light),
-  md: Number(roles.radius.md.defaults.light),
-  lg: Number(roles.radius.lg.defaults.light),
+  sm: radiusPx(roles.radius.sm.defaults.light),
+  md: radiusPx(roles.radius.md.defaults.light),
+  lg: radiusPx(roles.radius.lg.defaults.light),
 });
 
-/** Default radius and both height families as CSS variables, so static CSS and providers paint the
+/** Default radius and every height family as CSS variables, so static CSS and providers paint the
     general radius and size roles before any recipe resolves. */
 export function defaultGeometryVariables(
   mode: ThemeMode = 'light',
 ): Readonly<Record<`--${string}`, string>> {
   const variables: Record<`--${string}`, string> = {};
-  for (const group of [roles.radius, roles.size, roles.sizeCompact])
+  for (const def of Object.values(roles.radius)) variables[def.css] = radiusCss(def.defaults[mode]);
+  for (const group of [roles.size, roles.sizeCompact, roles.sizeBadge])
     for (const def of Object.values(group))
       variables[def.css] = formatValue(def, def.defaults[mode]);
-  variables['--radius'] = formatValue(roles.radius.md, roles.radius.md.defaults[mode]);
+  variables['--radius'] = radiusCss(roles.radius.md.defaults[mode]);
   return Object.freeze(variables);
 }
 
@@ -573,11 +650,6 @@ for (const option of roles.density.options ?? [])
 for (const option of roles.surfaceDepth.options ?? [])
   if (!SURFACE_DEPTHS.includes(option))
     invalidDefinitions(`surface option ${option} is not supported`);
-/** Reference recessed input well; fields stay inset whatever the panel depth. */
-const INPUT_INNER_SHADOW: Readonly<Record<ThemeMode, string>> = Object.freeze({
-  light: 'inset 0 1px 2px rgba(33, 45, 63, 0.12), inset 0 -1px 0 rgba(255, 255, 255, 0.8)',
-  dark: 'inset 0 2px 3px rgba(2, 9, 17, 0.38), inset 0 -1px 0 rgba(255, 255, 255, 0.09)',
-});
 const FONT_FAMILY = 'Outfit, system-ui, sans-serif';
 
 function formatValue(def: ThemeTokenDefinition, value: ThemeTokenValue): string {
@@ -707,7 +779,17 @@ function resolveMode(recipe: ThemeRecipe, mode: ThemeMode): ThemeBuilderResoluti
     { color: string; text: string; bg: string; border: string }
   >;
 
-  const radius = scale(roles.radius);
+  // Radius roles hold a choice or a legacy whole px: CSS keeps 100%, AntD gets safe numbers.
+  const radius = {
+    sm: radiusCss(values[roles.radius.sm.id]),
+    md: radiusCss(values[roles.radius.md.id]),
+    lg: radiusCss(values[roles.radius.lg.id]),
+  };
+  const radiusNumber = {
+    sm: radiusPx(values[roles.radius.sm.id]),
+    md: radiusPx(values[roles.radius.md.id]),
+    lg: radiusPx(values[roles.radius.lg.id]),
+  };
   // Control heights keep their 48/56/64 minima; density never changes them.
   const size = scale(roles.size);
   const space = scale(roles.spaceLocal);
@@ -739,7 +821,8 @@ function resolveMode(recipe: ThemeRecipe, mode: ThemeMode): ThemeBuilderResoluti
   const disabledInk = color(roles.disabledText);
   const disabledBg = color(roles.disabledBg);
   const depth = String(values[roles.surfaceDepth.id]);
-  const inputInnerShadow = INPUT_INNER_SHADOW[mode];
+  // Fields stay inset whatever the panel depth and reuse the canonical neutral well shadow.
+  const inputInnerShadow = inputSurfaces[mode].innerShadow;
   const shadowCss = (def: ThemeTokenDefinition): string => shadowRecipe(def, values, ink).css;
   const surfaceShadow =
     depth === 'flat' ? 'none' : depth === 'raised' ? shadowCss(roles.shadow.md) : inputInnerShadow;
@@ -750,7 +833,7 @@ function resolveMode(recipe: ThemeRecipe, mode: ThemeMode): ThemeBuilderResoluti
   for (const def of tokenDefinitions) {
     const value = values[def.id]!;
     if (!def.geometry) {
-      variables[def.css] = formatValue(def, value);
+      variables[def.css] = isRadiusTokenId(def.id) ? radiusCss(value) : formatValue(def, value);
       continue;
     }
     const shadow = shadowRecipe(def, values, ink);
@@ -800,11 +883,11 @@ function resolveMode(recipe: ThemeRecipe, mode: ThemeMode): ThemeBuilderResoluti
     '--disabled-ink': disabledInk,
     '--disabled-bg': disabledBg,
     // One general corner role shared by field wells, slot actions and buttons.
-    '--radius': px(radius.md),
+    '--radius': radius.md,
     '--radius-none': '0px',
-    '--radius-sm': px(radius.sm),
-    '--radius-md': px(radius.md),
-    '--radius-lg': px(radius.lg),
+    '--radius-sm': radius.sm,
+    '--radius-md': radius.md,
+    '--radius-lg': radius.lg,
     '--radius-pill': `${FIXED_RADII.pill}px`,
     '--radius-circle': FIXED_RADII.circle,
     '--atlas-size-sm': px(size.sm),
@@ -852,7 +935,7 @@ function resolveMode(recipe: ThemeRecipe, mode: ThemeMode): ThemeBuilderResoluti
     '--atlas-input-border-color': border,
     '--atlas-input-border-width': px(borderWidth),
     '--atlas-input-border-style': borderStyle,
-    '--atlas-input-radius': px(radius.md),
+    '--atlas-input-radius': radius.md,
     '--atlas-input-height-sm': px(size.sm),
     '--atlas-input-height-md': px(size.md),
     '--atlas-input-height-lg': px(size.lg),
@@ -922,9 +1005,9 @@ function resolveMode(recipe: ThemeRecipe, mode: ThemeMode): ThemeBuilderResoluti
     colorBorder: border,
     colorBorderSecondary: divider,
     colorSplit: divider,
-    borderRadiusSM: radius.sm,
-    borderRadius: radius.md,
-    borderRadiusLG: radius.lg,
+    borderRadiusSM: radiusNumber.sm,
+    borderRadius: radiusNumber.md,
+    borderRadiusLG: radiusNumber.lg,
     controlHeightSM: size.sm,
     controlHeight: size.md,
     controlHeightLG: size.lg,

@@ -1,0 +1,29 @@
+---
+// Redirect page only: the component catalog at / is canonical; /components/ has no directory of its own.
+const CATALOG_ROUTE = '/';
+const title = 'Component catalog moved';
+---
+
+<!doctype html>
+<html lang="en" data-page-kind="redirect">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>{title}</title>
+    <link rel="canonical" href={CATALOG_ROUTE} />
+    <meta http-equiv="refresh" content={`0; url=${CATALOG_ROUTE}`} />
+  </head>
+  <body>
+    <main>
+      <h1>
+        <span data-i18n={title}>{title}</span>
+      </h1>
+      <p>
+        <a href={CATALOG_ROUTE}>
+          <span data-i18n="Component catalog">Component catalog</span>
+        </a>
+      </p>
+    </main>
+  </body>
+</html>

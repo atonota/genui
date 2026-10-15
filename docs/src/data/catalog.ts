@@ -2,6 +2,7 @@ import { extensionComponents } from './catalog-extensions';
 import { contentComponents } from './catalog-content';
 import { uxPatternComponents } from './catalog-ux-patterns';
 import { listyComponents } from './catalog-listy';
+import { badgeComponents } from './catalog-badge';
 
 export type ComponentDoc = {
   slug: string;
@@ -3680,4 +3681,5 @@ export default function PeerCards() {
   ...contentComponents,
   ...uxPatternComponents,
   ...listyComponents,
+  ...badgeComponents,
 ];

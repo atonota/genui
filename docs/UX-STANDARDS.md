@@ -1,5 +1,108 @@
 # Atlas UX standards and complete reference crosswalk
 
+## Current authoritative project decision — 16 October 2026
+
+This is the current project decision. It supersedes older current statements,
+including the 61- and 64-definition counts; dated sections below remain
+history. Rules live on [UX standards](/standards/), values on
+[Design tokens](/tokens/), behavior on each component page. This read-only
+source proposal is not evidence of executed checks.
+
+- Tokens: 65 definitions (prior 61 + 3 Badge size heights + `listy-surface`),
+  all editable from the Tweaker on all 40 component pages. Saved
+  51/57/60/61/64 recipes gain only missing defaults; HEX uppercase
+  canonicalization is unchanged. Native Ant Design 6.6.6; no new package.
+- Sizes: Listy 16 patterns on shared `AtlasListyItem`; Listy and Cascader rows
+  compact 32/40/48 px (superseding the earlier Cascader regular 48 px). Standard
+  Avatar/Button/Input 48/56/64 px; Select items regular; rich descriptions
+  grow. Badge outer 20/26/32 px including border, default 14 px / 400.
+- Radius: 0px, 3px, 5px, 100%, factory 5px; Input, slot and Button share the
+  general value in both modes. Legacy numeric 0..32 values stay exact until a
+  choice. Circle Avatars and explicit legacy gallery corners stay. Pill, Card
+  and Checkbox inherit the general role; Button shows `Use general radius`.
+- Tweaker: native per-page props, no fake placeholder; Size/preview states kept
+  in memory while closed; shared recipe persists 30 days under the existing key
+  until cleared or expired. Not every business state is persisted.
+- Typography: project minimum 12 CSS px, default 14, ideal reading 16; weight
+  default 400, minimum 300; Outfit. Global instruction files are unchanged.
+- Surfaces: canonical `inputSurfaces.innerShadow` reused, duplicate blue shadow
+  removed; neutral fields, white/`#2c2c2c` panels, warm shell unchanged; one
+  functional outer boundary; Listy host padding/divider cleared; section gap
+  >= 16 px; TOC 256 px rail with 16 px padding. Reference HTML and 31 images
+  stay local; no navy colors.
+- Tests (frozen scope, not results): source 80 -> 80 with
+  `neutral-field-surfaces` 1 -> 2; browser files 26 -> 27 with exactly 5 added
+  cases (Badge/radius 2, docs-spacing +1, Listy +1, Tweaker +1); one old Tweaker
+  case adapted and rerun. One final independent diff review pending.
+- Publication: MIT GenUI `atonota/genui`; new work UNCOMMITTED; actual Pages
+  deployment NOT YET LIVE; local root and Pages stay separate; Pages-only
+  redaction with credential guard. No DONE/GREEN or publication claim.
+
+Türkçe: Bu bölüm güncel proje kararıdır ve eski 61/64 tanım sayılarının yerine
+geçer; aşağıdaki tarihli bölümler geçmiştir. 65 token (61 + 3 Badge yüksekliği +
+`listy-surface`) 40 sayfanın tamamında Tweaker ile düzenlenir; kayıtlı tarifler
+yalnız eksik varsayılanları alır. Listy 16 desen ve Cascader ile kompakt
+32/40/48 px; standart kontroller 48/56/64 px; Badge 20/26/32 px, 14 px / 400.
+Yarıçap 0px/3px/5px/100%, varsayılan 5px; eski 0..32 değerleri seçime kadar
+korunur. Tipografi en az 12, varsayılan 14, okuma 16 px; kalınlık 400/en az 300;
+Outfit. Test kapsamı sonuç değil, dondurulmuş yetkidir. Yeni iş UNCOMMITTED;
+gerçek Pages dağıtımı henüz canlı değildir; DONE/GREEN iddiası yoktur.
+
+## Latest scope boundary — 2026-10-16
+
+The completion statements below concern the dated PDF delivery only. They do
+not accept the new Badge/radius/TOC/publication scope, whose two Badge/radius
+cases remain RED while source writers work. This is a read-only source proposal,
+not integrated source or evidence of executed checks.
+
+Current normative rules are on [UX standards](/standards/), values are generated
+on [Design tokens](/tokens/), and native behavior belongs to
+[Badge](/components/badge/). The 16 October decisions add the Badge exception,
+approved radius choices with lossless legacy retention, default Badge/body
+weight 400 and readable TOC insets. Existing minimum weight 300, project
+12/14/16 px typography and independent non-radius custom roles remain intact.
+Older prose about a numeric radius editor or independent size radii is history,
+not the current editor contract. No model/schema changes belong to this proposal.
+
+Historical 80 source-test files and 26 browser specs stay historical. Authorized
+new accounting is 26 -> 27 browser specs with two Badge/radius cases and
+existing docs-spacing 1 -> 2 for the TOC case; one local ignored Pages control
+is separate. No additional test wave or review is authorized here.
+
+The packet reports a 51-page local root build PASS and `/components` GET
+404 -> 200 with canonical slash and declared redirect source. These supplied
+local receipts are not checks run here and do not prove deployment. Explicit
+publication authorization targets https://atonota.github.io/genui, retaining
+http://127.0.0.1:4324/ as local root. Local build, remote commit and actual
+Pages deploy are distinct evidence; committed main proves neither preview nor
+deployment. Checkpoint 852f882 predates the new UNCOMMITTED patches. No new
+Pages receipt or DONE/GREEN claim exists for this scope.
+
+Türkçe: Aşağıdaki tamamlanma ifadeleri yalnız tarihli PDF teslimine aittir.
+Yeni Badge/yarıçap/TOC/yayın kapsamını kabul etmez; kaynak yazarları çalışırken
+iki Badge/yarıçap vakası RED durumundadır. Bu, çalıştırılmış kontrol veya
+bütünleştirilmiş kaynak kanıtı değil, salt okunur kaynak önerisidir. Güncel
+kurallar `/standards/`, üretilen değerler `/tokens/`, yerel Badge davranışı
+`/components/badge/` sayfasındadır. Yeni kararlar Badge istisnası, eski değerleri
+kayıpsız koruyan yarıçap seçenekleri, Badge/gövde için varsayılan 400 kalınlık
+ve okunabilir TOC iç boşluklarıdır. En az 300 kalınlık, proje 12/14/16 px
+tipografisi ve bağımsız diğer özel roller korunur. Eski sayısal yarıçap
+düzenleyicisi veya bağımsız boyut yarıçapları anlatımı güncel sözleşme değil,
+geçmiştir. Model/şema değişikliği bu önerinin kapsamında değildir.
+
+Türkçe kanıt sınırı: Tarihsel 80 kaynak test dosyası ve 26 tarayıcı dosyası
+geçmiş olarak kalır. İzinli yeni kapsam iki Badge/yarıçap vakasıyla tarayıcı
+dosyaları 26 -> 27 ve TOC vakasıyla mevcut docs-spacing 1 -> 2 değişimidir;
+yerel yok sayılan tek Pages kontrolü ayrıdır. Ek test dalgası veya inceleme
+yoktur. Paket, 51 sayfalık yerel kök derlemesi PASS ve kanonik eğik çizgi ile
+beyan edilmiş yönlendirme kaynağı olan `/components` GET 404 -> 200 sonucunu
+bildirir; burada kontrol çalıştırılmadı. Yayın izni
+https://atonota.github.io/genui içindir; http://127.0.0.1:4324/ yerel kök
+olarak korunur. Yerel derleme, uzak commit ve gerçek Pages dağıtımı ayrı
+kanıtlardır; main commit'i önizlemeyi veya dağıtımı kanıtlamaz. 852f882 kontrol
+noktası yeni UNCOMMITTED yamalardan öncedir. Yeni Pages makbuzu veya bu kapsam
+için DONE/GREEN iddiası yoktur.
+
 ## Test scope — latest human decision 2026-10-15
 
 Only the minimum mandatory tests within the requested behavior's TDD scope are

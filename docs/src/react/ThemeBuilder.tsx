@@ -23,6 +23,13 @@ import { useI18n } from './useI18n';
 import { getThemeSnapshot, subscribeTheme, type ThemeMode } from '../theme';
 import { buttonColorPresets } from '../data/button-palette';
 import {
+  isRadiusTokenId,
+  radiusChoice,
+  radiusEditValue,
+  radiusSelectOptions,
+  withGeneralRadius,
+} from '../data/radius-options';
+import {
   createDefaultRecipe,
   parseRecipe,
   resolveThemeBuilder,
@@ -148,7 +155,16 @@ export default function ThemeBuilder() {
     if (result.ok) setLastValid(result.recipe);
   }
 
+  // Radius is one general role: any step edits SM, MD and LG in both modes; others edit this mode.
   function updateValue(id: string, value: string | number) {
+    if (isRadiusTokenId(id)) {
+      commitDraft({
+        ...draft,
+        light: withGeneralRadius(draft.light, value),
+        dark: withGeneralRadius(draft.dark, value),
+      });
+      return;
+    }
     commitDraft({ ...draft, [mode]: { ...draft[mode], [id]: value } });
   }
 
@@ -264,17 +280,24 @@ export default function ThemeBuilder() {
         </span>
       );
     } else {
+      // Radius offers the four shared choices plus a retained legacy px while it is current.
+      const radius = isRadiusTokenId(definition.id);
+      const options = radius
+        ? radiusSelectOptions(value).map(option => ({ value: option, label: option }))
+        : choiceOptions(definition);
       control = (
         <Select
           id={id}
           data-theme-token={definition.id}
           aria-describedby={descriptionId}
-          value={value === undefined ? undefined : String(value)}
-          options={choiceOptions(definition).map(option => ({
+          value={radius ? radiusChoice(value) : value === undefined ? undefined : String(value)}
+          options={options.map(option => ({
             value: option.value,
             label: t(option.label),
           }))}
-          onChange={(next: string) => updateValue(definition.id, next)}
+          onChange={(next: string) =>
+            updateValue(definition.id, radius ? radiusEditValue(next) : next)
+          }
         />
       );
     }

@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import type { DropdownProps, MenuProps } from 'antd';
+import { useId, useState } from 'react';
+import { Switch, type DropdownProps, type MenuProps } from 'antd';
 import AtlasProvider from './AtlasProvider';
+import { TweakerSettings } from './AtlasTweaker';
 import AtlasDropdown from './AtlasDropdown';
 import AtlasIcon from './AtlasIcon';
 import AtlasPill from './AtlasPill';
@@ -25,8 +26,22 @@ const contextStyles: DropdownProps['styles'] = ({ props }) => ({
   itemTitle: { color: 'var(--ink)' },
 });
 
-function DropdownExamples() {
+// Presentation only: every item keeps its key, label, handler and disabled state.
+function withoutIcons(items: NonNullable<MenuProps['items']>): NonNullable<MenuProps['items']> {
+  return items.map(item => {
+    if (!item) return item;
+    if ('children' in item) {
+      if (item.type === 'group') return { ...item, children: withoutIcons(item.children ?? []) };
+      return { ...item, icon: undefined, children: withoutIcons(item.children) };
+    }
+    return 'icon' in item ? { ...item, icon: undefined } : item;
+  });
+}
+
+function DropdownExamples({ documentation = false }: { documentation?: boolean }) {
   const { t } = useI18n();
+  const settingsId = useId();
+  const [showIcons, setShowIcons] = useState(true);
   const [saved, setSaved] = useState(false);
   const [notes, setNotes] = useState<number[]>([]);
   const [phase, setPhase] = useState<'draft' | 'review'>('draft');
@@ -137,8 +152,23 @@ function DropdownExamples() {
   const folderLabel = t(
     folder === 'inbox' ? 'Inbox' : folder === 'planning' ? 'Planning' : 'Delivery',
   );
+  const menu = (items: NonNullable<MenuProps['items']>) =>
+    showIcons ? items : withoutIcons(items);
+  const settings = documentation ? (
+    <TweakerSettings title="Dropdown settings">
+      <div className="atlas-tweaker-token">
+        <label htmlFor={`${settingsId}icons`}>{t('Show menu icons')}</label>
+        <Switch
+          id={`${settingsId}icons`}
+          checked={showIcons}
+          onChange={checked => setShowIcons(checked)}
+        />
+      </div>
+    </TweakerSettings>
+  ) : null;
   return (
     <div className="dropdown-catalog" data-dropdown-catalog>
+      {settings}
       <nav className="dropdown-navigation" aria-label={t('Dropdown examples')}>
         <a href="#dropdown-basic">{t('Basic actions')}</a>
         <a href="#dropdown-surfaces">{t('Surfaces')}</a>
@@ -173,7 +203,7 @@ function DropdownExamples() {
           </p>
         </header>
         <div className="dropdown-stage">
-          <AtlasDropdown label={t('Workspace actions')} items={actions} onAction={onAction} />
+          <AtlasDropdown label={t('Workspace actions')} items={menu(actions)} onAction={onAction} />
           <div className="dropdown-notes" aria-label={t('Local review notes')}>
             {notes.length ? (
               <ul>
@@ -207,7 +237,7 @@ function DropdownExamples() {
             <p>{t('A neutral menu for everyday work.')}</p>
             <AtlasDropdown
               label={t('Review tools')}
-              items={reviewActions}
+              items={menu(reviewActions)}
               onAction={onAction}
               classNames={quietClassNames}
               styles={quietStyles}
@@ -218,7 +248,7 @@ function DropdownExamples() {
             <p>{t('A soft accent keeps this review menu connected to its workspace.')}</p>
             <AtlasDropdown
               label={t('Review options')}
-              items={reviewActions}
+              items={menu(reviewActions)}
               onAction={onAction}
               classNames={contextClassNames}
               styles={contextStyles}
@@ -241,7 +271,11 @@ function DropdownExamples() {
           </p>
         </header>
         <div className="dropdown-stage">
-          <AtlasDropdown label={t('Organize workspace')} items={organization} onAction={onAction} />
+          <AtlasDropdown
+            label={t('Organize workspace')}
+            items={menu(organization)}
+            onAction={onAction}
+          />
           <p className="dropdown-guidance">
             {t(
               'Open by click, Enter, Space or ArrowDown. Use arrow keys between choices and submenu levels. Escape closes the menu and returns focus.',
@@ -256,7 +290,7 @@ function DropdownExamples() {
 export default function DropdownDemo({ documentation = false }: { documentation?: boolean } = {}) {
   return (
     <AtlasProvider appearance={documentation ? 'docs' : undefined}>
-      <DropdownExamples />
+      <DropdownExamples documentation={documentation} />
     </AtlasProvider>
   );
 }

@@ -5,6 +5,7 @@ import type { CascaderProps } from 'antd';
 import type { DefaultOptionType } from 'antd/es/cascader';
 import AtlasClearIcon from './AtlasClearIcon';
 import AtlasListyItem from './AtlasListyItem';
+import useListySurface from './useListySurface';
 import { normalizeSearch } from '../i18n';
 import { useI18n } from './useI18n';
 
@@ -88,6 +89,7 @@ export default function AtlasCascader(props: AtlasCascaderProps) {
   const generatedId = useId(),
     id = props.id ?? generatedId;
   const { locale, t } = useI18n();
+  const listySurface = useListySurface();
   const { componentDisabled } = ConfigProvider.useConfig();
   const blocked = props.disabled ?? componentDisabled ?? false;
   const root = useRef<HTMLDivElement>(null),
@@ -328,7 +330,8 @@ export default function AtlasCascader(props: AtlasCascaderProps) {
       ),
     classNames: {
       root: 'atlas-cascader-control',
-      popup: { root: 'atlas-select-popup atlas-cascader-popup' },
+      // The central Listy surface paints the popup; native menus keep their roles and handlers.
+      popup: { root: `atlas-select-popup atlas-cascader-popup atlas-listy-${listySurface}` },
     },
     getPopupContainer: (node: HTMLElement) =>
       node.closest<HTMLElement>('.atlas-cascader') ?? document.body,

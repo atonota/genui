@@ -35,7 +35,9 @@ export default function AtlasListyItem({
   className,
   ...rest
 }: AtlasListyItemProps) {
-  const rich = present(description) || present(leading);
+  // Leading icons and checkboxes keep the compact row; descriptions add padding and tall media
+  // such as an avatar grow the row through its minimum height.
+  const rich = present(description);
   return (
     <div
       {...rest}

@@ -1,5 +1,117 @@
 # GenUI maintenance contract
 
+## Current authoritative project decision — 16 October 2026
+
+This entry is the current project decision. It supersedes older current-policy
+statements, including the 61- and 64-definition counts in the dated entries
+below; those entries and their receipts remain dated history. Normative rules:
+`/standards/`; generated values: `/tokens/`; component behavior: each
+component page. CSS stays in its owning stylesheets; policy text does not copy it.
+
+- Tokens: 65 definitions = prior 61 + 3 Badge size heights + 1 `listy-surface`
+  role. All 65 are editable from the Tweaker on every one of the 40 component
+  pages. Saved 51/57/60/61/64-token recipes stay valid and receive only the
+  missing factory defaults; HEX uppercase canonicalization is unchanged. Native
+  Ant Design 6.6.6 and existing dependencies only; no new package is installed.
+- Sizes: Listy has 16 actual patterns on the shared `AtlasListyItem`; Listy and
+  Cascader rows are compact 32/40/48 px (superseding the earlier Cascader
+  regular 48 px statement). Standard Avatar, Button and Input stay 48/56/64 px
+  and Select items stay regular. Rows with rich descriptions grow instead of
+  clipping. Badge outer heights 20/26/32 px include the border; Badge text
+  defaults to 14 px / 400.
+- Radius: general radius choices 0px, 3px, 5px and 100%, factory default 5px.
+  One edit sets Input, its slot and Button to the same general value in both
+  modes. Valid legacy numeric 0..32 values are retained exactly until a choice
+  is made. Intentional circle Avatars and explicit legacy gallery corners are
+  preserved. Pill, Card and Checkbox documentation defaults inherit the general
+  role; the Button corner control shows `Use general radius` instead of a
+  misleading fixed 5.
+- Tweaker: each of the 40 pages offers its own native props, with no fake
+  generic placeholder settings. Common Size and preview states stay in memory
+  while the panel is closed. The shared theme/token recipe persists for 30 days
+  under the existing storage key until history is cleared or it expires. Not
+  every business state is persisted; do not claim that.
+- Typography (repeated direct human project exception; do not re-ask 14 vs 12):
+  minimum 12 CSS px, default 14 px, ideal reading 16 px; weight default 400,
+  minimum 300; Outfit. Global host instruction files are not edited. Listy row
+  text defaults to 14 px; a custom token may lower it only to 12 px.
+- Surfaces: the input root reuses the canonical `inputSurfaces.innerShadow`
+  through the existing resolver, removing the duplicate blue shadow. Fields stay
+  neutral `#ececec` / `#1b1b1b`, panels `#ffffff` / `#2c2c2c`; the warm shell
+  is unchanged. An outlined field has one functional outer boundary and a
+  decorative inset well edge, with no nested field, native border or extra
+  shadow. Native Listy host padding/divider are cleared so the outer row owns
+  the compact height. Section gaps are at least 16 px through semantic main
+  spacing; the TOC targets a 256 px rail with 16 px padding.
+- Raw reference HTML and its 31 images are local reference only: not published
+  or copied, and their navy colors are not adopted; GenUI keeps its current
+  neutral color roles. No fake AI functionality.
+- Test accounting (frozen authorized scope, not results): source test files
+  80 -> 80; the existing `neutral-field-surfaces` file goes 1 -> 2 cases for the
+  actual blue-shadow regression, and only that new case executes. Browser spec
+  files 26 -> 27: a new Badge/radius file with 2 cases, docs-spacing 1 -> 2,
+  Listy 1 -> 2 and Tweaker 2 -> 3, exactly 5 added browser cases. The first old
+  Tweaker case is adapted to the choice API and rerun for 30-day retention;
+  other old cases are not rerun. The existing ignored local Pages control and
+  HTTP alias checks are separate operational checks. No new matrix, review
+  round, catalog scan or frozen59 backlog. Receipt logs stay local; one final
+  independent diff review is pending. Source guidance is not runtime, CI or
+  Pages proof, and no DONE/GREEN acceptance is stated here.
+- Publication: public MIT GenUI, `main`, `atonota/genui`; the karacaismail
+  author and committer guard is preserved. New work is UNCOMMITTED as of this
+  packet. A supplied receipt reports the fresh Pages artifact control GREEN; the
+  actual Pages deployment is NOT YET LIVE. Local root http://127.0.0.1:4324/
+  and https://atonota.github.io/genui stay separate. The source API applies
+  Pages-only machine-prefix redaction with a credential fail guard; the old
+  intentional Avatar/Media error fixtures stay on an exact allowlist only under
+  that source guard. Do not claim publication complete; the live-host
+  endpoint/authentication decision remains pending.
+
+## Latest direct human decisions — 2026-10-16
+
+This entry overrides older current-policy statements only in the newly requested
+Badge, radius, default weight, TOC and publication scopes. Earlier receipts below
+are dated history, not acceptance of this scope. Normative rules: `/standards/`;
+generated values: `/tokens/`; component behavior: `/components/badge/`.
+
+- Badge uses native Ant Design 6.6.6 Badge/Tag, not a new GenUI registration.
+  Its outer sm/md/lg profile is 20/26/32 px, distinct from compact Pill.
+  The source target is 64 definitions: existing 61 plus three badge-size heights;
+  legacy recipes receive missing defaults only. Outfit 14/400 is the Badge
+  default; body defaults to 400, without changing the project minimum weight
+  300 or the 12/14/16 px text policy. Never shrink text.
+- The new radius editor offers 0px, 3px, 5px and 100%, factory default 5px.
+  One edit updates general sm/md/lg for Input, slot and Button in both modes.
+  Valid legacy numeric 0..32 recipes retain their exact values until edited
+  and display their retained current value. Non-radius roles remain independent,
+  including a custom dark body size of 20px. CSS 100% remains a percentage;
+  native numeric AntD fallback is fully round; intentional circle Avatars stay circles.
+- The source owner repairs the reported 192px, padding-zero right TOC using
+  existing layout standards: token gutters at least 16px, readable rail at
+  least 240px, natural label wrapping, sticky overflow and mobile Details
+  without horizontal page overflow. This proposal does not edit layout CSS.
+- Packet-reported local evidence: `/components` alias now returns 200 with
+  canonical trailing slash and declared redirect source; root build 51 pages PASS.
+  These are supplied receipts, not checks performed by this proposal. Publish
+  authorization targets https://atonota.github.io/genui; retain local root
+  http://127.0.0.1:4324/. Deployment source belongs to another owner.
+  Local build, remote commit and actual Pages deployment are distinct evidence;
+  committed main does not prove a preview or deployment. Publication checkpoint
+  852f882 predates these currently UNCOMMITTED patches; no new live receipt exists.
+- Current scope remains RED: two Badge/radius cases, source writers running.
+  Historical 80 source-test files and 26 browser specs remain history. The
+  authorized scope is browser specs 26 -> 27 with two Badge/radius cases,
+  existing docs-spacing cases 1 -> 2 for TOC, and one local ignored Pages
+  control; actual `/components` GET changed 404 -> 200 per supplied evidence.
+  Do not add tests, review rounds, matrices, dependencies, scans or backlog.
+- Preserve all eight component sections, frozen59, existing colors, Tab-only
+  ringless focus, Cubic/reduced motion, MIT/public GenUI identity, Atlas APIs,
+  storage keys and the karacaismail author/committer guard. No screenshot navy
+  palette or fabricated AI functionality. Temporal/Hermes native documentation
+  phase produces a read-only SOURCE proposal; master reviews and integrates it.
+  Build metadata follows all source integration; do not infer unknown-token
+  server errors before that build. No DONE/GREEN or new Pages publication claim.
+
 ## Bounded defect closure — latest human summary 2026-10-15
 
 Close the recorded defects with one necessary regression per actual defect. Then

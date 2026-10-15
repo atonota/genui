@@ -1,7 +1,9 @@
 import { useI18n } from './useI18n';
 import DataEntryCatalog, { DataEntryGrid } from './DataEntryCatalog';
-import { Radio } from 'antd';
+import { useId, useState } from 'react';
+import { Radio, Switch } from 'antd';
 import AtlasProvider from './AtlasProvider';
+import { TweakerSettings } from './AtlasTweaker';
 import AtlasButtonGroup from './AtlasButtonGroup';
 import AtlasSelectionVariants from './AtlasSelectionVariants';
 const choices = ['Tasarım', 'Mühendislik', 'Operasyon'];
@@ -14,6 +16,12 @@ export default function RadioDemo({
   documentation = false,
 }: { clusteredSegments?: boolean; documentation?: boolean } = {}) {
   const { t } = useI18n();
+  const previewDisabledId = useId();
+  const [previewDisabled, setPreviewDisabled] = useState(false);
+  // Controlled values keep each selection while the preview is disabled and enabled again.
+  const [team, setTeam] = useState('Tasarım');
+  const [view, setView] = useState('Liste');
+  const [delivery, setDelivery] = useState('delivery');
   const teamOptions = choices.map(value => ({
     value,
     label: t(
@@ -36,7 +44,9 @@ export default function RadioDemo({
     <>
       <Radio.Group
         name="team"
-        defaultValue="Tasarım"
+        value={team}
+        onChange={event => setTeam(event.target.value)}
+        disabled={previewDisabled}
         options={teamOptions}
         aria-label={t('Team')}
       />
@@ -48,7 +58,9 @@ export default function RadioDemo({
         <AtlasButtonGroup
           name="view"
           radius="pill"
-          defaultValue="Liste"
+          value={view}
+          onChange={setView}
+          disabled={previewDisabled}
           options={[viewOptions[0]!, viewOptions[1]!, viewOptions[2]!]}
           aria-label={t('View')}
         />
@@ -57,7 +69,9 @@ export default function RadioDemo({
           name="view"
           optionType="button"
           buttonStyle="solid"
-          defaultValue="Liste"
+          value={view}
+          onChange={event => setView(event.target.value)}
+          disabled={previewDisabled}
           options={viewOptions}
           aria-label={t('View')}
         />
@@ -69,7 +83,9 @@ export default function RadioDemo({
       <AtlasButtonGroup
         name="delivery"
         radius="pill"
-        defaultValue="delivery"
+        value={delivery}
+        onChange={setDelivery}
+        disabled={previewDisabled}
         options={[
           { value: 'delivery', label: t('Delivery') },
           { value: 'pickup', label: t('Pickup') },
@@ -95,6 +111,16 @@ export default function RadioDemo({
       sizeFamily={documentation ? 'selection' : 'component'}
     >
       <div className="pattern-stack">
+        <TweakerSettings title="Radio preview">
+          <label className="control-row" htmlFor={previewDisabledId}>
+            <Switch
+              id={previewDisabledId}
+              checked={previewDisabled}
+              onChange={setPreviewDisabled}
+            />
+            {t('Disable radio preview')}
+          </label>
+        </TweakerSettings>
         {documentation ? (
           <DataEntryCatalog
             slug="radio"

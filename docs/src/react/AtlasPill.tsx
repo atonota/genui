@@ -34,7 +34,7 @@ type PillAppearance = Pick<
 function usePillStyle({
   variant = 'filled',
   size: explicitSize,
-  radius = '5',
+  radius,
   color,
   colorIndex: explicitIndex,
   colorKey,
@@ -66,8 +66,11 @@ function usePillStyle({
           : undefined
       : undefined;
   const rounding =
-    atlas.decisions.buttons.radius_variants.find(item => item.value === radius) ??
+    atlas.decisions.buttons.radius_variants.find(item => item.value === (radius ?? '5')) ??
     atlas.decisions.buttons.radius_variants.find(item => item.value === '5')!;
+  // Without an explicit corner documentation pills read the general radius role.
+  const radiusCss =
+    radius === undefined && appearance === 'docs' ? `var(--radius, ${rounding.css})` : rounding.css;
   return {
     preset,
     managed: !!paint,
@@ -84,7 +87,7 @@ function usePillStyle({
         ? { '--pill-height': atlasLength(pillSizes[size], appearance) }
         : {}),
       ...style,
-      '--pill-radius': rounding.css,
+      '--pill-radius': radiusCss,
     } as CSSProperties,
   };
 }

@@ -1,6 +1,8 @@
 import { useEffect, useId, useRef, useState } from 'react';
+import { Switch } from 'antd';
 import AtlasProvider from './AtlasProvider';
 import AtlasEmptyState from './AtlasEmptyState';
+import { TweakerSettings } from './AtlasTweaker';
 import AtlasInput from './AtlasInput';
 import { useI18n } from './useI18n';
 import RecordCollection from './workspace/kit/RecordCollection';
@@ -77,7 +79,7 @@ function FirstUseExample() {
   );
 }
 
-function FilteredExample() {
+function FilteredExample({ showDescription }: { showDescription: boolean }) {
   const { t } = useI18n();
   const headingId = useId();
   const inputId = useId();
@@ -110,7 +112,11 @@ function FilteredExample() {
         <AtlasEmptyState
           kind="no-match"
           title={t('No matching records')}
-          description={t('Change your search or clear it to see the available records.')}
+          description={
+            showDescription
+              ? t('Change your search or clear it to see the available records.')
+              : undefined
+          }
           actionLabel={t('Clear search')}
           onAction={clear}
         />
@@ -119,7 +125,7 @@ function FilteredExample() {
   );
 }
 
-function UnavailableExample() {
+function UnavailableExample({ showDescription }: { showDescription: boolean }) {
   const { t } = useI18n();
   const headingId = useId();
   const [restored, setRestored] = useState(false);
@@ -142,7 +148,9 @@ function UnavailableExample() {
         <AtlasEmptyState
           kind="error"
           title={t('The supplied records could not be shown')}
-          description={t('This local example can restore its supplied records.')}
+          description={
+            showDescription ? t('This local example can restore its supplied records.') : undefined
+          }
           actionLabel={t('Try again')}
           onAction={() => setRestored(true)}
         />
@@ -157,17 +165,37 @@ function LocalExamplesNote() {
   return <p>{t('Local examples only. Nothing is saved to a server.')}</p>;
 }
 
+function EmptyStateExamples() {
+  const { t } = useI18n();
+  const descriptionsId = useId();
+  // Presentation only; create, search and retry stay inside the local preview.
+  const [showDescriptions, setShowDescriptions] = useState(true);
+  return (
+    <div className="atlas-content-examples">
+      <LocalExamplesNote />
+      <FirstUseExample />
+      <FilteredExample showDescription={showDescriptions} />
+      <UnavailableExample showDescription={showDescriptions} />
+      <TweakerSettings title="Empty state">
+        <div className="atlas-tweaker-token">
+          <label htmlFor={descriptionsId}>{t('Show descriptions')}</label>
+          <Switch
+            id={descriptionsId}
+            checked={showDescriptions}
+            onChange={checked => setShowDescriptions(checked)}
+          />
+        </div>
+      </TweakerSettings>
+    </div>
+  );
+}
+
 export default function EmptyStateDemo({
   documentation = false,
 }: { documentation?: boolean } = {}) {
   return (
     <AtlasProvider appearance={documentation ? 'docs' : undefined}>
-      <div className="atlas-content-examples">
-        <LocalExamplesNote />
-        <FirstUseExample />
-        <FilteredExample />
-        <UnavailableExample />
-      </div>
+      <EmptyStateExamples />
     </AtlasProvider>
   );
 }

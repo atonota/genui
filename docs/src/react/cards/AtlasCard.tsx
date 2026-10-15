@@ -2,12 +2,17 @@ import { createContext, useContext, useId, type CSSProperties, type ReactNode } 
 import { Card } from 'antd';
 import type { CardDataState } from '../../data/card-model';
 import { useAtlasSize } from '../AtlasSizeProfile';
+import { useAtlasAppearance } from '../AtlasAppearance';
+import atlas from '../../data/atlas.json';
 import { useI18n } from '../useI18n';
 
 const CardParent = createContext(false);
 
+/** Shared corner choices; absent means the general radius role. */
+export type CardRadius = '0' | '3' | '5' | 'pill';
+
 export interface CardAppearanceProps {
-  radius?: '0' | '3' | '5';
+  radius?: CardRadius;
   outlined?: boolean;
   headingLevel?: 3 | 4 | 5;
 }
@@ -57,6 +62,7 @@ export function AtlasCard({
 }: AtlasCardProps) {
   const nested = useContext(CardParent);
   const size = useAtlasSize();
+  const appearance = useAtlasAppearance();
   const titleId = useId();
   const stateId = useId();
   const { t } = useI18n();
@@ -75,13 +81,16 @@ export function AtlasCard({
     disabled: 'This card is unavailable.',
   };
   const status = stateMessage ?? (state === 'ready' ? undefined : messages[state]);
-  const style =
+  // Explicit corners keep their value; documentation defaults read the general radius role.
+  const corner =
     radius === undefined
       ? undefined
-      : ({
-          '--card-radius':
-            radius === '0' ? '0px' : radius === '3' ? 'var(--radius-sm)' : 'var(--radius)',
-        } as CSSProperties);
+      : atlas.decisions.buttons.radius_variants.find(item => item.value === radius);
+  const style = corner
+    ? ({ '--card-radius': corner.css } as CSSProperties)
+    : appearance === 'docs'
+      ? ({ '--card-radius': 'var(--radius)' } as CSSProperties)
+      : undefined;
   return (
     <CardParent.Provider value>
       <Card

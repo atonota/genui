@@ -1,7 +1,9 @@
 import '../styles/atlas-feedback.css';
-import { useState, type ReactElement } from 'react';
+import { useId, useState, type ReactElement } from 'react';
+import { Select, Switch } from 'antd';
 import AtlasProvider from './AtlasProvider';
 import AtlasButton from './AtlasButton';
+import { TweakerSettings } from './AtlasTweaker';
 import { AtlasCard } from './cards/AtlasCard';
 import { useI18n } from './useI18n';
 import {
@@ -28,10 +30,76 @@ const toastTriggers: { placement: AtlasToastPlacement; label: string }[] = [
   { placement: 'top-right-right', label: 'Toast · top right from right' },
 ];
 
+const statusLabels: Record<AtlasFeedbackStatus, string> = {
+  info: 'Info',
+  success: 'Success',
+  warning: 'Warning',
+  error: 'Error',
+};
+
+/** Labelled native Select for one example setting; the value stays in the example state. */
+function SettingSelect<T extends string>({
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  value: T;
+  options: Record<T, string>;
+  onChange: (value: T) => void;
+}) {
+  const { t } = useI18n();
+  const id = useId();
+  return (
+    <div className="atlas-tweaker-token">
+      <label htmlFor={id}>{t(label)}</label>
+      <Select
+        id={id}
+        value={value}
+        options={(Object.keys(options) as T[]).map(option => ({
+          value: option,
+          label: t(options[option]),
+        }))}
+        onChange={(next: T) => onChange(next)}
+      />
+    </div>
+  );
+}
+
+/** Labelled native Switch for one example setting; the value stays in the example state. */
+function SettingSwitch({
+  label,
+  checked,
+  onChange,
+}: {
+  label: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}) {
+  const { t } = useI18n();
+  const id = useId();
+  return (
+    <div className="atlas-tweaker-token">
+      <label htmlFor={id}>{t(label)}</label>
+      <Switch id={id} checked={checked} onChange={next => onChange(next)} />
+    </div>
+  );
+}
+
+// Each status reuses the matching alert title, so a toast never claims a save it did not make.
+const toastMessages: Record<AtlasFeedbackStatus, string> = {
+  info: 'Changes stay in this browser.',
+  success: 'Saved locally.',
+  warning: 'Two fields need review.',
+  error: 'This file could not be read.',
+};
+
 function ToastExample() {
   const { t } = useI18n();
   const [toast, toastHolder] = useAtlasToast();
-  const [saved, setSaved] = useState(false);
+  const [status, setStatus] = useState<AtlasFeedbackStatus>('success');
+  const [shown, setShown] = useState<AtlasFeedbackStatus | null>(null);
   return (
     <>
       {toastHolder}
@@ -43,15 +111,26 @@ function ToastExample() {
             key={placement}
             text={t(label)}
             onClick={() => {
-              setSaved(true);
-              toast.open({ placement, status: 'success', content: t('Saved locally.') });
+              setShown(status);
+              toast.open({ placement, status, content: t(toastMessages[status]) });
             }}
           />
         ))}
       >
-        <p className="atlas-feedback-result" data-feedback-result={saved ? 'saved' : 'idle'}>
-          {saved ? t('Saved locally.') : t('Nothing saved yet.')}
+        <p
+          className="atlas-feedback-result"
+          data-feedback-result={shown === 'success' ? 'saved' : shown ? 'shown' : 'idle'}
+        >
+          {shown ? t(toastMessages[shown]) : t('Nothing saved yet.')}
         </p>
+        <TweakerSettings title="Toast settings">
+          <SettingSelect
+            label="Toast status"
+            value={status}
+            options={statusLabels}
+            onChange={setStatus}
+          />
+        </TweakerSettings>
       </AtlasCard>
     </>
   );
@@ -82,6 +161,7 @@ const alerts: { status: AtlasFeedbackStatus; title: string; description: string 
 
 function AlertExample() {
   const { t } = useI18n();
+  const [descriptions, setDescriptions] = useState(true);
   return (
     <AtlasCard
       title={t('Alert')}
@@ -93,11 +173,18 @@ function AlertExample() {
             key={alert.status}
             status={alert.status}
             title={t(alert.title)}
-            description={t(alert.description)}
+            description={descriptions ? t(alert.description) : undefined}
             dismissible={alert.status === 'warning'}
           />
         ))}
       </div>
+      <TweakerSettings title="Alert settings">
+        <SettingSwitch
+          label="Show descriptions"
+          checked={descriptions}
+          onChange={setDescriptions}
+        />
+      </TweakerSettings>
     </AtlasCard>
   );
 }
@@ -107,6 +194,7 @@ const draftNotification = 'atlas-feedback-draft';
 function NotificationExample() {
   const { t } = useI18n();
   const [notify, notificationHolder] = useAtlasNotification();
+  const [status, setStatus] = useState<AtlasFeedbackStatus>('info');
   return (
     <>
       {notificationHolder}
@@ -119,7 +207,7 @@ function NotificationExample() {
             onClick={() =>
               notify.open({
                 key: draftNotification,
-                status: 'info',
+                status,
                 title: t('Draft kept in this browser'),
                 description: t('Nothing was sent. Keep editing or close this message.'),
                 actions: (
@@ -133,7 +221,16 @@ function NotificationExample() {
             }
           />
         }
-      />
+      >
+        <TweakerSettings title="Notification settings">
+          <SettingSelect
+            label="Notification status"
+            value={status}
+            options={statusLabels}
+            onChange={setStatus}
+          />
+        </TweakerSettings>
+      </AtlasCard>
     </>
   );
 }
@@ -144,6 +241,7 @@ function ModalExample() {
   const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const [applied, setApplied] = useState(false);
+  const [centered, setCentered] = useState(false);
   return (
     <>
       <AtlasCard
@@ -154,10 +252,14 @@ function ModalExample() {
         <p className="atlas-feedback-result" data-feedback-result={applied ? 'applied' : 'idle'}>
           {applied ? t('Changes applied locally.') : t('2 changes waiting for review.')}
         </p>
+        <TweakerSettings title="Modal settings">
+          <SettingSwitch label="Center dialog" checked={centered} onChange={setCentered} />
+        </TweakerSettings>
       </AtlasCard>
       <AtlasModal
         open={open}
         title={t('Review local changes')}
+        centered={centered}
         onCancel={() => setOpen(false)}
         footer={
           <div className="atlas-feedback-modal-actions">
@@ -188,6 +290,7 @@ function ModalExample() {
 function PopconfirmExample() {
   const { t } = useI18n();
   const [archived, setArchived] = useState(false);
+  const [showDescription, setShowDescription] = useState(true);
   return (
     <AtlasCard
       title={t('Popconfirm')}
@@ -195,7 +298,9 @@ function PopconfirmExample() {
       actions={
         <AtlasPopconfirm
           title={t('Archive this sample?')}
-          description={t('It moves to the local archive in this browser.')}
+          description={
+            showDescription ? t('It moves to the local archive in this browser.') : undefined
+          }
           okText={t('Archive')}
           cancelText={t('Cancel')}
           disabled={archived}
@@ -211,6 +316,13 @@ function PopconfirmExample() {
           {archived ? t('Archived locally') : t('Active')}
         </span>
       </p>
+      <TweakerSettings title="Popconfirm settings">
+        <SettingSwitch
+          label="Show description"
+          checked={showDescription}
+          onChange={setShowDescription}
+        />
+      </TweakerSettings>
     </AtlasCard>
   );
 }

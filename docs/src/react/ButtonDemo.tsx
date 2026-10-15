@@ -351,9 +351,9 @@ export default function ButtonDemo({
           {control(
             'button-radius',
             t('Corner · approved'),
-            radiusChoice ?? '5',
-            decisions.radius_variants,
-            setRadius,
+            radiusChoice ?? 'inherit',
+            [{ value: 'inherit', label: t('Use general radius') }, ...decisions.radius_variants],
+            value => setRadius(value === 'inherit' ? null : value),
           )}
           {control(
             'button-size',

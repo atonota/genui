@@ -370,7 +370,10 @@ function checkRedirect(document, path, findings) {
   const canonicals = [...document.querySelectorAll('link[rel~="canonical"]')];
   if (canonicals.length !== 1 || !routesTo(canonicals[0].getAttribute('href'), path, target))
     findings.push(
-      finding('redirect-metadata-invalid', `${path} needs exactly one canonical link to ${target}.`),
+      finding(
+        'redirect-metadata-invalid',
+        `${path} needs exactly one canonical link to ${target}.`,
+      ),
     );
   const refreshes = [...document.querySelectorAll('meta[http-equiv]')].filter(
     meta => meta.getAttribute('http-equiv').trim().toLowerCase() === 'refresh',
@@ -386,7 +389,9 @@ function checkRedirect(document, path, findings) {
     );
   const links = [...document.querySelectorAll('a[href]')];
   if (!links.some(link => routesTo(link.getAttribute('href'), path, target)))
-    findings.push(finding('redirect-fallback-missing', `${path} has no fallback link to ${target}.`));
+    findings.push(
+      finding('redirect-fallback-missing', `${path} has no fallback link to ${target}.`),
+    );
 }
 
 /** Structural findings for one generated page; cross-page checks belong to validateBuild. */
@@ -480,6 +485,13 @@ export async function validateBuild(outputDirectory) {
 // stylesheets that the built HTML links are restored, byte-for-byte, from this same build.
 const localCss = /^\/(_astro\/[\w-]+(?:\.[\w-]+)*\.css)$/;
 
+// Name of a local CSS link: with a configured Astro base only links under that base qualify,
+// and the base is stripped before the flat /_astro/<name>.css check.
+function linkedCss(href, base) {
+  if (!base) return localCss.exec(href)?.[1];
+  return href.startsWith(`${base}/`) ? localCss.exec(href.slice(base.length))?.[1] : undefined;
+}
+
 function cssSnapshotPlugin(snapshots) {
   return {
     name: 'atlas-docs-css-snapshot',
@@ -502,7 +514,7 @@ function cssSnapshotPlugin(snapshots) {
   };
 }
 
-async function restoreMissingCss(directory, snapshots, logger) {
+async function restoreMissingCss(directory, snapshots, logger, base) {
   const checked = new Set();
   for (const file of (await htmlFiles(directory)).sort()) {
     const { window } = new JSDOM(await readFile(file, 'utf8'));
@@ -511,7 +523,7 @@ async function restoreMissingCss(directory, snapshots, logger) {
     );
     window.close();
     for (const href of hrefs) {
-      const name = localCss.exec(href)?.[1];
+      const name = linkedCss(href, base);
       if (!name || checked.has(name)) continue;
       checked.add(name);
       const target = resolve(directory, name);
@@ -524,7 +536,7 @@ async function restoreMissingCss(directory, snapshots, logger) {
       const bytes = snapshots.get(name);
       if (!bytes)
         throw new Error(
-          `${routeOf(relative(directory, file))} links /${name}, which this build did not emit.`,
+          `${routeOf(relative(directory, file))} links ${href}, which this build did not emit.`,
         );
       await writeFile(target, bytes, { flag: 'wx' });
       logger.warn(`Restored ${name} from the CSS emitted by this build.`);
@@ -535,9 +547,15 @@ async function restoreMissingCss(directory, snapshots, logger) {
 /** Astro build gate: structural ECA findings fail the documentation build. */
 export default function docsPresentation() {
   const snapshots = new Map();
+  let base = '';
   return {
     name: 'atlas-docs-presentation',
     hooks: {
+      'astro:config:setup': ({ config }) => {
+        // Astro prefixes its own /_astro/ links with base; root builds keep an empty base.
+        const configured = config.base ?? '';
+        base = configured.endsWith('/') ? configured.slice(0, -1) : configured;
+      },
       'astro:build:start': () => {
         snapshots.clear();
       },
@@ -545,7 +563,7 @@ export default function docsPresentation() {
         updateConfig({ plugins: [cssSnapshotPlugin(snapshots)] });
       },
       'astro:build:done': async ({ dir, logger }) => {
-        await restoreMissingCss(fileURLToPath(dir), snapshots, logger);
+        await restoreMissingCss(fileURLToPath(dir), snapshots, logger, base);
         const findings = await validateBuild(fileURLToPath(dir));
         if (findings.length) {
           const report = findings

@@ -324,3 +324,108 @@ test('docs spacing: shell regions inset their content and the overview keeps one
     }
   }
 });
+
+/** Text in a contents panel: inset from the painted edge, clipping, word breaks and size. */
+async function contentsText(panel: Locator) {
+  return panel.evaluate(root => {
+    const edge = root.getBoundingClientRect();
+    return Array.from(root.querySelectorAll('p span, summary span, a span')).map(span => {
+      const rect = span.getBoundingClientRect();
+      const link = span.closest('a');
+      let brokenWords = 0;
+      for (const node of Array.from(span.childNodes)) {
+        if (node.nodeType !== Node.TEXT_NODE) continue;
+        for (const word of (node.textContent ?? '').matchAll(/\S+/g)) {
+          const range = document.createRange();
+          range.setStart(node, word.index ?? 0);
+          range.setEnd(node, (word.index ?? 0) + word[0].length);
+          const lines = new Set(Array.from(range.getClientRects(), line => Math.round(line.top)));
+          if (lines.size > 1) brokenWords++;
+        }
+      }
+      return {
+        text: (span.textContent ?? '').trim(),
+        start: rect.left - edge.left,
+        end: edge.right - rect.right,
+        top: rect.top - edge.top,
+        bottom: edge.bottom - rect.bottom,
+        clipped: link ? link.scrollWidth > link.clientWidth + 1 : false,
+        brokenWords,
+        fontSize: parseFloat(getComputedStyle(span).fontSize),
+        tabIndex: link ? link.tabIndex : 0,
+        tabindex: link?.getAttribute('tabindex') ?? null,
+      };
+    });
+  });
+}
+
+test('TOC rail has readable width and inner padding', async ({ page }, testInfo) => {
+  test.setTimeout(120_000);
+  const minimumTocWidthPx = 240;
+  const inset = minimumChromeInsetPx - tolerancePx;
+  for (const mode of modes) {
+    for (const viewport of viewports) {
+      const label = `input toc ${viewport.name} ${mode}`;
+      await page.setViewportSize({ width: viewport.width, height: viewport.height });
+      const url = new URL('/components/input/', testInfo.project.use.baseURL ?? fallbackBaseUrl);
+      await page.goto(url.href);
+      await applyMode(page, mode);
+      await expect(page.locator('[data-docs-shell]').first()).toHaveAttribute(
+        'data-docs-shell-ready',
+        /.*/,
+      );
+      let panel: Locator;
+      if (viewport.name === 'desktop') {
+        panel = page.locator(`[data-docs-shell] .page-grid > .toc[data-doc-nav='toc']`);
+        await expect.soft(panel, `${label}: contents rail is visible`).toBeVisible();
+        const box = await panel.evaluate(element => {
+          const computed = getComputedStyle(element);
+          const { paddingTop, paddingRight, paddingBottom, paddingLeft } = computed;
+          return {
+            width: element.getBoundingClientRect().width,
+            padding: [paddingTop, paddingRight, paddingBottom, paddingLeft].map(v => parseFloat(v)),
+            overflow: element.scrollWidth - element.clientWidth,
+          };
+        });
+        expect
+          .soft(box.width, `${label}: rail width`)
+          .toBeGreaterThanOrEqual(minimumTocWidthPx - tolerancePx);
+        ['top', 'right', 'bottom', 'left'].forEach((side, index) =>
+          expect
+            .soft(box.padding[index], `${label}: rail padding-${side}`)
+            .toBeGreaterThanOrEqual(inset),
+        );
+        expect.soft(box.overflow, `${label}: rail has no inline scroll`).toBeLessThanOrEqual(0);
+      } else {
+        panel = page.getByRole('main').locator('details[data-doc-contents]');
+        await panel.locator('summary').click();
+        await expect
+          .soft(panel, `${label}: summary opens the contents`)
+          .toHaveAttribute('open', '');
+        await expectNoHorizontalOverflow(page, label);
+      }
+      await expect.soft(panel.getByRole('link'), `${label}: all 8 section links`).toHaveCount(8);
+      await panel.scrollIntoViewIfNeeded();
+      await saveViewport(page, testInfo, `toc-${viewport.name}-${mode}`);
+      const texts = await contentsText(panel);
+      expect.soft(texts.length, `${label}: renders contents text`).toBeGreaterThan(0);
+      for (const text of texts) {
+        const name = `${label}: ${text.text}`;
+        expect.soft(text.start, `${name} start inset`).toBeGreaterThanOrEqual(inset);
+        expect.soft(text.end, `${name} end inset, no right clipping`).toBeGreaterThanOrEqual(inset);
+        expect.soft(text.clipped, `${name} fits its link`).toBe(false);
+        expect.soft(text.brokenWords, `${name} wraps between words only`).toBe(0);
+        expect.soft(text.fontSize, `${name} font size`).toBeGreaterThanOrEqual(14);
+        expect.soft(text.tabindex, `${name} keeps native tab order`).toBeNull();
+        expect.soft(text.tabIndex, `${name} is keyboard reachable`).toBe(0);
+      }
+      if (viewport.name === 'desktop') continue;
+      expect
+        .soft(Math.min(...texts.map(text => text.top)), `${label}: block-start inset`)
+        .toBeGreaterThanOrEqual(inset);
+      expect
+        .soft(Math.min(...texts.map(text => text.bottom)), `${label}: block-end inset`)
+        .toBeGreaterThanOrEqual(inset);
+    }
+  }
+});

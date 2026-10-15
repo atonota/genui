@@ -3,6 +3,7 @@ import { useI18n } from './useI18n';
 import { useEffect, useId, useRef, useState } from 'react';
 import { Form, Input, Select, type DrawerProps, type FormInstance } from 'antd';
 import { Drawer } from './AtlasOverlay';
+import { TweakerSettings } from './AtlasTweaker';
 import AtlasButton from './AtlasButton';
 
 type WorkspaceId = 'atlas-studio' | 'harbor-retail';
@@ -93,16 +94,18 @@ function PlacementFormExample() {
         )}
       </p>
       <div className="control-row">
-        <div className="form-layout-control">
-          <label htmlFor={placementId}>{t('Placement')}</label>
-          <Select<DrawerPlacement>
-            id={placementId}
-            value={placement}
-            onChange={setPlacement}
-            options={placementOptions}
-            labelRender={selectedLabel(placementOptions)}
-          />
-        </div>
+        <TweakerSettings title="Drawer placement">
+          <div className="form-layout-control">
+            <label htmlFor={placementId}>{t('Placement')}</label>
+            <Select<DrawerPlacement>
+              id={placementId}
+              value={placement}
+              onChange={setPlacement}
+              options={placementOptions}
+              labelRender={selectedLabel(placementOptions)}
+            />
+          </div>
+        </TweakerSettings>
         <AtlasButton text={t('Open panel')} onClick={() => setOpen(true)} />
       </div>
       <div className="form-result" role="status" aria-live="polite">

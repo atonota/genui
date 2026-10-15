@@ -1,5 +1,8 @@
+import { useId, useState } from 'react';
+import { Switch } from 'antd';
 import AtlasProvider from './AtlasProvider';
 import AtlasBreadcrumb, { type AtlasBreadcrumbItem } from './AtlasBreadcrumb';
+import { TweakerSettings } from './AtlasTweaker';
 import { useI18n } from './useI18n';
 
 const workspacePages = [
@@ -12,6 +15,11 @@ const workspacePages = [
 
 function BreadcrumbExamples() {
   const { t } = useI18n();
+  const iconsId = useId();
+  const homeId = useId();
+  // Presentation only; every link keeps its destination and the example owns these choices.
+  const [showIcons, setShowIcons] = useState(true);
+  const [iconOnlyHome, setIconOnlyHome] = useState(true);
   const quickItems: AtlasBreadcrumbItem[] = [
     { key: 'overview', label: t('Overview'), href: '/' },
     {
@@ -28,14 +36,20 @@ function BreadcrumbExamples() {
     { key: 'record-details', label: t('Record details') },
   ];
   const iconItems: AtlasBreadcrumbItem[] = [
-    { key: 'overview', label: t('Overview'), href: '/', icon: 'house', iconOnly: true },
+    {
+      key: 'overview',
+      label: t('Overview'),
+      href: '/',
+      icon: showIcons ? 'house' : undefined,
+      iconOnly: showIcons && iconOnlyHome,
+    },
     {
       key: 'record-workspace',
       label: t('Record workspace'),
       href: '/components/record-workspace/',
-      icon: 'settings',
+      icon: showIcons ? 'settings' : undefined,
     },
-    { key: 'record-details', label: t('Record details'), icon: 'check' },
+    { key: 'record-details', label: t('Record details'), icon: showIcons ? 'check' : undefined },
   ];
   return (
     <div className="breadcrumb-catalog" data-breadcrumb-catalog>
@@ -89,6 +103,21 @@ function BreadcrumbExamples() {
           )}
         </p>
       </section>
+      <TweakerSettings title="Breadcrumb">
+        <div className="atlas-tweaker-token">
+          <label htmlFor={iconsId}>{t('Show icons')}</label>
+          <Switch id={iconsId} checked={showIcons} onChange={checked => setShowIcons(checked)} />
+        </div>
+        <div className="atlas-tweaker-token">
+          <label htmlFor={homeId}>{t('Icon-only home')}</label>
+          <Switch
+            id={homeId}
+            checked={showIcons && iconOnlyHome}
+            disabled={!showIcons}
+            onChange={checked => setIconOnlyHome(checked)}
+          />
+        </div>
+      </TweakerSettings>
     </div>
   );
 }
