@@ -1,5 +1,54 @@
 # Astro documentation maintenance contract
 
+## Normal-laptop component detail presentation, colors frozen — human task 2026-10-16
+
+Newest human task; it rejects the previous detail composition and supersedes
+the dated shell-only ownership and the 1600px split threshold below for this
+presentation case only. The frozen 59-package backlog is not new scope. Results
+are PENDING; this entry claims no executed check and no DONE.
+
+- Geometry only: every existing paint declaration keeps its exact value,
+  selector and media context, and role colors are unchanged. Geometry only and
+  no new JS refer to the shared shell: layout and shared styles, the 875px
+  sidebar/native Drawer threshold, docs-shell.ts and the shell header stay
+  unchanged. The existing shared preview renderer alone receives icon markup,
+  central bounded device geometry and caption presentation, with unchanged
+  native behavior, theme, state and Code privacy. Outfit, frozen type tokens,
+  the 14 CSS px minimum, central roles, Cubic motion and Tab-only ringless
+  focus stay; no new JS package, framework, asset profile, service or
+  scrollspy. Layout styles keep their old paint context; new decorative device
+  hardware reuses the existing preview chrome, sensor, panel and ink colors
+  with no new palette or alpha.
+- Owned: `src/components/shell/layout.css` and `src/styles/documentation.css`
+  for shell geometry, plus the existing shared preview renderer
+  `src/react/ExamplePreview.tsx`, `src/styles/preview-workbench.css` and
+  `src/data/preview-devices.ts` (this case only; it supersedes the earlier
+  preview-workbench.css exclusion).
+  Shell geometry variables only: sidebar 14rem (224px) from 875px with the 16px
+  inset and 48px targets; shell and page grid gap 24px; global spacing tokens
+  unchanged.
+- `article[data-component-detail]` splits from 80rem (1280px): showcase left,
+  API/resources one continuous non-sticky right stack, `minmax(0, 1.65fr)
+  minmax(20rem, 1fr)` with a 24px gap (showcase >= 560px, reference >= 320px
+  at 1280 and 1920); narrower layouts stack, 320px without page overflow. The
+  far contents rail (16px padding) appears from 100rem (1600px) in layout.css
+  and documentation.css alike; below it the Contents disclosure and section
+  links stay. Eight section ids, order and content are kept; API tables keep
+  their own scroller (full cell interaction not certified); prose 65ch.
+- Device previews are bounded illustrations, not device emulation or detection:
+  390/820/1280px stay preferred reference maximums, and central display caps
+  (iPhone 260, iPad 400, MacBook 384 CSS px screen) bound the frame within its
+  column without scaling. Phones and tablets keep portrait and the MacBook
+  landscape proportions; every screen shares a 200px minimum and grows with its
+  content. The Device · Theme caption sits above the frame and the toolbar
+  centres. Known inner titles that duplicate the external heading, including
+  the button playground's, are visually hidden (screen-reader only) in their
+  known wrappers; external headings and anchors stay untouched.
+- Test accounting (authorized scope, not results): the two existing
+  `browser/component-preview.spec.ts` cases and the existing contents-rail case
+  are adapted, 0 new cases; browser spec files 28, source test files 80. One
+  independent review; the root conductor records actual receipts.
+
 ## Shell and shared documentation geometry, colors frozen — human task 2026-10-16
 
 Newest human task; it supersedes the dated docs-spacing count below only for

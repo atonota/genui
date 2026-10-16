@@ -1,11 +1,13 @@
-/* Documentation shell layout. The single aside.sidebar sits in the shell grid from the 875px
-   content breakpoint and moves into the native modal menu Drawer below it (docs-shell.ts). Page
-   contents stay a closed disclosure until the 1130px contents rail, which widens at 1290px.
-   Queries use rem so text zoom keeps the narrow layout: 54.6875rem = 875px,
-   70.625rem = 1130px, 80.625rem = 1290px, 100rem = 1600px (component detail columns).
-   Surfaces only use the shell and panel roles. */
+/* Documentation shell layout. The single aside.sidebar (14rem) sits in the shell grid from the
+   875px content breakpoint and moves into the native modal menu Drawer below it (docs-shell.ts).
+   Component detail splits into showcase and reference columns from a 1280px laptop; page
+   contents stay a closed disclosure until the 1600px contents rail. Queries use rem so text zoom
+   keeps the narrow layout: 54.6875rem = 875px, 70.625rem = 1130px and 80.625rem = 1290px (rail
+   width values only), 80rem = 1280px (component detail columns), 100rem = 1600px (contents
+   rail). Surfaces only use the shell and panel roles. */
 :where(:root) {
-  --shell-sidebar-inline-size: var(--sidebar-width, 16rem);
+  --shell-sidebar-inline-size: 14rem;
+  --shell-layout-gap: var(--space-lg);
   --shell-toc-inline-size: var(--toc-width, 10rem);
   --shell-drawer-inline-size: 20rem;
   --shell-drawer-edge: var(--target-min);
@@ -18,13 +20,25 @@
 [data-docs-shell] .docs-shell {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: var(--layout-gap);
+  gap: var(--shell-layout-gap);
 }
 /* The painted main column and the inline sidebar inset their content with the central container
    inset roles. Inside the Drawer the sidebar is no longer a shell child and keeps the Drawer
    padding only. */
 [data-docs-shell] .docs-main {
   padding: var(--inset-container-sm, 16px);
+}
+/* Below the 875px breakpoint the fixed Tweaker trigger (tweaker.css) sits at the middle of the
+   inline end edge. Only a main column that holds one keeps the trigger size, the container-sm
+   gap and the safe area clear beside its content; the header, the footer and wider layouts
+   keep their inset. */
+@media (width < 54.6875rem) {
+  [data-docs-shell] .docs-main:has([data-tweaker-trigger]) {
+    padding-inline-end: calc(
+      var(--inset-container-sm, 16px) + var(--atlas-tweaker-trigger-size, var(--target-min, 48px)) +
+        env(safe-area-inset-right, 0px)
+    );
+  }
 }
 [data-docs-shell] .docs-shell > .sidebar {
   padding-inline: var(--inset-container-sm, 16px);
@@ -153,7 +167,7 @@ dialog[data-docs-drawer][open]::backdrop {
 [data-docs-shell] .page-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: var(--layout-gap);
+  gap: var(--shell-layout-gap);
 }
 [data-docs-shell] [data-doc-contents] {
   margin-block: var(--space-lg) 0;
@@ -214,10 +228,11 @@ dialog[data-docs-drawer][open]::backdrop {
   text-align: end;
 }
 
-/* Component detail: the showcase and the API/resources reference stack naturally until the
-   article has room for both (about 960px beside the 16rem rail from 100rem). Header, section
-   links and neighbours span both columns; the reference is one continuous, non-sticky stack and
-   its tables scroll inside their own regions. */
+/* Component detail: the showcase and the API/resources reference stack naturally until a 1280px
+   laptop (80rem) gives the article room for both beside the 14rem sidebar, at least 560px and
+   320px; the contents rail only joins from 100rem. Header, section links and neighbours span
+   both columns; the reference is one continuous, non-sticky stack and its tables scroll inside
+   their own regions. */
 [data-docs-shell] :is(.component-showcase, .component-reference) {
   min-inline-size: 0;
 }
@@ -256,10 +271,20 @@ dialog[data-docs-drawer][open]::backdrop {
   }
 }
 @media (min-width: 70.625rem) {
-  /* The rail keeps a readable 240px minimum (15rem) and widens to 16rem at 1290px. */
+  /* Rail width values only: a readable 240px minimum (15rem) that widens to 16rem at 1290px.
+     The rail itself is shown from 100rem. */
   :where(:root) {
     --shell-toc-inline-size: 15rem;
   }
+}
+@media (min-width: 80.625rem) {
+  :where(:root) {
+    --shell-toc-inline-size: 16rem;
+  }
+}
+@media (min-width: 100rem) {
+  /* Below 1600px the Contents disclosure leaves the space to the preview; the far rail joins
+     here. */
   [data-docs-shell] .page-grid:has(> [data-doc-nav='toc']) {
     grid-template-columns: minmax(0, 1fr) var(--shell-toc-inline-size);
   }
@@ -285,16 +310,11 @@ dialog[data-docs-drawer][open]::backdrop {
     display: none;
   }
 }
-@media (min-width: 80.625rem) {
-  :where(:root) {
-    --shell-toc-inline-size: 16rem;
-  }
-}
-@media (min-width: 100rem) {
+@media (min-width: 80rem) {
   [data-docs-shell] .component-detail {
     display: grid;
-    grid-template-columns: minmax(0, 7fr) minmax(20rem, 4fr);
-    column-gap: var(--layout-gap);
+    grid-template-columns: minmax(0, 1.65fr) minmax(20rem, 1fr);
+    column-gap: var(--shell-layout-gap);
     align-items: start;
   }
   [data-docs-shell] .component-detail > :not(.component-showcase, .component-reference) {

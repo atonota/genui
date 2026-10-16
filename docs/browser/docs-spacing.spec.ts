@@ -4,8 +4,11 @@ import { expect, test, type Locator, type Page, type TestInfo } from '@playwrigh
 // and the card page (/components/card/) are probed at 320 and 1440 CSS px in light and dark
 // mode. Painted shell regions (main, header, footer and the visible sidebar) keep an inline
 // inset between their edge and their direct content; the overview grid keeps visible row and
-// column gaps and wraps inside the main content; major sections share the h1 content edge and
-// stay separated. Assertions use landmarks, section anchors and computed geometry only, and are
+// column gaps and wraps inside the main content; major sections stay separated. Content edges
+// are column-aware: showcase sections, the breadcrumb and the article share the h1 edge, API and
+// resources sections inside .component-reference share that column's own edge, and the reference
+// column either sits beside the showcase or stacks on the h1 edge. Assertions use landmarks,
+// section anchors and computed geometry only, and are
 // soft so every missing inset is reported in one run. Viewport screenshots are saved under
 // testInfo.outputPath, labelled with the source stage from ATLAS_SOURCE_STAGE.
 
@@ -155,7 +158,12 @@ async function expectChromeInsets(page: Page, label: string) {
     await expectInlineInset(aside, minimumChromeInsetPx, `${label}: sidebar`);
 }
 
-/** Sections, their headings, the breadcrumb and the article start at the h1 content edge. */
+/**
+ * Column-aware content edges. Showcase sections, their headings, the breadcrumb and the article
+ * start at the h1 content edge. API and resources sections inside .component-reference start at
+ * that column's own edge; the column sits right of the showcase beside it, or stacks on the h1
+ * edge when the detail columns collapse.
+ */
 async function expectSharedContentEdge(page: Page, label: string) {
   const main = page.getByRole('main');
   const heading = main.getByRole('heading', { level: 1 });
@@ -167,16 +175,45 @@ async function expectSharedContentEdge(page: Page, label: string) {
       if (rect.width === 0 || rect.height === 0) return [];
       const title = element.querySelector('h2');
       const titleLeft = title ? title.getBoundingClientRect().left : rect.left;
-      return [{ id: element.id, left: rect.left, titleLeft }];
+      const reference = element.closest('.component-reference');
+      const referenceLeft = reference ? reference.getBoundingClientRect().left : null;
+      return [{ id: element.id, left: rect.left, titleLeft, referenceLeft }];
     }),
   );
   expect.soft(sections.length, `${label}: renders doc sections`).toBeGreaterThan(0);
-  for (const section of sections) {
+  const detail = await main.evaluate(root => {
+    const box = (selector: string) => {
+      const element = root.querySelector(selector);
+      if (!element) return null;
+      const rect = element.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) return null;
+      return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom };
+    };
+    return { showcase: box('.component-showcase'), reference: box('.component-reference') };
+  });
+  const reference = detail.reference;
+  if (reference) {
+    const showcase = detail.showcase;
+    const beside =
+      showcase !== null &&
+      reference.left >= showcase.right - alignTolerancePx &&
+      reference.top < showcase.bottom;
+    const stacked = Math.abs(reference.left - edge) <= alignTolerancePx;
     expect
-      .soft(Math.abs(section.left - edge), `${label}: #${section.id} aligns to the h1 edge`)
+      .soft(
+        beside || stacked,
+        `${label}: API and resources sit beside the showcase or stack on the h1 edge`,
+      )
+      .toBe(true);
+  }
+  for (const section of sections) {
+    const target = section.referenceLeft ?? edge;
+    const name = section.referenceLeft === null ? 'the h1 edge' : 'the reference column edge';
+    expect
+      .soft(Math.abs(section.left - target), `${label}: #${section.id} aligns to ${name}`)
       .toBeLessThanOrEqual(alignTolerancePx);
     expect
-      .soft(Math.abs(section.titleLeft - edge), `${label}: #${section.id} h2 aligns to the h1 edge`)
+      .soft(Math.abs(section.titleLeft - target), `${label}: #${section.id} h2 aligns to ${name}`)
       .toBeLessThanOrEqual(alignTolerancePx);
   }
   const breadcrumb = page.getByRole('navigation', { name: /breadcrumb/i }).first();
@@ -363,8 +400,10 @@ test('TOC rail has readable width and inner padding', async ({ page }, testInfo)
   test.setTimeout(120_000);
   const minimumTocWidthPx = 240;
   const inset = minimumChromeInsetPx - tolerancePx;
+  // The far-right rail starts at the 1600px detail breakpoint; the desktop probe reads it at 1920.
+  const tocViewports = [viewports[0], { ...viewports[1], width: 1920, height: 1000 }] as const;
   for (const mode of modes) {
-    for (const viewport of viewports) {
+    for (const viewport of tocViewports) {
       const label = `input toc ${viewport.name} ${mode}`;
       await page.setViewportSize({ width: viewport.width, height: viewport.height });
       const url = new URL('/components/input/', testInfo.project.use.baseURL ?? fallbackBaseUrl);

@@ -1,7 +1,10 @@
-/* Shared example workbench (ExamplePreview.tsx). Device widths, screen proportions and chrome
-   curves are the central geometry in data/preview-devices.ts, inlined as --preview-* roles on the frame;
-   every other value reads the shell space, radius and surface roles. Neither the frame nor
-   the screen clips, so inline popups and portals keep their own positioning; only the code
+/* Shared example workbench (ExamplePreview.tsx). Preferred device widths, bounded display
+   caps, the shared minimum screen height, portrait phone and tablet and landscape MacBook
+   proportions and decorative hardware details are the central geometry in
+   data/preview-devices.ts, inlined as --preview-* roles on the frame. The frames are bounded
+   illustrative mockups, not device emulation: nothing scales, and screens grow with their
+   content; every other value reads the shell space, radius and surface roles. Neither the
+   frame nor the screen clips, so inline popups and portals keep their own positioning; only the code
    view scrolls, inside itself. Device geometry and the Preview/Code views ease in both
    directions with the central positive duration and Cubic easing, while the view state,
    aria-hidden and inert switch at once; reduced motion is the explicit instant exception.
@@ -14,6 +17,9 @@
   --preview-gap-tight: var(--space-sm, 8px);
   --preview-chrome: color-mix(in srgb, var(--ink) 16%, var(--surface));
   --preview-sensor: color-mix(in srgb, var(--ink) 55%, var(--surface));
+  /* Toolbar options keep the shared target; the caption sits close to its frame. */
+  --preview-control-size: max(48px, var(--target-min, 48px));
+  --preview-caption-gap: var(--space-xs, 4px);
   display: grid;
   gap: var(--preview-gap);
   grid-column: 1 / -1;
@@ -30,18 +36,41 @@
   inline-size: 100%;
   min-inline-size: 0;
 }
+/* Title and controls form one centred band and wrap as a whole. */
 .example-preview-toolbar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: var(--preview-gap-tight) var(--preview-gap);
   min-inline-size: 0;
 }
 .example-preview-title {
   margin: 0;
   color: var(--ink);
+  font-size: var(--text, 1rem);
   font-weight: var(--font-weight-strong, 600);
+}
+/* Visually hidden but still read: icon-only option names, the workbench title when the
+   heading right before it in a known example wrapper already names the cluster, and the inner
+   title of the button playground, whose canonical Playground section already names it. The
+   root keeps aria-labelledby on the title either way. */
+.example-preview-sr-only,
+:is(.atlas-badge-demo-group, .example-block)
+  > :is(h3, h4, h5, h6)
+  + .example-preview
+  > .example-preview-toolbar
+  > .example-preview-title,
+.button-playground > .example-preview > .example-preview-toolbar > .example-preview-title {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 .example-preview-controls {
   display: flex;
@@ -53,14 +82,40 @@
 .example-preview-controls > * {
   max-inline-size: 100%;
 }
+/* Compact options on the native radio groups: each group sizes to its options and wraps as a
+   whole, so the toolbar never scrolls and the central focus scale is never clipped. */
+.example-preview-controls .atlas-segmented.ant-segmented {
+  overflow: visible;
+}
+.example-preview-controls .atlas-segmented.ant-segmented .ant-segmented-item-label {
+  gap: var(--preview-caption-gap);
+  min-inline-size: var(--preview-control-size);
+  min-block-size: var(--atlas-segmented-height, var(--preview-control-size));
+  padding-block: 0;
+  padding-inline: var(--preview-gap-tight);
+}
+.example-preview-option {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.example-preview-option .atlas-icon,
+.example-preview-glyph {
+  display: block;
+  flex: none;
+  inline-size: var(--icon-optical-size, 1.25rem);
+  block-size: var(--icon-optical-size, 1.25rem);
+}
 /* One central timing for every moving workbench surface; each lists only what it moves. */
 .example-preview-stage,
 .example-preview-code-panel,
 .example-preview-device,
 .example-preview-bezel,
 .example-preview-bezel::before,
+.example-preview-bezel::after,
 .example-preview-screen,
-.example-preview-base {
+.example-preview-base,
+.example-preview-base::before {
   transition-duration: var(--preview-motion-duration);
   transition-timing-function: var(--preview-motion-easing);
   transition-delay: var(--preview-motion-delay);
@@ -71,11 +126,16 @@
   display: grid;
   min-inline-size: 0;
 }
+/* The caption leads the frame. The moving illustration is never the page's scroll anchor,
+   so device changes never scroll the reader. */
 .example-preview-stage {
   display: flex;
+  flex-direction: column;
   grid-area: 1 / 1;
-  justify-content: center;
+  align-items: center;
+  gap: var(--preview-caption-gap);
   min-inline-size: 0;
+  overflow-anchor: none;
   transition-property: var(--control-transition-properties), visibility;
 }
 /* The inactive view leaves the layout at once, takes no pointer (and no focus: inert) and is
@@ -91,16 +151,23 @@
   opacity: 0;
   pointer-events: none;
 }
+/* Bounded illustration: the central display cap keeps the frame below its preferred width
+   and within the column, without scaling. */
 .example-preview-device {
   display: flex;
   flex-direction: column;
   align-items: center;
-  inline-size: min(100%, var(--preview-device-width));
+  inline-size: min(100%, var(--preview-device-width), var(--preview-device-display-width));
   min-inline-size: 0;
   transition-property: var(--control-transition-properties), inline-size;
 }
+/* One screen cell at the shared minimum height: the screen fills it, and its content still
+   grows the cell past the floor and the preferred proportions. */
 .example-preview-bezel {
   position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(var(--preview-screen-min-height), auto);
   box-sizing: border-box;
   inline-size: calc(100% - 2 * var(--preview-base-overhang));
   min-inline-size: 0;
@@ -121,10 +188,36 @@
   border-radius: calc(var(--preview-sensor-height) / 2);
   background-color: var(--preview-sensor);
   transform: translateX(-50%);
+  pointer-events: none;
   transition-property:
     var(--control-transition-properties), inset-block-start, inline-size, block-size, border-radius;
 }
+/* Home indicator on iPhone, centred in the bottom bezel; zero size on the other devices. */
+.example-preview-bezel::after {
+  content: '';
+  position: absolute;
+  inset-block-end: calc((var(--preview-bezel-bottom) - var(--preview-indicator-height)) / 2);
+  inset-inline-start: 50%;
+  inline-size: var(--preview-indicator-width);
+  block-size: var(--preview-indicator-height);
+  border-radius: calc(var(--preview-indicator-height) / 2);
+  background-color: var(--preview-sensor);
+  transform: translateX(-50%);
+  pointer-events: none;
+  transition-property:
+    var(--control-transition-properties), inset-block-end, inline-size, block-size, border-radius;
+}
+/* Phones and tablets keep portrait and the MacBook landscape proportions; the bezel cell
+   holds the shared minimum. Direct children stay mounted in order and centre in the free
+   space. */
 .example-preview-screen {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: safe center;
+  justify-items: safe center;
+  /* Explicit stretch fills the bezel cell; a ratio item would otherwise start-align. */
+  align-self: stretch;
+  justify-self: stretch;
   box-sizing: border-box;
   min-inline-size: 0;
   max-inline-size: 100%;
@@ -136,8 +229,39 @@
   color: var(--ink);
   transition-property: var(--control-transition-properties), aspect-ratio, border-radius;
 }
-/* MacBook base: wider than the lid by the overhang; zero height on the other devices. */
+.example-preview-screen > * {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+/* Field, table and composite-widget content keeps the full screen width by semantics alone;
+   compact rows without fields, such as badges and spaces, centre. */
+.example-preview-screen
+  > :is(
+    form,
+    table,
+    [role='grid'],
+    [role='tree'],
+    [role='listbox'],
+    [role='combobox'],
+    [role='slider'],
+    :has(
+      input,
+      textarea,
+      table,
+      [role='grid'],
+      [role='tree'],
+      [role='listbox'],
+      [role='combobox'],
+      [role='slider']
+    )
+  ) {
+  justify-self: stretch;
+  inline-size: 100%;
+}
+/* MacBook base: wider than the lid by the overhang, with a hinge notch; zero height on the
+   other devices. */
 .example-preview-base {
+  position: relative;
   display: block;
   box-sizing: border-box;
   inline-size: 100%;
@@ -147,12 +271,38 @@
   background-color: var(--preview-chrome);
   transition-property: var(--control-transition-properties), block-size, border-radius;
 }
+.example-preview-base::before {
+  content: '';
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 50%;
+  inline-size: var(--preview-notch-width);
+  block-size: var(--preview-notch-height);
+  border-end-start-radius: var(--preview-notch-height);
+  border-end-end-radius: var(--preview-notch-height);
+  background-color: var(--preview-sensor);
+  transform: translateX(-50%);
+  pointer-events: none;
+  transition-property: var(--control-transition-properties), inline-size, block-size;
+}
+.example-preview-caption {
+  margin: 0;
+  color: var(--muted);
+  text-align: center;
+}
 .example-preview-code-panel {
   display: grid;
   grid-area: 1 / 1;
   gap: var(--preview-gap-tight);
   min-inline-size: 0;
   transition-property: var(--control-transition-properties), visibility;
+}
+/* Editor surface: the source row and the code share one field well; only the code scrolls,
+   in both directions. */
+.example-preview-editor {
+  display: grid;
+  min-inline-size: 0;
+  border-radius: var(--radius, 5px);
 }
 .example-preview-source {
   display: flex;
@@ -161,6 +311,7 @@
   justify-content: space-between;
   gap: var(--preview-gap-tight) var(--preview-gap);
   min-inline-size: 0;
+  padding: var(--preview-gap-tight) var(--preview-gap) 0;
 }
 .example-preview-source-label {
   margin: 0;
@@ -214,7 +365,9 @@
   .example-preview-device[data-preview-device='macbook'] .example-preview-base {
     border: 1px solid CanvasText;
   }
-  .example-preview-bezel::before {
+  .example-preview-bezel::before,
+  .example-preview-bezel::after,
+  .example-preview-base::before {
     background-color: CanvasText;
   }
 }

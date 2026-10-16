@@ -1,5 +1,57 @@
 # Atlas UX standards and complete reference crosswalk
 
+## Normal-laptop component detail presentation — 16 October 2026
+
+Newest human task and the current presentation decision. It supersedes the
+component preview workbench entry below, including its 100rem (1600px) column
+split and its newest label; that entry and older sources stay as history.
+Colors are frozen. This read-only source proposal is not evidence of executed
+checks: results are PENDING, with no PASS, DONE, CI or live claim.
+
+- Workbench: all 40 component routes keep their 164 logical example clusters,
+  each wrapped once by the existing shared
+  [ExamplePreview](src/react/ExamplePreview.tsx) adapter with three native
+  control groups: Device preview and Example view are local to each workbench,
+  Preview theme is the shared global shell theme. Native icon controls keep
+  48px targets and readable labels of at least 14 CSS px. The shared lazy Code
+  view is retained: the preview stays mounted, the hidden view is inert
+  immediately and transitions use the shared Cubic token with the
+  reduced-motion exception. Colors and theme values are unchanged.
+- Device previews: 390/820/1280px are only preferred reference maximums.
+  Central caps in [preview devices](src/data/preview-devices.ts) bound the
+  illustrative screen to iPhone 260, iPad 400 and MacBook 384 CSS px within its
+  column, never scaled and with no smaller text; phone and tablet are portrait,
+  the MacBook landscape, and every screen shares a 200px minimum and grows with
+  its content. They are illustrations, not physical device or browser
+  emulation. The Device · Theme caption sits above the frame and the toolbar is
+  centred. Known inner titles that duplicate the external heading, including
+  the button playground's, are screen-reader only; external headings and their
+  anchors are retained.
+- Detail layout: from 80rem (1280px) the showcase sits left (at least 560px)
+  and API plus resources form one continuous non-sticky right stack (at least
+  320px), with a 24px gap. The far sticky contents rail with 16px insets
+  appears from 100rem (1600px); below 1600px the Contents disclosure and section
+  links stay, and below 1280px the columns stack with no page overflow at
+  320px. The eight section IDs, their order and sources are unchanged; API
+  tables keep their own scroller and prose stays at 65ch.
+- Constraints: existing paint values and role colors, Outfit, frozen type
+  tokens, the 14 CSS px minimum, Cubic motion and Tab-only ringless keyboard
+  focus are unchanged; decorative device hardware reuses existing preview
+  chrome, sensor, panel and ink colors with no new palette or alpha.
+- Tests (authorized scope, not results): browser spec files 28 and source test
+  files 80 unchanged; the two existing component-preview cases and the
+  existing contents-rail case are adapted, 0 new cases. The root conductor
+  records the actual executed cases, limits and private evidence.
+
+Türkçe: Bu bölüm en yeni insan görevi ve güncel sunum kararıdır; aşağıdaki
+1600px bölme kararının yerine geçer, eski bölümler geçmiş olarak kalır. 40
+rotadaki 164 örnek kümesi mevcut ExamplePreview ile sarılır; cihaz ve görünüm
+yereldir, tema ortaktır. Cihaz ekranları ölçeklenmeden 260/400/384 CSS px ile
+sınırlanan temsili çizimlerdir, gerçek cihaz öykünmesi değildir. 1280px
+üstünde vitrin solda, API ve kaynaklar sağda; 1600px üstünde dış içindekiler
+rayı görünür. Renkler, Outfit, 14 CSS px minimum, Cubic hareket ve klavye odağı
+değişmez. Test kapsamı sonuç değildir; PASS/DONE iddiası yoktur.
+
 ## Component preview workbench and detail layout — 16 October 2026
 
 Newest human task; it supersedes the dated Badge/radius scope counts below as

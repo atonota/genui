@@ -115,9 +115,9 @@
     padding: var(--space-lg);
   }
 }
-@media (min-width: 70.625rem) {
-  /* The contents rail replaces the section links from its 1130px breakpoint
-     (layout.css, 70.625rem = 1130px). */
+@media (min-width: 100rem) {
+  /* The contents rail replaces the section links from its 1600px breakpoint
+     (layout.css, 100rem = 1600px). */
   .page-grid:has(> [data-doc-nav='toc']) [data-doc-nav='sections'] {
     display: none;
   }

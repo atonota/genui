@@ -12,6 +12,7 @@ import {
 } from 'react';
 import AtlasButton from './AtlasButton';
 import AtlasSegmented from './AtlasSegmented';
+import AtlasIcon from './AtlasIcon';
 import { useAtlasAppearance } from './AtlasAppearance';
 import { useI18n } from './useI18n';
 import {
@@ -23,6 +24,7 @@ import {
 } from '../theme';
 import {
   DEFAULT_PREVIEW_DEVICE,
+  previewDeviceDefinition,
   previewDevices,
   previewDeviceVariables,
   type PreviewDevice,
@@ -44,6 +46,47 @@ type SourceState =
   | { status: 'error' }
   | { status: 'ready'; payload: PreviewCode };
 type CopyState = 'idle' | 'copied' | 'failed';
+
+// Decorative 24×24 outline pictograms for the icon-only device options.
+const deviceGlyphs: Record<PreviewDevice, string> = {
+  iphone:
+    'M9.5 2.75h5A2.5 2.5 0 0 1 17 5.25v13.5a2.5 2.5 0 0 1-2.5 2.5h-5A2.5 2.5 0 0 1 7 18.75V5.25a2.5 2.5 0 0 1 2.5-2.5ZM10.75 5.5h2.5',
+  ipad: 'M6.5 3h11a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-11a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2ZM12 5.75h.01',
+  macbook:
+    'M4 15.5V6a1.5 1.5 0 0 1 1.5-1.5h13A1.5 1.5 0 0 1 20 6v9.5M2 15.5h20V17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2ZM12 6.75h.01',
+};
+// Every option keeps the shared target height through the wrapper's own height role.
+const controlStyle = { '--atlas-segmented-height': 'var(--preview-control-size)' } as CSSProperties;
+
+function DeviceGlyph({ device }: { device: PreviewDevice }) {
+  return (
+    <svg
+      className="example-preview-glyph"
+      viewBox="0 0 24 24"
+      width="20"
+      height="20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path d={deviceGlyphs[device]} />
+    </svg>
+  );
+}
+
+/** Icon-only option: the translated name stays the radio's single, visually hidden label. */
+function IconOption({ icon, label }: { icon: ReactNode; label: string }) {
+  return (
+    <span className="example-preview-option">
+      {icon}
+      <span className="example-preview-sr-only">{label}</span>
+    </span>
+  );
+}
 
 const SOURCE_ROOT = 'docs/src/react/';
 // Layout effects apply inert before paint in the browser; the server has no DOM to update.
@@ -173,23 +216,40 @@ function PreviewWorkbench({ id, title, children }: ExamplePreviewProps) {
           <AtlasSegmented<PreviewDevice>
             aria-label={t('Device preview')}
             tabIndex={-1}
+            size="sm"
+            style={controlStyle}
             value={device}
             onChange={setDevice}
-            options={previewDevices.map(item => ({ value: item.value, label: t(item.label) }))}
+            options={previewDevices.map(item => ({
+              value: item.value,
+              label: (
+                <IconOption icon={<DeviceGlyph device={item.value} />} label={t(item.label)} />
+              ),
+            }))}
           />
           <AtlasSegmented<ThemeMode>
             aria-label={t('Preview theme')}
             tabIndex={-1}
+            size="sm"
+            style={controlStyle}
             value={theme}
             onChange={setTheme}
             options={[
-              { value: 'light', label: t('Light') },
-              { value: 'dark', label: t('Dark') },
+              {
+                value: 'light',
+                label: <IconOption icon={<AtlasIcon name="sun" />} label={t('Light')} />,
+              },
+              {
+                value: 'dark',
+                label: <IconOption icon={<AtlasIcon name="moon" />} label={t('Dark')} />,
+              },
             ]}
           />
           <AtlasSegmented<ExampleView>
             aria-label={t('Example view')}
             tabIndex={-1}
+            size="sm"
+            style={controlStyle}
             value={view}
             onChange={changeView}
             options={[
@@ -208,6 +268,13 @@ function PreviewWorkbench({ id, title, children }: ExamplePreviewProps) {
           data-preview-active={view === 'preview'}
           aria-hidden={view === 'code' || undefined}
         >
+          {/* Quiet caption naming the selected device and shell theme, above the frame so the
+              choice shows without scrolling; the frame stays a bounded illustration and never
+              promises a viewport width. */}
+          <p className="example-preview-caption">
+            <span>{t(previewDeviceDefinition(device).label)}</span>{' '}
+            <span aria-hidden="true">·</span> <span>{t(theme === 'light' ? 'Light' : 'Dark')}</span>
+          </p>
           <div
             className="example-preview-device"
             data-preview-device={device}
@@ -229,7 +296,7 @@ function PreviewWorkbench({ id, title, children }: ExamplePreviewProps) {
           aria-hidden={view === 'preview' || undefined}
         >
           {payload ? (
-            <>
+            <div className="example-preview-editor">
               <div className="example-preview-source">
                 <p className="example-preview-source-label">
                   <span>{t('Source excerpt')}</span>{' '}
@@ -249,7 +316,7 @@ function PreviewWorkbench({ id, title, children }: ExamplePreviewProps) {
               >
                 <code>{payload.code}</code>
               </pre>
-            </>
+            </div>
           ) : source.status === 'error' ? (
             <div className="example-preview-message" role="alert">
               <p>{t('Source could not be loaded.')}</p>

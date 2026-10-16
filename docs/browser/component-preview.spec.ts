@@ -6,6 +6,10 @@ import { components } from '../src/data/catalog';
 // Example view controls. Wide component pages show the showcase on the left, API and resources
 // as one continuous stack on the right and a sticky contents rail on the far right; 320 CSS px
 // stacks naturally. Code loads lazily from /preview-code/<id>.json only after Code is chosen.
+// Presentation (2026-10-16): the three native radiogroups form one compact command bar; device
+// and theme options paint icons over assistive-only labels and the current device name stays a
+// visible caption. Detail columns start at 1280 CSS px; the far-right rail returns on wide pages.
+// At 320 CSS px the fixed Tweaker opener stays inside the viewport and covers no readable text.
 // Screenshots are saved under testInfo.outputPath, labelled with ATLAS_SOURCE_STAGE.
 // Routes and code payloads resolve against Playwright's configured baseURL, so the service the
 // config starts is the one tested; ATLAS_DOCS_ORIGIN is only an explicit controller override.
@@ -15,6 +19,13 @@ const THEME_KEY = 'atlas-theme';
 const tolerancePx = 1;
 const wide = { width: 1920, height: 1080 };
 const narrow = { width: 320, height: 800 };
+const laptop = { width: 1280, height: 900 };
+const badgeWide = { width: 1600, height: 1000 };
+const toolbarMaxHeightPx = 64;
+const hitMinWidthPx = 44;
+const hitMinHeightPx = 48;
+const badgeScreenMaxHeightPx = 260;
+const centerTolerancePx = 16;
 // The route table is the documentation catalog itself.
 const routes = components.map(component => component.slug);
 const WORKBENCH = '[data-example-preview]';
@@ -89,9 +100,11 @@ function settle(page: Page) {
   }, SETTLE_OWNERS);
 }
 
+// Full-viewport evidence. Like workbenchShot, finite transitions are fast-forwarded for the
+// capture only, so the image shows the settled state, not a mid-fade.
 async function shot(page: Page, testInfo: TestInfo, name: string) {
   const path = testInfo.outputPath(`component-preview-${stage}-${name}.png`);
-  await page.screenshot({ path });
+  await page.screenshot({ path, animations: 'disabled' });
   await testInfo.attach(`component-preview-${stage}-${name}`, { path, contentType: 'image/png' });
 }
 
@@ -117,6 +130,127 @@ const pageOverflow = (page: Page) =>
   page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
 const viewStage = (scope: Locator) => scope.locator('.example-preview-stage').first();
 const codePane = (scope: Locator) => scope.locator('.example-preview-code-panel').first();
+const toolbarHeight = (scope: Locator) =>
+  scope
+    .locator('.example-preview-toolbar')
+    .first()
+    .evaluate(el => el.getBoundingClientRect().height);
+
+// Painted text and SVG icons inside each option label of one radiogroup, with the label hit
+// area. Text or icons inside a box of 1px or less are assistive-only, never painted.
+const optionPaint = (scope: Locator, groupName: string) =>
+  group(scope, groupName)
+    .getByRole('radio')
+    .evaluateAll(radios =>
+      radios.map(radio => {
+        const host = radio.closest('label') ?? radio.parentElement ?? radio;
+        const assistive = (node: Element) => {
+          for (let item: Element | null = node; item; item = item.parentElement) {
+            const box = item.getBoundingClientRect();
+            const flat = box.width <= 1 || box.height <= 1;
+            if (flat && getComputedStyle(item).display !== 'contents') return true;
+            if (item === host) break;
+          }
+          return false;
+        };
+        const text: string[] = [];
+        const walker = document.createTreeWalker(host, NodeFilter.SHOW_TEXT);
+        for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+          const parent = node.parentElement;
+          const value = (node.textContent ?? '').trim();
+          if (!parent || !value || !parent.checkVisibility({ visibilityProperty: true })) continue;
+          if (!assistive(parent)) text.push(value);
+        }
+        const icons = [...host.querySelectorAll('svg')].filter(
+          svg => svg.checkVisibility({ visibilityProperty: true }) && !assistive(svg),
+        ).length;
+        const rect = host.getBoundingClientRect();
+        return { text, icons, width: rect.width, height: rect.height };
+      }),
+    );
+
+// Painted text of a workbench outside its radiogroups, screen and code: title and caption.
+const captions = (scope: Locator) =>
+  scope.evaluate(root => {
+    const found: { text: string; size: number }[] = [];
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      const parent = node.parentElement;
+      const text = (node.textContent ?? '').trim();
+      if (!parent || !text || !parent.checkVisibility({ visibilityProperty: true })) continue;
+      if (parent.closest('[role=radiogroup], .example-preview-screen, .example-preview-code-panel'))
+        continue;
+      let painted = true;
+      for (let item: Element | null = parent; item && painted; item = item.parentElement) {
+        const box = item.getBoundingClientRect();
+        const flat = box.width <= 1 || box.height <= 1;
+        if (flat && getComputedStyle(item).display !== 'contents') painted = false;
+        if (item === root) break;
+      }
+      if (painted) found.push({ text, size: parseFloat(getComputedStyle(parent).fontSize) });
+    }
+    return found;
+  });
+
+// Painted device chrome around the screen: elements that neither are nor hold the screen and
+// rendered ::before/::after parts of the frame, its chrome and the screen. Demo content inside
+// the screen is not chrome.
+const deviceChrome = (scope: Locator) =>
+  frame(scope).evaluate(device => {
+    const display = device.querySelector('.example-preview-screen') ?? device;
+    const box = display.getBoundingClientRect();
+    const paints = (style: CSSStyleDeclaration) =>
+      style.display !== 'none' &&
+      style.visibility !== 'hidden' &&
+      parseFloat(style.opacity) > 0 &&
+      (!/^(transparent|rgba[(].*, 0[)])$/.test(style.backgroundColor) ||
+        style.backgroundImage !== 'none' ||
+        parseFloat(style.borderTopWidth) + parseFloat(style.borderBottomWidth) > 0);
+    const parts: { width: number; height: number }[] = [];
+    const nodes = [device, ...device.querySelectorAll('*')].filter(
+      node => (node === display || !display.contains(node)) && !node.parentElement?.closest('svg'),
+    );
+    for (const node of nodes) {
+      const rect = node.getBoundingClientRect();
+      const style = getComputedStyle(node);
+      const painted =
+        node instanceof SVGSVGElement
+          ? style.display !== 'none' && style.visibility !== 'hidden'
+          : paints(style);
+      if (!node.contains(display) && rect.width > 0 && rect.height > 0 && painted)
+        parts.push({ width: rect.width, height: rect.height });
+      for (const pseudo of ['::before', '::after']) {
+        const part = getComputedStyle(node, pseudo);
+        const width = parseFloat(part.width) || 0;
+        const height = parseFloat(part.height) || 0;
+        if (/^(none|normal)$/.test(part.content) || width <= 0 || height <= 0) continue;
+        if (paints(part)) parts.push({ width, height });
+      }
+    }
+    return { screenWidth: box.width, screenHeight: box.height, parts };
+  });
+
+// The screen box and the union of its painted content leaves; 1px assistive boxes are skipped.
+const screenContent = (scope: Locator) =>
+  screen(scope).evaluate(el => {
+    const box = el.getBoundingClientRect();
+    const leaves = [...el.querySelectorAll('*')]
+      .filter(node => node instanceof SVGSVGElement || node.childElementCount === 0)
+      .filter(node => !node.parentElement?.closest('svg'))
+      .filter(node => node.checkVisibility({ visibilityProperty: true }))
+      .map(node => node.getBoundingClientRect())
+      .filter(rect => rect.width > 1 && rect.height > 1);
+    return {
+      leaves: leaves.length,
+      screen: { left: box.left, right: box.right, top: box.top, bottom: box.bottom },
+      content: {
+        left: Math.min(...leaves.map(rect => rect.left)),
+        right: Math.max(...leaves.map(rect => rect.right)),
+        top: Math.min(...leaves.map(rect => rect.top)),
+        bottom: Math.max(...leaves.map(rect => rect.bottom)),
+      },
+    };
+  });
 // Read once right after the choice, never polled: ARIA and inert switch with the view at once.
 const paneState = (target: Locator) =>
   target.evaluate(el => ({
@@ -375,11 +509,48 @@ function columns(page: Page) {
       });
     const toc = document.querySelector(`[data-docs-shell] .page-grid > .toc[data-doc-nav='toc']`);
     const contents = document.querySelector('main details[data-doc-contents]');
+    // Main column: its border box, the content box between its padding, the central
+    // container-sm inset resolved from the root role and the visible fixed Tweaker trigger.
+    const shell =
+      document.querySelector('[data-docs-shell] .docs-main') ?? document.querySelector('main');
+    const measureMain = (el: Element) => {
+      const rect = el.getBoundingClientRect();
+      const style = getComputedStyle(el);
+      const probe = document.createElement('div');
+      probe.hidden = true;
+      probe.style.paddingInlineStart = 'var(--inset-container-sm, 16px)';
+      el.append(probe);
+      const inset = parseFloat(getComputedStyle(probe).paddingInlineStart);
+      probe.remove();
+      const triggers = [...el.querySelectorAll('[data-tweaker-trigger], .atlas-tweaker-trigger')]
+        .filter(node => node.checkVisibility({ visibilityProperty: true }))
+        .map(node => node.getBoundingClientRect())
+        .filter(box => box.width > 0 && box.height > 0)
+        .sort((x, y) => y.width - x.width);
+      const paddingStart = parseFloat(style.paddingLeft);
+      const paddingEnd = parseFloat(style.paddingRight);
+      return {
+        left: rect.left,
+        right: rect.right,
+        contentLeft: rect.left + parseFloat(style.borderLeftWidth) + paddingStart,
+        contentRight: rect.right - parseFloat(style.borderRightWidth) - paddingEnd,
+        paddingStart,
+        paddingEnd,
+        inset,
+        trigger: triggers.length ? { left: triggers[0].left, width: triggers[0].width } : null,
+        viewport: document.documentElement.clientWidth,
+      };
+    };
     return {
       sections,
+      main: shell ? measureMain(shell) : null,
       toc:
         toc && shown(toc)
-          ? { left: toc.getBoundingClientRect().left, position: getComputedStyle(toc).position }
+          ? {
+              left: toc.getBoundingClientRect().left,
+              position: getComputedStyle(toc).position,
+              links: toc.querySelectorAll('a[href]').length,
+            }
           : null,
       contents: !!contents && shown(contents),
     };
@@ -387,7 +558,7 @@ function columns(page: Page) {
 }
 type Layout = Awaited<ReturnType<typeof columns>>;
 
-function expectDesktopColumns(layout: Layout, label: string) {
+function expectDesktopColumns(layout: Layout, label: string, { rail = true } = {}) {
   const refs = layout.sections.filter(
     section => referenceSection.test(section.id) || referenceSection.test(section.title),
   );
@@ -433,8 +604,15 @@ function expectDesktopColumns(layout: Layout, label: string) {
   expect
     .soft(Math.min(...refs.map(section => section.width)), `${label}: readable reference width`)
     .toBeGreaterThanOrEqual(320);
+  // Below the rail breakpoint the Contents disclosure replaces the far-right rail.
+  if (!rail) {
+    expect.soft(layout.toc, `${label}: far-right contents rail is not shown`).toBeNull();
+    expect.soft(layout.contents, `${label}: Contents disclosure is visible`).toBe(true);
+    return;
+  }
   expect.soft(layout.toc, `${label}: far-right contents rail is visible`).not.toBeNull();
   if (!layout.toc) return;
+  expect.soft(layout.toc.links, `${label}: contents rail lists all eight sections`).toBe(8);
   expect
     .soft(layout.toc.left, `${label}: contents rail sits right of the reference column`)
     .toBeGreaterThanOrEqual(refRight - tolerancePx);
@@ -444,14 +622,67 @@ function expectDesktopColumns(layout: Layout, label: string) {
 function expectNarrowStack(layout: Layout, label: string) {
   expect.soft(layout.sections.length, `${label}: keeps eight documentation sections`).toBe(8);
   expect.soft(layout.contents, `${label}: Contents disclosure is visible`).toBe(true);
+  // The section column fills the main content box exactly: the viewport minus the central
+  // container-sm inset at the start and, at the end, that inset plus the measured fixed Tweaker
+  // trigger when the main column holds one. Excess padding or a squeezed column fails.
+  const main = layout.main;
+  expect.soft(main, `${label}: main column is measured`).not.toBeNull();
+  if (!main) return;
+  const reserved = main.inset + (main.trigger?.width ?? 0);
+  const available = main.viewport - main.inset - reserved;
+  expect.soft(main.inset, `${label}: central container inset`).toBeGreaterThanOrEqual(16);
+  expect
+    .soft(Math.abs(main.left), `${label}: main column starts at the viewport edge`)
+    .toBeLessThanOrEqual(tolerancePx);
+  expect
+    .soft(Math.abs(main.right - main.viewport), `${label}: main column ends at the viewport edge`)
+    .toBeLessThanOrEqual(tolerancePx);
+  expect
+    .soft(Math.abs(main.paddingStart - main.inset), `${label}: start inset is the central role`)
+    .toBeLessThanOrEqual(tolerancePx);
+  expect
+    .soft(
+      Math.abs(main.paddingEnd - reserved),
+      `${label}: end inset is the central inset plus any trigger`,
+    )
+    .toBeLessThanOrEqual(tolerancePx);
+  if (main.trigger) {
+    expect
+      .soft(main.paddingEnd, `${label}: end inset clears the trigger and the central gap`)
+      .toBeGreaterThanOrEqual(main.trigger.width + main.inset - tolerancePx);
+    expect
+      .soft(main.trigger.left - main.contentRight, `${label}: Tweaker trigger sits past the gap`)
+      .toBeGreaterThanOrEqual(main.inset - tolerancePx);
+  }
+  expect
+    .soft(
+      Math.abs(main.contentRight - main.contentLeft - available),
+      `${label}: main content is the viewport minus the reserved insets`,
+    )
+    .toBeLessThanOrEqual(tolerancePx);
   const stack = [...layout.sections].sort((a, b) => a.top - b.top);
   stack.forEach((section, index) => {
     expect
       .soft(Math.abs(section.left - stack[0].left), `${label}: #${section.id} stacks on one edge`)
       .toBeLessThanOrEqual(tolerancePx);
     expect
-      .soft(section.width, `${label}: #${section.id} keeps a full-width column`)
-      .toBeGreaterThanOrEqual(280);
+      .soft(
+        Math.abs(section.left - main.contentLeft),
+        `${label}: #${section.id} starts at the main content edge`,
+      )
+      .toBeLessThanOrEqual(tolerancePx);
+    expect
+      .soft(
+        Math.abs(section.right - main.contentRight),
+        `${label}: #${section.id} ends at the main content edge`,
+      )
+      .toBeLessThanOrEqual(tolerancePx);
+    expect
+      .soft(
+        Math.abs(section.width - available),
+        `${label}: #${section.id} fills the available content width`,
+      )
+      .toBeLessThanOrEqual(tolerancePx);
     if (index > 0)
       expect
         .soft(section.top, `${label}: #${section.id} follows the previous section`)
@@ -633,7 +864,100 @@ test('every component route wraps each example cluster in one preview workbench 
       'first Button workbench spans its full playground width',
     )
     .toBeLessThanOrEqual(tolerancePx);
+  // Compact command bar: the three native radiogroups keep their accessible labels; device and
+  // theme options paint one SVG icon over an assistive-only label, Example view keeps its text,
+  // and every option keeps a 44 x 48 CSS px hit area.
+  expect
+    .soft(await toolbarHeight(first), 'command bar height at 1920')
+    .toBeLessThanOrEqual(toolbarMaxHeightPx + tolerancePx);
+  for (const [name, labels] of controlGroups) {
+    const options = await optionPaint(first, name);
+    expect.soft(options.length, `${name}: one option per label`).toBe(labels.length);
+    options.forEach((entry, index) => {
+      const optionLabel = `${name} ${labels[index] ?? index + 1}`;
+      expect
+        .soft(entry.width, `${optionLabel}: hit area width`)
+        .toBeGreaterThanOrEqual(hitMinWidthPx - tolerancePx);
+      expect
+        .soft(entry.height, `${optionLabel}: hit area height`)
+        .toBeGreaterThanOrEqual(hitMinHeightPx - tolerancePx);
+      if (name === 'Example view') {
+        expect.soft(entry.text, `${optionLabel}: keeps its visible text`).not.toEqual([]);
+        return;
+      }
+      expect.soft(entry.icons, `${optionLabel}: paints an SVG icon`).toBeGreaterThanOrEqual(1);
+      expect.soft(entry.text, `${optionLabel}: label text is assistive-only`).toEqual([]);
+    });
+  }
+  const firstCaptions = await captions(first);
+  expect
+    .soft(
+      firstCaptions.map(entry => entry.text),
+      'the current device name is a visible caption',
+    )
+    .toContain('MacBook');
+  for (const entry of firstCaptions)
+    expect.soft(entry.size, `workbench text ${entry.text} font size`).toBeGreaterThanOrEqual(14);
+  const laptopChrome = await deviceChrome(first);
+  expect
+    .soft(
+      laptopChrome.parts.filter(part => part.width >= laptopChrome.screenWidth - tolerancePx),
+      'MacBook base is painted under the lid',
+    )
+    .not.toEqual([]);
   await shot(page, testInfo, 'button-layout-1920');
+
+  // 1280 CSS px: showcase beside one continuous API and resources column; the Contents
+  // disclosure replaces the far-right rail.
+  await page.setViewportSize(laptop);
+  await visit(page, 'button');
+  await settle(page);
+  expectDesktopColumns(await columns(page), 'button 1280', { rail: false });
+  expect.soft(await pageOverflow(page), 'button 1280: no page overflow').toBeLessThanOrEqual(0);
+  await shot(page, testInfo, 'button-layout-1280');
+
+  // Badge at 1600 CSS px: the default MacBook screen stays short and centres the native badges.
+  await page.setViewportSize(badgeWide);
+  await visit(page, 'badge');
+  await settle(page);
+  const badge = workbench(page, 'badge-playground');
+  await expect
+    .soft(frame(badge), 'badge 1600: MacBook is the default')
+    .toHaveAttribute('data-preview-device', 'macbook');
+  const fit = await screenContent(badge);
+  const offset = {
+    inline: (fit.content.left + fit.content.right - fit.screen.left - fit.screen.right) / 2,
+    block: (fit.content.top + fit.content.bottom - fit.screen.top - fit.screen.bottom) / 2,
+  };
+  expect
+    .soft(fit.screen.bottom - fit.screen.top, 'badge 1600: MacBook screen height')
+    .toBeLessThanOrEqual(badgeScreenMaxHeightPx + tolerancePx);
+  expect.soft(fit.leaves, 'badge 1600: badge content renders').toBeGreaterThan(0);
+  expect
+    .soft(fit.content.left, 'badge 1600: content starts inside the screen')
+    .toBeGreaterThanOrEqual(fit.screen.left - tolerancePx);
+  expect
+    .soft(fit.content.right, 'badge 1600: content ends inside the screen')
+    .toBeLessThanOrEqual(fit.screen.right + tolerancePx);
+  expect
+    .soft(fit.content.top, 'badge 1600: content starts below the screen top')
+    .toBeGreaterThanOrEqual(fit.screen.top - tolerancePx);
+  expect
+    .soft(fit.content.bottom, 'badge 1600: content ends above the screen bottom')
+    .toBeLessThanOrEqual(fit.screen.bottom + tolerancePx);
+  expect
+    .soft(Math.abs(offset.inline), 'badge 1600: content is centred across the screen')
+    .toBeLessThanOrEqual(centerTolerancePx);
+  expect
+    .soft(Math.abs(offset.block), 'badge 1600: content is centred down the screen')
+    .toBeLessThanOrEqual(centerTolerancePx);
+  expect.soft(await unscaled(badge), 'badge 1600: preview is not scaled').toBe(true);
+  await workbenchShot(badge, testInfo, 'badge-playground-1600');
+  // One full-viewport frame with the Badge workbench in view, so review sees the device beside
+  // the API and resources column and the far-right contents rail together.
+  await badge.evaluate(element => element.scrollIntoView({ block: 'center', behavior: 'instant' }));
+  await settle(page);
+  await shot(page, testInfo, 'badge-layout-1600');
 
   await page.setViewportSize(narrow);
   await visit(page, 'button');
@@ -675,6 +999,75 @@ test('every component route wraps each example cluster in one preview workbench 
   expect
     .soft(narrowScreen.right, 'button 320: device screen fits the available width')
     .toBeLessThanOrEqual(narrowScreen.viewport + 0.5);
+  // The fixed Tweaker opener stays inside the viewport and covers no readable main text. Text in
+  // the opener itself and assistive-only, aria-hidden, inert, hidden or off-screen text is skipped.
+  const tweaker = await page.evaluate(() => {
+    const viewport = { width: window.innerWidth, height: window.innerHeight };
+    const triggers = [...document.querySelectorAll('.atlas-tweaker-trigger')].filter(el => {
+      const rect = el.getBoundingClientRect();
+      return el.checkVisibility({ visibilityProperty: true }) && rect.width > 0 && rect.height > 0;
+    });
+    const boxes = triggers.map(el => {
+      const rect = el.getBoundingClientRect();
+      return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom };
+    });
+    const main = document.querySelector('main');
+    if (!main) return { viewport, boxes, covered: [] as string[] };
+    const covered = new Set<string>();
+    const walker = document.createTreeWalker(main, NodeFilter.SHOW_TEXT);
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      const parent = node.parentElement;
+      const text = (node.textContent ?? '').trim();
+      if (!parent || !text || parent.closest('script, style')) continue;
+      if (triggers.some(trigger => trigger.contains(parent))) continue;
+      if (parent.closest('[aria-hidden=true], [inert]')) continue;
+      if (!parent.checkVisibility({ visibilityProperty: true })) continue;
+      let assistive = false;
+      for (let item: Element | null = parent; item && !assistive; item = item.parentElement) {
+        const box = item.getBoundingClientRect();
+        const flat = box.width <= 1 || box.height <= 1;
+        if (flat && getComputedStyle(item).display !== 'contents') assistive = true;
+        if (item === main) break;
+      }
+      if (assistive) continue;
+      const range = document.createRange();
+      range.selectNodeContents(node);
+      for (const line of Array.from(range.getClientRects())) {
+        const left = Math.max(line.left, 0);
+        const right = Math.min(line.right, viewport.width);
+        const top = Math.max(line.top, 0);
+        const bottom = Math.min(line.bottom, viewport.height);
+        if (right <= left || bottom <= top) continue;
+        const overlaps = boxes.some(
+          box =>
+            Math.min(right, box.right) - Math.max(left, box.left) > 0 &&
+            Math.min(bottom, box.bottom) - Math.max(top, box.top) > 0,
+        );
+        if (overlaps) covered.add(text.slice(0, 64));
+      }
+    }
+    return { viewport, boxes, covered: [...covered] };
+  });
+  expect
+    .soft(tweaker.boxes.length, 'button 320: the fixed Tweaker opener renders')
+    .toBeGreaterThan(0);
+  for (const box of tweaker.boxes) {
+    expect
+      .soft(box.left, 'button 320: Tweaker opener starts inside the viewport')
+      .toBeGreaterThanOrEqual(-0.5);
+    expect
+      .soft(box.right, 'button 320: Tweaker opener ends inside the viewport')
+      .toBeLessThanOrEqual(tweaker.viewport.width + 0.5);
+    expect
+      .soft(box.top, 'button 320: Tweaker opener starts below the viewport top')
+      .toBeGreaterThanOrEqual(-0.5);
+    expect
+      .soft(box.bottom, 'button 320: Tweaker opener ends above the viewport bottom')
+      .toBeLessThanOrEqual(tweaker.viewport.height + 0.5);
+  }
+  expect
+    .soft(tweaker.covered, 'button 320: the Tweaker opener covers no readable main text')
+    .toEqual([]);
   await shot(page, testInfo, 'button-layout-320');
 });
 
@@ -732,6 +1125,16 @@ test('Button and Input workbenches keep device, shared theme, lazy code, state a
     deviceWidths.iphone + tolerancePx,
   );
   expect(await unscaled(a), 'iPhone preview is not scaled').toBe(true);
+  const phone = await deviceChrome(a);
+  expect(phone.screenHeight, 'iPhone screen stays portrait').toBeGreaterThan(phone.screenWidth);
+  expect(
+    phone.parts.filter(part => part.width < phone.screenWidth / 2).length,
+    'iPhone paints its sensor and home indicator',
+  ).toBeGreaterThanOrEqual(2);
+  expect(
+    (await captions(a)).map(entry => entry.text),
+    'the caption names the chosen device',
+  ).toContain('iPhone');
   await workbenchShot(a, testInfo, 'iphone-workbench-1920');
 
   // Theme is the shared shell theme: every group and the header switch read the same value.
@@ -940,6 +1343,8 @@ test('Button and Input workbenches keep device, shared theme, lazy code, state a
     await screen(owner).evaluate(el => el.getBoundingClientRect().width),
     'iPad screen fits 820px',
   ).toBeLessThanOrEqual(deviceWidths.ipad + tolerancePx);
+  const tablet = await deviceChrome(owner);
+  expect(tablet.screenHeight, 'iPad screen stays portrait').toBeGreaterThan(tablet.screenWidth);
   await choose(option(owner, 'Preview theme', 'Dark'));
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await choose(option(owner, 'Example view', 'Code'));
