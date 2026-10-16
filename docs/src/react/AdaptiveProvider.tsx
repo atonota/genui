@@ -1,0 +1,121 @@
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+} from 'react';
+import {
+  advanceJourney,
+  journeyOptions,
+  resolveAdaptive,
+  serverEnvironment,
+  type AdaptiveEnvironment,
+  type AdaptiveJourney,
+  type AdaptiveOptions,
+  type AdaptiveResolution,
+  type ProductSurface,
+} from '../adaptive/policy';
+import { getEnvironmentStore } from '../adaptive/environment';
+
+export interface AdaptiveContextValue {
+  environment: AdaptiveEnvironment;
+  resolution: AdaptiveResolution;
+  surface: ProductSurface;
+  /** Effective options, including the phone lock of a retained journey. */
+  options: AdaptiveOptions;
+  /** Drops a retained journey; the next render resolves by width again. */
+  releaseJourney: () => void;
+}
+
+export const AdaptiveContext = createContext<AdaptiveContextValue | null>(null);
+
+const subscribeNothing = () => () => {};
+const readClient = () => true;
+const readServer = () => false;
+const webOptions: AdaptiveOptions = Object.freeze({ surface: 'web' });
+
+// The shared document store is read lazily during render, never at module init, so SSR
+// and the hydration pass both see the stable initial snapshot.
+function useEnvironment(
+  enabled: boolean,
+  initial: AdaptiveEnvironment,
+): { environment: AdaptiveEnvironment; measured: boolean } {
+  const store = useMemo(
+    () => (enabled && typeof window !== 'undefined' ? getEnvironmentStore(window) : null),
+    [enabled],
+  );
+  const subscribe = useCallback(
+    (onChange: () => void) => (store ? store.subscribe(onChange) : subscribeNothing()),
+    [store],
+  );
+  const getSnapshot = useCallback(() => (store ? store.getSnapshot() : initial), [store, initial]);
+  const getServerSnapshot = useCallback(() => initial, [initial]);
+  const environment = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  // Hydration renders the initial snapshot too; only later client renders are measured.
+  const hydrated = useSyncExternalStore(subscribeNothing, readClient, readServer);
+  return { environment, measured: store !== null && hydrated };
+}
+
+/**
+ * Resolution with journey continuity. The journey is derived state updated during render (the
+ * React pattern for information from previous renders), so a rotated phone never renders or
+ * requests the tablet layout first. SSR and hydration snapshots are never recorded, so the
+ * conservative 320 fallback cannot latch a phone.
+ */
+function useResolution(
+  environment: AdaptiveEnvironment,
+  measured: boolean,
+  options: AdaptiveOptions,
+): AdaptiveContextValue {
+  const surface = options.surface ?? 'web';
+  const { lockedProfile, continuity } = options;
+  const own = useMemo<AdaptiveOptions>(
+    () => ({
+      surface,
+      ...(lockedProfile ? { lockedProfile } : {}),
+      ...(continuity ? { continuity } : {}),
+    }),
+    [surface, lockedProfile, continuity],
+  );
+  const [journey, setJourney] = useState<AdaptiveJourney | null>(null);
+  const current = measured ? advanceJourney(journey, environment, own) : null;
+  if (current !== null && current !== journey) setJourney(current);
+  const releaseJourney = useCallback(() => setJourney(null), []);
+  const effective = useMemo(() => journeyOptions(current, own), [current, own]);
+  return useMemo(
+    () => ({
+      environment,
+      resolution: resolveAdaptive(environment, effective),
+      surface,
+      options: effective,
+      releaseJourney,
+    }),
+    [environment, effective, surface, releaseJourney],
+  );
+}
+
+/** Explicit product surface, locked profile and SSR snapshot for every nested consumer. */
+export default function AdaptiveProvider({
+  children,
+  options,
+  initialEnvironment,
+}: {
+  children: ReactNode;
+  options?: AdaptiveOptions;
+  initialEnvironment?: AdaptiveEnvironment;
+}) {
+  const { environment, measured } = useEnvironment(true, initialEnvironment ?? serverEnvironment);
+  const value = useResolution(environment, measured, options ?? {});
+  return <AdaptiveContext.Provider value={value}>{children}</AdaptiveContext.Provider>;
+}
+
+/** Provider context when present; otherwise the shared document environment on the web surface. */
+export function useAdaptive(): AdaptiveContextValue {
+  const provided = useContext(AdaptiveContext);
+  const { environment, measured } = useEnvironment(provided === null, serverEnvironment);
+  const own = useResolution(environment, measured, webOptions);
+  return provided ?? own;
+}

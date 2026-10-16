@@ -17,7 +17,7 @@
     "postinstall": "node tools/patch-antd-types.mjs && node tools/patch-picker-focus.mjs",
     "lint": "node tools/lint.mjs",
     "check:dropdown": "node tools/check-dropdown.mjs",
-    "docs:data": "node tools/docs-data.mjs",
+    "docs:data": "node tools/adaptive-styles.mjs --check && node tools/docs-data.mjs",
     "docs:dev": "npm run docs:data && cd docs && astro dev",
     "docs:check": "npm run docs:data && astro check --root docs && node tools/docs-snippets.mjs && tsc --noEmit --project docs/tsconfig.snippets.json",
     "docs:build": "npm run docs:data && astro build --root docs",
@@ -33,7 +33,11 @@
     "storybook:build": "npm run docs:data && storybook build --output-dir storybook-static --disable-telemetry",
     "storybook:test": "node --test storybook/tests/*.test.mjs",
     "storybook:verify": "npm run storybook:check && npm run storybook:build && npm run storybook:test",
-    "docs:lint": "node tools/docs-lint.mjs"
+    "docs:lint": "node tools/docs-lint.mjs",
+    "docs:adaptive:test": "node --test docs/tests/adaptive-policy.test.mjs docs/tests/adaptive-input.test.mjs docs/tests/adaptive-delivery.test.mjs",
+    "docs:adaptive:browser": "playwright test --config docs/browser/adaptive.config.ts",
+    "docs:adaptive:styles:check": "node tools/adaptive-styles.mjs --check",
+    "docs:adaptive:styles:generate": "node tools/adaptive-styles.mjs"
   },
   "devDependencies": {
     "@ant-design/colors": "8.0.1",
@@ -61,6 +65,7 @@
     "prettier-plugin-astro": "1.1.1",
     "react": "19.2.0",
     "react-dom": "19.2.0",
+    "sass": "1.105.2",
     "storybook": "10.2.19",
     "stylelint": "17.16.0",
     "typescript": "5.9.3"

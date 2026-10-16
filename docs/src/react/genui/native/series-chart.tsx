@@ -1,6 +1,5 @@
 import AtlasChart, { type AtlasChartSeries } from '../../AtlasChart';
 import type { NativeAdapterProps } from '../../../genui/native-contract';
-import '../../../styles/atlas-chart.css';
 
 /** Data arrives parsed by the series-chart schema; the chart owns legend, bars and table. */
 export default function AtlasSeriesChart({ data }: NativeAdapterProps) {

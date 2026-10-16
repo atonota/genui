@@ -1,0 +1,54 @@
+// Tablet: a rail beside main once the shell host reaches policy.widths.smallTablet; context
+// follows main so forms keep their width. Narrower hosts stack the slots in reading order, and
+// absent or closed slots reserve no column, row or gap.
+@use 'sass:map';
+@use '../generated/adaptive-policy' as policy;
+
+.adaptive-layout-tablet {
+  --adaptive-gutter: 1.5rem;
+  --adaptive-rail: 15rem;
+  --adaptive-form-measure: 40rem;
+
+  // Stacked: one column in DOM order (bar, nav, main, context, delivery).
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--adaptive-gutter);
+  padding-inline: max(var(--adaptive-gutter), env(safe-area-inset-left))
+    max(var(--adaptive-gutter), env(safe-area-inset-right));
+
+  &[data-purpose='form'] > .adaptive-shell-main {
+    max-inline-size: var(--adaptive-form-measure);
+  }
+
+  > .adaptive-shell-main {
+    min-inline-size: 0;
+  }
+}
+
+@container adaptive-shell (width >= #{map.get(policy.$widths, small-tablet)}) {
+  // Open navigation: rail beside main; context follows main only when it exists.
+  .adaptive-layout-tablet[data-nav-open='true'] {
+    grid-template-columns: minmax(0, var(--adaptive-rail)) minmax(0, 1fr);
+    grid-template-areas: 'bar bar' 'nav main' 'nav context';
+
+    &:not(:has(> .adaptive-shell-context)) {
+      grid-template-areas: 'bar bar' 'nav main';
+    }
+
+    > .adaptive-shell-bar {
+      grid-area: bar;
+    }
+    > .adaptive-shell-nav {
+      grid-area: nav;
+    }
+    > .adaptive-shell-main {
+      grid-area: main;
+    }
+    > .adaptive-shell-context {
+      grid-area: context;
+    }
+    > .adaptive-shell-delivery {
+      grid-column: 1 / -1;
+    }
+  }
+}

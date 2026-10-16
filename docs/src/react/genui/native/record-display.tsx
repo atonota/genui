@@ -11,8 +11,6 @@ import {
   RECORD_DISPLAY_PRESENTATIONS,
   type RecordDisplayPresentation,
 } from '../../../genui/native/record-display';
-import '../../../styles/workspace-kit.css';
-import '../../../styles/kit-records.css';
 
 /** Validated JSON record rendered through the existing read-only RecordDisplay; no edit or host callbacks. */
 export default function NativeRecordDisplay({ data }: NativeAdapterProps) {

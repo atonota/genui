@@ -1,5 +1,3 @@
-import '../../../styles/atlas-avatar.css';
-import '../../../styles/atlas-content-patterns.css';
 import type { NativeAdapterProps } from '../../../genui/native-contract';
 import { definition } from '../../../genui/native/avatar-group';
 import AtlasAvatarGroup, { type AtlasAvatarGroupPerson } from '../../AtlasAvatarGroup';

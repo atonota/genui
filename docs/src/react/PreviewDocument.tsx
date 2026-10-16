@@ -22,6 +22,13 @@ import { restoreLocale } from '../i18n';
 import { initializeThemeBuilder } from '../theme-builder/store';
 import type { ThemeMode } from '../theme';
 import { AtlasSsrTheme } from './AtlasProvider';
+import AdaptiveProvider from './AdaptiveProvider';
+import {
+  serverEnvironment,
+  type AdaptiveEnvironment,
+  type AdaptiveOptions,
+  type LayoutProfile,
+} from '../adaptive/policy';
 import { PreviewProvider } from './PreviewContext';
 
 // The server resolves every allowlisted demo before rendering. In browser bundles this branch is
@@ -96,6 +103,14 @@ export type PreviewLayout = {
   readonly dataLayout: string;
 };
 type PreviewStyle = CSSProperties & Record<`--preview-document-${string}`, string>;
+
+/** Each preview profile is a known, trusted reference journey and locks its layout profile, so a
+    rotated small preview stays phone instead of reading its landscape width as tablet. */
+const adaptiveProfiles: Readonly<Record<PreviewProfile, LayoutProfile>> = {
+  small: 'phone',
+  medium: 'tablet',
+  large: 'desktop',
+};
 
 // Literal allowlisted entries; a switch imports only the requested one, never on first render.
 const profileEntries: Readonly<
@@ -234,6 +249,23 @@ export default function PreviewDocument({
     () => ({ exampleId: id, profile, mode, orientation: screen.orientation }),
     [id, profile, mode, screen.orientation],
   );
+  // A constant, unkeyed AdaptiveProvider wraps every profile so the business subtree never
+  // remounts; it locks the reference profile and seeds only this logical screen's CSS size,
+  // never an emulated device capability.
+  const adaptiveOptions = useMemo<AdaptiveOptions>(
+    () => ({ lockedProfile: adaptiveProfiles[profile] }),
+    [profile],
+  );
+  const adaptiveEnvironment = useMemo<AdaptiveEnvironment>(
+    () => ({
+      ...serverEnvironment,
+      width: screen.widthPx,
+      height: screen.heightPx,
+      visualWidth: screen.widthPx,
+      visualHeight: screen.heightPx,
+    }),
+    [screen.widthPx, screen.heightPx],
+  );
   const style: PreviewStyle = {
     '--preview-document-width': `${screen.widthPx}px`,
     '--preview-document-height': `${screen.heightPx}px`,
@@ -242,27 +274,34 @@ export default function PreviewDocument({
     '--preview-document-gutter': `${layout.gutterPx}px`,
   };
   return (
-    <PreviewProvider value={context}>
-      <div
-        ref={root}
-        data-preview-document=""
-        data-profile={profile}
-        data-theme={mode}
-        data-orientation={screen.orientation}
-        data-preview-grid={grid ? '' : undefined}
-        data-preview-hydrated={hydrated ? 'true' : undefined}
-        style={style}
-      >
-        <div data-preview-viewport="">
-          <div data-preview-container="">
-            {/* One stable main for every profile; only its preset class and layout change. */}
-            <main className={layout.className} data-preview-layout={layout.dataLayout}>
-              <Demo documentation />
-              <Ready onReady={onReady} />
-            </main>
+    <AdaptiveProvider options={adaptiveOptions} initialEnvironment={adaptiveEnvironment}>
+      <PreviewProvider value={context}>
+        <div
+          ref={root}
+          data-preview-document=""
+          data-profile={profile}
+          data-theme={mode}
+          data-orientation={screen.orientation}
+          data-preview-grid={grid ? '' : undefined}
+          data-preview-hydrated={hydrated ? 'true' : undefined}
+          style={style}
+        >
+          <div data-preview-viewport="">
+            <div data-preview-container="">
+              {/* One stable main for every profile; only its preset class and layout change. It is
+                  also the named adaptive container every demo's container rules read. */}
+              <main
+                className={layout.className}
+                data-preview-layout={layout.dataLayout}
+                data-adaptive-container=""
+              >
+                <Demo documentation />
+                <Ready onReady={onReady} />
+              </main>
+            </div>
           </div>
         </div>
-      </div>
-    </PreviewProvider>
+      </PreviewProvider>
+    </AdaptiveProvider>
   );
 }

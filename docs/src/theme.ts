@@ -110,6 +110,19 @@ export const docsThemeColors = {
   dark: { ...themeColors.dark, ...docsShellRoles('dark') },
 } as const;
 
+/** One mode's color roles as CSS custom properties, each camelCase role under its kebab-case
+    name. The static root style text and inline preview owners share this single mapping. */
+export function themeColorVariables(
+  colors: Readonly<Record<string, string>>,
+): Record<`--${string}`, string> {
+  return Object.fromEntries(
+    Object.entries(colors).map(([name, value]) => [
+      `--${name.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}`,
+      value,
+    ]),
+  ) as Record<`--${string}`, string>;
+}
+
 function createThemeStyleText(colorsByMode: Record<ThemeMode, Record<string, string>>) {
   return Object.entries(colorsByMode)
     .map(([mode, colors]) => {
@@ -117,12 +130,7 @@ function createThemeStyleText(colorsByMode: Record<ThemeMode, Record<string, str
       // Keep color source mappings intact; custom provider recipes still override these defaults.
       const variables = {
         ...defaultGeometryVariables(mode as ThemeMode),
-        ...Object.fromEntries(
-          Object.entries(colors).map(([name, value]) => [
-            `--${name.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}`,
-            value,
-          ]),
-        ),
+        ...themeColorVariables(colors),
       };
       const tokens = Object.entries(variables)
         .map(([name, value]) => `${name}:${value}`)

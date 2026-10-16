@@ -1,22 +1,26 @@
 import {
   createContext,
+  useCallback,
   useContext,
+  useLayoutEffect,
   useMemo,
+  useRef,
   useState,
   useSyncExternalStore,
   type CSSProperties,
   type ReactNode,
 } from 'react';
+import { createPortal } from 'react-dom';
 import { ConfigProvider, theme, type ThemeConfig } from 'antd';
 import trTR from 'antd/locale/tr_TR.js';
 import enUS from 'antd/locale/en_US.js';
 import { useI18n } from './useI18n';
-import { usePreviewTheme } from './PreviewContext';
+import { usePreviewContext, usePreviewTheme } from './PreviewContext';
 import { StyleProvider, px2remTransformer } from '@ant-design/cssinjs';
 import atlas from '../data/atlas.json';
 import motion from '../data/motion.json';
-import { themeColors, type ThemeMode } from '../theme';
-import { documentationColors } from '../data/docs-brand';
+import { docsThemeColors, themeColorVariables, themeColors, type ThemeMode } from '../theme';
+import { documentationColors, documentationVariables } from '../data/docs-brand';
 import { tweakerVariables } from '../data/tweaker';
 import { selectionSizeProfiles } from '../data/selection-sizes';
 import {
@@ -32,9 +36,11 @@ import {
 import {
   getInputModalitySnapshot,
   getServerInputModalitySnapshot,
+  registerSpatialPortal,
   subscribeInputModality,
 } from '../input-modality';
 import { inputSurfaceAliasVariables } from '../data/input-surfaces';
+import { AtlasPortalOwner, adaptivePortalAttributes } from './AtlasPortalScope';
 import {
   getServerThemeBuilderSnapshot,
   getThemeBuilderSnapshot,
@@ -53,6 +59,8 @@ import {
 } from './AtlasSizeProfile';
 import AtlasTweaker, { useHasTweaker } from './AtlasTweaker';
 import AtlasClearIcon from './AtlasClearIcon';
+import { AdaptiveContext, useAdaptive } from './AdaptiveProvider';
+import { adaptiveBreakpointTokens } from '../adaptive/policy';
 import {
   AtlasAppearanceContext,
   useAtlasAppearance,
@@ -185,6 +193,8 @@ function createAtlasTheme(
       motionDurationFast: motion.durationMs.fast / 1000 + 's',
       motionDurationMid: motion.durationMs.feedback / 1000 + 's',
       motionDurationSlow: motion.durationMs.standard / 1000 + 's',
+      // Viewport breakpoints follow the shared adaptive policy in every appearance.
+      ...adaptiveBreakpointTokens,
       // Recipe tokens apply last; enclosing focus outlines stay disabled.
       ...(activeBuilder
         ? {
@@ -307,6 +317,18 @@ const inheritedPaintVariables = Object.fromEntries(
 // Style extraction can collect both schemes while the real island keeps light SSR markup.
 export const AtlasSsrTheme = createContext<ThemeMode>('light');
 
+// Preview owners scope their variable class per example, mode and appearance: inline previews
+// share the page document, so another mode or recipe must not overwrite the page's variables.
+// The key derives only from stable route data, so SSR extraction and hydration agree.
+function previewCssVarKey(exampleId: string, mode: ThemeMode, appearance: AtlasAppearance): string {
+  const id = exampleId
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  const base = appearance === 'docs' ? 'css-var-atlas-docs' : 'css-var-atlas';
+  return `${base}-preview-${id || 'example'}-${mode}`;
+}
+
 export default function AtlasProvider({
   children,
   appearance: explicitAppearance,
@@ -332,6 +354,7 @@ export default function AtlasProvider({
   // An isolated preview document owns its mode; it neither follows nor writes shared-origin
   // theme storage. Everywhere else the global theme store stays the source.
   const mode = usePreviewTheme(() => serverMode);
+  const preview = usePreviewContext();
   // Only documentation surfaces follow the applied Theme Builder recipe.
   const builderActive = appearance === 'docs';
   const builderRecipe = useSyncExternalStore(
@@ -350,23 +373,51 @@ export default function AtlasProvider({
         ? builder.token.controlHeightLG
         : builder.token.controlHeight
     : undefined;
+  // An inline preview shares the page document but renders its own mode, so it paints that mode's
+  // semantic roles locally; the field aliases on this owner then resolve from them. Other owners
+  // keep inheriting the static :root[data-theme] roles.
+  const ownsPreviewPaint = preview !== null;
+  const previewPaintVariables = useMemo(
+    () =>
+      ownsPreviewPaint
+        ? {
+            ...themeColorVariables((appearance === 'docs' ? docsThemeColors : themeColors)[mode]),
+            // A docs preview also owns that mode's documentation brand roles, exactly as the root
+            // docs style text declares them, so the app palette never replaces the docs identity.
+            ...(appearance === 'docs' ? documentationVariables(mode) : {}),
+          }
+        : undefined,
+    [ownsPreviewPaint, appearance, mode],
+  );
   // The store writes the applied recipe on the document for the current mode; field paint and
   // the roles it reads inherit from there, so only non-field builder roles are inlined here.
+  // A preview owner's mode may differ from the document, so it inlines the recipe's paint
+  // resolved for its own mode instead of inheriting the host's.
   const builderVariables = useMemo(
     () =>
       builder
         ? ({
             ...Object.fromEntries(
               Object.entries(builder.variables).filter(
-                ([name]) => !fieldPaintNames.has(name) && !inheritedPaintNames.has(name),
+                ([name]) =>
+                  !fieldPaintNames.has(name) &&
+                  (ownsPreviewPaint || !inheritedPaintNames.has(name)),
               ),
             ),
-            ...inheritedPaintVariables,
+            ...(ownsPreviewPaint ? {} : inheritedPaintVariables),
           } as Record<`--${string}`, string>)
         : undefined,
-    [builder],
+    [builder, ownsPreviewPaint],
   );
   const sizeStyle: CSSProperties & Record<`--${string}`, string> = {
+    // A preview owner's local mode paint comes first; accessibility, size and builder roles below
+    // keep their usual precedence over it.
+    ...previewPaintVariables,
+    // A preview owner also paints its own canvas and ink from those roles, so its content never
+    // sits on a host canvas of the other mode; ordinary owners stay transparent and inherit.
+    ...(previewPaintVariables
+      ? { colorScheme: mode, backgroundColor: 'var(--paper)', color: 'var(--ink)' }
+      : {}),
     ...(ownsTweaker ? tweakerVariables : {}),
     ...(appearance === 'docs'
       ? { ...docsTypographyVariables, ...docsAccessibilityVariables(mode) }
@@ -411,64 +462,120 @@ export default function AtlasProvider({
   // AntD motion is off for the hydration render only: server-rendered fields and form help
   // mount without an appear animation, while later validation and client mounts keep motion.
   const motionReady = useSyncExternalStore(subscribeNothing, hydratedSnapshot, hydratingSnapshot);
+  // A preview owner keeps the exact selected theme under its own variable class; exported themes
+  // stay untouched and ordinary owners keep their shared keys.
+  const cssVarKey = preview ? previewCssVarKey(preview.exampleId, mode, appearance) : undefined;
+  const ownedTheme = cssVarKey ? { ...scopedTheme, cssVar: { key: cssVarKey } } : scopedTheme;
   const providerTheme = motionReady
-    ? scopedTheme
-    : { ...scopedTheme, token: { ...scopedTheme.token, motion: false } };
+    ? ownedTheme
+    : { ...ownedTheme, token: { ...ownedTheme.token, motion: false } };
+  // Capabilities resolve from an outer AdaptiveProvider or the shared document store. The owner
+  // re-provides that one value, so every nested consumer reads the same retained journey.
+  const adaptive = useAdaptive();
   const inputModality = useSyncExternalStore(
     subscribeInputModality,
     getInputModalitySnapshot,
     getServerInputModalitySnapshot,
   );
+  // One body-level portal root per owner: native popups (Select, Dropdown, Picker, Modal,
+  // Drawer) without an explicit container render into it, so they inherit this owner's roles,
+  // local mode paint and adaptive surface. display: contents adds no box or containing block.
+  // It mounts only after hydration, so SSR markup and the hydration render stay unchanged.
+  // Each AdaptiveShell inside renders its own portal from this owner's descriptor instead.
+  const ownerRef = useRef<HTMLDivElement>(null);
+  const portalRef = useRef<HTMLDivElement>(null);
+  const getPopupContainer = useCallback(
+    () => portalRef.current ?? ownerRef.current?.ownerDocument.body ?? document.body,
+    [],
+  );
+  useLayoutEffect(() => {
+    const owner = ownerRef.current;
+    const portal = portalRef.current;
+    if (!motionReady || !owner || !portal) return;
+    return registerSpatialPortal(owner, portal);
+  }, [motionReady]);
+  // Theme roles of this owner, its portal and the own portal of every Shell inside it; the
+  // adaptive attributes follow each element's effective resolution.
+  const themeAttributes = {
+    'data-size-profile': size,
+    'data-theme-mode': mode,
+    'data-atlas-appearance': appearance === 'docs' ? 'docs' : undefined,
+    'data-input-modality': inputModality,
+  };
+  const ownerAttributes = { ...themeAttributes, ...adaptivePortalAttributes(adaptive) };
+  const portalDescriptor = {
+    className: 'atlas-demo',
+    style: sizeStyle,
+    attributes: themeAttributes,
+  };
+  const portalRoot =
+    motionReady && typeof document !== 'undefined'
+      ? createPortal(
+          <div
+            ref={portalRef}
+            className="atlas-demo"
+            data-atlas-portal=""
+            style={{ ...sizeStyle, display: 'contents' }}
+            {...ownerAttributes}
+          />,
+          document.body,
+        )
+      : null;
   return (
-    <AtlasAppearanceContext.Provider value={appearance}>
-      <AtlasSizeContext.Provider value={size}>
-        <StyleProvider transformers={appearance === 'docs' ? pixelTransformers : transformers}>
-          <ConfigProvider
-            componentSize={size === 'sm' ? 'small' : size === 'lg' ? 'large' : 'middle'}
-            theme={providerTheme}
-            locale={locale === 'tr' ? trTR : enUS}
-            wave={{ disabled: true }}
-            input={{ variant: 'filled' }}
-            inputPassword={{ variant: 'filled' }}
-            inputSearch={{ variant: 'filled' }}
-            inputNumber={{ variant: 'filled' }}
-            datePicker={appearance === 'docs' ? { clearIcon } : undefined}
-            textArea={{ variant: 'filled' }}
-            form={{ variant: 'filled' }}
-            select={{
-              variant: 'filled',
-              classNames: { popup: { root: 'atlas-select-popup' } },
-              ...(appearance === 'docs' ? { clearIcon } : {}),
-            }}
-          >
-            <div
-              className="atlas-demo"
-              data-size-profile={size}
-              style={sizeStyle}
-              data-theme-mode={mode}
-              data-atlas-appearance={appearance === 'docs' ? 'docs' : undefined}
-              data-input-modality={inputModality}
+    <AdaptiveContext.Provider value={adaptive}>
+      <AtlasAppearanceContext.Provider value={appearance}>
+        <AtlasSizeContext.Provider value={size}>
+          <StyleProvider transformers={appearance === 'docs' ? pixelTransformers : transformers}>
+            <ConfigProvider
+              componentSize={size === 'sm' ? 'small' : size === 'lg' ? 'large' : 'middle'}
+              theme={providerTheme}
+              locale={locale === 'tr' ? trTR : enUS}
+              getPopupContainer={getPopupContainer}
+              wave={{ disabled: true }}
+              input={{ variant: 'filled' }}
+              inputPassword={{ variant: 'filled' }}
+              inputSearch={{ variant: 'filled' }}
+              inputNumber={{ variant: 'filled' }}
+              datePicker={appearance === 'docs' ? { clearIcon } : undefined}
+              textArea={{ variant: 'filled' }}
+              form={{ variant: 'filled' }}
+              select={{
+                variant: 'filled',
+                classNames: { popup: { root: 'atlas-select-popup' } },
+                ...(appearance === 'docs' ? { clearIcon } : {}),
+              }}
             >
-              {ownsTweaker ? (
-                <AtlasTweaker
-                  settings={
-                    <AtlasSizeControl
-                      value={size}
-                      onChange={setLocalSize}
-                      sizeFamily={sizeFamily}
-                      vertical
-                    />
-                  }
+              <AtlasPortalOwner descriptor={portalDescriptor} getPopupContainer={getPopupContainer}>
+                <div
+                  ref={ownerRef}
+                  className="atlas-demo"
+                  data-atlas-provider-owner=""
+                  style={sizeStyle}
+                  {...ownerAttributes}
                 >
-                  {children}
-                </AtlasTweaker>
-              ) : (
-                children
-              )}
-            </div>
-          </ConfigProvider>
-        </StyleProvider>
-      </AtlasSizeContext.Provider>
-    </AtlasAppearanceContext.Provider>
+                  {ownsTweaker ? (
+                    <AtlasTweaker
+                      settings={
+                        <AtlasSizeControl
+                          value={size}
+                          onChange={setLocalSize}
+                          sizeFamily={sizeFamily}
+                          vertical
+                        />
+                      }
+                    >
+                      {children}
+                    </AtlasTweaker>
+                  ) : (
+                    children
+                  )}
+                </div>
+                {portalRoot}
+              </AtlasPortalOwner>
+            </ConfigProvider>
+          </StyleProvider>
+        </AtlasSizeContext.Provider>
+      </AtlasAppearanceContext.Provider>
+    </AdaptiveContext.Provider>
   );
 }

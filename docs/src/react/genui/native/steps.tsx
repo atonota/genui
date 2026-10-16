@@ -1,4 +1,3 @@
-import '../../../styles/atlas-steps.css';
 import AtlasSteps from '../../AtlasSteps';
 import { definition, type StepsData } from '../../../genui/native/steps';
 import type { NativeAdapterProps } from '../../../genui/native-contract';

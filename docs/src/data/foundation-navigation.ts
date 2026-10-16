@@ -26,6 +26,7 @@ export const foundationGroups: readonly FoundationGroup[] = [
       { slug: 'color-system', href: '/color-system/', label: 'Color system' },
       { slug: 'theme-builder', href: '/theme-builder/', label: 'Theme Builder' },
       { slug: 'genui', href: '/genui/', label: 'GenUI' },
+      { slug: 'adaptive', href: '/adaptive/', label: 'Adaptive UI' },
     ],
   },
   {

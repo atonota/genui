@@ -8,6 +8,7 @@ import AtlasListyItem from './AtlasListyItem';
 import useListySurface from './useListySurface';
 import { normalizeSearch } from '../i18n';
 import { useI18n } from './useI18n';
+import '../styles/atlas-cascader.css';
 
 export type AtlasCascadeOption = Readonly<{
   value: string;

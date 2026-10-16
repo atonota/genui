@@ -1,4 +1,3 @@
-import '../../../styles/atlas-cascader.css';
 import { useMemo } from 'react';
 import AtlasCascader from '../../AtlasCascader';
 import type { AtlasCascadeOption } from '../../AtlasCascader';

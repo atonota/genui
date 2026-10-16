@@ -1,4 +1,3 @@
-import '../../../styles/atlas-feedback.css';
 import { AtlasAlert, type AtlasFeedbackStatus } from '../../AtlasFeedback';
 import type { NativeAdapterProps } from '../../../genui/native-contract';
 import { definition } from '../../../genui/native/alert';

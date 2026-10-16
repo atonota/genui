@@ -17,19 +17,16 @@
   scroll-padding-block: var(--focus-scroll-padding);
 }
 /* Color roles are declared on body under the root theme so var(--accent) resolves after the
-   docs brand override on body (see nav.css). The indicator is --ink on the shell and panel
-   surfaces; button focus text is the focus surface on the --ink fill. */
+   docs brand override on body (see nav.css). Custom properties inherit their computed value,
+   so every local theme owner (.atlas-demo[data-theme-mode], marked on both the provider and
+   the body portal roots) recomputes the same formulas from its own --ink, --accent and
+   --field-bg; otherwise a preview in the opposite mode would inherit the page's focus colors.
+   The indicator is --ink on the shell and panel surfaces; button focus text is the focus
+   surface on the --ink fill. */
 :root:not([data-theme]) body,
-:root[data-theme='light'] body {
-  --focus-indicator-color: var(--ink);
-  --focus-bg: color-mix(in srgb, var(--field-bg) 90%, var(--ink) 10%);
-  --focus-link-ink: color-mix(in srgb, var(--accent) 55%, var(--ink));
-  --focus-button-bg: var(--ink);
-  --focus-button-ink: var(--focus-bg);
-  --focus-color: var(--focus-indicator-color);
-  --focus-marker: var(--focus-indicator-width);
-}
-:root[data-theme='dark'] body {
+:root[data-theme='light'] body,
+:root[data-theme='dark'] body,
+.atlas-demo[data-theme-mode] {
   --focus-indicator-color: var(--ink);
   --focus-bg: color-mix(in srgb, var(--field-bg) 90%, var(--ink) 10%);
   --focus-link-ink: color-mix(in srgb, var(--accent) 55%, var(--ink));

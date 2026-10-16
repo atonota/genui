@@ -1,0 +1,68 @@
+name: Adaptive UI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'src/**'
+      - 'tools/docs-*'
+      - 'tools/adaptive-styles*'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/adaptive-ui.yml'
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'src/**'
+      - 'tools/docs-*'
+      - 'tools/adaptive-styles*'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/adaptive-ui.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: adaptive-ui-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  adaptive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.21.0'
+          cache: npm
+      - run: npm ci
+      - name: Adaptive contract tests
+        run: npm run docs:adaptive:test
+      - name: Docs format
+        run: npm run docs:format
+      - name: Docs lint
+        run: npm run docs:lint
+      - name: Docs check
+        run: npm run docs:check
+      - name: Browser config type check
+        run: npx tsc --noEmit --project docs/tsconfig.browser.json
+      - name: Production docs build
+        run: npm run docs:build
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium firefox webkit
+      - name: Adaptive browser tests
+        run: npm run docs:adaptive:browser
+        env:
+          ATLAS_SOURCE_STAGE: ci
+      - name: Upload adaptive browser evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: adaptive-browser-evidence
+          path: evidence/adaptive-browser/
+          retention-days: 14

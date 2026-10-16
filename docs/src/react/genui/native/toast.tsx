@@ -1,4 +1,3 @@
-import '../../../styles/atlas-feedback.css';
 import { useEffect, useId, useRef } from 'react';
 import AtlasButton from '../../AtlasButton';
 import { AtlasFeedbackScope, useAtlasToast } from '../../AtlasFeedback';

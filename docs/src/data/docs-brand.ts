@@ -83,16 +83,35 @@ export const docsBrandColors = Object.freeze({
   }),
 });
 const cssName = (name: string) => name.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`);
+/** One mode's documentation brand roles and their aliases as CSS custom properties. The static
+    root style text and inline docs preview owners share this single mapping. */
+export function documentationVariables(mode: ThemeMode): Record<`--${string}`, string> {
+  return {
+    ...Object.fromEntries(
+      Object.entries(docsBrandColors[mode]).map(([name, value]) => [
+        `--docs-brand-${cssName(name)}`,
+        value,
+      ]),
+    ),
+    ...Object.fromEntries(
+      Object.entries(docsApprovedButtonColors).map(([name, value]) => [
+        `--docs-approved-button-${name}`,
+        value,
+      ]),
+    ),
+    '--accent': 'var(--docs-brand-accent)',
+    '--action-ink': 'var(--docs-brand-action-ink)',
+    '--primary': 'var(--docs-brand-primary)',
+    '--primary-edge': 'var(--docs-brand-primary-edge)',
+    '--soft': 'var(--docs-brand-soft)',
+  } as Record<`--${string}`, string>;
+}
 export const docsBrandStyleText = (['light', 'dark'] as const)
   .map(mode => {
-    const colors = docsBrandColors[mode];
-    const tokens = Object.entries(colors)
-      .map(([name, value]) => `--docs-brand-${cssName(name)}:${value}`)
+    const tokens = Object.entries(documentationVariables(mode))
+      .map(([name, value]) => `${name}:${value}`)
       .join(';');
-    const approved = Object.entries(docsApprovedButtonColors)
-      .map(([name, value]) => `--docs-approved-button-${name}:${value}`)
-      .join(';');
-    return `:root[data-theme='${mode}'] body[data-atlas-surface='docs']{${tokens};${approved};--accent:var(--docs-brand-accent);--action-ink:var(--docs-brand-action-ink);--primary:var(--docs-brand-primary);--primary-edge:var(--docs-brand-primary-edge);--soft:var(--docs-brand-soft)}`;
+    return `:root[data-theme='${mode}'] body[data-atlas-surface='docs']{${tokens}}`;
   })
   .join('\n');
 

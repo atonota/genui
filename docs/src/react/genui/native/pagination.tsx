@@ -1,4 +1,3 @@
-import '../../../styles/atlas-pagination.css';
 import AtlasPagination from '../../AtlasPagination';
 import type { NativeAdapterProps } from '../../../genui/native-contract';
 import { definition } from '../../../genui/native/pagination';

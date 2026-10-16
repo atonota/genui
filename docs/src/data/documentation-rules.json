@@ -45,6 +45,11 @@
       "description": "Published page types, section order, rules, source map, admission workflow and verification limits.",
       "routes": ["/documentation/"]
     },
+    "adaptive-lab": {
+      "label": "Adaptive lab",
+      "description": "Capability-first adaptive layout and input lab, with integration guidance and stated verification limits.",
+      "routes": ["/adaptive/"]
+    },
     "redirect": {
       "label": "Legacy redirect",
       "description": "Retired route that only redirects to its declared canonical target. Legacy fragments are mapped by docs/src/data/token-redirects.ts.",

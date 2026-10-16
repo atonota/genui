@@ -1,6 +1,12 @@
+import type { GenUIPresentationContext } from './adaptive';
 import type { JsonValue } from './contracts';
 
 export type NativePayload = Record<string, JsonValue>;
+/** Trusted-host presentation enums; generated payloads never set them. */
+export type NativePresentation = Pick<
+  GenUIPresentationContext,
+  'layout' | 'targetLayer' | 'layerPlacement'
+>;
 export interface NativeDefinition {
   name: string;
   readOnly: boolean;
@@ -14,6 +20,8 @@ export interface NativeAdapterProps {
   disabled: boolean;
   /** Whether a registered outer action is currently available. */
   actionAvailable?: boolean;
+  /** Trusted-host presentation; standalone use omits it. */
+  presentation?: NativePresentation;
   onChange(value: JsonValue): void;
   onAction(): void;
 }
@@ -137,4 +145,22 @@ export function safeMediaSource(value: unknown): string {
   if (url.protocol !== 'https:' || url.username || url.password)
     throw new Error('Media source must be same-origin or credential-free HTTPS.');
   return value;
+}
+
+/**
+ * AntD rootClassName for a portaled layer. Portals leave the surface subtree, so its data
+ * attributes cannot reach them; every class comes from trusted enums, never from a payload.
+ */
+export function nativeLayerClassName(
+  presentation: NativePresentation | undefined,
+): string | undefined {
+  if (!presentation || presentation.layerPlacement === 'none') return undefined;
+  return [
+    'atlas-genui-layer',
+    `atlas-genui-layer-${presentation.layerPlacement}`,
+    `atlas-genui-target-${presentation.targetLayer}`,
+    presentation.layout === 'living-room' ? 'atlas-genui-layer-living-room' : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
 }

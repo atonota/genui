@@ -1,5 +1,71 @@
 # GenUI maintenance contract
 
+## Capability-first adaptive GenUI and explicit TV focus — human task 2026-10-16
+
+Newest direct human task: every GenUI component moves to the capability-first
+adaptive architecture in `docs/ADAPTIVE-PLAN.md`; older entries stay as
+history. The source architecture is implemented; per-component verification
+and publication are tracked separately. Source authors run no check: conductor
+receipts under `adaptive-20261016` and the actual GitHub status are
+authoritative, and no status is a blanket DONE.
+
+- Counts stay separate: 61 runtime components (49 native + 12 generic) and 40
+  documentation slugs, all mapped in `docs/src/adaptive/component-coverage.ts`
+  and starting `implemented-unverified`; metadata never marks one `verified`.
+  `docs/src/adaptive/policy.json` is the single source for `policy.ts`,
+  `adaptiveBreakpointTokens` and the generated Sass map; a hand copy or a
+  JSON/Sass difference must FAIL a test.
+- Human answer 2026-10-16 (`hem tab, hem tv`): Tab/Shift+Tab opens the visual
+  focus mode everywhere; inside an explicit `data-adaptive-surface=living-room`
+  boundary a directional key a widget actually handled may also open the SAME
+  ringless central mode through `requestSpatialInputModality` in
+  `docs/src/input-modality.ts`, which only relays the existing bridge event (no
+  second writer, storage, ring or global arrow listener). Width never means TV;
+  generic web arrows still never open the mode.
+- `docs/src/genui/adaptive.ts`: `arrowsMoveVisualFocus` equals
+  `allowsSpatialVisualFocus(resolution)` (living-room layout + spatial layer),
+  trusted host only. `docs/src/react/genui/AtlasGenUISurface.tsx` emits
+  `data-adaptive-layout`, `-band`, `-surface` and `-input-layers` on its
+  existing root and family/target/placement on the native boundary; keys,
+  generations, actions, validation, data and stream focus are unchanged.
+  `data-adaptive-container` is not emitted: inline-size containment would make
+  the root the containing block of fixed popups mounted inside it.
+- Phone continuity: `AdaptiveProvider` automatically retains a measured phone
+  journey across rotation until its continuity reset option or
+  `useAdaptive().releaseJourney`; there is no height or pointer heuristic, so
+  an initial 768x300 is tablet and 1280x400 is desktop. `AdaptiveShell`
+  `options` accept only `surface` and `lockedProfile`; continuity belongs to
+  the Provider. Shared business state stays in unkeyed context and slots.
+- Conditional delivery: the six profiles load only through the literal
+  `layoutLoaders` registry in `docs/src/adaptive/delivery.ts`; each JS module
+  carries its SCSS as `?inline` compiled CSS that is installed only into the
+  Shell root's owner document. The initial HTML is the baseline with none of
+  the six profile stylesheets, and the visited-profile cache is reported as is.
+  The production adaptive ownership graph rejects multi-owner or foreign
+  assets; network evidence asserts external requests and the initial HTML and
+  installed stylesheet CSS. `display:none` is not proof.
+- SSR guard: only a trusted host may `await loadServerAdaptive(hints)` from
+  `docs/src/adaptive/server.ts` and pass its `environment`, `options` and
+  serializable `initialLayout` to `AdaptiveShell`, which presents it only for
+  the matching profile. Static Pages renders the conservative baseline and the
+  lab never server-renders profile CSS; never claim request-time SSR hosting or
+  a published npm package.
+- Portal ownership: layers portaled to `body` register in the provider-owned
+  registry with the pooled spatial adapter, so TV modality goes through the
+  single central bridge guarded by the nearest surface boundary. Web arrows,
+  APG composites and caret owners are unchanged; nested Shells skip
+  `defaultPrevented` and repeated Back keys.
+- Tests are node:test, not Vitest; the proposed Vitest files under `docs/src`
+  were rejected and do not exist. Unit (8 cases):
+  `docs/tests/adaptive-policy.test.mjs`, `docs/tests/adaptive-input.test.mjs`,
+  `docs/tests/adaptive-delivery.test.mjs`; browser (implemented, 3 cases on
+  Chromium, Firefox and WebKit across the 14 widths):
+  `docs/browser/adaptive-ui.spec.ts`. Checks use the root scripts
+  `docs:check`, `docs:lint`, `docs:format`, `docs:build` and the explicit
+  browser types command. Results use only pass/fail/not_run/not_applicable;
+  physical TV/webOS, pen, eye tracking, macOS/iOS Safari and Android stay
+  pending, not excluded.
+
 ## Component page tabs, full-width rails and install guidance — human task 2026-10-16
 
 Newest human task for component pages; it supersedes the 80rem showcase/reference

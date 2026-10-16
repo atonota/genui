@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "widths": {
+    "base": 320,
+    "widePhone": 480,
+    "smallTablet": 600,
+    "tablet": 768,
+    "laptop": 960,
+    "desktop": 1280,
+    "wideDesktop": 1600,
+    "ultraWide": 1920,
+    "expansive": 2560
+  },
+  "antd": { "xs": 480, "sm": 600, "md": 768, "lg": 960, "xl": 1280, "xxl": 1600, "xxxl": 1920 },
+  "shortHeight": 480,
+  "verificationWidths": [320, 375, 430, 480, 599, 600, 768, 959, 960, 1279, 1280, 1600, 1920, 2560]
+}

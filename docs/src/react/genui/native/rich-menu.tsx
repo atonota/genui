@@ -1,5 +1,3 @@
-import '../../../styles/atlas-dropdown.css';
-import '../../../styles/atlas-rich-menu.css';
 import { Flex, Typography } from 'antd';
 import AtlasRichMenu, { type AtlasRichMenuGroup } from '../../AtlasRichMenu';
 import type { NativeAdapterProps } from '../../../genui/native-contract';

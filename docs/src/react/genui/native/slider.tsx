@@ -1,4 +1,3 @@
-import '../../../styles/slider.css';
 import { useId } from 'react';
 import { Flex, Typography } from 'antd';
 import AtlasSlider from '../../AtlasSlider';

@@ -23,6 +23,7 @@ import AtlasIcon from './AtlasIcon';
 import { Modal } from './AtlasOverlay';
 import { useI18n } from './useI18n';
 import { layerOrder } from '../theme-builder/states';
+import { AtlasPopupScopeContext, type AtlasPopupScope } from './AtlasPortalScope';
 
 export type AtlasFeedbackStatus = 'info' | 'success' | 'warning' | 'error';
 
@@ -83,7 +84,19 @@ const layers = Object.fromEntries(layerOrder.map(({ id, value }) => [id, value])
 >;
 const scopeStyle = { '--feedback-layer': layers.toast } as CSSProperties;
 
-const FeedbackContainer = createContext<(() => HTMLElement) | undefined>(undefined);
+type FeedbackLayer = Readonly<{ getContainer: () => HTMLElement; scope: AtlasPopupScope | null }>;
+const FeedbackContainer = createContext<FeedbackLayer | undefined>(undefined);
+
+/**
+ * Internal default container of Modal and Popconfirm. The feedback layer serves only the popup
+ * scope it renders in; under a nearer Shell scope it may lie outside that Shell's surface, so
+ * the default falls back to the Shell's ConfigProvider body portal. Explicit containers win.
+ */
+function useFeedbackContainer(): (() => HTMLElement) | undefined {
+  const layer = useContext(FeedbackContainer);
+  const scope = useContext(AtlasPopupScopeContext);
+  return layer && layer.scope === scope ? layer.getContainer : undefined;
+}
 
 /**
  * Stable portal target inside the themed AtlasProvider wrapper, so Modal and
@@ -94,8 +107,10 @@ const FeedbackContainer = createContext<(() => HTMLElement) | undefined>(undefin
 export function AtlasFeedbackScope({ children }: { children: ReactNode }) {
   const layer = useRef<HTMLDivElement>(null);
   const getContainer = useCallback(() => layer.current ?? document.body, []);
+  const scope = useContext(AtlasPopupScopeContext);
+  const value = useMemo(() => ({ getContainer, scope }), [getContainer, scope]);
   return (
-    <FeedbackContainer.Provider value={getContainer}>
+    <FeedbackContainer.Provider value={value}>
       <div className="atlas-feedback-scope" style={scopeStyle}>
         {children}
         <div ref={layer} className="atlas-feedback-portal" data-feedback-portal />
@@ -343,7 +358,7 @@ export function AtlasModal({
   ...props
 }: AtlasModalProps) {
   const { t } = useI18n();
-  const container = useContext(FeedbackContainer);
+  const container = useFeedbackContainer();
   return (
     <Modal
       {...props}
@@ -381,7 +396,7 @@ export function AtlasPopconfirm({
   ...props
 }: AtlasPopconfirmProps) {
   const { t } = useI18n();
-  const container = useContext(FeedbackContainer);
+  const container = useFeedbackContainer();
   const trigger = useRef<PopconfirmRef>(null);
   const [localOpen, setLocalOpen] = useState(defaultOpen ?? false);
   const open = controlledOpen ?? localOpen;

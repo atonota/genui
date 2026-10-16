@@ -11,7 +11,6 @@ import {
   type RadioCardLayout,
   type RadioCardOption,
 } from '../../../genui/native/radio-cards';
-import '../../../styles/atlas-selection-variants.css';
 
 /** Structural subset of the AntD Radio ref. */
 type NativeChoiceHandle = {

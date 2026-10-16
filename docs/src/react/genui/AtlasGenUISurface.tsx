@@ -28,12 +28,18 @@ import {
   type TaskBlockData,
 } from '../../genui/contracts';
 import { readPointer } from '../../genui/policy';
+import { resolveGenUIPresentation } from '../../genui/adaptive';
+import type { AdaptiveResolution } from '../../adaptive/policy';
+import { useAdaptive } from '../AdaptiveProvider';
 import { NATIVE_ADAPTERS } from './native-catalog';
+import NativeStyles from './NativeStyles';
 
 interface Owner {
   runtime: GenUIRuntime;
   surface: GenUISurface;
   snapshot: GenUISnapshot;
+  /** Trusted-host adaptive resolution; generated payloads never choose it. */
+  resolution: AdaptiveResolution;
 }
 const SurfaceOwner = createContext<Owner | null>(null);
 function useOwner(): Owner {
@@ -158,7 +164,12 @@ function RegisteredCollection({ sourceComponentId, payload }: NativeProps) {
     ? [...new Set(payload.rows.map(row => String(row[payload.groupBy!] ?? '—')))]
     : [null];
   return (
-    <section className="genui-data-block" aria-label={dataText(payload.title)}>
+    <section
+      className="genui-data-block"
+      aria-label={dataText(payload.title)}
+      data-adaptive-container=""
+      data-adaptive-content="data"
+    >
       <h5>{dataText(payload.title)}</h5>
       {groups.map(group => {
         const rows = payload.rows!.filter(
@@ -247,7 +258,11 @@ function RegisteredForm({
   const prefix = useId();
   if (!payload?.fields) return null;
   return (
-    <section className="genui-data-block" aria-label={dataText(payload.title)}>
+    <section
+      className="genui-data-block"
+      aria-label={dataText(payload.title)}
+      data-adaptive-container=""
+    >
       <h5>{dataText(payload.title)}</h5>
       {payload.fields.map(field => {
         const error =
@@ -350,13 +365,20 @@ function RegisteredNative({
   payload,
 }: NativeProps & { name: GenUINativeComponentName }) {
   const dataText = useDataText();
-  const { runtime, surface, snapshot } = useOwner();
+  const { runtime, surface, snapshot, resolution } = useOwner();
   const { t } = useI18n();
+  // Presentation metadata for the registered name only; it never touches data or actions.
+  const presentation = useMemo(
+    () => resolveGenUIPresentation(name, resolution),
+    [name, resolution],
+  );
   if (!payload?.native) return null;
   const Adapter = NATIVE_ADAPTERS[name];
   const ready =
     (snapshot.status === 'success' || snapshot.status === 'idle') &&
     typeof renderedRevision === 'number';
+  // Overlay layers portal out of the block; containing them would trap fixed descendants.
+  const contained = presentation.containerBehavior !== 'overlay-adaptive';
   const action = payload.action;
   // A disabled/readOnly native control also blocks its outer action, and a Button
   // without an available outer action is disabled rather than enabled but inert.
@@ -372,6 +394,14 @@ function RegisteredNative({
       role="group"
       aria-label={dataText(payload.title)}
       data-native-component={name}
+      data-adaptive-family={presentation.family}
+      data-adaptive-target={presentation.targetLayer}
+      data-adaptive-placement={presentation.layerPlacement}
+      data-adaptive-behavior={presentation.containerBehavior}
+      data-adaptive-container={contained ? '' : undefined}
+      data-adaptive-content={
+        presentation.containerBehavior === 'scroll-region' ? 'data' : undefined
+      }
     >
       <NativeAdapterBoundary
         fallback={<p role="alert">{t('This control could not be loaded.')}</p>}
@@ -379,6 +409,7 @@ function RegisteredNative({
         <Suspense fallback={<p role="status">{t('Loading control…')}</p>}>
           <Adapter
             data={payload.native}
+            presentation={presentation}
             disabled={!ready || (name === 'AtlasButton' && !actionable)}
             actionAvailable={actionable}
             onChange={value => {
@@ -466,7 +497,7 @@ const nativeCatalog = (id: string) => ({
 registerCatalog(nativeCatalog(ATLAS_CARD_CATALOG_ID));
 registerCatalog(nativeCatalog(ATLAS_PUBLIC_CATALOG_ID));
 
-function NativeSurface({ runtime, surface, snapshot }: Owner) {
+function NativeSurface({ runtime, surface, snapshot, resolution }: Owner) {
   const commands = useMemo((): XAgentCommand_v0_9[] => {
     const texts = Object.fromEntries(
       surface.components
@@ -517,7 +548,7 @@ function NativeSurface({ runtime, surface, snapshot }: Owner) {
   if (!surface.components.length)
     return <p role="status">{t('Waiting for complete Card data.')}</p>;
   return (
-    <SurfaceOwner.Provider value={{ runtime, surface, snapshot }}>
+    <SurfaceOwner.Provider value={{ runtime, surface, snapshot, resolution }}>
       <XCard.Box
         components={COMPONENTS}
         commands={commands}
@@ -539,24 +570,37 @@ function NativeSurface({ runtime, surface, snapshot }: Owner) {
     </SurfaceOwner.Provider>
   );
 }
+// This surface owns no navigation keys; the shell and registered portal adapters do. Tab opens
+// the central ringless focus on every surface, and handled arrows inside the explicit TV
+// boundary may open that same ringless focus.
 export default function AtlasGenUISurface({ runtime }: { runtime: GenUIRuntime }) {
   const snapshot = useSyncExternalStore(
     runtime.subscribe,
     runtime.getSnapshot,
     runtime.getSnapshot,
   );
+  // Trusted host context: the explicit product surface, never a width guess or a payload.
+  const { resolution, surface: productSurface } = useAdaptive();
   return (
     <div
       className="atlas-genui-runtime"
       data-genui-scope={snapshot.scopeId}
       data-genui-audience={snapshot.audience}
+      data-adaptive-layout={resolution.layout}
+      data-adaptive-band={resolution.band}
+      data-adaptive-surface={productSurface}
+      data-adaptive-input-layers={resolution.inputLayers.join(' ')}
+      data-adaptive-short-height={String(resolution.shortHeight)}
     >
+      {/* Native control CSS ships only with a rendered surface; React hoists it to <head>. */}
+      <NativeStyles />
       {snapshot.surfaces.map(surface => (
         <NativeSurface
           key={`${surface.id}-${surface.generation}`}
           runtime={runtime}
           surface={surface}
           snapshot={snapshot}
+          resolution={resolution}
         />
       ))}
     </div>

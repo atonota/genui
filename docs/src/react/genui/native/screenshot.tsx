@@ -1,5 +1,3 @@
-import '../../../styles/atlas-media.css';
-import '../../../styles/atlas-screenshot.css';
 import AtlasScreenshot from '../../AtlasScreenshot';
 import type { NativeAdapterProps } from '../../../genui/native-contract';
 import { definition } from '../../../genui/native/screenshot';

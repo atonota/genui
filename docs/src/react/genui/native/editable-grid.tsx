@@ -6,7 +6,6 @@ import type { JsonValue } from '../../../genui/contracts';
 import type { NativeAdapterProps } from '../../../genui/native-contract';
 import { nativeFieldDefinitions, type NativeRecord } from '../../../genui/native/record-fields';
 import { definition, parseNativeGrid } from '../../../genui/native/editable-grid';
-import '../../../styles/workspace-kit.css';
 
 type Props = NativeAdapterProps & { actionAvailable?: boolean };
 

@@ -1,4 +1,3 @@
-import '../../../styles/atlas-content-patterns.css';
 import AtlasIconList, { type AtlasIconListItem } from '../../AtlasIconList';
 import type { AtlasIconName } from '../../AtlasIcon';
 import type { NativeAdapterProps } from '../../../genui/native-contract';

@@ -1,4 +1,3 @@
-import '../../../styles/atlas-content-patterns.css';
 import AtlasQuote from '../../AtlasQuote';
 import type { NativeAdapterProps } from '../../../genui/native-contract';
 import { definition } from '../../../genui/native/quote';

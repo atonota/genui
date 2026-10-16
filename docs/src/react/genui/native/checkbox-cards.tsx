@@ -10,7 +10,6 @@ import {
   type CheckboxCardVariant,
 } from '../../../genui/native/checkbox-cards';
 import type { NativeAdapterProps } from '../../../genui/native-contract';
-import '../../../styles/atlas-selection-variants.css';
 
 /** Structural subset of the AntD Checkbox ref. */
 type NativeChoiceHandle = {

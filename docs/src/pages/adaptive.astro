@@ -1,0 +1,145 @@
+---
+import DocsLayout from '../layouts/DocsLayout.astro';
+import CodeExample from '../components/CodeExample.astro';
+import DocumentationNav from '../components/DocumentationNav.astro';
+import AdaptiveLab from '../react/AdaptiveLab';
+import { extractDemoStyles } from '../ssr/styles';
+import '../styles/adaptive-lab.scss';
+
+// Build-time only: static Pages render the conservative server snapshot, never a measured device.
+const demoStyles = extractDemoStyles(AdaptiveLab, { documentation: true });
+const example = `import type { ReactNode } from 'react';
+import AdaptiveProvider from './AdaptiveProvider';
+import AtlasProvider from './AtlasProvider';
+import AdaptiveShell from './AdaptiveShell';
+import type { AdaptiveEnvironment, AdaptiveOptions } from '../adaptive/policy';
+import type { InitialLayout } from '../adaptive/delivery';
+import '../styles/adaptive-components.scss';
+
+// A trusted request-time SSR adapter, such as a Frappe host port, may await
+// loadServerAdaptive(hints) from '../adaptive/server' and pass environment, options and
+// initialLayout; the profile comes only from the literal layout registry. Static builds omit
+// all three and keep the shared conservative baseline.
+// children is your shared business subtree; it stays mounted across profiles.
+// AdaptiveProvider wraps AtlasProvider so every primitive reads the host options.
+export default function AdaptivePage({
+  children,
+  ariaLabel,
+  options,
+  initialEnvironment,
+  initialLayout,
+}: {
+  children: ReactNode;
+  ariaLabel: string;
+  options?: AdaptiveOptions;
+  initialEnvironment?: AdaptiveEnvironment;
+  initialLayout?: InitialLayout;
+}) {
+  return (
+    <AdaptiveProvider options={options} initialEnvironment={initialEnvironment}>
+      <AtlasProvider appearance="docs">
+        <AdaptiveShell ariaLabel={ariaLabel} initialLayout={initialLayout}>
+          {children}
+        </AdaptiveShell>
+      </AtlasProvider>
+    </AdaptiveProvider>
+  );
+}`;
+const sections = [
+  { id: 'lab', label: 'Adaptive lab' },
+  { id: 'integration', label: 'Host integration' },
+  { id: 'verification', label: 'Verification status' },
+];
+---
+
+<DocsLayout
+  title="Adaptive UI"
+  description="Capability-first layout profiles, additive input layers and one shared business state."
+  slug="adaptive"
+>
+  <p class="eyebrow">
+    <span data-i18n="FOUNDATIONS / ADAPTIVE UI">FOUNDATIONS / ADAPTIVE UI</span>
+  </p>
+  <h1>
+    <span class="page-heading-line" data-i18n="One journey.">
+      One journey.
+    </span>
+    <br />
+    <span>
+      <span data-i18n="Every capable surface.">Every capable surface.</span>
+    </span>
+  </h1>
+  <p class="lead">
+    <span data-i18n="Layout profiles come from usable width and the explicit product surface. Input layers add to them; nothing is inferred from a device name.">
+      Layout profiles come from usable width and the explicit product surface. Input layers add to
+      them; nothing is inferred from a device name.
+    </span>
+  </p>
+  <DocumentationNav items={sections} />
+  <section id="lab" class="doc-section" data-doc-section="lab" aria-labelledby="lab-title">
+    <h2 id="lab-title">
+      <span data-i18n="Adaptive lab">Adaptive lab</span>
+    </h2>
+    <p>
+      <span data-i18n="Actual mode reports this browser. Simulation is opt-in and labelled; it never claims a measured physical device.">
+        Actual mode reports this browser. Simulation is opt-in and labelled; it never claims a
+        measured physical device.
+      </span>
+    </p>
+    <Fragment set:html={demoStyles} />
+    <AdaptiveLab documentation client:load />
+  </section>
+  <section
+    id="integration"
+    class="doc-section"
+    data-doc-section="integration"
+    aria-labelledby="integration-title"
+  >
+    <h2 id="integration-title">
+      <span data-i18n="Host integration">Host integration</span>
+    </h2>
+    <p>
+      <span data-i18n="A Frappe host injects its adapter result as options and initialEnvironment. A request-time SSR host may resolve them per request; this static Pages build uses only the build-time snapshot.">
+        A Frappe host injects its adapter result as options and initialEnvironment. A request-time
+        SSR host may resolve them per request; this static Pages build uses only the build-time
+        snapshot.
+      </span>
+    </p>
+    <p>
+      <span data-i18n="No npm GenUI package is published. Use the source path below inside this repository.">
+        No npm GenUI package is published. Use the source path below inside this repository.
+      </span>
+    </p>
+    <CodeExample code={example} title="TSX example" />
+  </section>
+  <section
+    id="verification"
+    class="doc-section"
+    data-doc-section="verification"
+    aria-labelledby="verification-title"
+  >
+    <h2 id="verification-title">
+      <span data-i18n="Verification status">Verification status</span>
+    </h2>
+    <ul>
+      <li>
+        <span data-i18n="Coverage statuses come from the coverage manifest; pending and unverified entries are shown as such.">
+          Coverage statuses come from the coverage manifest; pending and unverified entries are
+          shown as such.
+        </span>
+      </li>
+      <li>
+        <span data-i18n="Physical TV, webOS, pen and eye-tracking verification is pending. No device certificate is claimed.">
+          Physical TV, webOS, pen and eye-tracking verification is pending. No device certificate is
+          claimed.
+        </span>
+      </li>
+      <li>
+        <span data-i18n="Width never selects the living-room surface. On that explicit surface, handled directional keys may open the same ringless focus indicator as Tab.">
+          Width never selects the living-room surface. On that explicit surface, handled directional
+          keys may open the same ringless focus indicator as Tab.
+        </span>
+      </li>
+    </ul>
+  </section>
+</DocsLayout>

@@ -1,4 +1,3 @@
-import '../../../styles/atlas-splitter.css';
 import { useId, useMemo } from 'react';
 import AtlasSplitter, { type AtlasSplitterPanel } from '../../AtlasSplitter';
 import type { NativeAdapterProps } from '../../../genui/native-contract';

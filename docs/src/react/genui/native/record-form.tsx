@@ -6,8 +6,6 @@ import { definition, readRecordForm } from '../../../genui/native/record-form';
 import { nativeFieldDefinitions, type NativeRecord } from '../../../genui/native/record-fields';
 import { useI18n } from '../../useI18n';
 import { RecordForm } from '../../workspace/kit/RecordForm';
-import '../../../styles/workspace-kit.css';
-import '../../../styles/kit-records.css';
 
 const noErrors = {};
 

@@ -1,4 +1,3 @@
-import '../../../styles/atlas-breadcrumb.css';
 import type { MouseEvent } from 'react';
 import AtlasBreadcrumb, { type AtlasBreadcrumbItem } from '../../AtlasBreadcrumb';
 import type { NativeAdapterProps } from '../../../genui/native-contract';

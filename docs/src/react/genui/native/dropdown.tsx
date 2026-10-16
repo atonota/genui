@@ -1,4 +1,3 @@
-import '../../../styles/atlas-dropdown.css';
 import { ConfigProvider } from 'antd';
 import AtlasDropdown from '../../AtlasDropdown';
 import type { NativeAdapterProps } from '../../../genui/native-contract';

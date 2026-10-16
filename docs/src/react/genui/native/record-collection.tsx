@@ -8,7 +8,6 @@ import {
 import { nativeFieldDefinitions, type NativeRecord } from '../../../genui/native/record-fields';
 import { useI18n } from '../../useI18n';
 import RecordCollection from '../../workspace/kit/RecordCollection';
-import '../../../styles/workspace-kit.css';
 
 /** One event's accumulated candidate and the onChange captured when it began. */
 interface PendingChange {

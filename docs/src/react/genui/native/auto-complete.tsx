@@ -1,4 +1,3 @@
-import '../../../styles/atlas-autocomplete.css';
 import AtlasAutoComplete, { type AtlasSuggestion } from '../../AtlasAutoComplete';
 import type { NativeAdapterProps } from '../../../genui/native-contract';
 import { definition, type AutoCompletePayload } from '../../../genui/native/auto-complete';

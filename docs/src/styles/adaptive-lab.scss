@@ -1,0 +1,235 @@
+// Adaptive lab layout only. Colors, type, focus and controls come from the shared Atlas roles;
+// gaps are font-relative so they follow the user's root size.
+.adaptive-lab {
+  --adaptive-gap-xs: 0.25em;
+  --adaptive-gap-sm: 0.5em;
+  --adaptive-gap: 1em;
+  --adaptive-gap-lg: 1.5em;
+  --adaptive-gap-xl: 2.5em;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--adaptive-gap-xl);
+  min-inline-size: 0;
+
+  > * {
+    min-inline-size: 0;
+  }
+
+  h3,
+  h4,
+  p {
+    margin: 0;
+  }
+}
+
+.adaptive-lab-preview,
+.adaptive-container,
+.adaptive-lab-controls,
+.adaptive-journey,
+.adaptive-telemetry,
+.adaptive-genui,
+.adaptive-coverage,
+.adaptive-examples {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--adaptive-gap);
+  min-inline-size: 0;
+
+  > * {
+    min-inline-size: 0;
+  }
+}
+
+// The preview frame never scrolls as a whole: its single track and each child stay inside it,
+// so only galleries and tables scroll in their own boxes and focusing into them cannot shift
+// the frame or clip ordinary headings. Nothing inside shrinks text to fit.
+.adaptive-lab-frame {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-inline-size: 0;
+  max-inline-size: 100%;
+
+  > * {
+    min-inline-size: 0;
+    max-inline-size: 100%;
+  }
+}
+
+.adaptive-lab-preview {
+  gap: var(--adaptive-gap-xl);
+}
+
+// Reading content stays bounded; data and galleries keep the full width.
+.adaptive-journey,
+.adaptive-lab-controls > p,
+.adaptive-telemetry > p,
+.adaptive-genui > p,
+.adaptive-coverage > p {
+  max-inline-size: 70ch;
+}
+
+.adaptive-control-row,
+.adaptive-simulation {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--adaptive-gap);
+}
+
+.adaptive-simulation {
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+
+  legend {
+    inline-size: 100%;
+    padding: 0;
+    margin-block-end: var(--adaptive-gap-xs);
+  }
+}
+
+.adaptive-control {
+  display: grid;
+  gap: var(--adaptive-gap-xs);
+  min-inline-size: min(100%, 14em);
+}
+
+.adaptive-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--adaptive-gap-sm);
+}
+
+.adaptive-field {
+  display: grid;
+  gap: var(--adaptive-gap-xs);
+}
+
+.adaptive-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--adaptive-gap-sm);
+}
+
+.adaptive-error {
+  color: var(--ant-color-error, currentColor);
+}
+
+.adaptive-result,
+.adaptive-signals dt,
+.adaptive-card-frame figcaption {
+  color: var(--ant-color-text-secondary, currentColor);
+}
+
+.adaptive-telemetry-grid {
+  display: grid;
+  gap: var(--adaptive-gap-lg);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16em), 1fr));
+
+  > div {
+    display: grid;
+    align-content: start;
+    gap: var(--adaptive-gap-sm);
+  }
+}
+
+.adaptive-signals {
+  display: grid;
+  gap: var(--adaptive-gap-xs);
+  margin: 0;
+
+  > div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--adaptive-gap-xs) var(--adaptive-gap);
+  }
+
+  dd {
+    margin: 0;
+  }
+}
+
+// AntD Row pulls out by half its inline gutter; the same gutter pads it back inside the frame.
+.adaptive-grid {
+  padding-inline: calc(var(--adaptive-grid-gutter, 0px) / 2);
+}
+
+.adaptive-grid-cell {
+  display: grid;
+  gap: var(--adaptive-gap-xs);
+  padding-block: var(--adaptive-gap-sm);
+}
+
+.adaptive-sider-demo {
+  min-inline-size: 0;
+}
+
+.adaptive-sider-items {
+  display: grid;
+  gap: var(--adaptive-gap-sm);
+  margin: 0;
+  padding: var(--adaptive-gap);
+  list-style: none;
+}
+
+.adaptive-sider-content {
+  display: grid;
+  gap: var(--adaptive-gap-sm);
+  padding: var(--adaptive-gap);
+}
+
+// Words wrap only between words; the table scrolls inside its own container instead.
+.adaptive-record-name {
+  display: inline-block;
+  min-inline-size: 12em;
+}
+
+.adaptive-record-note {
+  display: inline-block;
+  min-inline-size: 18em;
+}
+
+// Lab tables scroll inside their own wrapper at those minima, never through the frame.
+.adaptive-lab .ant-table-wrapper {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+
+.adaptive-lab .ant-table-content {
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+
+.adaptive-card-gallery {
+  display: flex;
+  align-items: start;
+  gap: var(--adaptive-gap-lg);
+  max-inline-size: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  padding-block-end: var(--adaptive-gap-sm);
+}
+
+.adaptive-card-frame {
+  display: grid;
+  flex: 0 0 auto;
+  gap: var(--adaptive-gap-sm);
+  inline-size: var(--adaptive-card-width);
+  margin: 0;
+  container-type: inline-size;
+}
+
+.adaptive-coverage {
+  ul {
+    columns: 16em;
+    margin: 0;
+    padding-inline-start: var(--adaptive-gap-lg);
+  }
+
+  details {
+    margin-block-start: var(--adaptive-gap-sm);
+  }
+}

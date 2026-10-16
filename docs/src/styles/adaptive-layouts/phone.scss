@@ -1,0 +1,16 @@
+// Phone (320 first): one column in reading order; the drawer opens in flow, never over fields.
+// Slots auto-place in DOM order (bar, nav, main, context, delivery), so a closed nav or an
+// absent context adds no row and no gap.
+.adaptive-layout-phone {
+  --adaptive-gutter: 1rem;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--adaptive-gutter);
+  padding-inline: max(var(--adaptive-gutter), env(safe-area-inset-left))
+    max(var(--adaptive-gutter), env(safe-area-inset-right));
+
+  > .adaptive-shell-main {
+    min-inline-size: 0;
+  }
+}

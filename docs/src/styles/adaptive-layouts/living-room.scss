@@ -1,0 +1,111 @@
+// Living room: remote-readable roles scoped to the explicit TV surface; web 14px/48px roles stay.
+// The nav column needs a shell host of policy.widths.laptop; narrower hosts stack the slots in
+// reading order, and absent or closed slots reserve no column, row or gap.
+@use 'sass:map';
+@use '../generated/adaptive-policy' as policy;
+
+// Remote roles also reach body portals of the same explicit TV surface; those portal roots get
+// no shell grid, padding or type.
+.adaptive-layout-living-room,
+[data-adaptive-surface='living-room'] {
+  --adaptive-tv-text: 24px;
+  --adaptive-tv-target: 64px;
+}
+
+.adaptive-layout-living-room {
+  --adaptive-gutter: 2rem;
+  --adaptive-nav: 20rem;
+
+  // Stacked: one column in DOM order (bar, nav, main, context, delivery).
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--adaptive-gutter);
+  font-size: var(--adaptive-tv-text);
+  // Overscan-safe edges for television panels.
+  padding: max(5vh, env(safe-area-inset-top)) max(5vw, env(safe-area-inset-right))
+    max(5vh, env(safe-area-inset-bottom)) max(5vw, env(safe-area-inset-left));
+
+  > .adaptive-shell-main {
+    min-inline-size: 0;
+  }
+}
+
+// Remote targets reach from the closest TV root down to a nested web shell or surface, which
+// keeps its own 48/56/64 roles. The outer control owns the target and wins over the web control
+// minima, AtlasButton's inline size included; AntD proxy inputs and slot actions stay inside
+// their painted wrapper, and checkbox, radio and switch artwork keep their graphic size.
+$tv-roots: ".adaptive-layout-living-room, [data-adaptive-surface='living-room']";
+$web-limits: '.adaptive-shell:not(.adaptive-layout-living-room), ' +
+  "[data-adaptive-surface]:not([data-adaptive-surface='living-room'])";
+
+@scope (#{$tv-roots}) to (#{$web-limits}) {
+  :where(
+    a[href],
+    button:not(.ant-switch, .atlas-slot-button),
+    input:not(
+      .ant-select-input,
+      .ant-input-affix-wrapper > input,
+      .ant-input-number-input,
+      .ant-picker-input > input,
+      [type='checkbox'],
+      [type='radio'],
+      [type='hidden']
+    ),
+    select,
+    textarea,
+    [role='button'],
+    .ant-select,
+    .ant-input-affix-wrapper,
+    .ant-input-number,
+    .ant-picker
+  ):where(:not(.atlas-input-frame *)) {
+    min-block-size: var(--adaptive-tv-target) !important;
+  }
+
+  // An Atlas input well is the painted control and owns its height: the frame takes the remote
+  // target through its height roles, so native children and slot actions size inside it.
+  :where(.atlas-input-frame[data-atlas-input]) {
+    --atlas-component-height: var(--adaptive-tv-target) !important;
+    --atlas-input-height: var(--adaptive-tv-target) !important;
+    --control-h: var(--adaptive-tv-target) !important;
+  }
+
+  // Icon-only actions stay square at the remote target.
+  :where(.atlas-icon-button:not(.atlas-slot-button)) {
+    min-inline-size: var(--adaptive-tv-target) !important;
+  }
+
+  // Nav links are inline text; a flex box gives the whole link the remote hitbox.
+  :scope > .adaptive-shell-nav a[href] {
+    display: flex;
+    align-items: center;
+  }
+}
+
+@container adaptive-shell (width >= #{map.get(policy.$widths, laptop)}) {
+  // Open navigation: nav beside main; context follows main only when it exists.
+  .adaptive-layout-living-room[data-nav-open='true'] {
+    grid-template-columns: minmax(0, var(--adaptive-nav)) minmax(0, 1fr);
+    grid-template-areas: 'bar bar' 'nav main' 'nav context';
+
+    &:not(:has(> .adaptive-shell-context)) {
+      grid-template-areas: 'bar bar' 'nav main';
+    }
+
+    > .adaptive-shell-bar {
+      grid-area: bar;
+    }
+    > .adaptive-shell-nav {
+      grid-area: nav;
+    }
+    > .adaptive-shell-main {
+      grid-area: main;
+    }
+    > .adaptive-shell-context {
+      grid-area: context;
+    }
+    > .adaptive-shell-delivery {
+      grid-column: 1 / -1;
+    }
+  }
+}

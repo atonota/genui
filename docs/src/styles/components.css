@@ -32,6 +32,14 @@
     2px 5px 0 rgba(var(--shadow-ink), 0.05), 3px 6px 0 rgba(var(--shadow-ink), 0.04),
     3px 7px 0 rgba(var(--shadow-ink), 0.03), 4px 8px 0 rgba(var(--shadow-ink), 0.02);
   --shadow-layered-pressed-8: 0 1px 0 rgba(var(--shadow-ink), 0.04);
+  /* Mode space toggles of the nearest owner: the active mode is empty and the other invalid,
+     so `var(--atlas-mode-dark, light) var(--atlas-mode-light, dark)` resolves one value. */
+  --atlas-mode-light: ;
+  --atlas-mode-dark: initial;
+}
+.atlas-demo[data-theme-mode='dark'] {
+  --atlas-mode-light: initial;
+  --atlas-mode-dark: ;
 }
 /* Native transition:all must not animate the outer geometry of controls. */
 :root[data-theme]
@@ -379,9 +387,13 @@
   border-radius: var(--button-radius);
   box-shadow: var(--button-shadow, none);
 }
-:root[data-theme='dark'] .atlas-demo .atlas-button {
-  --button-outlined-ink: var(--button-outline-ink);
-  --button-transparent-ink: var(--button-outline-ink);
+/* Outlined and transparent inks follow the nearest owner's mode, so a light preview on a dark
+   host keeps its light inks; each button's inline roles stay the source values. */
+.atlas-demo .atlas-button {
+  --button-outlined-ink: var(--atlas-mode-dark, var(--button-edge))
+    var(--atlas-mode-light, var(--button-outline-ink));
+  --button-transparent-ink: var(--atlas-mode-dark, var(--button-transparent-light-ink))
+    var(--atlas-mode-light, var(--button-outline-ink));
 }
 .atlas-demo :is(.ant-btn-primary, .atlas-button)::before {
   content: '';

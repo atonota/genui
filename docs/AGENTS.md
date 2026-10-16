@@ -1,5 +1,52 @@
 # Astro documentation maintenance contract
 
+## Capability-first adaptive GenUI and explicit TV focus — human task 2026-10-16
+
+Newest direct human task: all GenUI components follow `ADAPTIVE-PLAN.md`. The
+source architecture is implemented; per-component verification and publication
+are separate. Source authors run no check; conductor receipts under
+`adaptive-20261016` and the actual GitHub status are authoritative, no blanket
+DONE.
+
+- 61 runtime components (49 native + 12 generic) and 40 documentation slugs
+  are separate counts, mapped in `src/adaptive/component-coverage.ts` as
+  `implemented-unverified`; metadata never marks one `verified`.
+  `src/adaptive/policy.json` alone feeds `policy.ts`,
+  `adaptiveBreakpointTokens` and the generated Sass map; no hand copies.
+- Human answer 2026-10-16 (`hem tab, hem tv`): Tab/Shift+Tab everywhere; in an
+  explicit `data-adaptive-surface=living-room` boundary a handled directional
+  key may open the SAME ringless mode via `requestSpatialInputModality`
+  (`src/input-modality.ts`, existing bridge event, single owner). Width never
+  means TV; generic web arrows never open the mode.
+- `src/genui/adaptive.ts` derives `arrowsMoveVisualFocus` from
+  `allowsSpatialVisualFocus`; `src/react/genui/AtlasGenUISurface.tsx` emits
+  `data-adaptive-*` on its existing root and native boundary only.
+- Phone continuity: `AdaptiveProvider` retains a measured phone journey until
+  its continuity reset or `useAdaptive().releaseJourney`; no height or pointer
+  heuristic (768x300 is tablet, 1280x400 desktop). `AdaptiveShell` `options`
+  take only `surface` and `lockedProfile`; business state stays in unkeyed
+  context and slots.
+- Delivery: six profiles load only via the literal `layoutLoaders` registry in
+  `src/adaptive/delivery.ts`; SCSS ships as `?inline` compiled CSS installed
+  only into the Shell root's owner document. Initial HTML is the baseline with
+  no profile CSS; multi-owner or foreign adaptive assets are rejected. Network
+  proof covers external requests plus initial HTML and installed CSS.
+- SSR guard: only a trusted host awaits `loadServerAdaptive(hints)`
+  (`src/adaptive/server.ts`) and passes `environment`, `options` and the
+  serializable `initialLayout`; `AdaptiveShell` uses it only for the matching
+  profile. Static Pages stays on the baseline; no request-time SSR hosting or
+  npm package is claimed.
+- Portal ownership: body portals register in the provider-owned registry and
+  pooled spatial adapter; the TV bridge is guarded by the nearest surface
+  boundary. Nested Shells skip `defaultPrevented` and repeated Back keys.
+- Tests are node:test (no Vitest; the proposed `src/*.test.ts` files were
+  rejected): `tests/adaptive-policy.test.mjs`, `tests/adaptive-input.test.mjs`,
+  `tests/adaptive-delivery.test.mjs` (8 cases) and the implemented browser spec
+  `browser/adaptive-ui.spec.ts` (3 cases x 3 engines, 14 widths). Use the root
+  scripts `docs:check`, `docs:lint`, `docs:format`, `docs:build` and the
+  explicit browser types command. Results are pass/fail/not_run/
+  not_applicable; physical devices stay pending, not excluded.
+
 ## Preview profile runtime contract — permanent, human task 2026-10-16
 
 Permanent runtime contract for the isolated example preview; later entries

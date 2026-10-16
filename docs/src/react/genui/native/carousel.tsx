@@ -1,5 +1,3 @@
-import '../../../styles/atlas-media.css';
-import '../../../styles/atlas-carousel.css';
 import AtlasCarousel from '../../AtlasCarousel';
 import type { NativeAdapterProps } from '../../../genui/native-contract';
 import { definition, readCarousel } from '../../../genui/native/carousel';

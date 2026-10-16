@@ -1,4 +1,3 @@
-import '../../../styles/atlas-upload.css';
 import AtlasUpload, { type UploadMetadata } from '../../AtlasUpload';
 import type { JsonValue } from '../../../genui/contracts';
 import type { NativeAdapterProps } from '../../../genui/native-contract';

@@ -20,8 +20,6 @@ import {
   withConnectedValue,
   type ConnectedWorkspaceValue,
 } from '../../../genui/native/connected-workspace';
-import '../../../styles/workspace-kit.css';
-import '../../../styles/kit-records.css';
 
 const EMPTY_QUERY: QueryState = { search: '', filters: [], sort: [] };
 

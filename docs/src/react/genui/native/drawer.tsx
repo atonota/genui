@@ -1,18 +1,23 @@
-import '../../../styles/atlas-drawer-extensions.css';
 import { Typography } from 'antd';
 import AtlasButton from '../../AtlasButton';
 import AtlasIcon from '../../AtlasIcon';
 import { Drawer } from '../../AtlasOverlay';
 import { useI18n } from '../../useI18n';
 import { definition } from '../../../genui/native/drawer';
-import type { NativeAdapterProps } from '../../../genui/native-contract';
+import { nativeLayerClassName, type NativeAdapterProps } from '../../../genui/native-contract';
 
 /**
  * Controlled native Drawer: opener and close only report the next value; the runtime owns it.
  * A locked drawer never renders open, because every close path is disabled while locked; the
- * stored value is left untouched so a later unlock reveals it again.
+ * stored value is left untouched so a later unlock reveals it again. Trusted presentation
+ * opens it as a bottom sheet on phone or short height, and from its side otherwise.
  */
-export default function AtlasDrawerAdapter({ data, disabled, onChange }: NativeAdapterProps) {
+export default function AtlasDrawerAdapter({
+  data,
+  disabled,
+  presentation,
+  onChange,
+}: NativeAdapterProps) {
   const { t } = useI18n();
   const drawer = definition.parse(data);
   const locked = disabled || drawer.disabled === true;
@@ -34,7 +39,14 @@ export default function AtlasDrawerAdapter({ data, disabled, onChange }: NativeA
       <Drawer
         open={open}
         title={drawer.title as string}
-        placement={drawer.placement === 'left' ? 'left' : 'right'}
+        rootClassName={nativeLayerClassName(presentation)}
+        placement={
+          presentation?.layerPlacement === 'sheet'
+            ? 'bottom'
+            : drawer.placement === 'left'
+              ? 'left'
+              : 'right'
+        }
         keyboard={!locked}
         maskClosable={!locked}
         closable={

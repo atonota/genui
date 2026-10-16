@@ -8,8 +8,6 @@ import {
   definition,
   readRepeatingRecords,
 } from '../../../genui/native/repeating-records';
-import '../../../styles/workspace-kit.css';
-import '../../../styles/kit-records.css';
 
 /** Rows always come from the controlled payload; the caller may reject or delay a change. */
 export default function NativeRepeatingRecords({ data, disabled, onChange }: NativeAdapterProps) {

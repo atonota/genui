@@ -1,0 +1,196 @@
+// Capability-first adaptive layer for GenUI components. Thresholds come only from the
+// generated policy partial (tools/adaptive-styles.mjs reads the single policy.json); paint,
+// type, radii, motion and keyboard focus stay with the existing central stylesheets.
+@use 'sass:map';
+@use 'generated/adaptive-policy' as policy;
+
+@function adaptive-width($name) {
+  @return map.get(policy.$widths, $name);
+}
+
+// Coarse pointers: the Provider's resolved input layer, or the pointer capability itself for
+// server output and for popups portaled outside the Provider subtree.
+@mixin coarse {
+  @media (any-pointer: coarse) {
+    @content;
+  }
+  &:where([data-adaptive-input-layers~='coarse'] *) {
+    @content;
+  }
+}
+
+// Short viewports from the shared policy, or the Provider's resolved short-height flag.
+@mixin short-height {
+  @media #{policy.$media-short} {
+    @content;
+  }
+  &:where([data-adaptive-short-height='true'] *) {
+    @content;
+  }
+}
+
+:root {
+  // Effective coarse target; visible artwork keeps its own 32/40/48 and 20/26/32 geometry.
+  --adaptive-coarse-target: max(3rem, var(--target-min, 3rem));
+  --adaptive-column-min: 8rem;
+  --adaptive-form-measure: 40rem;
+  --adaptive-safe-block: calc(env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px));
+}
+
+// Shell host: the stable wrapper outside each AdaptiveShell root. Profile layouts adapt to its
+// inline size, not to the viewport. Structural only; popups portal to body, outside it.
+.adaptive-shell-host {
+  container: adaptive-shell / inline-size;
+  min-inline-size: 0;
+}
+// An idle delivery region (empty status) leaves the grid flow, so it adds no row or gap; it
+// stays rendered as the live region and returns to the flow as soon as it announces anything.
+.adaptive-shell > .adaptive-shell-delivery:has(> [role='status']:empty) {
+  position: absolute;
+}
+
+// Opt-in named containers. Never put on the Provider or the fixed Tweaker: containment would
+// make them the containing block of their fixed children.
+:is(.adaptive-content, [data-adaptive-container]) {
+  container: adaptive-content / inline-size;
+  min-inline-size: 0;
+}
+:where(.adaptive-content, [data-adaptive-container]) > * {
+  min-inline-size: 0;
+}
+// Reading, form and data areas keep distinct measures inside the same container.
+:is(.adaptive-content, [data-adaptive-container])[data-adaptive-content='reading'] {
+  max-inline-size: var(--prose-measure, 65ch);
+}
+:is(.adaptive-content, [data-adaptive-container])[data-adaptive-content='form'] {
+  max-inline-size: var(--adaptive-form-measure);
+}
+:is(.adaptive-content, [data-adaptive-container])[data-adaptive-content='data'] {
+  inline-size: 100%;
+  max-inline-size: 100%;
+}
+
+// Form groups stack when their own inline area is narrow, whatever the viewport is.
+@container adaptive-content (width < #{adaptive-width(small-tablet)}) {
+  .atlas-demo .ant-form-horizontal .ant-form-item-row {
+    display: block;
+  }
+  .atlas-demo .ant-form-horizontal .ant-form-item-label {
+    padding-block-end: var(--space-xs);
+    text-align: start;
+  }
+  .atlas-demo .ant-form-horizontal :is(.ant-form-item-label, .ant-form-item-control) {
+    flex: none;
+    max-inline-size: 100%;
+  }
+  .atlas-demo .ant-form-inline .ant-form-item {
+    flex-basis: 100%;
+  }
+}
+
+// Data regions scroll inside their own box at readable column minima; cells wrap only between
+// words, so identifiers such as DocType, Template or Proposal never split.
+:where(.adaptive-content, [data-adaptive-container]) .ant-table-wrapper {
+  max-inline-size: 100%;
+  min-inline-size: 0;
+}
+:where(.adaptive-content, [data-adaptive-container]) .ant-table-content {
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+:where(.adaptive-content, [data-adaptive-container]) .ant-table-cell {
+  min-inline-size: var(--adaptive-column-min);
+  overflow-wrap: normal;
+  word-break: normal;
+}
+// Selection and expand columns keep their compact control width.
+:where(.adaptive-content, [data-adaptive-container]) .ant-table-selection-column,
+:where(.adaptive-content, [data-adaptive-container]) .ant-table-row-expand-icon-cell {
+  min-inline-size: auto;
+}
+
+// Coarse input enlarges label hit regions and full-row list targets only. Checkbox, radio,
+// switch and badge artwork keep their graphic size; no oversized invisible pseudo hitboxes.
+.atlas-demo :is(.ant-checkbox-wrapper, .ant-radio-wrapper, .ant-list-item) {
+  @include coarse {
+    min-block-size: var(--adaptive-coarse-target);
+  }
+}
+:is(.ant-dropdown-menu-item, .ant-dropdown-menu-submenu-title, .ant-cascader-menu-item),
+.atlas-select-popup .ant-select-item {
+  @include coarse {
+    min-block-size: var(--adaptive-coarse-target);
+  }
+}
+
+// Short viewports: panels use the available height inside the safe area and trim decorative
+// padding only; fields and controls keep their size.
+body .ant-modal {
+  @include short-height {
+    top: env(safe-area-inset-top, 0px);
+    padding-block-end: env(safe-area-inset-bottom, 0px);
+  }
+}
+body .ant-modal .ant-modal-content {
+  @include short-height {
+    max-block-size: calc(100dvh - var(--adaptive-safe-block));
+    overflow-y: auto;
+  }
+}
+.atlas-demo .ant-drawer-body {
+  @include short-height {
+    padding-block: var(--space-md) max(var(--space-md), env(safe-area-inset-bottom, 0px));
+  }
+}
+
+// GenUI natives: the trusted presentation's target layer (never a payload) enlarges label and
+// row hit regions in the surface; checkbox, radio and list artwork keep their geometry.
+.atlas-genui-runtime
+  [data-adaptive-target='coarse']
+  :is(.ant-checkbox-wrapper, .ant-radio-wrapper, .ant-list-item) {
+  min-block-size: var(--adaptive-coarse-target);
+}
+
+// Portaled GenUI layers carry trusted classes through AntD rootClassName (nativeLayerClassName),
+// so these rules never reach unrelated previews. Paint, type, radii and motion stay central.
+// Sheet: phone or short height. The Modal sits at the bottom of the safe area at full width.
+.atlas-genui-layer-sheet .ant-modal-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.atlas-genui-layer-sheet .ant-modal {
+  top: auto;
+  margin: 0;
+  max-inline-size: 100%;
+  padding-block-end: env(safe-area-inset-bottom, 0px);
+}
+.atlas-genui-layer-sheet .ant-modal .ant-modal-content {
+  max-block-size: calc(100dvh - var(--adaptive-safe-block));
+  overflow-y: auto;
+}
+// The Drawer opens from the bottom (adapter placement) and stays inside the safe area.
+.atlas-genui-layer-sheet .ant-drawer-content-wrapper {
+  max-block-size: calc(100dvh - env(safe-area-inset-top, 0px));
+}
+.atlas-genui-layer-sheet .ant-drawer-body {
+  padding-block-end: max(var(--space-md), env(safe-area-inset-bottom, 0px));
+}
+// Popconfirm stays anchored to its trigger for context and never reports a sheet; at every
+// width its root fits the viewport while AntD keeps the trigger-relative placement.
+.ant-popover.atlas-genui-layer-anchored {
+  max-inline-size: calc(100vw - 2 * var(--space-md));
+}
+// Coarse layers: close controls get the coarse hit region; the icon keeps its size.
+.atlas-genui-target-coarse :is(.ant-modal-close, .ant-drawer-close) {
+  min-inline-size: var(--adaptive-coarse-target);
+  min-block-size: var(--adaptive-coarse-target);
+}
+// Explicit living-room layout: layers stay inside the title-safe area; type is unchanged.
+.atlas-genui-layer-living-room .ant-modal,
+.ant-popover.atlas-genui-layer-living-room {
+  max-inline-size: 90vw;
+}
+.atlas-genui-layer-living-room .ant-drawer-body {
+  padding-inline: max(var(--space-md), 5vw);
+}

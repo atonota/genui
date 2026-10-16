@@ -1,0 +1,86 @@
+// Wide: three panes up to policy.widths.expansive; data widens context, reading keeps its measure.
+// The panes need a shell host of policy.widths.laptop; narrower hosts stack the slots in reading
+// order, and absent or closed slots reserve no column, row or gap.
+@use 'sass:map';
+@use '../generated/adaptive-policy' as policy;
+
+.adaptive-layout-wide {
+  --adaptive-gutter: 2.5rem;
+  --adaptive-nav: 18rem;
+  --adaptive-context: 24rem;
+  --adaptive-pane-max: 2560px;
+  --adaptive-reading-measure: 76ch;
+  --adaptive-form-measure: 48rem;
+
+  // Stacked: one column in DOM order (bar, nav, main, context, delivery).
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--adaptive-gutter);
+  max-inline-size: var(--adaptive-pane-max);
+  margin-inline: auto;
+  padding-inline: var(--adaptive-gutter);
+
+  &[data-purpose='data'] {
+    --adaptive-context: 32rem;
+  }
+
+  &[data-purpose='reading'] > .adaptive-shell-main,
+  &[data-purpose='form'] > .adaptive-shell-main {
+    justify-self: center;
+  }
+  &[data-purpose='reading'] > .adaptive-shell-main {
+    max-inline-size: var(--adaptive-reading-measure);
+  }
+  &[data-purpose='form'] > .adaptive-shell-main {
+    max-inline-size: var(--adaptive-form-measure);
+  }
+
+  > .adaptive-shell-main {
+    min-inline-size: 0;
+  }
+}
+
+@container adaptive-shell (width >= #{map.get(policy.$widths, laptop)}) {
+  // Open navigation: nav, main and context; without a context slot, nav and main only.
+  .adaptive-layout-wide[data-nav-open='true'] {
+    grid-template-columns: minmax(0, var(--adaptive-nav)) minmax(0, 1fr) minmax(
+        0,
+        var(--adaptive-context)
+      );
+    grid-template-areas: 'bar bar bar' 'nav main context';
+
+    &:not(:has(> .adaptive-shell-context)) {
+      grid-template-columns: minmax(0, var(--adaptive-nav)) minmax(0, 1fr);
+      grid-template-areas: 'bar bar' 'nav main';
+    }
+  }
+
+  // Closed or absent navigation: main beside context; without context main stays stacked.
+  .adaptive-layout-wide[data-nav-open='false']:has(> .adaptive-shell-context) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, var(--adaptive-context));
+    grid-template-areas: 'bar bar' 'main context';
+
+    &:not(:has(> .adaptive-shell-bar)) {
+      grid-template-areas: 'main context';
+    }
+  }
+
+  // Areas apply only where one of the templates above does.
+  .adaptive-layout-wide:is([data-nav-open='true'], :has(> .adaptive-shell-context)) {
+    > .adaptive-shell-bar {
+      grid-area: bar;
+    }
+    > .adaptive-shell-nav {
+      grid-area: nav;
+    }
+    > .adaptive-shell-main {
+      grid-area: main;
+    }
+    > .adaptive-shell-context {
+      grid-area: context;
+    }
+    > .adaptive-shell-delivery {
+      grid-column: 1 / -1;
+    }
+  }
+}

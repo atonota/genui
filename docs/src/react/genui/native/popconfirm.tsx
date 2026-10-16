@@ -1,9 +1,9 @@
-import '../../../styles/atlas-feedback.css';
 import { useRef } from 'react';
 import AtlasButton from '../../AtlasButton';
 import { AtlasPopconfirm } from '../../AtlasFeedback';
 import type { NativeUIAdapterProps } from '../native-catalog';
 import { definition, type PopconfirmPayload } from '../../../genui/native/popconfirm';
+import { nativeLayerClassName } from '../../../genui/native-contract';
 
 /**
  * Controlled AtlasPopconfirm. The runtime value is the open state only:
@@ -15,6 +15,7 @@ export default function NativePopconfirm({
   data,
   disabled,
   actionAvailable = true,
+  presentation,
   onChange,
   onAction,
 }: NativeUIAdapterProps) {
@@ -30,6 +31,7 @@ export default function NativePopconfirm({
       description={payload.description}
       open={open}
       disabled={locked}
+      rootClassName={nativeLayerClassName(presentation)}
       okButtonProps={{ disabled: !confirmable }}
       onOpenChange={next => {
         if (!next && keepOpen.current) {

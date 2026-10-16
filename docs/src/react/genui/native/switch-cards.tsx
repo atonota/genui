@@ -11,7 +11,6 @@ import {
   type SwitchCardLayout,
   type SwitchCardOption,
 } from '../../../genui/native/switch-cards';
-import '../../../styles/atlas-selection-variants.css';
 
 const describedLayouts: readonly SwitchCardLayout[] = ['vertical', 'icon-cards', 'image-cards'];
 // Node test bundles have no Vite env; fall back to the site root.

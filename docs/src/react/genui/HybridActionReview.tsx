@@ -6,7 +6,6 @@ import type { GenUIAction, GenUIRuntime, GenUISnapshot, JsonValue } from '../../
 import AtlasButton from '../AtlasButton';
 import { AtlasAlert, AtlasModal } from '../AtlasFeedback';
 import { useI18n } from '../useI18n';
-import '../../styles/atlas-feedback.css';
 
 type ReviewDescriptor = Pick<
   GenUIAction,

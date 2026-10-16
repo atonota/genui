@@ -1,4 +1,3 @@
-import '../../../styles/atlas-media.css';
 import AtlasMediaFrame, { type AtlasMediaFrameProps } from '../../AtlasMediaFrame';
 import type { NativeAdapterProps } from '../../../genui/native-contract';
 import { definition } from '../../../genui/native/media-frame';
