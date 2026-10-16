@@ -25,7 +25,7 @@ function AtlasInputBase({
 }: AtlasInputProps) {
   const state = useAtlasInputState({ size, status, disabled, readOnly });
   return (
-    <AtlasInputFrame kind="text" state={state}>
+    <AtlasInputFrame kind="text" state={state} variant={variant}>
       <Input
         {...rest}
         className={atlasNativeClassName(className)}
@@ -50,7 +50,7 @@ function AtlasPassword({
 }: AtlasPasswordProps) {
   const state = useAtlasInputState({ size, status, disabled, readOnly });
   return (
-    <AtlasInputFrame kind="password" state={state}>
+    <AtlasInputFrame kind="password" state={state} variant={variant}>
       <Input.Password
         {...rest}
         className={atlasNativeClassName(className)}
@@ -75,7 +75,7 @@ function AtlasTextArea({
 }: AtlasTextAreaProps) {
   const state = useAtlasInputState({ size, status, disabled, readOnly });
   return (
-    <AtlasInputFrame kind="textarea" state={state}>
+    <AtlasInputFrame kind="textarea" state={state} variant={variant}>
       <Input.TextArea
         {...rest}
         className={atlasNativeClassName(className)}
@@ -106,7 +106,7 @@ function AtlasSearch({
     <AtlasSlotButton icon="search" aria-label={t('Search')} disabled={disabled} />
   );
   return (
-    <AtlasInputFrame kind="search" state={state}>
+    <AtlasInputFrame kind="search" state={state} variant={variant}>
       <Input.Search
         {...rest}
         enterButton={action}

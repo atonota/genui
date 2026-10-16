@@ -9,6 +9,7 @@ type NativeSize = NonNullable<InputProps['size']>;
 export type AtlasInputKind = 'text' | 'password' | 'textarea' | 'search' | 'number';
 export type AtlasInputSize = AtlasSize | NativeSize;
 export type AtlasInputStatus = NonNullable<InputProps['status']>;
+export type AtlasInputVariant = NonNullable<InputProps['variant']>;
 
 const sizeAliases: Record<AtlasInputSize, AtlasSize> = {
   sm: 'sm',
@@ -66,14 +67,17 @@ export const atlasNativeClassName = (className?: string) =>
 
 type FrameStyle = CSSProperties & Record<`--atlas-input-${string}`, string>;
 
-/** Single paint owner for the field well; native children keep semantics and refs. */
+/** Single paint owner for the field well; native children keep semantics and refs.
+    variant mirrors the native AntD variant; only underlined changes the well's rest edge. */
 export default function AtlasInputFrame({
   kind,
   state,
+  variant = 'filled',
   children,
 }: {
   kind: AtlasInputKind;
   state: AtlasInputState;
+  variant?: AtlasInputVariant;
   children: ReactNode;
 }) {
   const appearance = useAtlasAppearance();
@@ -89,6 +93,7 @@ export default function AtlasInputFrame({
       className="atlas-input-frame"
       data-atlas-input={kind}
       data-size={state.size}
+      data-variant={variant}
       data-status={state.status || undefined}
       data-disabled={state.disabled || undefined}
       data-readonly={state.readOnly || undefined}

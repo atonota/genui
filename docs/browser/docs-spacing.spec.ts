@@ -469,10 +469,13 @@ test('TOC rail has readable width and inner padding', async ({ page }, testInfo)
   }
 });
 
-/** Frozen shell, panel and field surfaces per theme for the shell aesthetic case. */
+/**
+ * Frozen shell, panel and field surfaces per theme for the shell aesthetic case. The dark shell
+ * canvas is black; the dark panel and field and every light role are unchanged.
+ */
 const frozenColors = {
   light: { shell: 'rgb(230, 226, 215)', panel: 'rgb(255, 255, 255)', field: 'rgb(236, 236, 236)' },
-  dark: { shell: 'rgb(25, 19, 2)', panel: 'rgb(44, 44, 44)', field: 'rgb(27, 27, 27)' },
+  dark: { shell: 'rgb(0, 0, 0)', panel: 'rgb(44, 44, 44)', field: 'rgb(27, 27, 27)' },
 } as const;
 
 /** The shell helper, eager React islands and fonts are ready after navigation. */
@@ -491,7 +494,14 @@ async function expectFrozenColors(page: Page, colors: (typeof frozenColors)[Mode
     ['header', page.getByRole('banner'), colors.shell],
     ['footer', page.getByRole('contentinfo'), colors.shell],
     ['main panel', page.getByRole('main'), colors.panel],
-    ['search field', page.locator('#component-search'), colors.field],
+    [
+      'search field well',
+      page
+        .locator('.atlas-input-frame[data-atlas-input]')
+        .filter({ has: page.locator('#component-search') }),
+      colors.field,
+    ],
+    ['native search field', page.locator('#component-search'), 'rgba(0, 0, 0, 0)'],
   ] as const;
   for (const [name, target, color] of surfaces)
     await expect.soft(target, `${label}: ${name} surface`).toHaveCSS('background-color', color);
@@ -653,6 +663,116 @@ async function focusPaint(target: Locator) {
   });
 }
 
+/** Outer border-box height of an md field well, from the shared Atlas size profile. */
+const mdFieldHeightPx = 56;
+
+/**
+ * Paint of a search field: its `.atlas-input-frame[data-atlas-input]` paint owners, the shared
+ * frame paint and the native child. The general radius and the canonical inset shadow resolve
+ * where the frame reads them, through a momentary out-of-flow probe. Geometry and paint are
+ * read after the finite native animations of the containing dialog and the paint owners finish,
+ * such as the Drawer opening translate or a focus fill transition; infinite ones are ignored.
+ */
+async function searchWell(search: Locator) {
+  return search.evaluate(async input => {
+    const edges = (style: CSSStyleDeclaration) =>
+      ['top', 'right', 'bottom', 'left'].map(side =>
+        parseFloat(style.getPropertyValue(`border-${side}-width`)),
+      );
+    const outline = (style: CSSStyleDeclaration) =>
+      style.outlineStyle === 'none' ? 0 : parseFloat(style.outlineWidth);
+    const owners: Element[] = [];
+    for (let node = input.parentElement; node; node = node.parentElement)
+      if (node.matches('.atlas-input-frame[data-atlas-input]')) owners.push(node);
+    const scopes = [input.closest('dialog'), ...owners].filter(
+      (scope): scope is Element => scope !== null,
+    );
+    await Promise.all(
+      scopes
+        .flatMap(scope => scope.getAnimations({ subtree: true }))
+        .filter(animation => Number.isFinite(Number(animation.effect?.getComputedTiming().endTime)))
+        .map(animation => animation.finished.catch(() => undefined)),
+    );
+    const paintOf = (frame: Element) => {
+      const resolve = (property: string, value: string) => {
+        const probe = document.createElement('span');
+        probe.style.position = 'absolute';
+        probe.style.setProperty(property, value);
+        frame.append(probe);
+        const resolved = getComputedStyle(probe).getPropertyValue(property);
+        probe.remove();
+        return resolved;
+      };
+      const style = getComputedStyle(frame);
+      const rect = frame.getBoundingClientRect();
+      return {
+        size: frame.getAttribute('data-size'),
+        left: rect.left,
+        top: rect.top,
+        width: rect.width,
+        height: rect.height,
+        borders: edges(style),
+        radius: style.borderTopLeftRadius,
+        background: style.backgroundColor,
+        backgroundImage: style.backgroundImage,
+        backgroundSize: style.backgroundSize,
+        backgroundPosition: style.backgroundPosition,
+        boxShadow: style.boxShadow,
+        outline: outline(style),
+        generalRadius: resolve('border-top-left-radius', 'var(--radius)'),
+        insetShadow: resolve('box-shadow', 'var(--field-inner-shadow)'),
+      };
+    };
+    const native = getComputedStyle(input);
+    return {
+      owners: owners.length,
+      well: owners[0] ? paintOf(owners[0]) : null,
+      native: {
+        background: native.backgroundColor,
+        borders: edges(native),
+        boxShadow: native.boxShadow,
+        outline: outline(native),
+        fontSize: parseFloat(native.fontSize),
+        fontWeight: native.fontWeight,
+        focusVisible: input.matches(':focus-visible'),
+      },
+    };
+  });
+}
+
+/**
+ * The search has exactly one shared frame paint owner at the md profile with the general radius,
+ * the neutral field fill and the canonical inset shadow; the native search inside paints no fill,
+ * border or shadow and keeps 14px/400 text. Returns the resting paint for the focus check.
+ */
+async function expectSearchWell(search: Locator, field: string, label: string) {
+  const rest = await searchWell(search);
+  expect.soft(rest.owners, `${label}: one .atlas-input-frame paint owner`).toBe(1);
+  const well = rest.well;
+  if (well) {
+    expect.soft(well.size, `${label}: well uses the md size profile`).toBe('md');
+    expect
+      .soft(Math.abs(well.height - mdFieldHeightPx), `${label}: md well outer height`)
+      .toBeLessThanOrEqual(tolerancePx);
+    expect.soft(well.generalRadius, `${label}: general radius resolves`).not.toBe('');
+    expect.soft(well.radius, `${label}: well uses the general radius`).toBe(well.generalRadius);
+    expect.soft(well.background, `${label}: well paints the neutral field fill`).toBe(field);
+    expect.soft(well.insetShadow, `${label}: canonical inset shadow resolves`).not.toBe('none');
+    expect
+      .soft(well.boxShadow, `${label}: well paints the canonical inset shadow`)
+      .toBe(well.insetShadow);
+  }
+  const { native } = rest;
+  expect
+    .soft(native.background, `${label}: native search leaves the fill to its well`)
+    .toBe('rgba(0, 0, 0, 0)');
+  expect.soft(native.borders, `${label}: native search draws no border`).toEqual([0, 0, 0, 0]);
+  expect.soft(native.boxShadow, `${label}: native search paints no shadow`).toBe('none');
+  expect.soft(native.fontSize, `${label}: native search font size`).toBeGreaterThanOrEqual(14);
+  expect.soft(native.fontWeight, `${label}: native search font weight`).toBe('400');
+  return rest;
+}
+
 /** A region scrolls on its own: overflow, height, last link reachable and link heights. */
 async function ownScroll(region: Locator) {
   return region.evaluate(element => {
@@ -803,6 +923,51 @@ test('shell aesthetic: compact header, navigation rhythm and frozen colors', asy
   await expect.soft(inputRow, `${label}: search filters the Input row`).toBeHidden();
   await search.fill('');
   await expect.soft(inputRow, `${label}: clearing returns the Input row`).toBeVisible();
+  await expect
+    .soft(search, `${label}: native search keeps its id`)
+    .toHaveAttribute('id', 'component-search');
+  const restingSearch = await expectSearchWell(
+    search,
+    frozenColors.light.field,
+    `${label}: Drawer search`,
+  );
+  // Keyboard focus on the search: the shared frame paints one bottom marker, no ring, and keeps
+  // its rest geometry.
+  await page.keyboard.press('Shift+Tab');
+  await page.keyboard.press('Tab');
+  await expect.soft(search, `${label}: Shift+Tab, Tab returns to the search`).toBeFocused();
+  await expect
+    .soft(page.locator('html'), `${label}: Tab turns on keyboard modality in the Drawer`)
+    .toHaveAttribute('data-input-modality', 'keyboard');
+  const focusedSearch = await searchWell(search);
+  expect.soft(focusedSearch.native.focusVisible, `${label}: search is focus-visible`).toBe(true);
+  expect.soft(focusedSearch.native.outline, `${label}: native search has no outline`).toBe(0);
+  const restWell = restingSearch.well;
+  const focusWell = focusedSearch.well;
+  if (restWell && focusWell) {
+    const name = `${label}: Drawer search well`;
+    expect.soft(focusWell.outline, `${name} has no outline`).toBe(0);
+    expect
+      .soft(focusWell.boxShadow, `${name} has no box-shadow ring`)
+      .not.toMatch(/ 0px 0px 0px [1-9]/);
+    expect.soft(focusWell.borders, `${name} keeps its rest edges`).toEqual(restWell.borders);
+    for (const side of ['left', 'top', 'width', 'height'] as const)
+      expect
+        .soft(Math.abs(focusWell[side] - restWell[side]), `${name} keeps its ${side}`)
+        .toBeLessThanOrEqual(tolerancePx);
+    expect.soft(restWell.backgroundImage, `${name} paints no marker at rest`).toBe('none');
+    expect
+      .soft(focusWell.backgroundImage, `${name} paints the shared focus marker`)
+      .toMatch(/gradient/);
+    expect
+      .soft(focusWell.backgroundPosition, `${name} marker sits on the bottom edge`)
+      .toMatch(/100%$/);
+    const markerHeight = parseFloat(focusWell.backgroundSize.split(' ')[1] ?? '');
+    expect.soft(markerHeight, `${name} marker has a height`).toBeGreaterThan(0);
+    expect
+      .soft(markerHeight, `${name} marker stays a bottom edge`)
+      .toBeLessThanOrEqual(restWell.height / 4);
+  }
   await page.keyboard.press('Escape');
   await expect.soft(drawer, `${label}: Escape closes the Drawer`).not.toHaveAttribute('open', /.*/);
   await expect
@@ -826,8 +991,19 @@ test('shell aesthetic: compact header, navigation rhythm and frozen colors', asy
   const rail = page.locator(`[data-docs-shell] .page-grid > .toc[data-doc-nav='toc']`);
   await expect.soft(aside, `${label}: sidebar is visible`).toBeVisible();
   await expect.soft(rail, `${label}: contents rail is visible`).toBeVisible();
+  await expect
+    .soft(aside, `${label}: sidebar paints the black shell`)
+    .toHaveCSS('background-color', frozenColors.dark.shell);
+  await expect
+    .soft(rail, `${label}: contents rail paints the black shell`)
+    .toHaveCSS('background-color', frozenColors.dark.shell);
   if ((await aside.count()) > 0) {
     await expectInlineInset(aside, minimumChromeInsetPx, `${label}: sidebar`);
+    await expectSearchWell(
+      documentationNav(aside).getByRole('searchbox', { name: 'Find a component' }),
+      frozenColors.dark.field,
+      `${label}: sidebar search`,
+    );
     const groupGap = await documentationNav(aside).evaluate(nav => {
       const groups = Array.from(nav.querySelectorAll(':scope > section'));
       const list = groups[0]?.querySelector('ul');

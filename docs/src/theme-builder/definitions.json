@@ -45,7 +45,7 @@
     "kind": "color",
     "defaults": {
       "light": "#e6e2d7",
-      "dark": "#191302"
+      "dark": "#000000"
     },
     "unit": "",
     "css": "--paper",

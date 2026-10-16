@@ -7,7 +7,7 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
  * output and consumed by the DocsShell owner; no other stylesheet repaints these regions.
  *
  *   role         painted by                                          light     dark
- *   --shell-bg   header, sidebar, table of contents, mobile drawer   #E6E2D7   #191302
+ *   --shell-bg   header, sidebar, table of contents, mobile drawer   #E6E2D7   #000000
  *   --panel-bg   the entire main content column                      #FFFFFF   #2C2C2C
  *   --field-bg   editable fields such as "Find a component"          neutral   #1B1B1B
  *                                                                    grey, darker than the panel
@@ -22,8 +22,13 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
  * before the next theme switch. Computed styles are read even when a modal drawer makes the
  * background inert; an always-visible sidebar is measured as rendered.
  *
- * The "Find a component" field must keep a functional boundary of at least 3:1 against its own
- * fill. Its recognisability against the shell it sits on is attached as a report only; it is
+ * The "Find a component" field is the canonical GenUI input well: exactly one
+ * `.atlas-input-frame[data-atlas-input]` paints the --field-bg fill, and the native search inside
+ * it paints no fill, border or shadow of its own. The frame uses the shared underlined variant, so
+ * its strongest resting edge is the functional field border on the bottom and needs 3:1 against
+ * the unfocused fill. Separately, the keyboard focus marker the shared frame paints on its bottom
+ * edge needs 3:1 against the focused fill after Shift+Tab, Tab; neither state stands in for the
+ * other. Recognisability against the shell it sits on is attached as a report only; it is
  * reported, never recoloured.
  */
 
@@ -41,7 +46,7 @@ const EXPECTED: Readonly<
   Record<Mode, Readonly<{ shell: string; panel: string; field: string | null }>>
 > = {
   light: { shell: '#e6e2d7', panel: '#ffffff', field: null },
-  dark: { shell: '#191302', panel: '#2c2c2c', field: '#1b1b1b' },
+  dark: { shell: '#000000', panel: '#2c2c2c', field: '#1b1b1b' },
 };
 const NEUTRAL_CHANNEL_TOLERANCE = 2;
 const MIN_TEXT_CONTRAST = 4.5;
@@ -55,15 +60,33 @@ const PROBES = {
 } as const;
 type Role = keyof typeof PROBES;
 
+const RGB_COLOR = /^rgba?\(\s*(\d+)[\s,]+(\d+)[\s,]+(\d+)\s*(?:[,/]\s*([\d.]+%?)\s*)?\)$/;
+/** CSS Color 4 computed sRGB, e.g. from color-mix() or a tweened value; channels are 0..1. */
+const SRGB_COLOR =
+  /^color\(\s*srgb\s+([-+.\deE]+)\s+([-+.\deE]+)\s+([-+.\deE]+)\s*(?:\/\s*([\d.]+%?)\s*)?\)$/;
+
+function parseAlpha(raw: string | undefined): number {
+  return raw === undefined ? 1 : raw.endsWith('%') ? Number(raw.slice(0, -1)) / 100 : Number(raw);
+}
+
+/** Maps a 0..1 sRGB channel onto the 0..255 byte scale, clamped to the sRGB gamut. */
+function toByte(channel: number): number {
+  return Math.round(Math.min(Math.max(channel, 0), 1) * 255);
+}
+
 function parseColor(value: string): Paint {
-  const match = /^rgba?\(\s*(\d+)[\s,]+(\d+)[\s,]+(\d+)\s*(?:[,/]\s*([\d.]+%?)\s*)?\)$/.exec(
-    value.trim(),
-  );
-  if (!match) throw new Error(`Unsupported computed color "${value}"`);
-  const raw = match[4];
-  const alpha =
-    raw === undefined ? 1 : raw.endsWith('%') ? Number(raw.slice(0, -1)) / 100 : Number(raw);
-  return { rgb: [Number(match[1]), Number(match[2]), Number(match[3])], alpha };
+  const text = value.trim();
+  const rgb = RGB_COLOR.exec(text);
+  if (rgb)
+    return { rgb: [Number(rgb[1]), Number(rgb[2]), Number(rgb[3])], alpha: parseAlpha(rgb[4]) };
+  const srgb = SRGB_COLOR.exec(text);
+  if (srgb) {
+    const channels = [Number(srgb[1]), Number(srgb[2]), Number(srgb[3])] as const;
+    const alpha = parseAlpha(srgb[4]);
+    if (channels.every(Number.isFinite) && Number.isFinite(alpha))
+      return { rgb: [toByte(channels[0]), toByte(channels[1]), toByte(channels[2])], alpha };
+  }
+  throw new Error(`Unsupported computed color "${value}"`);
 }
 
 function toHex(rgb: Rgb): string {
@@ -96,6 +119,8 @@ const ratio = (value: number): number => Math.round(value * 100) / 100;
 
 const MENU_TOGGLE = '[data-docs-menu-toggle]';
 const MENU_CLOSE = '[data-docs-menu-close]';
+/** The canonical GenUI input well: the single paint owner of an editable field. */
+const FIELD_OWNER = '.atlas-input-frame[data-atlas-input]';
 const SIDES = ['top', 'right', 'bottom', 'left'] as const;
 type Boundary = Readonly<{ side: (typeof SIDES)[number]; rgb: Rgb; contrast: number }>;
 
@@ -121,6 +146,46 @@ async function strongestBoundary(field: Locator, fill: Rgb): Promise<Boundary | 
   return strongest;
 }
 
+type Marker = Readonly<{ rgb: Rgb; contrast: number; outline: number; boxShadow: string }>;
+
+/**
+ * Keyboard focus marker of the shared well. Shift+Tab, Tab gives the field keyboard modality and
+ * :focus-visible; the first color stop of the frame's background image is the bottom marker,
+ * flattened onto the focused fill. Null when the frame paints no marker image.
+ */
+async function focusMarker(page: Page, input: Locator, well: Locator): Promise<Marker | null> {
+  await input.focus();
+  await page.keyboard.press('Shift+Tab');
+  await page.keyboard.press('Tab');
+  await expect(input, 'Shift+Tab then Tab must return keyboard focus to the field').toBeFocused();
+  await expect(page.locator('html')).toHaveAttribute('data-input-modality', 'keyboard');
+  // Visual paint is read after the finite native animations of the well and its dialog finish,
+  // so the focused fill and marker are final values; infinite animations are ignored.
+  const paint = await well.evaluate(async element => {
+    const scopes = [element.closest('dialog'), element].filter(
+      (scope): scope is HTMLElement | SVGElement => scope !== null,
+    );
+    await Promise.all(
+      scopes
+        .flatMap(scope => scope.getAnimations({ subtree: true }))
+        .filter(animation => Number.isFinite(Number(animation.effect?.getComputedTiming().endTime)))
+        .map(animation => animation.finished.catch(() => undefined)),
+    );
+    const style = getComputedStyle(element);
+    return {
+      image: style.backgroundImage,
+      fill: style.backgroundColor,
+      outline: style.outlineStyle === 'none' ? 0 : Number.parseFloat(style.outlineWidth),
+      boxShadow: style.boxShadow,
+    };
+  });
+  const stop = /(?:rgba?|color)\([^)]*\)/.exec(paint.image);
+  if (!stop) return null;
+  const fill = parseColor(paint.fill).rgb;
+  const rgb = flatten(parseColor(stop[0]), fill);
+  return { rgb, contrast: contrast(rgb, fill), outline: paint.outline, boxShadow: paint.boxShadow };
+}
+
 /**
  * At narrow widths the DocsShell may close the sidebar behind a menu toggle. When a visible
  * toggle exists, open the drawer through it so the shell is measured as users see it; an
@@ -140,6 +205,16 @@ async function openMenuIfToggled(page: Page): Promise<boolean> {
 /** Closes the drawer through its own control so the header theme switch is reachable again. */
 async function closeMenu(page: Page): Promise<void> {
   await page.locator(MENU_CLOSE).first().click();
+  // A native modal dialog makes the rest of the page inert without an [inert] attribute, so the
+  // dialog itself must report closed and the toggle collapsed.
+  await expect(
+    page.locator(`dialog:has(${MENU_CLOSE})`).first(),
+    'the close control must close the native drawer dialog',
+  ).not.toHaveAttribute('open');
+  await expect(
+    page.locator(MENU_TOGGLE).first(),
+    'closing the drawer must collapse the menu toggle',
+  ).toHaveAttribute('aria-expanded', 'false');
   await expect
     .poll(
       () =>
@@ -169,6 +244,10 @@ async function expectSurface(locator: Locator, hex: string, what: string): Promi
 
 /** Switches through the native header switch and waits for the atomic theme paint to settle. */
 async function ensureMode(page: Page, mode: Mode): Promise<void> {
+  // A focused sidebar control reopens the modal drawer across a resize to keep its focus; close
+  // it through its own control first so the header theme switch is reachable.
+  const close = page.locator(MENU_CLOSE).first();
+  if ((await close.count()) > 0 && (await close.isVisible())) await closeMenu(page);
   const html = page.locator('html');
   const toggle = page.getByRole('switch', { name: 'Dark theme' });
   if ((await html.getAttribute('data-theme')) !== mode) await toggle.click();
@@ -247,7 +326,8 @@ test('docs shell, panel and field roles paint exact isolated surfaces in both th
   const header = page.getByRole('banner').first();
   const sidebar = page.getByRole('complementary').first();
   const main = page.getByRole('main');
-  const field = page.getByRole('searchbox', { name: 'Find a component' });
+  const fieldInput = page.getByRole('searchbox', { name: 'Find a component' });
+  const field = page.locator(FIELD_OWNER).filter({ has: fieldInput });
   const optionalShell = [
     { name: 'table of contents', locator: page.locator('.toc').first() },
     { name: 'mobile drawer', locator: page.locator('[data-docs-drawer]').first() },
@@ -255,7 +335,8 @@ test('docs shell, panel and field roles paint exact isolated surfaces in both th
   await expect(header).toBeAttached();
   await expect(sidebar).toBeAttached();
   await expect(main).toBeAttached();
-  await expect(field).toBeAttached();
+  await expect(fieldInput).toHaveAttribute('id', 'component-search');
+  await expect(field, 'the search field has exactly one canonical well paint owner').toHaveCount(1);
 
   const report: Record<string, unknown>[] = [];
   for (const { label, viewport } of WIDTHS) {
@@ -290,9 +371,30 @@ test('docs shell, panel and field roles paint exact isolated surfaces in both th
           ).not.toBe(expected.panel);
       }
 
-      // Field: neutral grey, darker than the panel, exact in dark, readable text.
+      // Field: the canonical well paints a neutral grey fill, darker than the panel, exact in
+      // dark; the native search inside it paints nothing of its own and keeps readable text.
       const fieldPaint = parseColor(await computed(field, 'background-color'));
-      expect(fieldPaint.alpha, `${where} field must paint an opaque surface`).toBe(1);
+      expect(fieldPaint.alpha, `${where} field well must paint an opaque surface`).toBe(1);
+      const native = await fieldInput.evaluate(element => {
+        const style = getComputedStyle(element);
+        return {
+          background: style.backgroundColor,
+          borders: ['top', 'right', 'bottom', 'left'].map(side =>
+            Number.parseFloat(style.getPropertyValue(`border-${side}-width`)),
+          ),
+          boxShadow: style.boxShadow,
+        };
+      });
+      expect(
+        parseColor(native.background).alpha,
+        `${where} native search must leave the fill to its well`,
+      ).toBe(0);
+      expect(native.borders, `${where} native search must draw no border of its own`).toEqual([
+        0, 0, 0, 0,
+      ]);
+      expect(native.boxShadow, `${where} native search must paint no shadow of its own`).toBe(
+        'none',
+      );
       const fieldHex = toHex(fieldPaint.rgb);
       if (expected.field) {
         expect(fieldHex, `${where} field background`).toBe(expected.field);
@@ -307,21 +409,40 @@ test('docs shell, panel and field roles paint exact isolated surfaces in both th
         luminance(fieldPaint.rgb),
         `${where} field ${fieldHex} must be darker than the panel ${expected.panel}`,
       ).toBeLessThan(luminance(panelRgb));
-      const ink = flatten(parseColor(await computed(field, 'color')), fieldPaint.rgb);
+      const ink = flatten(parseColor(await computed(fieldInput, 'color')), fieldPaint.rgb);
       const inkContrast = contrast(ink, fieldPaint.rgb);
       expect(inkContrast, `${where} field text contrast`).toBeGreaterThanOrEqual(MIN_TEXT_CONTRAST);
 
-      // Functional boundary is asserted (soft, so the report still attaches); recognisability
-      // against the shell is measured and reported only.
-      const boundary = await strongestBoundary(field, fieldPaint.rgb);
-      const boundaryContrast = boundary?.contrast ?? 1;
+      // Two separate 3:1 cues (soft, so the report still attaches): the resting edge against the
+      // unfocused fill here, and the keyboard focus marker against the focused fill below.
+      // Recognisability against the shell is reported only.
+      const restEdge = await strongestBoundary(field, fieldPaint.rgb);
+      const restContrast = restEdge?.contrast ?? 1;
       expect
         .soft(
-          boundaryContrast,
-          `${where} field ${fieldHex} needs a painted border edge of at least ${MIN_BOUNDARY_CONTRAST}:1 (strongest ${boundary ? `${boundary.side} ${toHex(boundary.rgb)}` : 'none'})`,
+          restContrast,
+          `${where} field ${fieldHex} resting edge needs at least ${MIN_BOUNDARY_CONTRAST}:1 against the unfocused fill (edge ${restEdge ? `${restEdge.side} ${toHex(restEdge.rgb)}` : 'none'})`,
         )
         .toBeGreaterThanOrEqual(MIN_BOUNDARY_CONTRAST);
       const shellContrast = contrast(fieldPaint.rgb, shellRgb);
+      await testInfo.attach(`shell-surfaces-${mode}-${label}.png`, {
+        body: await page.screenshot({ fullPage: true }),
+        contentType: 'image/png',
+      });
+
+      if (label === 'desktop') await expectRoleIsolation(page, { header, sidebar, main, field });
+      const marker = await focusMarker(page, fieldInput, field);
+      const markerContrast = marker?.contrast ?? 1;
+      expect
+        .soft(
+          markerContrast,
+          `${where} field ${fieldHex} keyboard focus marker needs at least ${MIN_BOUNDARY_CONTRAST}:1 against the focused fill (marker ${marker ? toHex(marker.rgb) : 'none'})`,
+        )
+        .toBeGreaterThanOrEqual(MIN_BOUNDARY_CONTRAST);
+      expect.soft(marker?.outline ?? 0, `${where} field focus draws no outline`).toBe(0);
+      expect
+        .soft(marker?.boxShadow ?? 'none', `${where} field focus draws no box-shadow ring`)
+        .not.toMatch(/ 0px 0px 0px [1-9]/);
       report.push({
         width: label,
         mode,
@@ -329,23 +450,21 @@ test('docs shell, panel and field roles paint exact isolated surfaces in both th
         shell: { header: expected.shell, sidebar: expected.shell, ...optional },
         panel: expected.panel,
         field: {
+          owner: FIELD_OWNER,
           background: fieldHex,
           ink: toHex(ink),
           inkContrast: ratio(inkContrast),
-          boundary: boundary ? toHex(boundary.rgb) : 'none',
-          boundarySide: boundary?.side ?? 'none',
-          boundaryContrast: ratio(boundaryContrast),
-          meetsFunctionalBoundary: boundaryContrast >= MIN_BOUNDARY_CONTRAST,
+          restEdge: restEdge ? toHex(restEdge.rgb) : 'none',
+          restEdgeSide: restEdge?.side ?? 'none',
+          restBoundaryContrast: ratio(restContrast),
+          meetsFunctionalBoundary: restContrast >= MIN_BOUNDARY_CONTRAST,
+          focusMarker: marker ? toHex(marker.rgb) : 'none',
+          focusMarkerContrast: ratio(markerContrast),
+          meetsFocusMarkerContrast: markerContrast >= MIN_BOUNDARY_CONTRAST,
           shellContrast: ratio(shellContrast),
           ambiguousOnShell: shellContrast < FIELD_RECOGNITION_RATIO,
         },
       });
-      await testInfo.attach(`shell-surfaces-${mode}-${label}.png`, {
-        body: await page.screenshot({ fullPage: true }),
-        contentType: 'image/png',
-      });
-
-      if (label === 'desktop') await expectRoleIsolation(page, { header, sidebar, main, field });
       if (drawerOpened) await closeMenu(page);
     }
   }

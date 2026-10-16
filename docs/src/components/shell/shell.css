@@ -153,40 +153,8 @@
   -webkit-backdrop-filter: blur(var(--overlay-backdrop-blur));
   backdrop-filter: blur(var(--overlay-backdrop-blur));
 }
-/* The sidebar search sits outside AtlasProvider and reads the root field roles: the
-   --field-bg fill, the quiet decorative well edge and inner depth on the top and sides, and
-   one fixed --field-focus-indicator-width functional bottom edge in --field-border that keeps
-   at least 3:1 against the fill. Keyboard focus (html keyboard modality and :focus-visible)
-   keeps that edge fixed, fills the well with --focus-bg and paints one separate
-   --field-focus-indicator-width bottom marker in --focus-indicator-color as a background
-   layer; pointer focus paints nothing. */
-[data-docs-shell] .sidebar input[type='search'] {
-  width: 100%;
-  min-width: 0;
-  min-height: var(--control-height);
-  padding: 0.5rem 0.75rem;
-  border: 1px solid var(--field-inset-border, transparent);
-  border-bottom: var(--field-focus-indicator-width) solid var(--field-border);
-  background-color: var(--field-bg);
-  box-shadow: var(--field-inner-shadow, none);
-  border-radius: var(--radius);
-  color: var(--ink);
-}
-@media (any-hover: hover) {
-  [data-docs-shell] .sidebar input[type='search']:hover {
-    box-shadow: var(--field-inner-hover, var(--field-inner-shadow, none));
-  }
-}
-:root[data-input-modality='keyboard']
-  [data-docs-shell]
-  .sidebar
-  input[type='search']:focus-visible {
-  background-color: var(--focus-bg);
-  background-image: linear-gradient(var(--focus-indicator-color), var(--focus-indicator-color));
-  background-position: bottom;
-  background-size: 100% var(--field-focus-indicator-width);
-  background-repeat: no-repeat;
-}
+/* The sidebar search is the canonical .atlas-input-frame rendered by DocsNav; atlas-input.css
+   and focus-fields.css paint it from the shared field model, so the shell adds no well. */
 .sidebar-note {
   color: var(--muted);
   margin-top: var(--space-lg);

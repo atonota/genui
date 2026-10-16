@@ -1,5 +1,48 @@
 # GenUI maintenance contract
 
+## Black dark documentation shell and canonical sidebar search — human task 2026-10-16
+
+Newest human task; a precise, human-authorized exception to the color freeze in
+the entries below, for the dark shell only. Older entries stay as history.
+Results are PENDING; this entry claims no executed check and no DONE.
+
+- Only `canvas.defaults.dark` in `docs/src/theme-builder/definitions.json`
+  moves from `#191302` to `#000000`; theme.ts already aliases `--paper` to
+  `--shell-bg`, so the dark header, left sidebar, Drawer, right contents rail
+  and footer turn black. Light values, panels, fields, accent, the approved and
+  Storybook `themeColors.dark.paper` (#242424) and the definition count stay;
+  no new token, CSS black override or `!important`. Saved Theme Builder
+  recipes keep their values and are not migrated.
+- The sidebar search stays the static SSR native `#component-search` under its
+  label, i18n and autocomplete (DocsLayout filter and Drawer move unchanged; no
+  island, hydration, dependency or JS). DocsNav renders it inside a canonical
+  `.atlas-input-frame[data-atlas-input=text][data-size=md]` fed by
+  `inputSurfaceAliasVariables`, `inputPaddingInline` and the md atlas size
+  profile. `docs/src/styles/atlas-input.css` is the single paint owner (its
+  native-child reset covers `input.atlas-input-native`), focus-fields.css owns
+  the Tab-only bottom marker, and the narrow forced-colors frame rules apply.
+  Sidebar fill/border/shadow/radius/marker copies in nav.css, shell.css and the
+  forced-colors block are removed; legacy sidebar placeholder rules in
+  docs-accessibility.css only reach unframed inputs.
+- Correction to the initial quiet search choice: the shared GenUI input gains
+  an `underlined` variant. AtlasInputFrame takes an optional `variant` typed
+  from AntD `InputProps['variant']` (default `filled`) and emits
+  `data-variant`; the AtlasInput wrappers and AtlasInputNumber forward their
+  native variant. Only `[data-variant=underlined]` in atlas-input.css paints
+  the rest bottom edge with the functional `--atlas-input-border` (fallback
+  `--field-border`) at the unchanged 1px width; other edges keep the quiet
+  inset edge, and fill, inset shadow, radius, height and type stay. Status,
+  disabled and forced-colors rules still override it; the default `filled`
+  master look is unchanged. DocsNav opts the sidebar search into the same
+  variant, with no sidebar paint copy. Rest and focus are separate criteria:
+  the resting edge needs 3:1 against the unfocused fill and the Tab-only
+  bottom marker needs 3:1 against the focused fill; neither substitutes for
+  the other.
+- Test accounting (authorized scope, not results): existing cases only, 0 new
+  cases; the author ran no test. Outfit, the 14 CSS px minimum, central roles,
+  Cubic motion and ringless keyboard focus stay. The root conductor records
+  actual receipts.
+
 ## Normal-laptop component detail presentation, colors frozen — human task 2026-10-16
 
 Newest human task; it rejects the previous detail composition and supersedes

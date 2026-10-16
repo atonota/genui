@@ -1,6 +1,8 @@
 ---
 import { components } from '../../data/catalog';
 import { foundationGroups } from '../../data/foundation-navigation';
+import atlas from '../../data/atlas.json';
+import { inputPaddingInline, inputSurfaceAliasVariables } from '../../data/input-surfaces';
 import './nav.css';
 
 interface Props {
@@ -9,6 +11,20 @@ interface Props {
 
 const { slug } = Astro.props;
 const groups = [...new Set(components.map(component => component.category))];
+
+/* Static AtlasInputFrame adapter: atlas-input.css paints the search well from the shared
+   field model and the md size profile (atlasSizeProfiles reads the same atlas.json), while
+   the native input stays the DocsLayout filter target without an island. It opts into the
+   shared underlined variant, whose functional bottom edge identifies the field at rest. */
+const searchSize = 'md';
+const searchHeight = atlas.decisions.buttons.size_variants.find(
+  profile => profile.value === searchSize,
+)?.height_px;
+const searchFrameStyle: Record<string, string> = {
+  ...inputSurfaceAliasVariables(),
+  '--atlas-input-padding-inline': `${inputPaddingInline[searchSize]}px`,
+  ...(searchHeight != null ? { '--atlas-input-height': `${searchHeight}px` } : {}),
+};
 ---
 
 <div class="navigation" id="navigation">
@@ -18,13 +34,22 @@ const groups = [...new Set(components.map(component => component.category))];
   <nav aria-label="Documentation" data-i18n-aria-label="Documentation">
     <label class="nav-search">
       <span data-i18n="Find a component">Find a component</span>
-      <input
-        type="search"
-        id="component-search"
-        placeholder="Button, Input, Drawer…"
-        data-i18n-placeholder="Button, Input, Drawer…"
-        autocomplete="off"
-      />
+      <span
+        class="atlas-input-frame"
+        data-atlas-input="text"
+        data-size={searchSize}
+        data-variant="underlined"
+        style={searchFrameStyle}
+      >
+        <input
+          type="search"
+          id="component-search"
+          class="atlas-input-native"
+          placeholder="Button, Input, Drawer…"
+          data-i18n-placeholder="Button, Input, Drawer…"
+          autocomplete="off"
+        />
+      </span>
     </label>
     {foundationGroups.map(group => (
       <section class="nav-group">

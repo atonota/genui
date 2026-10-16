@@ -38,26 +38,10 @@
   gap: var(--space-xs);
   margin-bottom: var(--space-md);
 }
-.sidebar .nav-search > span {
+/* The label text shares the row inset; the search well is the canonical .atlas-input-frame
+   from DocsNav, painted by atlas-input.css with its keyboard marker in focus-fields.css. */
+.sidebar .nav-search > span:not(.atlas-input-frame) {
   padding-inline: var(--space-sm);
-}
-.sidebar .nav-search input {
-  width: 100%;
-  min-width: 0;
-  min-height: var(--control-height);
-  padding: var(--space-xs) var(--space-sm);
-  /* Same quiet well as the fields through the root theme aliases; shell.css owns the
-     fixed functional bottom edge and its keyboard-only focus state. */
-  border: 1px solid var(--field-inset-border, transparent);
-  background-color: var(--field-bg);
-  box-shadow: var(--field-inner-shadow, none);
-  border-radius: var(--radius);
-  color: var(--ink);
-}
-@media (any-hover: hover) {
-  .sidebar .nav-search input:hover {
-    box-shadow: var(--field-inner-hover, var(--field-inner-shadow, none));
-  }
 }
 .sidebar .navigation ul {
   list-style: none;

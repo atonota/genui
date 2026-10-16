@@ -45,7 +45,7 @@ export default function AtlasInputNumber<T extends number | string = number | st
   );
   if (unframed) return control;
   return (
-    <AtlasInputFrame kind="number" state={state}>
+    <AtlasInputFrame kind="number" state={state} variant={variant}>
       {control}
     </AtlasInputFrame>
   );

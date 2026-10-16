@@ -66,10 +66,12 @@
   min-inline-size: 0;
 }
 
-/* Native children never paint a second well. Important outranks AntD variant
+/* Native children never paint a second well: AntD classes and the static native
+   input.atlas-input-native of an Astro adapter alike. Important outranks AntD variant
    state rules and the legacy field rules without a per-state override pile. */
 .atlas-input-frame[data-atlas-input]
   :is(
+    input.atlas-input-native,
     .ant-input,
     .ant-input-affix-wrapper,
     .ant-input-number,
@@ -87,6 +89,11 @@
   background: transparent !important;
   box-shadow: none !important;
   outline: none;
+}
+
+/* WebKit search inputs keep a native field look unless appearance is reset. */
+.atlas-input-frame[data-atlas-input] input.atlas-input-native[type='search'] {
+  appearance: none;
 }
 
 /* Legacy fixed and minimum heights on native children would override the
@@ -181,6 +188,13 @@
   .atlas-input-frame[data-atlas-input]:hover {
     box-shadow: var(--atlas-input-inner-hover);
   }
+}
+
+/* Underlined variant: the rest bottom edge takes the functional field border role at
+   the unchanged width (3:1 identification at rest); the other edges stay the quiet inset
+   edge. Placed before status, disabled and forced colors, which still override it. */
+.atlas-input-frame[data-atlas-input][data-variant='underlined'] {
+  border-bottom-color: var(--atlas-input-border, var(--field-border));
 }
 
 /* Status recolors the reserved edges; the fill and inner shadow stay put. */
@@ -428,23 +442,5 @@
     -webkit-text-fill-color: GrayText !important;
   }
 
-  /* Sidebar search: the field itself owns the edge. :not(.atlas-input-frame *)
-     lifts specificity above the accessibility sheet's bottom rest role. */
-  .nav-search input:not(.atlas-input-frame *) {
-    forced-color-adjust: none;
-    border-color: Canvas !important;
-    background-color: Canvas !important;
-    background-image: none !important;
-    box-shadow: none !important;
-    color: CanvasText !important;
-    -webkit-text-fill-color: CanvasText !important;
-    caret-color: CanvasText !important;
-  }
-  .nav-search input:not(.atlas-input-frame *)::placeholder {
-    color: GrayText !important;
-    -webkit-text-fill-color: GrayText !important;
-  }
-  :root[data-input-modality='keyboard'] .nav-search input:not(.atlas-input-frame *):focus-visible {
-    border-bottom-color: Highlight !important;
-  }
+  /* The sidebar search is a canonical .atlas-input-frame and follows the frame rules above. */
 }

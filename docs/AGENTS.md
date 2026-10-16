@@ -1,5 +1,41 @@
 # Astro documentation maintenance contract
 
+## Black dark documentation shell and canonical sidebar search — human task 2026-10-16
+
+Newest human task; a precise, human-authorized exception to the color freeze in
+the entries below, for the dark shell only. Older entries stay as history.
+Results are PENDING; this entry claims no executed check and no DONE.
+
+- Only `canvas.defaults.dark` in `src/theme-builder/definitions.json` moves
+  from `#191302` to `#000000`; theme.ts aliases `--paper` to `--shell-bg`, so
+  the dark header, sidebar, Drawer, contents rail and footer turn black. Light
+  values, panels, fields, accent, approved/Storybook `themeColors.dark.paper`
+  (#242424) and the definition count stay; no new token, CSS black override or
+  `!important`. Saved Theme Builder recipes are not wiped or migrated.
+- The static SSR native `#component-search` keeps its label, i18n,
+  autocomplete, DocsLayout filter and Drawer move (no island, hydration or JS)
+  inside a canonical `.atlas-input-frame[data-atlas-input=text][data-size=md]`
+  rendered by DocsNav from `inputSurfaceAliasVariables`, `inputPaddingInline`
+  and the md atlas size profile. `src/styles/atlas-input.css` is the single
+  paint owner (native-child reset covers `input.atlas-input-native`);
+  focus-fields.css owns the Tab-only bottom marker; forced colors use the
+  frame rules. Sidebar well copies in nav.css and shell.css are removed and the
+  legacy placeholder rules in docs-accessibility.css only reach unframed inputs.
+- Correction to the initial quiet search choice: AtlasInputFrame takes an
+  optional `variant` typed from AntD `InputProps['variant']` (default
+  `filled`, emitted as `data-variant`), forwarded by the AtlasInput wrappers
+  and AtlasInputNumber. Only `[data-variant=underlined]` in
+  `src/styles/atlas-input.css` paints the rest bottom edge with
+  `--atlas-input-border` (fallback `--field-border`) at the unchanged 1px
+  width; fill, inset shadow, radius, height and type stay, and status,
+  disabled and forced colors still override it. The `filled` master look is
+  unchanged; DocsNav opts the search into `underlined` with no paint copy.
+  Rest and focus are separate: the resting edge needs 3:1 against the
+  unfocused fill, the Tab-only marker 3:1 against the focused fill.
+- Test accounting (authorized scope, not results): existing cases only, 0 new
+  cases; no test run by the author. Outfit, 14 CSS px minimum, central roles,
+  Cubic motion and ringless keyboard focus stay.
+
 ## Normal-laptop component detail presentation, colors frozen — human task 2026-10-16
 
 Newest human task; it rejects the previous detail composition and supersedes
