@@ -253,17 +253,17 @@ dialog[data-docs-drawer][open]::backdrop {
   text-align: end;
 }
 
-/* Component detail is one centered column of at most 1120px (70rem) at every width. The
-   showcase and reference wrappers keep their nodes but render no box, so the eight sections
-   stack in DOM order and API tables scroll inside their own regions. */
+/* Component detail fills the whole center column between the sidebar and the contents rail
+   with no width ceiling, so the shared preview can use it; reading prose keeps its own
+   measure (documentation.css). The showcase and reference wrappers keep their nodes but
+   render no box, so the eight sections stack in DOM order and API tables scroll inside their
+   own regions. */
 [data-docs-shell] :is(.component-showcase, .component-reference) {
   display: contents;
 }
 [data-docs-shell] .page-grid > .component-detail {
   inline-size: 100%;
   min-inline-size: 0;
-  max-inline-size: 70rem;
-  margin-inline: auto;
 }
 /* Compact primary links join the header band from 80rem; the Drawer navigation covers
    narrower widths. */

@@ -1,5 +1,23 @@
 # Astro documentation maintenance contract
 
+## Laptop preview screen and flexible component article — human task 2026-10-16
+
+- The MacBook preview is a fixed 1440x900 (16:10) logical screen with the
+  centered 1280 container (80px margins); bezel and base are unchanged, so the
+  whole device is 1520x942. `src/data/preview-devices.ts` stays the one source;
+  captions, profile and Code usage derive from it. The adaptive 1600
+  breakpoint is a separate policy value and stays unchanged.
+- The component article has no 70rem ceiling: it fills the center column
+  between the flush sidebar and the flush contents rail, whose widths, shell
+  padding and gaps stay. Prose keeps `--prose-measure`. Actual 1:1 is never
+  scaled; a stage narrower than the device scrolls only itself with every edge
+  reachable, never the page.
+- Regression: `browser/preview-geometry.spec.ts` runs in the three engines of
+  `browser/adaptive.config.ts`, including 320 Fit, 1280/1920 Actual, 2160 and
+  expanded 2160. The existing `browser/docs-reference.spec.ts` retains its
+  selected-profile, theme, code and state checks. Conductor receipts record
+  actual results; local checks, CI and publication remain separate evidence.
+
 ## Capability-first adaptive GenUI and explicit TV focus — human task 2026-10-16
 
 Newest direct human task: all GenUI components follow `ADAPTIVE-PLAN.md`. The

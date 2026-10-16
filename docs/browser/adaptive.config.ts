@@ -18,7 +18,7 @@ const reportFolder = join(stageRoot, 'report');
 
 export default defineConfig({
   testDir: '.',
-  testMatch: ['adaptive-ui.spec.ts'],
+  testMatch: ['adaptive-ui.spec.ts', 'preview-geometry.spec.ts'],
   outputDir: resultsRoot,
   fullyParallel: false,
   forbidOnly: Boolean(process.env.CI),

@@ -650,14 +650,19 @@ test('Input preview isolates its iframe document, state, profile and delivery', 
   await expect.poll(size).toBe(ipad === '744x1133' ? '1133x744' : '744x1133');
   await expectDemoStateKept();
 
-  // MacBook: 1600 logical screen with a centered 1280 container.
+  // MacBook: 1440x900 (16:10) logical screen with a centered 1280 container and 80px margins;
+  // the caption reads the same central size.
   await choose(preview, /macbook/i);
-  await expect.poll(async () => Math.round((await box(viewport)).width)).toBe(1600);
+  await expect.poll(size).toBe('1440x900');
+  await expect(caption).toContainText('1440×900');
   const screen = await box(viewport);
   const container = await box(frame.locator('[data-preview-container]'));
   expect(container.width).toBeCloseTo(1280, 0);
-  expect(container.left - screen.left).toBeCloseTo(160, 0);
+  expect(container.left - screen.left).toBeCloseTo(80, 0);
   await expectDemoStateKept();
+
+  // Actual 1:1 scrolling, the 2160 wide column and the expanded 1:1 fit are gated on every
+  // adaptive engine by preview-geometry.spec.ts.
 
   // Expanded MacBook evidence on a desktop-sized page, then Escape returns inline.
   await page.setViewportSize({ width: 1920, height: 1080 });

@@ -67,11 +67,12 @@ function fixedScreen(width: number, height: number, container = width) {
   };
 }
 
-// Illustrative MacBook 13 class: 1600×1000 logical screen, 1280 container, 160 margins.
+// Illustrative MacBook 13 class: 1440×900 (16:10) logical screen, 1280 container, 80 margins;
+// with the unchanged bezel and base the whole device is 1520×942.
 const macbook: PreviewDeviceDefinition = {
   value: 'macbook',
   label: 'MacBook',
-  ...fixedScreen(1600, 1000, 1280),
+  ...fixedScreen(1440, 900, 1280),
   rotatable: false,
   bezelTopPx: 18,
   bezelInlinePx: 12,
