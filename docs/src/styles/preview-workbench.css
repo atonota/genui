@@ -460,6 +460,24 @@
   border-inline-start-color: var(--focus-indicator-color);
   background-color: var(--focus-bg);
 }
+/* MacBook width axis (data-preview-fit-axis='width'): DeviceFrame scales by the inline size
+   only, so the stage has no height cap, expanded included, and the whole fixed device or its
+   scaled footprint flows in the page. The inline start bar would narrow the stage, so the
+   keyboard marker is one bottom edge on transparent reserved block space instead. Inline, the
+   views reclaim the docs preview bleed (documentation.css), so the stage spans the column. */
+.example-preview-fit[data-preview-fit-axis='width'] {
+  max-block-size: none;
+  border-inline-start-width: 0;
+  border-block-end: var(--focus-indicator-width, 3px) solid transparent;
+}
+:root[data-input-modality='keyboard']
+  .example-preview-fit[data-preview-fit-axis='width']:focus-visible {
+  border-block-end-color: var(--focus-indicator-color);
+}
+.example-preview:not([data-preview-expanded='true'])
+  > .example-preview-views:has([data-preview-fit-axis='width']) {
+  margin-inline: calc(-1 * var(--docs-preview-bleed, 0px));
+}
 /* Next-phase dialog root: a closed dialog workbench stays the inline grid, so the inline
    stage is never hidden; only [data-preview-expanded='true'] fills the viewport over the
    shared backdrop. Modal behaviour belongs to the next phase. */
@@ -499,6 +517,15 @@ dialog.example-preview {
   -webkit-backdrop-filter: blur(var(--overlay-backdrop-blur));
   backdrop-filter: blur(var(--overlay-backdrop-blur));
 }
+/* A full-height MacBook can make the expanded dialog scroll; its toolbar, Close included,
+   stays reachable at the top of the dialog scrollport. */
+.example-preview[data-preview-expanded='true'][data-preview-device='macbook']
+  > .example-preview-toolbar {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 1;
+  background-color: var(--panel);
+}
 /* Expanded Fit uses the viewport below the toolbar rows; DeviceFrame reads this computed cap.
    Actual 1:1 still scrolls only inside its own stage. */
 .example-preview[data-preview-expanded='true'] .example-preview-fit {
@@ -519,6 +546,11 @@ dialog.example-preview {
   }
   :root[data-input-modality='keyboard'] .example-preview-fit:focus-visible {
     outline: 2px solid CanvasText;
+  }
+  .example-preview-fit[data-preview-fit-axis='width'],
+  :root[data-input-modality='keyboard']
+    .example-preview-fit[data-preview-fit-axis='width']:focus-visible {
+    border-block-end-color: Canvas;
   }
   .example-preview-bezel,
   .example-preview-device[data-preview-device='macbook'] .example-preview-base {

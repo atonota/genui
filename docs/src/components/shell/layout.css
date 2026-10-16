@@ -5,9 +5,11 @@
    rem so text zoom keeps the narrow layout: 54.6875rem = 875px, 70.625rem = 1130px (rail width)
    and 80rem = 1280px (wide sidebar, contents rail and header links). Surfaces only use the shell and panel roles. */
 :where(:root) {
-  --shell-sidebar-inline-size: 14rem;
+  /* Desktop rails never exceed 200px including their padding (border-box tracks). */
+  --shell-rail-max-inline-size: 200px;
+  --shell-sidebar-inline-size: min(14rem, var(--shell-rail-max-inline-size));
   --shell-layout-gap: var(--space-lg);
-  --shell-toc-inline-size: var(--toc-width, 10rem);
+  --shell-toc-inline-size: min(var(--toc-width, 10rem), var(--shell-rail-max-inline-size));
   --shell-drawer-inline-size: 20rem;
   --shell-drawer-edge: var(--target-min);
   /* Sticky rails start below the sticky header; DocsShell measures its wrapped height. */
@@ -311,16 +313,17 @@ dialog[data-docs-drawer][open]::backdrop {
   }
 }
 @media (min-width: 70.625rem) {
-  /* Rail width value only: a readable 240px (15rem); the rail itself is shown from 80rem. */
+  /* Rail width value only: 15rem capped at the 200px rail role; the rail itself is shown from
+     80rem. */
   :where(:root) {
-    --shell-toc-inline-size: 15rem;
+    --shell-toc-inline-size: min(15rem, var(--shell-rail-max-inline-size));
   }
 }
 @media (min-width: 80rem) {
-  /* Full-width laptop geometry: the sidebar widens to 224-248px flush left, the 240px rail sits
-     flush right without a main inline-end inset, and the Contents disclosure yields to it. */
+  /* Full-width laptop geometry: the sidebar sits flush left and the rail flush right, both at
+     the 200px rail role, without a main inline-end inset; the Contents disclosure yields. */
   :where(:root) {
-    --shell-sidebar-inline-size: clamp(14rem, 16vw, 15.5rem);
+    --shell-sidebar-inline-size: var(--shell-rail-max-inline-size);
   }
   [data-docs-shell] .header-primary {
     display: flex;
@@ -351,5 +354,20 @@ dialog[data-docs-drawer][open]::backdrop {
   /* The rail replaces the disclosure; only one set of section links is visible. */
   [data-docs-shell] .page-grid:has(> [data-doc-nav='toc']) [data-doc-contents] {
     display: none;
+  }
+  /* Component pages: the center column meets both rails without outer gaps or main inline
+     insets, so at 1920px it is exactly 1920 - 200 - 200 = 1520px. The article keeps reading
+     content on the container-md inset and names it, so a MacBook width-axis preview stage can
+     bleed back to the column edges (documentation.css, preview-workbench.css). */
+  [data-docs-shell][data-docs-component-page] :is(.docs-shell, .page-grid) {
+    column-gap: 0;
+  }
+  [data-docs-shell][data-docs-component-page] .docs-main {
+    padding-inline: 0;
+  }
+  [data-docs-shell][data-docs-component-page] .page-grid > .component-detail {
+    --docs-article-inset: var(--inset-container-md, 24px);
+    box-sizing: border-box;
+    padding-inline: var(--docs-article-inset);
   }
 }

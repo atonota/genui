@@ -1,5 +1,36 @@
 # Astro documentation maintenance contract
 
+## MacBook 1024 container, 200px rails and 1920 auto Actual — human task 2026-10-16
+
+Newest direct human decision; it supersedes only the 1280/80 container figures
+of the laptop entry below, whose other rules stay.
+
+- The MacBook logical screen stays 1440x900 (16:10) and the whole device stays
+  1520x942 (bezel and base unchanged; the human accepted the annotated
+  explanation). The centered container is now 1024 with 208px inner margins on
+  each side. `src/data/preview-devices.ts` stays the single source; captions,
+  profile, grid comments and Code usage derive from it.
+- Both docs rails (sidebar and contents) are at most 200 CSS px each,
+  including their padding. The shell's negative bleed reclaims the article and
+  live-preview insets so the whole MacBook frame fits between the rails at a
+  1920 CSS px viewport.
+- CSS viewport below 1920: the MacBook automatically fits its width and the
+  inline Expand control is visible. At 1920 and wider: automatic Actual 1:1
+  and the inline Expand control is hidden. The redundant manual MacBook Actual
+  control is hidden; phone and tablet keep Actual and Rotate.
+- Expanded mode: Close stays reachable after a resize to a wide viewport, and
+  Escape closes it and returns focus to a visible control under the shared
+  ringless keyboard-focus mode.
+- The whole fixed MacBook height stays in normal flow; no 720px height cap or
+  shrink. No palette, font (Outfit, 14 CSS px minimum) or motion (central
+  Cubic tokens) change.
+- Regression gate: `browser/preview-geometry.spec.ts` gains ONE case run in the
+  three engines of the existing `browser/adaptive.config.ts`; the two existing
+  docs-consumer cases stay. Root runs `docs:check`, `docs:lint`,
+  `docs:format`, `docs:build` and the explicit browser types command. Source
+  authors claim no PASS, CI or live result; conductor receipts under
+  `adaptive-20261016` record actual pass/fail/not_run/not_applicable.
+
 ## Laptop preview screen and flexible component article — human task 2026-10-16
 
 - The MacBook preview is a fixed 1440x900 (16:10) logical screen with the

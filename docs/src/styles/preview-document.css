@@ -19,9 +19,10 @@ body[data-preview-body] {
 }
 
 /* Central layout grid per profile: small 4 columns, 16px margins, 12px gutters; medium 8
-   columns, 32px margins, 16px gutters; large 12 columns across the 1280 container, whose 160px
-   outer margins come from the container fields, with 24px gutters. Frames pad by the margin
-   and space by the gutter. */
+   columns, 32px margins, 16px gutters; large 12 columns across the centered container (1024 on
+   the 1440x900 MacBook screen), whose 208px outer margins come from the container fields of
+   the central device model, with 24px gutters. Frames pad by the margin and space by the
+   gutter. */
 [data-preview-document] {
   --preview-grid-columns: 4;
   --preview-grid-margin: 16px;
@@ -64,7 +65,7 @@ body[data-preview-body] {
   padding: var(--preview-grid-gutter) var(--preview-grid-margin);
 }
 
-/* Large: the 1280 container keeps the model's inline margins. */
+/* Large: the centered container from the central device model keeps its inline margins. */
 .preview-large {
   padding: var(--preview-grid-gutter) var(--preview-grid-margin);
 }

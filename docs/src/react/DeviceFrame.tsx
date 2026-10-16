@@ -16,6 +16,8 @@ import {
 } from '../data/preview-devices';
 
 export type DeviceFrameZoom = 'fit' | 'actual';
+/** Fit by both stage axes, or by the stage width alone with the full fixed height in flow. */
+export type DeviceFrameFitAxis = 'both' | 'width';
 
 export type DeviceFrameProps = {
   device: PreviewDevice;
@@ -23,9 +25,12 @@ export type DeviceFrameProps = {
   orientation?: PreviewOrientation;
   /** Fit scales the whole device into the stage, never above 1:1; Actual keeps 1:1. */
   zoom?: DeviceFrameZoom;
+  /** Width ignores the stage height cap; defaults to both for the existing consumers. */
+  fitAxis?: DeviceFrameFitAxis;
   /** Kept as the same element across resizes and rotations; never cloned or keyed here. */
   children: ReactNode;
-  /** Applied scale as a whole percentage, for the parent's caption. */
+  /** Applied scale as a percentage floored to two decimals, for the parent's caption; a fit
+      below 1:1 never reads 100. */
   onScale?: (percent: number) => void;
   /** Canonical English name of the stage region; translated here. */
   label?: string;
@@ -53,16 +58,18 @@ const stageCap = (heightPx?: number) =>
   heightPx && heightPx > 0 ? heightPx : DEVICE_STAGE_MAX_HEIGHT_PX;
 
 /** Fit never enlarges; an unmeasured stage keeps the central height cap, a measured one its
-    computed semantic cap. Flooring keeps the scaled footprint inside the stage. */
+    computed semantic cap; the width axis ignores that cap. Flooring keeps the scaled footprint
+    inside the stage. */
 export function deviceFrameScale(
   size: { readonly widthPx: number; readonly heightPx: number },
   zoom: DeviceFrameZoom,
   availableWidthPx?: number,
   availableHeightPx?: number,
+  fitAxis: DeviceFrameFitAxis = 'both',
 ): number {
   if (zoom === 'actual') return 1;
   const byWidth = availableWidthPx && availableWidthPx > 0 ? availableWidthPx / size.widthPx : 1;
-  const byHeight = stageCap(availableHeightPx) / size.heightPx;
+  const byHeight = fitAxis === 'width' ? 1 : stageCap(availableHeightPx) / size.heightPx;
   return Math.floor(Math.min(1, byWidth, byHeight) * 1e4) / 1e4;
 }
 
@@ -76,6 +83,7 @@ export default function DeviceFrame({
   device,
   orientation,
   zoom = 'fit',
+  fitAxis = 'both',
   children,
   onScale,
   label = 'Device preview',
@@ -120,8 +128,9 @@ export default function DeviceFrame({
   }, []);
 
   const size = deviceFrameSize(device, orientation);
-  const scale = deviceFrameScale(size, zoom, availableWidth, availableHeight);
-  const percent = Math.round(scale * 100);
+  const scale = deviceFrameScale(size, zoom, availableWidth, availableHeight, fitAxis);
+  // The scale is already floored to 1e-4, so this is its exact two-decimal percentage.
+  const percent = Math.round(scale * 1e4) / 100;
   useIsomorphicLayoutEffect(() => {
     onScaleRef.current?.(percent);
   }, [percent]);
@@ -130,7 +139,7 @@ export default function DeviceFrame({
     zoom === 'actual' &&
     (availableWidth === undefined ||
       size.widthPx > availableWidth ||
-      size.heightPx > stageCap(availableHeight));
+      (fitAxis === 'both' && size.heightPx > stageCap(availableHeight)));
   const scalerStyle = {
     '--preview-scale': String(scale),
     '--preview-fit-width': `${size.widthPx * scale}px`,
@@ -146,6 +155,7 @@ export default function DeviceFrame({
       aria-label={t(label)}
       tabIndex={scrollable ? 0 : undefined}
       data-preview-zoom={zoom}
+      data-preview-fit-axis={fitAxis}
     >
       <div className="example-preview-scaler" style={scalerStyle}>
         <div

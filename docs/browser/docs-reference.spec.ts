@@ -226,6 +226,24 @@ test('320 drawer keeps nav scroll; desktop tabs, sidebar and TOC fit', async ({ 
   expect(tocBox.left).toBeGreaterThan(1920 / 2);
   expect(Math.abs(tocBox.left + tocBox.width - 1920)).toBeLessThanOrEqual(1);
   expect(Math.abs((await box(sidebar)).left)).toBeLessThanOrEqual(1);
+  // Both desktop rails stay within 200 CSS px including their padding; their links keep 14px
+  // or larger text that wraps between words instead of clipping or ending in an ellipsis.
+  expect(tocBox.width).toBeLessThanOrEqual(200);
+  expect((await box(sidebar)).width).toBeLessThanOrEqual(200);
+  const clippedRailText = await page.evaluate(() =>
+    Array.from(document.querySelectorAll('aside.sidebar a, [data-doc-nav=toc] a'))
+      .filter(link => link.getClientRects().length > 0)
+      .filter(link => {
+        const style = getComputedStyle(link);
+        return (
+          Number.parseFloat(style.fontSize) < 14 ||
+          style.textOverflow === 'ellipsis' ||
+          link.scrollWidth > link.clientWidth + 1
+        );
+      })
+      .map(link => link.textContent?.trim() ?? ''),
+  );
+  expect(clippedRailText).toEqual([]);
   await expectNoPageOverflow(page);
   await saveShot(page, 'docs-reference-1920.png');
 });
@@ -650,22 +668,23 @@ test('Input preview isolates its iframe document, state, profile and delivery', 
   await expect.poll(size).toBe(ipad === '744x1133' ? '1133x744' : '744x1133');
   await expectDemoStateKept();
 
-  // MacBook: 1440x900 (16:10) logical screen with a centered 1280 container and 80px margins;
-  // the caption reads the same central size.
+  // MacBook: 1440x900 (16:10) logical screen with a centered 1024 container and 208px
+  // margins; the caption reads the same central size.
   await choose(preview, /macbook/i);
   await expect.poll(size).toBe('1440x900');
   await expect(caption).toContainText('1440×900');
   const screen = await box(viewport);
   const container = await box(frame.locator('[data-preview-container]'));
-  expect(container.width).toBeCloseTo(1280, 0);
-  expect(container.left - screen.left).toBeCloseTo(80, 0);
+  expect(container.width).toBeCloseTo(1024, 0);
+  expect(container.left - screen.left).toBeCloseTo(208, 0);
   await expectDemoStateKept();
 
-  // Actual 1:1 scrolling, the 2160 wide column and the expanded 1:1 fit are gated on every
-  // adaptive engine by preview-geometry.spec.ts.
+  // Automatic Fit below 1920, automatic 1:1 from 1920, the 200px rails and the wide column
+  // are gated on every adaptive engine by preview-geometry.spec.ts.
 
-  // Expanded MacBook evidence on a desktop-sized page, then Escape returns inline.
-  await page.setViewportSize({ width: 1920, height: 1080 });
+  // Expanded MacBook evidence just below 1920, where the inline Expand exists; widening to
+  // 1920 while expanded keeps the close control and Escape still returns inline.
+  await page.setViewportSize({ width: 1919, height: 1080 });
   await expand.click();
   await expect(preview).toHaveAttribute('data-preview-expanded', 'true');
   await expect(frame.locator('[data-preview-container]')).toBeVisible();
@@ -678,11 +697,73 @@ test('Input preview isolates its iframe document, state, profile and delivery', 
   );
   expect(deviceBox.left).toBeGreaterThanOrEqual(Math.max(stageBox.left, 0) - 1);
   expect(deviceBox.top).toBeGreaterThanOrEqual(Math.max(stageBox.top, 0) - 1);
-  expect(deviceBox.right).toBeLessThanOrEqual(Math.min(stageBox.right, 1920) + 1);
-  expect(deviceBox.bottom).toBeLessThanOrEqual(Math.min(stageBox.bottom, 1080) + 1);
-  await settledShot('preview-expanded-macbook-1920.png');
+  expect(deviceBox.right).toBeLessThanOrEqual(Math.min(stageBox.right, 1919) + 1);
+  expect(deviceBox.bottom).toBeLessThanOrEqual(stageBox.bottom + 1);
+  // The fitted device keeps its full height: a short expanded dialog owns the vertical scroll
+  // instead of shrinking the device, and scrolling it to the end reaches the device bottom.
+  const dialogScroll = await stage.locator('.example-preview-device').evaluate(device => {
+    const viewportHeight = device.ownerDocument.documentElement.clientHeight;
+    const dialog = device.closest('dialog, [role="dialog"]');
+    let scroller: Element | null = null;
+    for (
+      let node = device.parentElement;
+      node && dialog?.contains(node);
+      node = node.parentElement
+    ) {
+      const scrolls = /auto|scroll/.test(getComputedStyle(node).overflowY);
+      if (scrolls && node.scrollHeight > node.clientHeight) {
+        scroller = node;
+        break;
+      }
+    }
+    const bottom = device.getBoundingClientRect().bottom;
+    const measured = {
+      dialog: Boolean(dialog),
+      scrolls: Boolean(scroller),
+      viewportHeight,
+      bottom,
+      scrollHeight: 0,
+      clientHeight: 0,
+      kept: 0,
+      atEnd: 0,
+      restored: 0,
+      bottomAtEnd: bottom,
+      scrollportBottom: viewportHeight,
+    };
+    if (!scroller) return measured;
+    measured.scrollHeight = scroller.scrollHeight;
+    measured.clientHeight = scroller.clientHeight;
+    measured.kept = scroller.scrollTop;
+    scroller.scrollTo({ top: scroller.scrollHeight, behavior: 'instant' });
+    measured.atEnd = scroller.scrollTop;
+    measured.bottomAtEnd = device.getBoundingClientRect().bottom;
+    const port = scroller.getBoundingClientRect();
+    const portBottom = port.top + scroller.clientTop + scroller.clientHeight;
+    measured.scrollportBottom = Math.min(portBottom, viewportHeight);
+    scroller.scrollTo({ top: measured.kept, behavior: 'instant' });
+    measured.restored = scroller.scrollTop;
+    return measured;
+  });
+  await test.info().attach('preview-expanded-macbook-scroll.json', {
+    body: JSON.stringify(dialogScroll, null, 2),
+    contentType: 'application/json',
+  });
+  if (dialogScroll.bottom > dialogScroll.viewportHeight + 1) {
+    expect(dialogScroll.dialog).toBe(true);
+    expect(dialogScroll.scrolls).toBe(true);
+    expect(dialogScroll.bottomAtEnd).toBeLessThanOrEqual(dialogScroll.scrollportBottom + 1);
+  }
+  expect(Math.abs(dialogScroll.restored - dialogScroll.kept)).toBeLessThanOrEqual(1);
+  await expectNoPageOverflow(page);
+  await settledShot('preview-expanded-macbook-1919.png');
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  await expect(preview).toHaveAttribute('data-preview-expanded', 'true');
+  await expect(preview.getByRole('button', { name: /^close expanded preview$/i })).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(preview).toHaveAttribute('data-preview-expanded', 'false');
+  await expect(preview.getByRole('button', { name: /^expand$/i })).toBeHidden();
+  await expect(workspace).toHaveValue('Atlas operations');
+  expect(await sameFrameWindow()).toBe(true);
 
   // Production delivery: a cold context with no service worker or HTTP cache hosts only the
   // documented usage markup in an ordinary page; the embedded small profile document, its

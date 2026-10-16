@@ -1,9 +1,11 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
 // Laptop preview geometry gate for every adaptive engine: the first Input workbench shows the
-// MacBook as one fixed 1440x900 logical screen with a centered 1280 container and 80px
-// margins, fits it at 320 and draws the whole 1520x942 device 1:1 from a laptop page to 2160,
-// always in the same iframe document and without page overflow.
+// MacBook as one fixed 1440x900 logical screen with a centered 1024 container and 208px
+// margins. Below a 1920 CSS px page the whole 1520x942 device fits the stage width with the
+// inline Expand available; from 1920 the two rails of at most 200px leave the center column
+// room to draw it 1:1, with no manual zoom or inline Expand, always in the same iframe
+// document and without page overflow.
 
 async function expectNoPageOverflow(page: Page) {
   const overflow = await page.evaluate(
@@ -71,6 +73,7 @@ function deviceGeometry(fitRegion: Locator) {
     const drawn = device.getBoundingClientRect();
     const style = getComputedStyle(region);
     return {
+      drawnWidth: drawn.width,
       deviceWidth: Math.round(drawn.width),
       deviceHeight: Math.round(drawn.height),
       clientWidth: region.clientWidth,
@@ -146,138 +149,184 @@ test('MacBook preview geometry holds from 320 Fit to 2160 Actual', async ({ page
       margin: Math.round(inner.left - screen.left),
     };
   };
-  const expectedScreen = { width: 1440, height: 900, containerWidth: 1280, margin: 80 };
+  const expectedScreen = { width: 1440, height: 900, containerWidth: 1024, margin: 208 };
   const caption = preview.locator('.example-preview-stage > .example-preview-caption');
-  const captionPercent = async () =>
-    Number(/([0-9]+)%$/.exec(((await caption.textContent()) ?? '').trim())?.[1] ?? NaN);
+  const captionPercent = async () => {
+    const text = ((await caption.textContent()) ?? '').trim();
+    // The caption may carry decimals (99.93%), so the whole percentage is parsed.
+    return Number(/([0-9]+(?:\.[0-9]+)?)%$/.exec(text)?.[1] ?? NaN);
+  };
   const fitRegion = preview.locator('.example-preview-fit');
+  // The MacBook has no manual zoom: the page width alone chooses Fit or 1:1.
   const actual = preview.getByRole('button', { name: /actual size 1:1/i });
+  const expand = preview.getByRole('button', { name: /^expand$/i });
+  const closeExpanded = preview.getByRole('button', { name: /^close expanded preview$/i });
 
-  // 320 Fit: the whole device scales into the stage below 100% and nothing scrolls sideways.
-  await expect.poll(logicalScreen).toEqual(expectedScreen);
-  await expect(caption).toContainText('1440×900');
-  await expect(actual).toHaveAttribute('aria-pressed', 'false');
-  await expect.poll(captionPercent).toBeLessThan(100);
-  await settleMotion(preview, frameRoot);
-  const fit = await deviceGeometry(fitRegion);
-  const fitPercent = await captionPercent();
-  expect(Math.abs(fit.deviceWidth - (1520 * fitPercent) / 100)).toBeLessThanOrEqual(8);
-  expect(fit.deviceWidth).toBeLessThanOrEqual(fit.clientWidth + 1);
-  expectFitInside(fit);
-  await expectNoPageOverflow(page);
-  await expectDraftKept();
-  await page.screenshot({ path: testInfo.outputPath('preview-fit-macbook-320.png') });
-
-  // Actual 1:1 on laptop and desktop pages: a stage narrower than the 1520px device scrolls
-  // only itself with both inline edges reachable; the page never overflows.
-  await page.setViewportSize({ width: 1280, height: 900 });
-  await actual.click();
-  await expect(actual).toHaveAttribute('aria-pressed', 'true');
-  await expect(caption).toContainText('100%');
-  const narrow: Record<string, unknown> = {};
-  for (const [width, height] of [
-    [1280, 900],
-    [1920, 1080],
-  ] as const) {
-    await page.setViewportSize({ width, height });
-    await expect.poll(async () => (await deviceGeometry(fitRegion)).deviceWidth).toBe(1520);
+  // Automatic Fit below 1920: the drawn device fills the stage width, never a 720px height
+  // cap, stays below 1:1 by its actual rect rather than the rounded caption, and stays inside
+  // the stage by its drawn rect and scaler footprint; the inline Expand stays available.
+  const expectAutoFit = async () => {
+    // A narrowed stage may still sit within 2px of the old 1:1 device before the page width
+    // commits, so Fit is awaited as a whole: the inline Expand is back, the stage clips as Fit
+    // and the drawn device is below 1:1 while filling the stage width.
+    const fitCommitted = async () => {
+      const geometry = await deviceGeometry(fitRegion);
+      return (
+        (await expand.isVisible()) &&
+        geometry.overflowX === 'hidden' &&
+        geometry.drawnWidth < 1520 &&
+        Math.abs(geometry.clientWidth - geometry.drawnWidth) <= 2
+      );
+    };
+    await expect.poll(fitCommitted).toBe(true);
     await settleMotion(preview, frameRoot);
     const geometry = await deviceGeometry(fitRegion);
-    narrow[width] = geometry;
-    expect(geometry.deviceHeight).toBe(942);
-    expect(geometry.scrollWidth).toBeGreaterThan(geometry.clientWidth);
-    expect(Math.abs(geometry.startGap)).toBeLessThanOrEqual(1);
-    expect(Math.abs(geometry.endGap)).toBeLessThanOrEqual(1);
+    const percent = await captionPercent();
+    expect(geometry.drawnWidth).toBeLessThan(1520);
+    expect(geometry.drawnWidth).toBeLessThanOrEqual(geometry.clientWidth + 1);
+    expect(Math.abs(geometry.clientWidth - geometry.drawnWidth)).toBeLessThanOrEqual(2);
+    expect(percent).toBeLessThanOrEqual(100);
+    expect(Math.abs(geometry.drawnWidth - (1520 * percent) / 100)).toBeLessThanOrEqual(8);
+    expectFitInside(geometry);
     await expect.poll(logicalScreen).toEqual(expectedScreen);
-    await expect(caption).toContainText('100%');
+    await expect(caption).toContainText('1440×900');
+    await expect(actual).toHaveCount(0);
+    await expect(expand).toBeVisible();
     await expectNoPageOverflow(page);
     await expectDraftKept();
-    await fitRegion.scrollIntoViewIfNeeded();
-    await page.screenshot({ path: testInfo.outputPath(`preview-actual-macbook-${width}.png`) });
-  }
+    return { ...geometry, percent };
+  };
 
-  // At 2160 the component article fills the whole column between the flush sidebar and the
-  // flush contents rail, past the old 1120px (70rem) ceiling, so the device width fits 1:1.
-  await page.setViewportSize({ width: 2160, height: 1350 });
-  const columns = await page.evaluate(() => {
-    const grid = document.querySelector('[data-docs-shell] .page-grid');
-    const article = grid?.querySelector(':scope > .component-detail');
-    const toc = grid?.querySelector(':scope > [data-doc-nav=toc]');
-    const sidebar = document.querySelector('aside.sidebar');
-    if (!grid || !article || !toc || !sidebar) throw new Error('The page columns are missing.');
-    const [g, a, t, s] = [grid, article, toc, sidebar].map(el => el.getBoundingClientRect());
-    return {
-      gridLeft: g.left,
-      columnGap: Number.parseFloat(getComputedStyle(grid).columnGap),
-      articleLeft: a.left,
-      articleRight: a.right,
-      tocLeft: t.left,
-      tocRight: t.right,
-      tocWidth: t.width,
-      sidebarLeft: s.left,
-      sidebarRight: s.right,
-    };
-  });
-  expect(columns.articleRight - columns.articleLeft).toBeGreaterThan(1121);
-  expect(Math.abs(columns.articleLeft - columns.gridLeft)).toBeLessThanOrEqual(1);
-  const articleEndGap = columns.tocLeft - columns.columnGap - columns.articleRight;
-  expect(Math.abs(articleEndGap)).toBeLessThanOrEqual(1);
-  expect(Math.abs(columns.tocRight - 2160)).toBeLessThanOrEqual(1);
-  expect(columns.tocWidth).toBeCloseTo(240, 0);
-  expect(Math.abs(columns.sidebarLeft)).toBeLessThanOrEqual(1);
-  expect(columns.sidebarRight).toBeLessThan(columns.articleLeft);
-  expect((await box(preview)).width).toBeGreaterThan(1120);
-  await expect
-    .poll(async () => {
+  // From 1920 both rails stay at most 200 CSS px including padding, flush to the page edges,
+  // and the component article fills the whole column between them.
+  const columns = () =>
+    page.evaluate(() => {
+      const grid = document.querySelector('[data-docs-shell] .page-grid');
+      const article = grid?.querySelector(':scope > .component-detail');
+      const toc = grid?.querySelector(':scope > [data-doc-nav=toc]');
+      const sidebar = document.querySelector('aside.sidebar');
+      if (!grid || !article || !toc || !sidebar) throw new Error('The page columns are missing.');
+      const [g, a, t, s] = [grid, article, toc, sidebar].map(el => el.getBoundingClientRect());
+      return {
+        gridLeft: g.left,
+        columnGap: Number.parseFloat(getComputedStyle(grid).columnGap),
+        articleLeft: a.left,
+        articleRight: a.right,
+        tocLeft: t.left,
+        tocRight: t.right,
+        tocWidth: t.width,
+        sidebarLeft: s.left,
+        sidebarRight: s.right,
+        sidebarWidth: s.width,
+      };
+    });
+  const expectColumns = async (width: number) => {
+    const layout = await columns();
+    expect(Math.abs(layout.sidebarLeft)).toBeLessThanOrEqual(1);
+    expect(layout.sidebarWidth).toBeLessThanOrEqual(200);
+    expect(layout.sidebarRight).toBeLessThanOrEqual(layout.articleLeft + 1);
+    expect(Math.abs(layout.tocRight - width)).toBeLessThanOrEqual(1);
+    expect(layout.tocWidth).toBeGreaterThan(0);
+    expect(layout.tocWidth).toBeLessThanOrEqual(200);
+    expect(Math.abs(layout.articleLeft - layout.gridLeft)).toBeLessThanOrEqual(1);
+    const articleEndGap = layout.tocLeft - layout.columnGap - layout.articleRight;
+    expect(Math.abs(articleEndGap)).toBeLessThanOrEqual(1);
+    expect(layout.articleRight - layout.articleLeft).toBeGreaterThanOrEqual(1520);
+    return layout;
+  };
+
+  // Automatic 1:1 from 1920: the whole 1520x942 device sits inside the center stage without
+  // any horizontal overflow, the caption reads 100% and the inline Expand is gone.
+  const expectAutoActual = async (width: number) => {
+    // 1:1 is awaited as a whole: the inline Expand is gone, the device is drawn at 1520 and
+    // the stage has no horizontal overflow, before motion settles and geometry is read.
+    const actualCommitted = async () => {
       const geometry = await deviceGeometry(fitRegion);
-      return geometry.scrollWidth - geometry.clientWidth;
-    })
-    .toBeLessThanOrEqual(0);
-  await settleMotion(preview, frameRoot);
-  const wide = await deviceGeometry(fitRegion);
-  expect(wide.deviceWidth).toBe(1520);
-  expect(wide.deviceHeight).toBe(942);
-  expect(wide.clientWidth).toBeGreaterThanOrEqual(1520);
-  expect(wide.startGap).toBeGreaterThanOrEqual(-1);
-  expect(wide.endGap).toBeGreaterThanOrEqual(-1);
-  await expect.poll(logicalScreen).toEqual(expectedScreen);
-  await expectNoPageOverflow(page);
-  await expectDraftKept();
-  await fitRegion.scrollIntoViewIfNeeded();
-  await page.screenshot({ path: testInfo.outputPath('preview-actual-macbook-2160.png') });
+      return (
+        (await expand.isHidden()) &&
+        geometry.deviceWidth === 1520 &&
+        geometry.scrollWidth - geometry.clientWidth <= 0
+      );
+    };
+    await expect.poll(actualCommitted).toBe(true);
+    await settleMotion(preview, frameRoot);
+    const geometry = await deviceGeometry(fitRegion);
+    expect(geometry.deviceWidth).toBe(1520);
+    expect(geometry.deviceHeight).toBe(942);
+    expect(geometry.clientWidth).toBeGreaterThanOrEqual(1520);
+    expect(geometry.shownStartGap).toBeGreaterThanOrEqual(-1);
+    expect(geometry.shownEndGap).toBeGreaterThanOrEqual(-1);
+    await expect.poll(captionPercent).toBe(100);
+    await expect.poll(logicalScreen).toEqual(expectedScreen);
+    await expect(actual).toHaveCount(0);
+    await expect(expand).toBeHidden();
+    const layout = await expectColumns(width);
+    await expectNoPageOverflow(page);
+    await expectDraftKept();
+    return { ...geometry, columns: layout };
+  };
 
-  // Expanded at the same width, the whole 1520x942 device fits 1:1 without any scroll.
-  const expand = preview.getByRole('button', { name: /^(expand|close expanded preview)$/i });
+  // After Escape the focus rests on a visible control of this workbench, not a removed Expand.
+  const focusOnVisibleControl = () =>
+    preview.evaluate(workbench => {
+      const el = workbench.ownerDocument.activeElement;
+      if (!el || el === workbench || !workbench.contains(el)) return false;
+      const control = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]';
+      if (!el.matches(control)) return false;
+      const shown = (el.closest('label') ?? el).getBoundingClientRect();
+      return shown.width > 0 && shown.height > 0 && getComputedStyle(el).visibility !== 'hidden';
+    });
+
+  // 320: the whole device fits the stage width below 100% and nothing scrolls sideways.
+  const fit = await expectAutoFit();
+  expect(fit.percent).toBeLessThan(100);
+  await page.screenshot({ path: testInfo.outputPath('preview-fit-macbook-320.png') });
+
+  // Laptop pages below 1920 keep automatic Fit, 1919 included, where the caption may round to
+  // 100% while the drawn device is still narrower than 1520.
+  const below: Record<number, unknown> = {};
+  for (const [width, height] of [
+    [1280, 900],
+    [1919, 1080],
+  ] as const) {
+    await page.setViewportSize({ width, height });
+    below[width] = await expectAutoFit();
+  }
+  await fitRegion.scrollIntoViewIfNeeded();
+  await page.screenshot({ path: testInfo.outputPath('preview-fit-macbook-1919.png') });
+
+  // Expanded at 1919, then widened to 1920: the close control stays, Escape returns inline and
+  // focus lands on a visible control because the inline Expand is gone from 1920.
   await expand.click();
   await expect(preview).toHaveAttribute('data-preview-expanded', 'true');
-  await expect
-    .poll(async () => {
-      const geometry = await deviceGeometry(fitRegion);
-      return Math.max(
-        geometry.scrollWidth - geometry.clientWidth,
-        geometry.scrollHeight - geometry.clientHeight,
-      );
-    })
-    .toBeLessThanOrEqual(0);
-  await settleMotion(preview, frameRoot);
-  const expanded = await deviceGeometry(fitRegion);
-  expect(expanded.deviceWidth).toBe(1520);
-  expect(expanded.deviceHeight).toBe(942);
+  await expect(closeExpanded).toBeVisible();
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  await expect(preview).toHaveAttribute('data-preview-expanded', 'true');
+  await expect(closeExpanded).toBeVisible();
   await expectDraftKept();
   await page.keyboard.press('Escape');
   await expect(preview).toHaveAttribute('data-preview-expanded', 'false');
+  await expect.poll(focusOnVisibleControl).toBe(true);
 
-  // Back to Fit rescales the same document; the logical screen and the draft stay.
-  await actual.click();
-  await expect(actual).toHaveAttribute('aria-pressed', 'false');
-  await settleMotion(preview, frameRoot);
-  const fitAgain = await deviceGeometry(fitRegion);
-  expectFitInside(fitAgain);
-  await expect.poll(logicalScreen).toEqual(expectedScreen);
-  await expectNoPageOverflow(page);
-  await expectDraftKept();
+  // 1920 and wider: automatic 1:1 between the two capped rails with no inline Expand.
+  const wide: Record<number, unknown> = {};
+  wide[1920] = await expectAutoActual(1920);
+  await fitRegion.scrollIntoViewIfNeeded();
+  await page.screenshot({ path: testInfo.outputPath('preview-actual-macbook-1920.png') });
+  for (const [width, height] of [
+    [1921, 1080],
+    [2160, 1350],
+  ] as const) {
+    await page.setViewportSize({ width, height });
+    wide[width] = await expectAutoActual(width);
+  }
+  expect((await box(preview)).width).toBeGreaterThan(1120);
+
+  // Back below 1920 the same document fits again and the inline Expand returns.
+  await page.setViewportSize({ width: 1919, height: 1080 });
+  const fitAgain = await expectAutoFit();
   await testInfo.attach('preview-geometry-macbook.json', {
-    body: JSON.stringify({ fit, fitPercent, narrow, columns, wide, expanded, fitAgain }, null, 2),
+    body: JSON.stringify({ fit, below, wide, fitAgain }, null, 2),
     contentType: 'application/json',
   });
 });

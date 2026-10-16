@@ -16,6 +16,7 @@ import { usePreviewFrame } from './usePreviewFrame';
 import { useI18n } from './useI18n';
 import type { ThemeMode } from '../theme';
 import { previewProfileForDevice, type PreviewProfile } from '../preview/profiles';
+import { previewWorkbenchLayout, useMacbookWideViewport } from '../preview/workbench-layout';
 import {
   previewDeviceDefinition,
   previewDevices,
@@ -79,6 +80,26 @@ function IconOption({ icon, label }: { icon: ReactNode; label: string }) {
   );
 }
 
+/** Returning from the iframe, Firefox ignores an element's focus() until the parent document's
+    window is activated again, so each attempt first focuses the target's own window. */
+function focusInOwnWindow(target: HTMLElement | null | undefined) {
+  if (!target) return;
+  target.ownerDocument.defaultView?.focus();
+  target.focus({ preventScroll: true });
+}
+
+/** Expand while it is offered, else the checked view radio; focus() keeps the input modality.
+    Firefox can still ignore focus() on the visually hidden radio, so an ignored attempt falls
+    back to the always-operable Grid button. */
+function focusReturnTarget(dialog: HTMLDialogElement | null) {
+  const target =
+    dialog?.querySelector<HTMLElement>('[data-preview-expand]') ??
+    dialog?.querySelector<HTMLElement>('.example-preview-view-tabs input[type="radio"]:checked');
+  focusInOwnWindow(target);
+  if (target && target.ownerDocument.activeElement === target) return;
+  focusInOwnWindow(dialog?.querySelector<HTMLElement>('[data-preview-grid-control]'));
+}
+
 /** One example in one isolated preview document. Expand reuses the same dialog, DeviceFrame
     and iframe browsing context; nothing is remounted or reparented. */
 export default function PreviewWorkbench({ id, title }: PreviewWorkbenchProps) {
@@ -94,6 +115,10 @@ export default function PreviewWorkbench({ id, title }: PreviewWorkbenchProps) {
   const codePanelRef = useRef<HTMLDivElement>(null);
   // Close events queued by our own mode switches are not user closes.
   const ownCloses = useRef(0);
+  // Set when leaving Expand; the return focus waits for that render.
+  const returnFocus = useRef(false);
+  const wide = useMacbookWideViewport();
+  const layout = previewWorkbenchLayout(frame.device, wide, zoom);
   const profile = previewProfileForDevice(frame.device);
   const screen = previewScreen(frame.device, frame.orientation);
   const rotatable = previewDeviceDefinition(frame.device).rotatable;
@@ -122,10 +147,27 @@ export default function PreviewWorkbench({ id, title }: PreviewWorkbenchProps) {
     }
     if (modal) dialog.showModal();
     else dialog.show();
+    // Leaving Expand may remove its button (wide MacBook), so that return follows the render.
+    returnFocus.current = !modal && expanded;
     setExpanded(modal);
-    if (!modal)
-      dialog.querySelector<HTMLElement>('[data-preview-expand]')?.focus({ preventScroll: true });
+    if (!modal && !expanded) focusReturnTarget(dialog);
   };
+
+  // Firefox can restore focus while it settles the queued native close, so the return waits
+  // a frame until our own closes have landed; a mode switch or unmount cancels it.
+  useIsomorphicLayoutEffect(() => {
+    if (expanded || !returnFocus.current) return;
+    returnFocus.current = false;
+    let frame = 0;
+    const settle = (frames: number) => {
+      frame = requestAnimationFrame(() => {
+        if (ownCloses.current > 0 && frames > 0) settle(frames - 1);
+        else focusReturnTarget(dialogRef.current);
+      });
+    };
+    settle(3);
+    return () => cancelAnimationFrame(frame);
+  }, [expanded]);
 
   const caption = (
     <p className="example-preview-caption">
@@ -150,6 +192,7 @@ export default function PreviewWorkbench({ id, title }: PreviewWorkbenchProps) {
       data-preview-device={frame.device}
       data-preview-orientation={screen.orientation}
       data-preview-expanded={String(expanded)}
+      data-preview-macbook-wide={String(wide)}
       onPointerDown={() => frame.focus()}
       onFocusCapture={() => frame.focus()}
       onCancel={event => {
@@ -216,16 +259,19 @@ export default function PreviewWorkbench({ id, title }: PreviewWorkbenchProps) {
                 },
               ]}
             />
+            {layout.manualActual && (
+              <AtlasButton
+                fill="outline"
+                size="sm"
+                text={t('Actual size 1:1')}
+                aria-pressed={zoom === 'actual'}
+                onClick={() => setZoom(zoom === 'fit' ? 'actual' : 'fit')}
+              />
+            )}
             <AtlasButton
               fill="outline"
               size="sm"
-              text={t('Actual size 1:1')}
-              aria-pressed={zoom === 'actual'}
-              onClick={() => setZoom(zoom === 'fit' ? 'actual' : 'fit')}
-            />
-            <AtlasButton
-              fill="outline"
-              size="sm"
+              data-preview-grid-control=""
               text={t('Grid')}
               aria-pressed={frame.grid}
               onClick={() => frame.setGrid(!frame.grid)}
@@ -237,13 +283,16 @@ export default function PreviewWorkbench({ id, title }: PreviewWorkbenchProps) {
               disabled={!rotatable}
               onClick={() => frame.rotate()}
             />
-            <AtlasButton
-              fill="outline"
-              size="sm"
-              data-preview-expand=""
-              text={expanded ? t('Close expanded preview') : t('Expand')}
-              onClick={() => present(!expanded)}
-            />
+            {/* Close always stays while expanded; the wide MacBook already shows 1:1 inline. */}
+            {(expanded || layout.inlineExpand) && (
+              <AtlasButton
+                fill="outline"
+                size="sm"
+                data-preview-expand=""
+                text={expanded ? t('Close expanded preview') : t('Expand')}
+                onClick={() => present(!expanded)}
+              />
+            )}
             <a href={frame.standaloneSrc} target="_blank" rel="noopener">
               {t('Open alone')}
             </a>
@@ -283,7 +332,8 @@ export default function PreviewWorkbench({ id, title }: PreviewWorkbenchProps) {
           <DeviceFrame
             device={frame.device}
             orientation={frame.orientation}
-            zoom={zoom}
+            zoom={layout.zoom}
+            fitAxis={layout.fitAxis}
             onScale={setScale}
           >
             <iframe

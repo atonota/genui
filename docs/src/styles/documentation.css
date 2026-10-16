@@ -193,4 +193,10 @@
     :is([data-doc-nav='sections'], [data-doc-tools='article']) {
     display: none;
   }
+  /* The live preview keeps its inset and names the bleed back to the column edges (the article
+     inset from layout.css plus its own); only a MacBook width-axis stage consumes it. */
+  [data-docs-shell][data-docs-component-page] .live-preview {
+    --docs-preview-bleed: calc(var(--docs-article-inset, 0px) + var(--space-lg));
+    padding-inline: var(--space-lg);
+  }
 }
