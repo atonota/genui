@@ -21,24 +21,6 @@ function box(locator: Locator) {
   });
 }
 
-/** Finite CSS and Web Animations still running in a scope; infinite loaders never settle. */
-function runningFiniteAnimations(scope: Locator) {
-  return scope.evaluate(
-    el =>
-      el
-        .getAnimations({ subtree: true })
-        .filter(
-          animation =>
-            animation.playState === 'running' &&
-            Number.isFinite(animation.effect?.getComputedTiming().iterations ?? Infinity),
-        ).length,
-  );
-}
-
-async function settleMotion(...scopes: Locator[]) {
-  for (const scope of scopes) await expect.poll(() => runningFiniteAnimations(scope)).toBe(0);
-}
-
 /** Segmented options are chosen through their visible label; the native radio is hidden. */
 async function choose(scope: Locator, name: RegExp) {
   await scope
@@ -48,9 +30,14 @@ async function choose(scope: Locator, name: RegExp) {
   await expect(scope.getByRole('radio', { name })).toBeChecked();
 }
 
-/** The drawn device and the stage's own scroll extent, with the gaps at both inline edges. */
-function deviceGeometry(fitRegion: Locator) {
-  return fitRegion.evaluate(region => {
+/** After the given animation frames, one read of the drawn device and the stage's own scroll
+    extent with the gaps at both inline edges, its caption and the finite CSS and Web
+    Animations still running in the workbench; infinite loaders never settle. */
+function deviceGeometry(fitRegion: Locator, frames = 0) {
+  return fitRegion.evaluate(async (region, frameCount) => {
+    for (let frame = 0; frame < frameCount; frame += 1) {
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+    }
     const device = region.querySelector('.example-preview-device');
     const scaler = region.querySelector('.example-preview-scaler');
     if (!device || !scaler) throw new Error('The stage has no scaled device.');
@@ -72,6 +59,16 @@ function deviceGeometry(fitRegion: Locator) {
     const footprint = gaps(scaler);
     const drawn = device.getBoundingClientRect();
     const style = getComputedStyle(region);
+    const caption = region
+      .closest('.example-preview-stage')
+      ?.querySelector(':scope > .example-preview-caption');
+    const runningAnimations = (region.closest('.example-preview') ?? region)
+      .getAnimations({ subtree: true })
+      .filter(
+        animation =>
+          animation.playState === 'running' &&
+          Number.isFinite(animation.effect?.getComputedTiming().iterations ?? Infinity),
+      ).length;
     return {
       drawnWidth: drawn.width,
       deviceWidth: Math.round(drawn.width),
@@ -89,9 +86,21 @@ function deviceGeometry(fitRegion: Locator) {
       scalerEndGap: footprint.end,
       overflowX: style.overflowX,
       overflowY: style.overflowY,
+      caption: caption?.textContent?.trim() ?? '',
+      runningAnimations,
     };
-  });
+  }, frames);
 }
+
+/** Accept two matching snapshots, each observed after two animation frames, rather than
+    resampling geometry independently after the condition passed. */
+async function settledGeometry(fitRegion: Locator) {
+  const first = await deviceGeometry(fitRegion, 2);
+  const second = await deviceGeometry(fitRegion, 2);
+  return JSON.stringify(first) === JSON.stringify(second) ? second : undefined;
+}
+
+type StageGeometry = Awaited<ReturnType<typeof deviceGeometry>>;
 
 // Fit clips its stage, so a raw scrollWidth may still count the unscaled layout box (Firefox).
 // The oracle is the drawn device and its scaler footprint inside the scrollport, with the
@@ -167,11 +176,8 @@ test('MacBook preview geometry holds from 320 Fit to 2160 Actual', async ({ page
     });
   const expectedScreen = { width: 1440, height: 900, containerWidth: 1024, margin: 208 };
   const caption = preview.locator('.example-preview-stage > .example-preview-caption');
-  const captionPercent = async () => {
-    const text = ((await caption.textContent()) ?? '').trim();
-    // The caption may carry decimals (99.93%), so the whole percentage is parsed.
-    return Number(/([0-9]+(?:\.[0-9]+)?)%$/.exec(text)?.[1] ?? NaN);
-  };
+  // The caption may carry decimals (99.93%), so the whole percentage is parsed.
+  const percentOf = (text: string) => Number(/([0-9]+(?:\.[0-9]+)?)%$/.exec(text)?.[1] ?? NaN);
   const fitRegion = preview.locator('.example-preview-fit');
   // The MacBook has no manual zoom: the page width alone chooses Fit or 1:1.
   const actual = preview.getByRole('button', { name: /actual size 1:1/i });
@@ -183,21 +189,31 @@ test('MacBook preview geometry holds from 320 Fit to 2160 Actual', async ({ page
   // the stage by its drawn rect and scaler footprint; the inline Expand stays available.
   const expectAutoFit = async () => {
     // A narrowed stage may still sit within 2px of the old 1:1 device before the page width
-    // commits, so Fit is awaited as a whole: the inline Expand is back, the stage clips as Fit
-    // and the drawn device is below 1:1 while filling the stage width.
-    const fitCommitted = async () => {
-      const geometry = await deviceGeometry(fitRegion);
-      return (
+    // commits, and a resize may show no running animation before its observer and transform
+    // transition start. Fit is therefore accepted as one settled snapshot, identical across
+    // animation frames: the inline Expand is back, no finite animation runs, the stage clips as
+    // Fit, the drawn device is below 1:1 while filling the stage width and the caption matches
+    // it. The assertions read that same snapshot, never a later resample.
+    const accepted: { geometry?: StageGeometry } = {};
+    const fitSettled = async () => {
+      const snapshot = await settledGeometry(fitRegion);
+      const settled =
+        snapshot !== undefined &&
         (await expand.isVisible()) &&
-        geometry.overflowX === 'hidden' &&
-        geometry.drawnWidth < 1520 &&
-        Math.abs(geometry.clientWidth - geometry.drawnWidth) <= 2
-      );
+        snapshot.runningAnimations === 0 &&
+        snapshot.overflowX === 'hidden' &&
+        snapshot.drawnWidth < 1520 &&
+        Math.abs(snapshot.clientWidth - snapshot.drawnWidth) <= 2 &&
+        percentOf(snapshot.caption) <= 100 &&
+        Math.abs(snapshot.drawnWidth - (1520 * percentOf(snapshot.caption)) / 100) <= 8;
+      accepted.geometry = settled ? snapshot : undefined;
+      return settled;
     };
-    await expect.poll(fitCommitted).toBe(true);
-    await settleMotion(preview);
-    const geometry = await deviceGeometry(fitRegion);
-    const percent = await captionPercent();
+    await expect.poll(fitSettled).toBe(true);
+    const geometry = accepted.geometry;
+    if (!geometry) throw new Error('No settled Fit geometry was accepted.');
+    const percent = percentOf(geometry.caption);
+    expect(geometry.runningAnimations).toBe(0);
     expect(geometry.drawnWidth).toBeLessThan(1520);
     expect(geometry.drawnWidth).toBeLessThanOrEqual(geometry.clientWidth + 1);
     expect(Math.abs(geometry.clientWidth - geometry.drawnWidth)).toBeLessThanOrEqual(2);
@@ -254,25 +270,34 @@ test('MacBook preview geometry holds from 320 Fit to 2160 Actual', async ({ page
   // Automatic 1:1 from 1920: the whole 1520x942 device sits inside the center stage without
   // any horizontal overflow, the caption reads 100% and the inline Expand is gone.
   const expectAutoActual = async (width: number) => {
-    // 1:1 is awaited as a whole: the inline Expand is gone, the device is drawn at 1520 and
-    // the stage has no horizontal overflow, before motion settles and geometry is read.
-    const actualCommitted = async () => {
-      const geometry = await deviceGeometry(fitRegion);
-      return (
+    // 1:1 is accepted as one settled snapshot, identical across animation frames: the inline
+    // Expand is gone, no finite animation runs, the device is drawn at exactly 1520, the stage
+    // has no horizontal overflow and the caption reads 100%. The assertions read that same
+    // snapshot, never a later resample.
+    const accepted: { geometry?: StageGeometry } = {};
+    const actualSettled = async () => {
+      const snapshot = await settledGeometry(fitRegion);
+      const settled =
+        snapshot !== undefined &&
         (await expand.isHidden()) &&
-        geometry.deviceWidth === 1520 &&
-        geometry.scrollWidth - geometry.clientWidth <= 0
-      );
+        snapshot.runningAnimations === 0 &&
+        snapshot.drawnWidth === 1520 &&
+        snapshot.scrollWidth - snapshot.clientWidth <= 0 &&
+        percentOf(snapshot.caption) === 100;
+      accepted.geometry = settled ? snapshot : undefined;
+      return settled;
     };
-    await expect.poll(actualCommitted).toBe(true);
-    await settleMotion(preview);
-    const geometry = await deviceGeometry(fitRegion);
+    await expect.poll(actualSettled).toBe(true);
+    const geometry = accepted.geometry;
+    if (!geometry) throw new Error('No settled 1:1 geometry was accepted.');
+    expect(geometry.runningAnimations).toBe(0);
+    expect(geometry.drawnWidth).toBe(1520);
     expect(geometry.deviceWidth).toBe(1520);
     expect(geometry.deviceHeight).toBe(942);
     expect(geometry.clientWidth).toBeGreaterThanOrEqual(1520);
     expect(geometry.shownStartGap).toBeGreaterThanOrEqual(-1);
     expect(geometry.shownEndGap).toBeGreaterThanOrEqual(-1);
-    await expect.poll(captionPercent).toBe(100);
+    expect(percentOf(geometry.caption)).toBe(100);
     await expect.poll(logicalScreen).toEqual(expectedScreen);
     await expect(actual).toHaveCount(0);
     await expect(expand).toBeHidden();
