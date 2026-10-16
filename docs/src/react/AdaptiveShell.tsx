@@ -154,17 +154,29 @@ export default function AdaptiveShell({
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     // Keys bubble through nested Shells: one handled by an inner Shell is never handled again.
-    if (event.defaultPrevented) return;
+    // Composition and modified chords belong to the focused control or the platform.
     if (
-      event.key === 'Escape' &&
-      kind === 'drawer' &&
-      navOpen &&
-      navRef.current?.contains(event.target as Node)
-    ) {
+      event.defaultPrevented ||
+      event.nativeEvent.isComposing ||
+      event.altKey ||
+      event.ctrlKey ||
+      event.metaKey ||
+      event.shiftKey
+    )
+      return;
+    const drawerOpen = kind === 'drawer' && navOpen;
+    if (event.key === 'Escape' && drawerOpen && navRef.current?.contains(event.target as Node)) {
       event.preventDefault();
       setNavChoice(false);
-    } else if (isBackKey(event) && !event.repeat && onBack?.()) {
-      event.preventDefault();
+    } else if (isBackKey(event) && !event.repeat) {
+      // Back dismisses the open drawer layer first; only a closed drawer hands Back to the app,
+      // and a Back the app does not handle stays with the platform.
+      if (drawerOpen) {
+        event.preventDefault();
+        setNavChoice(false);
+      } else if (onBack?.()) {
+        event.preventDefault();
+      }
     }
   };
 

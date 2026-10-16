@@ -1,5 +1,43 @@
 # Astro documentation maintenance contract
 
+## Inline device previews and recovery — human decision 2026-10-16
+
+Newest authoritative entry. Current human decisions live only in
+`decisions/current.json`, revision `human-2026-10-16-recovery-2-inline`; they
+outrank every older entry and source comment, which stay as history. Proposal
+authors never edit the record. The latest human iframe ban supersedes the older
+isolated-iframe preview contract.
+
+- Guard: the root `tools/docs-decisions.mjs` checks the fresh record digest and
+  facts, zero iframes, real components as direct device-frame children and all
+  four device values through the docs-data build and CI. The root integrates
+  read-only proposals serially with exact CAS on the current revision; a stale
+  proposal is not DONE and needs a manual root revalidation record. Proposal,
+  implemented source, local checks, CI, main, live and physical devices are
+  distinct states.
+- The MacBook 1024 entry below stays: 1440x900 screen, 1024 content with 208px
+  margins, 1520x942 device, rails at most 200px, Actual from 1920, otherwise
+  Fit plus Expand. Colors, black dark shell, Outfit 14 CSS px minimum (old
+  12px floor superseded), weights 300/400, radius and size families come from
+  the record; do not copy all values into prose.
+- Four explicit references, phone, tablet, computer and tv, never inferred from
+  a physical device or user agent; TV is an illustrative 1920x1080 screen with
+  1600 content and does not change the MacBook.
+- Real components render in the same React subtree inside `DeviceFrame`; never
+  an iframe, fetched HTML, a cloned demo or a reparented document. The local
+  preview theme and token recipe stay separate from the page and the sibling
+  global 30-day ThemeBuilder, which is unchanged.
+- Standalone preview routes are real links, not embedded; selected code imports
+  the actual small, medium, large or tv entry without private form state. TV
+  loads only the existing conditional living-room module and shared modality;
+  pointer, Tab, pen, caret and APG ownership are unchanged.
+- Recovery status lives at the top of `ADAPTIVE-PLAN.md`. Tests stay minimal:
+  existing 2 policy, 4 input, 2 delivery, the typography test, 2
+  docs-reference, 1 geometry and ONE decision guard; no new matrix or rewritten
+  baselines; a read-only reviewer is required. Actual checks go to private
+  `evidence/recovery-20261016`, never committed with secrets or absolute user
+  attachment paths.
+
 ## MacBook 1024 container, 200px rails and 1920 auto Actual — human task 2026-10-16
 
 Newest direct human decision; it supersedes only the 1280/80 container figures

@@ -1,0 +1,163 @@
+{
+  "schemaVersion": 1,
+  "revision": "human-2026-10-16-recovery-2-inline",
+  "authority": "Direct human conversation decisions; new human decisions supersede only the explicitly changed fields. Proposal authors cannot edit this record.",
+  "sources": {
+    "preview": "Latest user: inner content1024; earlier logicalMacBook1440 and proportionally shrink below1920;200px rails.",
+    "palette": "User froze colors and expressly chose black dark shell.",
+    "typography": "Latest user AGENTS instructions: Outfit and minimum14 CSSpx; supersedes older project12px entry.",
+    "adaptive": "Original human task320/600/960/1280/1920; inner480/768/1600;2560+, explicitTV andTab.",
+    "inlinePreview": "Latest direct human: iframe is forbidden; components render on-page in device mockups; all components adapt to phone,tablet,computer,tv."
+  },
+  "facts": {
+    "macbook": {
+      "width": 1440,
+      "height": 900,
+      "container": 1024
+    },
+    "previewActualMinWidth": 1920,
+    "railMaxWidth": 200,
+    "typography": {
+      "minimum": 14,
+      "default": 14,
+      "reading": 16,
+      "weightMinimum": 300,
+      "weightDefault": 400
+    },
+    "radius": {
+      "default": "5px",
+      "options": [
+        "0px",
+        "3px",
+        "5px",
+        "100%"
+      ]
+    },
+    "sizes": {
+      "regular": [
+        48,
+        56,
+        64
+      ],
+      "compact": [
+        32,
+        40,
+        48
+      ],
+      "badge": [
+        20,
+        26,
+        32
+      ]
+    },
+    "palette": {
+      "primary": {
+        "light": "#0099ff",
+        "dark": "#0099ff"
+      },
+      "text": {
+        "light": "#242622",
+        "dark": "#f2f2f2"
+      },
+      "muted": {
+        "light": "#575a53",
+        "dark": "#b8b8b8"
+      },
+      "canvas": {
+        "light": "#e6e2d7",
+        "dark": "#000000"
+      },
+      "panel": {
+        "light": "#ffffff",
+        "dark": "#2c2c2c"
+      },
+      "field": {
+        "light": "#ececec",
+        "dark": "#1b1b1b"
+      },
+      "border": {
+        "light": "#747166",
+        "dark": "#858585"
+      },
+      "divider": {
+        "light": "#d5dae1",
+        "dark": "#48515d"
+      },
+      "success": {
+        "light": "#237804",
+        "dark": "#95de64"
+      },
+      "info": {
+        "light": "#005fb3",
+        "dark": "#50bef5"
+      },
+      "warning": {
+        "light": "#874d00",
+        "dark": "#ffd666"
+      },
+      "danger": {
+        "light": "#a8071a",
+        "dark": "#ff7875"
+      },
+      "disabled-bg": {
+        "light": "#ded9cc",
+        "dark": "#1b1b1b"
+      },
+      "disabled-text": {
+        "light": "#575a53",
+        "dark": "#b8b8b8"
+      },
+      "overlay-scrim-color": {
+        "light": "#000000",
+        "dark": "#000000"
+      }
+    },
+    "adaptivePolicy": {
+      "version": 1,
+      "widths": {
+        "base": 320,
+        "widePhone": 480,
+        "smallTablet": 600,
+        "tablet": 768,
+        "laptop": 960,
+        "desktop": 1280,
+        "wideDesktop": 1600,
+        "ultraWide": 1920,
+        "expansive": 2560
+      },
+      "antd": {
+        "xs": 480,
+        "sm": 600,
+        "md": 768,
+        "lg": 960,
+        "xl": 1280,
+        "xxl": 1600,
+        "xxxl": 1920
+      },
+      "shortHeight": 480,
+      "verificationWidths": [
+        320,
+        375,
+        430,
+        480,
+        599,
+        600,
+        768,
+        959,
+        960,
+        1279,
+        1280,
+        1600,
+        1920,
+        2560
+      ]
+    },
+    "previewRendering": "inline-components",
+    "supportedSurfaces": [
+      "phone",
+      "tablet",
+      "computer",
+      "tv"
+    ]
+  }
+}

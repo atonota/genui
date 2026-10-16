@@ -2,8 +2,9 @@
 // docs/src/adaptive modules with esbuild into a temporary directory outside the repository, like
 // adaptive-policy.test.mjs: bare packages stay external, styles load empty, and the real layout
 // chunks stay external so Node never runs a default loader. Controllers get injected per-profile
-// loaders whose deferred promises the test settles in a chosen order. CSS, network and visual
-// delivery checks remain with the browser gates.
+// loaders whose deferred promises the test settles in a chosen order. The server case also
+// compiles the real adaptive stylesheet with sass and matches its unconditional rules in JSDOM;
+// computed CSS, network and visual delivery checks remain with the browser gates.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtemp, rm } from 'node:fs/promises';
@@ -667,4 +668,81 @@ test('server hints fall back to the SSR baseline and every GenUI component and c
     /No adaptive contract/,
     'unknown names never fall back',
   );
+
+  // The generic choice renders the registered AntD Select, so its contract is a fluid combobox.
+  const choice = adaptiveContractFor('AtlasChoice');
+  assert.deepStrictEqual(
+    {
+      family: choice.family,
+      containerBehavior: choice.containerBehavior,
+      composite: choice.inputContract.composite,
+    },
+    { family: 'choice', containerBehavior: 'fluid-fill', composite: 'combobox' },
+    'AtlasChoice renders the registered AntD Select: a fluid-fill combobox, not a wrap-flow group',
+  );
+
+  // Coarse hit regions follow the trusted runtime root's input layer in the compiled stylesheet,
+  // without a demo or target wrapper. JSDOM evaluates no media queries, so only unconditional
+  // top-level rules count; a precision-only root stays unsized and artwork keeps its geometry.
+  const { compile } = await import('sass');
+  const { JSDOM } = await import('jsdom');
+  const { css } = compile(path.join(projectDirectory, 'docs/src/styles/adaptive-components.scss'));
+  const dom = new JSDOM('<!doctype html><html><head></head><body></body></html>');
+  try {
+    const { document } = dom.window;
+    const style = document.createElement('style');
+    style.textContent = css;
+    document.head.append(style);
+    const coarseRules = [...document.styleSheets[0].cssRules].filter(
+      rule =>
+        typeof rule.selectorText === 'string' &&
+        rule.style.getPropertyValue('min-block-size').trim() === 'var(--adaptive-coarse-target)',
+    );
+    assert.ok(coarseRules.length > 0, 'the compiled stylesheet keeps unconditional coarse rules');
+    const sizedBy = element =>
+      coarseRules
+        .filter(rule => {
+          try {
+            return element.matches(rule.selectorText);
+          } catch (error) {
+            failures.push(`selector ${rule.selectorText} threw ${error.message}`);
+            return false;
+          }
+        })
+        .map(rule => rule.selectorText);
+    const runtimeRoot = layers => {
+      const root = document.createElement('div');
+      root.className = 'atlas-genui-runtime';
+      root.dataset.adaptiveInputLayers = layers;
+      root.innerHTML = [
+        '<form class="ant-form">',
+        '<label class="ant-checkbox-wrapper"><span class="ant-checkbox"></span>Archived</label>',
+        '<label class="ant-radio-wrapper"><span class="ant-radio"></span>Proposal</label>',
+        '<div class="ant-list-item">DocType Template</div>',
+        '</form>',
+      ].join('');
+      document.body.append(root);
+      return root;
+    };
+    const coarse = runtimeRoot('coarse');
+    const precision = runtimeRoot('precision');
+    for (const name of ['ant-checkbox-wrapper', 'ant-radio-wrapper', 'ant-list-item']) {
+      expect(
+        sizedBy(coarse.querySelector(`.${name}`)).length > 0,
+        `.${name} under a coarse .atlas-genui-runtime root gets no coarse min-block-size`,
+      );
+      const matched = sizedBy(precision.querySelector(`.${name}`));
+      expect(
+        matched.length === 0,
+        `.${name} under a precision-only runtime root matched ${show(matched)}`,
+      );
+    }
+    for (const name of ['ant-checkbox', 'ant-radio']) {
+      const matched = sizedBy(coarse.querySelector(`.${name}`));
+      expect(matched.length === 0, `.${name} artwork matched ${show(matched)}; it keeps its size`);
+    }
+    assert.deepStrictEqual(failures, [], `coarse target regressions: ${failures.join(' ; ')}`);
+  } finally {
+    dom.window.close();
+  }
 });

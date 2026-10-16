@@ -143,9 +143,9 @@ const componentCoverage = {
     activation: 'delegated',
     caret: 'delegated',
   }),
-  AtlasChoice: contract('choice', 'wrap-flow', SURFACE, {
+  AtlasChoice: contract('choice', 'fluid-fill', SURFACE, {
     activation: 'native-control',
-    composite: 'selection-group',
+    composite: 'combobox',
   }),
   AtlasAction: contract('action', 'inline-intrinsic', SURFACE, { activation: 'semantic-click' }),
   AtlasEmpty: contract('feedback', 'fluid-fill', SURFACE, { activation: 'delegated' }),

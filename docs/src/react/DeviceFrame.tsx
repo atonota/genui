@@ -14,6 +14,7 @@ import {
   type PreviewDevice,
   type PreviewOrientation,
 } from '../data/preview-devices';
+import type { ThemeMode } from '../theme';
 
 export type DeviceFrameZoom = 'fit' | 'actual';
 /** Fit by both stage axes, or by the stage width alone with the full fixed height in flow. */
@@ -34,6 +35,10 @@ export type DeviceFrameProps = {
   onScale?: (percent: number) => void;
   /** Canonical English name of the stage region; translated here. */
   label?: string;
+  /** Theme roles and local recipe for the screen alone, so the frame keeps the page palette. */
+  screenStyle?: CSSProperties;
+  /** Local mode of the screen's preview document. */
+  screenTheme?: ThemeMode;
 };
 
 /** Semantic stage cap; --preview-stage-max-height in preview-workbench.css mirrors it. */
@@ -87,6 +92,8 @@ export default function DeviceFrame({
   children,
   onScale,
   label = 'Device preview',
+  screenStyle,
+  screenTheme,
 }: DeviceFrameProps) {
   const { t } = useI18n();
   const stageRef = useRef<HTMLDivElement>(null);
@@ -165,7 +172,12 @@ export default function DeviceFrame({
           style={previewDeviceVariables(device, orientation) as CSSProperties}
         >
           <div className="example-preview-bezel">
-            <div className="example-preview-screen" data-preview-device={device}>
+            <div
+              className="example-preview-screen"
+              data-preview-device={device}
+              data-theme={screenTheme}
+              style={screenStyle}
+            >
               {children}
             </div>
           </div>

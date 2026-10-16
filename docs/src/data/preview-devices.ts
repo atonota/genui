@@ -1,10 +1,10 @@
 /** Device frames for the shared example workbench. Each device draws one fixed logical
     screen: the size is an illustrative reference, not browser or device emulation and no
-    hardware claim. Phones and tablets rotate by swapping width and height, the MacBook is
-    always landscape, and the screen never grows with its content. The whole device width
-    includes the bezel and the base. The chrome curves stay neutral roles for the existing
+    hardware claim. Phones and tablets rotate by swapping width and height, the MacBook and
+    the TV are always landscape, and the screen never grows with its content. The whole device
+    width includes the bezel and the base. The chrome curves stay neutral roles for the existing
     CSS. Lengths are CSS px; this module is the one central source of preview dimensions. */
-export type PreviewDevice = 'iphone' | 'ipad' | 'macbook';
+export type PreviewDevice = 'iphone' | 'ipad' | 'macbook' | 'tv';
 export type PreviewOrientation = 'portrait' | 'landscape';
 
 export const previewOrientations: readonly PreviewOrientation[] = ['portrait', 'landscape'];
@@ -23,7 +23,7 @@ export type PreviewDeviceDefinition = {
   readonly screenHeightPx: number;
   /** Centered content container width; equals the screen width when unbounded. */
   readonly containerWidthPx: number;
-  /** Phones and tablets rotate; the MacBook stays landscape. */
+  /** Phones and tablets rotate; the MacBook and the TV stay landscape. */
   readonly rotatable: boolean;
   /** @deprecated Compat alias of screenWidthPx until the workbench reads the fixed roles. */
   readonly displayMaxScreenWidthPx: number;
@@ -91,6 +91,31 @@ const macbook: PreviewDeviceDefinition = {
   notchHeightPx: 5,
 };
 
+// Illustrative living-room TV class: a 1920x1080 (16:9) logical reference screen with a 1600
+// container and 160 margins. A new illustrative assumption, not a physical hardware claim; the
+// thin bezel and low stand reuse the neutral chrome roles of the other devices.
+const tv: PreviewDeviceDefinition = {
+  value: 'tv',
+  label: 'TV',
+  ...fixedScreen(1920, 1080, 1600),
+  rotatable: false,
+  bezelTopPx: 12,
+  bezelInlinePx: 12,
+  bezelBottomPx: 12,
+  frameRadiusPx: 6,
+  frameEndRadiusPx: 6,
+  screenRadiusPx: 2,
+  sensorWidthPx: 6,
+  sensorHeightPx: 6,
+  indicatorWidthPx: 0,
+  indicatorHeightPx: 0,
+  baseHeightPx: 10,
+  baseOverhangPx: 0,
+  baseRadiusPx: 4,
+  notchWidthPx: 0,
+  notchHeightPx: 0,
+};
+
 export const DEFAULT_PREVIEW_DEVICE: PreviewDevice = 'macbook';
 
 export const previewDevices: readonly PreviewDeviceDefinition[] = [
@@ -140,17 +165,20 @@ export const previewDevices: readonly PreviewDeviceDefinition[] = [
     notchHeightPx: 0,
   },
   macbook,
+  tv,
 ];
 
+/** A detached shallow copy: every field is primitive and callers never reach the registry. */
 export function previewDeviceDefinition(device: PreviewDevice): PreviewDeviceDefinition {
-  return previewDevices.find(item => item.value === device) ?? macbook;
+  return { ...(previewDevices.find(item => item.value === device) ?? macbook) };
 }
 
 function naturalOrientation(definition: PreviewDeviceDefinition): PreviewOrientation {
   return definition.screenWidthPx >= definition.screenHeightPx ? 'landscape' : 'portrait';
 }
 
-/** Rotatable devices honour a valid requested orientation; the MacBook stays landscape. */
+/** Rotatable devices honour a valid requested orientation; fixed devices keep their natural
+    orientation, landscape for the MacBook and the TV. */
 export function previewOrientation(
   device: PreviewDevice,
   orientation?: PreviewOrientation,

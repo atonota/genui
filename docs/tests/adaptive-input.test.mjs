@@ -696,6 +696,140 @@ test('SpatialNavigationAdapter moves only on an explicit living-room surface and
     } finally {
       hosted.window.close();
     }
+
+    // Single-line fields on a TV surface: Left/Right stay with the caret even at either edge of an
+    // empty value, while Up/Down leave the field because a remote has no other way out. Checkbox
+    // and button inputs own no arrows unless a composite owns them; multiline, rich text, select,
+    // combobox, radio, range and number fields keep every arrow. Synthetic unit keys and stubbed
+    // rects; no physical remote, IME or TV is claimed here.
+    const fieldsDom = new JSDOM(`<!doctype html><body>
+<section id=form>
+<button id=up data-spatial-target>Up</button>
+<button id=left data-spatial-target>Left</button>
+<input id=line data-spatial-target>
+<button id=right data-spatial-target>Right</button>
+<button id=down data-spatial-target>Down</button>
+<textarea id=area data-spatial-target></textarea>
+<div id=rich contenteditable=true tabindex=0>Rich</div>
+<select id=pick data-spatial-target><option>One</option><option>Two</option></select>
+<input id=combo role=combobox data-spatial-target>
+<input id=radio type=radio name=choice data-spatial-target>
+<input id=range type=range data-spatial-target>
+<input id=count type=number data-spatial-target>
+<input id=check type=checkbox data-spatial-target>
+<input id=action type=button value=Act data-spatial-target>
+<div role=toolbar><input id=grouped type=checkbox data-spatial-target></div>
+</section>
+<section id=webform><input id=webline data-spatial-target><button id=webdown data-spatial-target>Web down</button></section>
+</body>`);
+    const fieldDoc = fieldsDom.window.document;
+    const own = Object.fromEntries(
+      [...fieldDoc.querySelectorAll('[id]')].map(element => [element.id, element]),
+    );
+    try {
+      // Every field under test shares one box, so none lies ahead of another.
+      const shared = ['line', 'area', 'rich', 'pick', 'combo', 'radio', 'range', 'count'];
+      for (const id of [...shared, 'check', 'action', 'grouped']) place(own[id], 120, 100);
+      const fieldBoxes = {
+        up: [120, 0],
+        left: [0, 100],
+        right: [240, 100],
+        down: [120, 200],
+        webline: [0, 400],
+        webdown: [0, 500],
+      };
+      for (const [id, [left, top]] of Object.entries(fieldBoxes)) place(own[id], left, top);
+      const fieldMoves = [];
+      const formAdapter = new SpatialNavigationAdapter(own.form, {
+        surface: 'living-room',
+        onNavigate: ({ from, to, direction }) =>
+          fieldMoves.push(`${from.id}>${to.id}:${direction}`),
+      });
+      const pressField = (element, name, init) => {
+        element.focus();
+        return key(element, name, init).defaultPrevented;
+      };
+      const exits = {
+        ArrowUp: own.up,
+        ArrowDown: own.down,
+        ArrowLeft: own.left,
+        ArrowRight: own.right,
+      };
+
+      // Up/Down leave every single-line field; Left/Right never escape the caret.
+      for (const type of [null, 'text', 'password', 'email', 'url', 'tel', 'search']) {
+        if (type === null) own.line.removeAttribute('type');
+        else own.line.setAttribute('type', type);
+        const label = type ?? 'default';
+        for (const name of ['ArrowLeft', 'ArrowRight']) {
+          assert.equal(pressField(own.line, name), false, `${label} ${name} stays with the caret`);
+          assert.equal(fieldDoc.activeElement, own.line);
+        }
+        assert.equal(pressField(own.line, 'ArrowDown'), true, `${label} ArrowDown leaves`);
+        assert.equal(fieldDoc.activeElement, own.down);
+        assert.equal(pressField(own.line, 'ArrowUp'), true, `${label} ArrowUp leaves`);
+        assert.equal(fieldDoc.activeElement, own.up);
+      }
+      assert.equal(fieldMoves.length, 14);
+
+      // Modifiers, IME composition and an earlier handler keep the field's native keys.
+      own.line.setAttribute('type', 'text');
+      for (const init of [
+        { shiftKey: true },
+        { altKey: true },
+        { ctrlKey: true },
+        { metaKey: true },
+        { isComposing: true },
+      ]) {
+        assert.equal(pressField(own.line, 'ArrowDown', init), false);
+        assert.equal(fieldDoc.activeElement, own.line);
+      }
+      own.line.addEventListener('keydown', event => event.preventDefault(), { once: true });
+      pressField(own.line, 'ArrowDown');
+      assert.equal(fieldDoc.activeElement, own.line);
+
+      // Multiline, rich text, select, combobox, radio, range, number and a composite-owned
+      // checkbox keep every arrow.
+      for (const owner of shared
+        .slice(1)
+        .map(id => own[id])
+        .concat(own.grouped)) {
+        for (const name of Object.keys(exits)) {
+          assert.equal(pressField(owner, name), false, `${owner.id} owns ${name}`);
+          assert.equal(fieldDoc.activeElement, owner);
+        }
+      }
+
+      // Checkbox and button inputs have no arrow behavior of their own, so every arrow moves.
+      for (const control of [own.check, own.action]) {
+        for (const [name, exit] of Object.entries(exits)) {
+          assert.equal(pressField(control, name), true, `${control.id} ${name} moves`);
+          assert.equal(fieldDoc.activeElement, exit);
+        }
+      }
+      assert.deepEqual(fieldMoves.slice(14), [
+        'check>up:up',
+        'check>down:down',
+        'check>left:left',
+        'check>right:right',
+        'action>up:up',
+        'action>down:down',
+        'action>left:left',
+        'action>right:right',
+      ]);
+
+      // The same field on a web surface keeps every arrow; a disposed adapter does too.
+      const webForm = new SpatialNavigationAdapter(own.webform, { surface: 'web' });
+      assert.equal(pressField(own.webline, 'ArrowDown'), false);
+      assert.equal(fieldDoc.activeElement, own.webline);
+      webForm.dispose();
+      formAdapter.dispose();
+      assert.equal(pressField(own.line, 'ArrowDown'), false);
+      assert.equal(fieldDoc.activeElement, own.line);
+      assert.equal(fieldMoves.length, 22);
+    } finally {
+      fieldsDom.window.close();
+    }
   } finally {
     window.close();
   }

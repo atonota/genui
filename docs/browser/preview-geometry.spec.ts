@@ -4,8 +4,8 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 // MacBook as one fixed 1440x900 logical screen with a centered 1024 container and 208px
 // margins. Below a 1920 CSS px page the whole 1520x942 device fits the stage width with the
 // inline Expand available; from 1920 the two rails of at most 200px leave the center column
-// room to draw it 1:1, with no manual zoom or inline Expand, always in the same iframe
-// document and without page overflow.
+// room to draw it 1:1, with no manual zoom or inline Expand, always on the same inline node
+// of this page and without page overflow.
 
 async function expectNoPageOverflow(page: Page) {
   const overflow = await page.evaluate(
@@ -111,44 +111,60 @@ test('MacBook preview geometry holds from 320 Fit to 2160 Actual', async ({ page
   await page.goto('/components/input/');
   const preview = page.locator('[data-example-preview]').first();
   await expect(preview).toHaveAttribute('data-preview-mode', 'preview');
-  const iframe = preview.locator('iframe[data-preview-iframe]');
-  const frame = preview.frameLocator('iframe[data-preview-iframe]');
-  const frameRoot = frame.locator('html');
-  const root = frame.locator('[data-preview-document]');
-  // The iframe loads lazily, so the first workbench is brought into view before it is judged.
+  // Component pages never embed a document; the example renders in this page's device screen.
+  await expect(page.locator('iframe')).toHaveCount(0);
+  const screen = preview.locator('.example-preview-screen');
+  const content = screen.locator('[data-preview-content]');
   await preview.scrollIntoViewIfNeeded();
   await choose(preview, /macbook/i);
   await expect(preview).toHaveAttribute('data-preview-device', 'macbook');
-  await expect(iframe).toBeVisible();
-  await expect(frame.locator('[data-preview-hydrated=true]')).toBeAttached();
+  await expect(preview).toHaveAttribute('data-preview-profile', 'large');
+  await expect(screen).toBeVisible();
+  await expect(screen.locator('[data-preview-hydrated=true]')).toBeAttached();
 
-  // A form draft and a window property survive only while the same document stays mounted.
-  const workspace = frame.getByRole('textbox', { name: /workspace name/i });
+  // A form draft and a node expando survive only while the same input element stays mounted.
+  const workspace = content.getByRole('textbox', { name: /workspace name/i });
   await expect(workspace).toBeEditable();
   await workspace.fill('Atlas operations');
-  await root.evaluate(() => {
-    (window as Window & { atlasGeometryProof?: string }).atlasGeometryProof = 'kept';
+  const workspaceNode = await workspace.elementHandle();
+  if (!workspaceNode) throw new Error('The Workspace name field is missing.');
+  await workspaceNode.evaluate(el => {
+    (el as Element & { atlasGeometryProof?: string }).atlasGeometryProof = 'kept';
   });
   const expectDraftKept = async () => {
     await expect(workspace).toHaveValue('Atlas operations');
-    const kept = await root.evaluate(
-      () => (window as Window & { atlasGeometryProof?: string }).atlasGeometryProof === 'kept',
+    const current = await workspace.elementHandle();
+    const kept = await page.evaluate(
+      ([before, now]) =>
+        Boolean(before?.isConnected) &&
+        before === now &&
+        (before as Element & { atlasGeometryProof?: string }).atlasGeometryProof === 'kept',
+      [workspaceNode, current],
     );
     expect(kept).toBe(true);
+    // The page width alone never turns the MacBook into another surface or profile.
+    await expect(preview).toHaveAttribute('data-preview-device', 'macbook');
+    await expect(preview).toHaveAttribute('data-preview-profile', 'large');
   };
 
-  // The logical screen is measured inside the iframe, so the stage scale never changes it.
-  const viewport = frame.locator('[data-preview-viewport]');
-  const container = frame.locator('[data-preview-container]');
-  const logicalScreen = async () => {
-    const [screen, inner] = [await box(viewport), await box(container)];
-    return {
-      width: Math.round(screen.width),
-      height: Math.round(screen.height),
-      containerWidth: Math.round(inner.width),
-      margin: Math.round(inner.left - screen.left),
-    };
-  };
+  // The logical screen is read as layout lengths (offsetWidth), so the stage scale never changes
+  // it; the drawn container margin is converted back by the screen's own drawn scale.
+  const viewport = preview.locator('[data-preview-viewport]');
+  const logicalScreen = () =>
+    viewport.evaluate(el => {
+      const screenBox = el as HTMLElement;
+      const inner = screenBox.querySelector<HTMLElement>('[data-preview-container]');
+      if (!inner) throw new Error('The logical screen has no container.');
+      const scale = screenBox.getBoundingClientRect().width / screenBox.offsetWidth;
+      const drawnMargin =
+        inner.getBoundingClientRect().left - screenBox.getBoundingClientRect().left;
+      return {
+        width: screenBox.offsetWidth,
+        height: screenBox.offsetHeight,
+        containerWidth: inner.offsetWidth,
+        margin: Math.round(drawnMargin / scale),
+      };
+    });
   const expectedScreen = { width: 1440, height: 900, containerWidth: 1024, margin: 208 };
   const caption = preview.locator('.example-preview-stage > .example-preview-caption');
   const captionPercent = async () => {
@@ -179,7 +195,7 @@ test('MacBook preview geometry holds from 320 Fit to 2160 Actual', async ({ page
       );
     };
     await expect.poll(fitCommitted).toBe(true);
-    await settleMotion(preview, frameRoot);
+    await settleMotion(preview);
     const geometry = await deviceGeometry(fitRegion);
     const percent = await captionPercent();
     expect(geometry.drawnWidth).toBeLessThan(1520);
@@ -249,7 +265,7 @@ test('MacBook preview geometry holds from 320 Fit to 2160 Actual', async ({ page
       );
     };
     await expect.poll(actualCommitted).toBe(true);
-    await settleMotion(preview, frameRoot);
+    await settleMotion(preview);
     const geometry = await deviceGeometry(fitRegion);
     expect(geometry.deviceWidth).toBe(1520);
     expect(geometry.deviceHeight).toBe(942);

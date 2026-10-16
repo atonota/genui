@@ -157,7 +157,7 @@ export default function PreviewSource({ id, profile, settings, active }: Props) 
       () => setCopied(label),
       () => setCopied(t('Copy failed')),
     );
-  // Embeds point at this site's own preview route, so a local build embeds its local route.
+  // Usage resolves against this site's own base, so a local build references its local entry.
   const siteBase = new URL(`${base}/`, window.location.origin).href;
   const usage = previewDeliveryUsage(
     profile,
@@ -167,7 +167,7 @@ export default function PreviewSource({ id, profile, settings, active }: Props) 
   return (
     <section role="region" aria-label={t('Source code')} className="preview-source">
       <div className="preview-source-block">
-        <h3>{t('Preview embed')}</h3>
+        <h3>{t('Preview usage')}</h3>
         <p>
           {t('Theme')}: <code>{theme}</code> · {t('Orientation')}: <code>{orientation}</code> ·{' '}
           {t('Grid')}: <code>{String(grid)}</code>
@@ -179,18 +179,18 @@ export default function PreviewSource({ id, profile, settings, active }: Props) 
         </p>
         <p>
           {t(
-            'The iframe embeds the existing isolated preview route, which already includes all server-rendered markup and styles. The profile delivery components are internal and only work inside that route; for the actual product component API, use the Integration tab.',
+            'This code renders the selected profile on the page through an internal repository entry and requires the canonical documentation styles, so it works only inside this repository. Use Open alone for a standalone view and the Integration tab for the public product API.',
           )}{' '}
           <a href="#code">{t('Go to Integration usage code')}</a>
         </p>
-        <p>{t('Usage')} · HTML</p>
+        <p>{t('Usage')} · React TSX</p>
         <pre>
           <code>{usage}</code>
         </pre>
         <AtlasButton
-          text={t('Copy embed code')}
+          text={t('Copy usage code')}
           fill="outline"
-          onClick={() => copy(t('Embed code copied'), usage)}
+          onClick={() => copy(t('Usage code copied'), usage)}
         />
       </div>
       <SourceBlock

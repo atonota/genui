@@ -157,6 +157,16 @@ export interface AdaptiveJourney {
   readonly layout: LayoutProfile;
   /** True while continuity keeps a phone that the width alone would replace. */
   readonly retained: boolean;
+  /**
+   * Tallest height seen at this width, so a virtual keyboard that shrinks a portrait view never
+   * makes it read as landscape; absent on hand-built journeys, where height stands in.
+   */
+  readonly baselineHeight?: number;
+  /**
+   * The view before the last rotation, so rotating back restores its tallest height while a
+   * virtual keyboard stays open; one entry, dropped by a width change in the same orientation.
+   */
+  readonly rotatedFrom?: { readonly width: number; readonly baselineHeight: number };
 }
 
 const isLandscape = (width: number, height: number): boolean => width > height;
@@ -165,7 +175,10 @@ const isLandscape = (width: number, height: number): boolean => width > height;
  * Pure journey reducer for stateful hosts. The first measured read is the width resolution, so
  * an initial 768x300 stays a tablet. An established phone survives a reciprocal orientation
  * change whose short side stays under smallTablet, then height-only changes of that view
- * (virtual keyboard, toolbars). A width change in the same orientation, an explicit lock or
+ * (virtual keyboard, toolbars). Orientation is judged against the tallest height seen at the
+ * current width or at the view it last rotated from, so a keyboard-shrunk portrait still reads as
+ * portrait each time it rotates. A width
+ * change in the same orientation, an explicit lock or
  * surface, or continuity 'reset' releases it. An unchanged read returns previous itself.
  */
 export function advanceJourney(
@@ -179,9 +192,29 @@ export function advanceJourney(
   const explicit =
     (options.surface ?? 'web') !== 'web' ||
     (options.lockedProfile !== undefined && options.lockedProfile !== 'living-room');
+  const previousBaseline =
+    previous === null ? height : (previous.baselineHeight ?? previous.height);
+  // Same width keeps the tallest height and rotating back restores the view it left: keyboard
+  // shrinks never redefine the orientation.
+  const back = previous?.rotatedFrom;
+  const reference =
+    previous !== null && width === previous.width
+      ? previousBaseline
+      : back !== undefined && width === back.width
+        ? back.baselineHeight
+        : undefined;
+  const baselineHeight = reference === undefined ? height : Math.max(height, reference);
   const rotated =
     previous !== null &&
-    isLandscape(width, height) !== isLandscape(previous.width, previous.height);
+    isLandscape(width, baselineHeight) !== isLandscape(previous.width, previousBaseline);
+  const rotatedFrom =
+    previous === null
+      ? undefined
+      : rotated
+        ? Object.freeze({ width: previous.width, baselineHeight: previousBaseline })
+        : width === previous.width
+          ? previous.rotatedFrom
+          : undefined;
   const heightOnly = previous?.retained === true && !rotated && width === previous.width;
   const retained =
     !explicit &&
@@ -195,10 +228,19 @@ export function advanceJourney(
     previous?.width === width &&
     previous.height === height &&
     previous.layout === layout &&
-    previous.retained === retained
+    previous.retained === retained &&
+    previousBaseline === baselineHeight &&
+    previous.rotatedFrom === rotatedFrom
   )
     return previous;
-  return Object.freeze({ width, height, layout, retained });
+  return Object.freeze({
+    width,
+    height,
+    layout,
+    retained,
+    baselineHeight,
+    ...(rotatedFrom === undefined ? {} : { rotatedFrom }),
+  });
 }
 
 /** Options that show a retained journey through resolveAdaptive; anything else passes through. */

@@ -1,5 +1,51 @@
 # GenUI maintenance contract
 
+## Inline device previews and recovery — human decision 2026-10-16
+
+Newest authoritative entry. Current human decisions live only in
+`docs/decisions/current.json`, revision `human-2026-10-16-recovery-2-inline`;
+they outrank every older entry and source comment, which stay as history.
+Proposal authors never edit the record. The latest human iframe ban supersedes
+the older isolated-iframe preview contract.
+
+- Guard: `tools/docs-decisions.mjs` checks the fresh record digest and facts,
+  zero iframes, real components as direct device-frame children and all four
+  device values through the docs-data build and CI. Source authors write
+  read-only Temporal-native Claude proposals; the root integrates serially with
+  exact CAS on the current revision. A stale proposal is not DONE and needs a
+  manual root revalidation record. Proposal, implemented source, local checks,
+  CI, main, live and physical devices are distinct states.
+- Preserved geometry: MacBook logical screen 1440x900, content 1024 with 208px
+  margins, outer device 1520x942, rails at most 200px, Actual from a 1920 CSS
+  px viewport, otherwise Fit plus Expand.
+- Visual facts: existing colors exactly, latest dark shell black; Outfit with a
+  14 CSS px minimum (the old project 12px floor is superseded); weight minimum
+  300, default 400; radius 5px default with options 0, 3px, 5px and 100%; sizes
+  48/56/64, compact 32/40/48, badge 20/26/32. The record holds the full palette
+  and adaptive policy; do not copy all values into prose.
+- Four explicit references, phone, tablet, computer and tv, are never inferred
+  from a physical device or user agent. The TV reference is an illustrative
+  1920x1080 screen with 1600 content; it does not change the MacBook.
+- Real components render in the same React subtree inside `DeviceFrame`; never
+  an iframe, fetched HTML, a cloned demo or a reparented document. The local
+  preview theme and token recipe stay separate from the page and the sibling
+  global 30-day ThemeBuilder, which is unchanged.
+- Standalone preview routes are real links, not embedded. Selected code
+  imports the actual small, medium, large or tv entry and excludes private form
+  state. TV loads only the existing conditional living-room module and the
+  shared modality; pointer, Tab, pen, caret and APG ownership are unchanged.
+- Recovery gaps and per-requirement status live at the top of
+  `docs/ADAPTIVE-PLAN.md`; each is IMPLEMENTED or PENDING root checks. Never
+  claim all 61 components verified, live Frappe, model calls, SSR hosting or an
+  npm publication.
+- Tests stay minimal: the existing 2 policy, 4 input and 2 delivery unit cases,
+  the existing typography test, 2 docs-reference cases, 1 geometry case and ONE
+  decision guard; no new deep matrix and no rewritten visual baselines. A
+  read-only reviewer is required. The root records actual checks in private
+  `evidence/recovery-20261016`; no secrets or absolute user attachment paths
+  are committed. This metadata changes no application styles, services,
+  automation, license or Git authorship.
+
 ## Capability-first adaptive GenUI and explicit TV focus — human task 2026-10-16
 
 Newest direct human task: every GenUI component moves to the capability-first

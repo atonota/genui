@@ -2,6 +2,29 @@
 
 Durum: **KAYNAK MİMARİSİ UYGULANDI; BİLEŞEN DOĞRULAMASI VE YAYIN AYRI İZLENİR**. Tarih: 2026-10-16. Bu belge test kanıtı değildir ve DONE iddiası taşımaz. Kaynak yazarları hiçbir kontrol çalıştırmadı; sonuçların yetkili kaynağı `adaptive-20261016` altındaki conductor makbuzları ve GitHub'daki gerçek CI/yayın durumudur.
 
+## Recovery acceptance — human decision 2026-10-16
+
+Authoritative source: `docs/decisions/current.json`, revision `human-2026-10-16-recovery-2-inline`; it outranks this document and older entries, and proposal authors never edit it. The iframe ban supersedes the older isolated-iframe preview contract. Status is source-level only: IMPLEMENTED (SOURCE ONLY) means the source for the row is integrated; it does not claim that all 61 components, CI, main, live or physical devices are verified. No row is verified or DONE without a root receipt in private `evidence/recovery-20261016`; final authoritative results are the private conductor receipts and the actual GitHub state, never a hardcoded future pass.
+
+- **IMPLEMENTED (SOURCE ONLY)** — Decision guard `tools/docs-decisions.mjs` checks the fresh record digest and AST facts, including plain primitive entries and detached getters, through the docs-data build and CI. Receipt: guard run, `docs:build`, CI job.
+- **IMPLEMENTED (SOURCE ONLY)** — Zero iframes; real components render as direct children of `DeviceFrame` in the same React subtree, never fetched HTML, cloned demos or reparented documents. Receipt: decision guard, docs-reference cases.
+- **IMPLEMENTED (SOURCE ONLY)** — Four explicit references, phone, tablet, computer and tv, with no physical device or user-agent inference; TV is an illustrative 1920x1080 screen with 1600 content. Receipt: decision guard, geometry case.
+- **IMPLEMENTED (SOURCE ONLY)** — Preserved MacBook geometry: 1440x900 screen, 1024 content with 208px margins, 1520x942 device, rails at most 200px, Actual from 1920, otherwise Fit plus Expand. Receipt: `browser/preview-geometry.spec.ts` in three engines.
+- **IMPLEMENTED (SOURCE ONLY)** — Visual facts unchanged: existing palette and black dark shell, Outfit 14 CSS px minimum, weights 300/400, radius 5px with 0/3px/5px/100%, sizes 48/56/64, 32/40/48, 20/26/32. Receipt: `docs:check`, `docs:lint`, decision guard.
+- **IMPLEMENTED (SOURCE ONLY)** — Local preview theme and token recipe separate from the page and the global 30-day ThemeBuilder, which is unchanged. Receipt: docs-reference cases.
+- **IMPLEMENTED (SOURCE ONLY)** — Standalone preview routes are four real links with embeddable CSR; selected code imports the actual small, medium, large or tv entry and excludes private form state. Receipt: docs-reference cases.
+- **IMPLEMENTED (SOURCE ONLY)** — TV loads only the existing conditional living-room module and shared modality, with Up/Down navigation; pointer, Tab, pen, caret and APG ownership unchanged. Receipt: input unit cases, `browser/adaptive-ui.spec.ts`.
+- **IMPLEMENTED (SOURCE ONLY)** — Runtime IME composition and Back layer handling. Receipt: input unit cases.
+- **IMPLEMENTED (SOURCE ONLY)** — Virtual keyboard resize keeps the phone journey, including the five-step keyboard-open sequence. Receipt: policy or input unit case.
+- **IMPLEMENTED (SOURCE ONLY)** — Vertical text and caret handling on the TV reference. Receipt: browser case.
+- **IMPLEMENTED (SOURCE ONLY)** — Metadata Choice as an accessible combobox; generic coarse touch targets. Receipt: browser case.
+- **IMPLEMENTED (SOURCE ONLY)** — Outfit with the 14 CSS px minimum from the decision record; legacy stored 12/13 values migrate without discarding saved recipes. Receipt: existing typography test.
+- **IMPLEMENTED (SOURCE ONLY)** — Consumable local Ant Design UI package with optional GenUI, SSR and Frappe canonical ports. Receipt: `node tools/build-library.mjs` plus the locally packed consumer check (types, SSR, stylesheet rule coverage and local asset presence); no npm publication, SSR hosting, live Frappe or model call is claimed.
+
+Receipt status: IMPLEMENTED (SOURCE ONLY) does not prove acceptance. The latest private conductor receipts and the actual GitHub CI and Pages state are authoritative; this document records no check counts, pass results or open failures. Standalone preview profiles are server-rendered (SSR); selected code entries are embeddable CSR; generic embedded SSR hydration is not verified. The TV reference is a logical 1920x1080 screen regardless of the host viewport used by any browser check. Per-component status for the 61 components, physical-device QA, CI, main and live states are never inferred from this metadata.
+
+Test budget: the existing 2 policy, 4 input and 2 delivery unit cases, the existing typography test, 2 docs-reference cases, 1 geometry case and ONE decision guard; no new deep matrix and no rewritten visual baselines. A read-only reviewer is required. Proposal, implemented source, local checks, CI, main, live and physical devices are distinct states; a stale proposal needs a manual root revalidation record. Never claim all 61 components verified. This metadata changes no application styles, services, automation, license or Git authorship.
+
 ## Yol haritası ve destek defteri
 
 Üç durum ayrı izlenir ve birbirinden türetilmez:

@@ -33,7 +33,7 @@ const directions: Readonly<Record<string, SpatialDirection>> = {
   ArrowRight: 'right',
 };
 
-/** Native buttons, links, fields and comboboxes that opted in; fields keep their arrows once focused. */
+/** Native buttons, links, fields and comboboxes that opted in; fields keep their editing arrows. */
 export const spatialTargetSelector = [
   'button',
   'a[href]',
@@ -68,15 +68,28 @@ const compositeRoles = [
   'treegrid',
   'treeitem',
 ];
-/** Text editing and composite widgets own their arrow keys. */
+/** Multi-line editing, native pickers and explicit composite roles own every arrow key. */
 const ownsArrows = [
-  'input',
   'textarea',
   'select',
   '[contenteditable]:not([contenteditable=false])',
   '[role=separator][tabindex]',
   ...compositeRoles.map(role => `[role=${role}]`),
 ].join(',');
+/** Single-line text keeps Left/Right for the caret at every position; only Up/Down may leave. */
+const verticalEscapeInputs = new Set(['text', 'search', 'email', 'url', 'tel', 'password']);
+/** Activation-only inputs have no arrow behavior of their own. */
+const directionalInputs = new Set(['checkbox', 'button', 'submit', 'reset', 'image']);
+
+/** Radio, range, number, date-like and other inputs keep every arrow native. */
+function keepsArrowNative(target: Element, direction: SpatialDirection): boolean {
+  if (target.closest(ownsArrows)) return true;
+  if (target.localName !== 'input') return false;
+  const type = ((target as HTMLInputElement).type || 'text').toLowerCase();
+  if (directionalInputs.has(type)) return false;
+  if (verticalEscapeInputs.has(type)) return direction === 'left' || direction === 'right';
+  return true;
+}
 
 /** Misalignment across the axis costs more than distance along it. */
 const crossWeight = 2;
@@ -271,7 +284,8 @@ export class SpatialNavigationAdapter {
     if (key.altKey || key.ctrlKey || key.metaKey || key.shiftKey) return;
     const scope = this.scope();
     const target = key.target as Element | null;
-    if (!scope || !target?.closest || !scope.contains(target) || target.closest(ownsArrows)) return;
+    if (!scope || !target?.closest || !scope.contains(target)) return;
+    if (keepsArrowNative(target, direction)) return;
     // Keys bubbling from a nested web or TV Shell belong to that controller, not this one.
     if (!isSpatialBoundaryOwned(target, this.boundary)) return;
     const active = this.boundary.ownerDocument.activeElement;

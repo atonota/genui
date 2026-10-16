@@ -133,10 +133,18 @@ function ownershipSource(id) {
     else if (vendor !== -1) source = source.slice(vendor + 1);
     else if (virtual) return virtualSource(path.basename(bare));
     else throw new Error(`${OWNERSHIP_FILE} source '${id}' is not inside the repository.`);
-  } else if (virtual || /^[a-zA-Z0-9_-]{2,}:/.test(source)) return virtualSource(source);
+  } else if (virtual) return virtualSource(source);
+  // Vite also roots scheme ids ('<root>/virtual:astro:page:...'), so check after relativizing.
+  if (/^[a-zA-Z0-9_-]{2,}:/.test(source)) return virtualSource(source);
   if (source === '' || /^(?:[a-zA-Z]:)?[/]/.test(source) || source.split('/').includes('..'))
     throw new Error(`${OWNERSHIP_FILE} source '${id}' cannot be published.`);
   return source;
+}
+
+/** Public source of an emitted origin name: NUL or scheme virtual ids stay ids, only real relative files resolve. */
+function originSource(root, name) {
+  if (name.charCodeAt(0) === 0 || /^[a-zA-Z0-9_-]{2,}:/.test(name)) return ownershipSource(name);
+  return ownershipSource(path.resolve(root, name));
 }
 
 /** A prefix ending in '/' is a folder; otherwise it also covers its extensions and same-named folder. */
@@ -263,7 +271,7 @@ function adaptiveOwnership() {
         if (output.type === 'asset') {
           // originalFileNames are relative to the Vite root; root CSS URL entries own their asset.
           for (const name of output.originalFileNames ?? []) {
-            const source = ownershipSource(path.resolve(root, name));
+            const source = originSource(root, name);
             const ids = idsOf.get(source) ?? [];
             const owner = forced(source);
             add(
@@ -382,7 +390,7 @@ function adaptiveStyleProvenance(styles) {
           if (stylesheet(output)) {
             // Emitted stylesheet assets name their own origins, relative to the Vite root.
             for (const name of output.originalFileNames ?? []) {
-              const source = ownershipSource(path.resolve(root, name));
+              const source = originSource(root, name);
               const ids = idsOf.get(source) ?? [];
               const owner = forced(source);
               add(

@@ -1,5 +1,5 @@
 import { getThemeSnapshot, THEME_STORAGE_KEY, type ThemeMode } from '../theme';
-import { parseRecipe, resolveThemeBuilder, type ThemeRecipe } from './model';
+import { parseRecipe, parseStoredRecipe, resolveThemeBuilder, type ThemeRecipe } from './model';
 
 export const THEME_BUILDER_STORAGE_KEY = 'atlas-theme-builder-v1';
 const THEME_EVENT = 'atlas-theme-change';
@@ -16,6 +16,8 @@ const MAX_STORED_BYTES = MAX_RECIPE_BYTES + 1024;
 export type ThemeBuilderResult = { ok: true; persisted: boolean } | { ok: false; error: string };
 
 type ParsedRecipe = { ok: true; recipe: ThemeRecipe } | { ok: false; error: string };
+// Explicit imports parse strictly; only stored recipes may lift earlier 12-13 px text sizes.
+type RecipeParser = (text: string) => ParsedRecipe;
 type OwnedValue = { value: string; priority: string };
 type StoredEnvelope = {
   format: typeof STORAGE_FORMAT;
@@ -69,14 +71,14 @@ function byteLength(text: string): number {
   return new TextEncoder().encode(text).length;
 }
 
-function parseText(text: string): ParsedRecipe {
+function parseText(text: string, parse: RecipeParser = parseRecipe): ParsedRecipe {
   if (byteLength(text) > MAX_RECIPE_BYTES) {
     return { ok: false, error: 'Theme recipe exceeds the 32 KiB limit.' };
   }
-  return parseRecipe(text);
+  return parse(text);
 }
 
-function serialize(input: unknown): ParsedRecipe {
+function serialize(input: unknown, parse?: RecipeParser): ParsedRecipe {
   let text: unknown;
   try {
     text = JSON.stringify(input);
@@ -86,7 +88,7 @@ function serialize(input: unknown): ParsedRecipe {
   if (typeof text !== 'string') {
     return { ok: false, error: 'Theme recipe must be a JSON object.' };
   }
-  return parseText(text);
+  return parseText(text, parse);
 }
 
 function isThemeMode(value: unknown): value is ThemeMode {
@@ -205,7 +207,7 @@ function readStoredText(text: string, now: number): StoredRecipe {
   }
   if (!isRecord(parsed) || !Object.prototype.hasOwnProperty.call(parsed, 'format')) {
     // Raw recipes saved before retention are still accepted and upgraded, never reset.
-    const result = parseText(text);
+    const result = parseText(text, parseStoredRecipe);
     return result.ok ? { kind: 'recipe', recipe: result.recipe, legacy: true } : { kind: 'ignore' };
   }
   const { format, version, savedAt, expiresAt, recipe } = parsed;
@@ -223,7 +225,8 @@ function readStoredText(text: string, now: number): StoredRecipe {
     now >= expiresAt
   )
     return { kind: 'discard' };
-  const result = serialize(recipe);
+  // The envelope keeps its save time; a migrated recipe never extends the retention window.
+  const result = serialize(recipe, parseStoredRecipe);
   return result.ok ? { kind: 'recipe', recipe: result.recipe, legacy: false } : { kind: 'ignore' };
 }
 

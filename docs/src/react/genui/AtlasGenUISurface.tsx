@@ -320,6 +320,7 @@ function RegisteredChoice({ sourceComponentId, payload }: NativeProps) {
       <span>{dataText(payload.title)}</span>
       <Select
         aria-label={dataText(payload.title)}
+        classNames={{ popup: { root: 'atlas-select-popup' } }}
         mode={payload.multiple ? 'multiple' : undefined}
         value={typeof payload.value === 'string' ? payload.value : [...(payload.value ?? [])]}
         options={payload.options.map(option => ({

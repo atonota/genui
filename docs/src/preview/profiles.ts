@@ -8,15 +8,16 @@ import {
   type PreviewScreen,
 } from '../data/preview-devices';
 
-export type PreviewProfile = 'large' | 'medium' | 'small';
+export type PreviewProfile = 'large' | 'medium' | 'small' | 'tv';
 
-export const previewProfiles: readonly PreviewProfile[] = ['large', 'medium', 'small'];
+export const previewProfiles: readonly PreviewProfile[] = ['large', 'medium', 'small', 'tv'];
 export const DEFAULT_PREVIEW_PROFILE: PreviewProfile = 'large';
 
 const profileDevices: Readonly<Record<PreviewProfile, PreviewDevice>> = {
   large: 'macbook',
   medium: 'ipad',
   small: 'iphone',
+  tv: 'tv',
 };
 
 export function isPreviewProfile(value: unknown): value is PreviewProfile {

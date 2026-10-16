@@ -41,6 +41,8 @@ jobs:
           node-version: '24.21.0'
           cache: npm
       - run: npm ci
+      - name: Decision admission tests
+        run: node --test docs/tests/decision-admission.test.mjs
       - name: Adaptive contract tests
         run: npm run docs:adaptive:test
       - name: Docs format

@@ -128,8 +128,13 @@
   "previewDocuments": {
     "label": "Isolated example preview",
     "description": "Prerendered document for one literal ExamplePreview id and one profile. It is not a documentation page and is checked by the preview rules only.",
-    "routePattern": "^/preview/([a-z0-9]+(?:-[a-z0-9]+)*)/(small|medium|large)/$",
-    "deliveries": { "small": "SmallDelivery", "medium": "MediumDelivery", "large": "LargeDelivery" }
+    "routePattern": "^/preview/([a-z0-9]+(?:-[a-z0-9]+)*)/(small|medium|large|tv)/$",
+    "deliveries": {
+      "small": "SmallDelivery",
+      "medium": "MediumDelivery",
+      "large": "LargeDelivery",
+      "tv": "TvDelivery"
+    }
   },
   "verification": "The gate inspects generated HTML structure only. It is not browser, computed-style, visual, device or CI evidence.",
   "rules": [

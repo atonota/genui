@@ -11,14 +11,19 @@ export type ExamplePreviewProps = {
   children: ReactNode;
 };
 
-/** Docs pages render the isolated workbench; the preview document renders only its example. */
+/** Docs pages render the actual example on the same page inside its device mockup workbench;
+    the standalone preview document renders only its example. */
 export default function ExamplePreview({ id, title, children }: ExamplePreviewProps) {
   const appearance = useAtlasAppearance();
   const preview = usePreviewContext();
-  // Inside the isolated preview document only the selected example renders.
+  // Inside a preview document only the selected example renders.
   if (preview) return preview.exampleId === id ? <div data-preview-content>{children}</div> : null;
   // Storybook and approved consumers render the demo unchanged.
   if (appearance !== 'docs') return <>{children}</>;
-  // Docs pages never render the raw demo outside its iframe.
-  return <PreviewWorkbench id={id} title={title} />;
+  // Docs pages render the real demo inline, inside the workbench's device mockup.
+  return (
+    <PreviewWorkbench id={id} title={title}>
+      {children}
+    </PreviewWorkbench>
+  );
 }

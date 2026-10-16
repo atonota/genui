@@ -4,6 +4,10 @@ import vm from 'node:vm';
 import postcss from 'postcss';
 import { format, resolveConfig } from 'prettier';
 import { root } from './build.mjs';
+import { checkCurrentDecisions } from './docs-decisions.mjs';
+
+// Current direct human decisions gate every docs build and check before anything is derived.
+await checkCurrentDecisions(root);
 
 // Build-only bridge. The existing model remains the single source of decisions.
 const source = (

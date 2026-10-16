@@ -150,6 +150,13 @@ body .ant-modal .ant-modal-content {
   :is(.ant-checkbox-wrapper, .ant-radio-wrapper, .ant-list-item) {
   min-block-size: var(--adaptive-coarse-target);
 }
+// Generic surface components carry no target layer; they follow the runtime root's resolved
+// coarse input layer, so precision-only surfaces keep their size and artwork keeps its geometry.
+.atlas-genui-runtime :is(.ant-checkbox-wrapper, .ant-radio-wrapper, .ant-list-item) {
+  @include coarse {
+    min-block-size: var(--adaptive-coarse-target);
+  }
+}
 
 // Portaled GenUI layers carry trusted classes through AntD rootClassName (nativeLayerClassName),
 // so these rules never reach unrelated previews. Paint, type, radii and motion stay central.

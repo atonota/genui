@@ -1,0 +1,30 @@
+/* Static GenUI stylesheet: consumers import 'genui/styles.css'. Canonical sheets only, in docs.css
+   cascade order: motion, the generated foundation (docs.css :root and @font-face blocks), base
+   components, inputs, focus, the native control families in NativeStyles.tsx order, then adaptive
+   components. Docs shell, sidebar, catalog, preview and web.css styles are intentionally absent. */
+@import '../../../docs/src/styles/atlas-motion.css';
+@import 'genui:foundation';
+@import '../../../docs/src/styles/components.css';
+@import '../../../docs/src/styles/atlas-input.css';
+@import '../../../docs/src/styles/focus-01.css';
+@import '../../../docs/src/styles/atlas-feedback.css';
+@import '../../../docs/src/styles/atlas-autocomplete.css';
+@import '../../../docs/src/styles/atlas-avatar.css';
+@import '../../../docs/src/styles/atlas-content-patterns.css';
+@import '../../../docs/src/styles/atlas-breadcrumb.css';
+@import '../../../docs/src/styles/atlas-media.css';
+@import '../../../docs/src/styles/atlas-carousel.css';
+@import '../../../docs/src/styles/atlas-selection-variants.css';
+@import '../../../docs/src/styles/workspace-kit.css';
+@import '../../../docs/src/styles/kit-records.css';
+@import '../../../docs/src/styles/atlas-drawer-extensions.css';
+@import '../../../docs/src/styles/atlas-dropdown.css';
+@import '../../../docs/src/styles/atlas-pagination.css';
+@import '../../../docs/src/styles/atlas-rich-menu.css';
+@import '../../../docs/src/styles/atlas-screenshot.css';
+@import '../../../docs/src/styles/atlas-chart.css';
+@import '../../../docs/src/styles/slider.css';
+@import '../../../docs/src/styles/atlas-splitter.css';
+@import '../../../docs/src/styles/atlas-steps.css';
+@import '../../../docs/src/styles/atlas-upload.css';
+@import '../../../docs/src/styles/adaptive-components.scss';

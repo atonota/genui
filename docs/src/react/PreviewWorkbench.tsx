@@ -1,9 +1,12 @@
 import {
+  useCallback,
   useEffect,
   useId,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
+  useSyncExternalStore,
   type CSSProperties,
   type ReactNode,
 } from 'react';
@@ -11,10 +14,29 @@ import AtlasButton from './AtlasButton';
 import AtlasSegmented from './AtlasSegmented';
 import AtlasIcon from './AtlasIcon';
 import DeviceFrame, { type DeviceFrameZoom } from './DeviceFrame';
+import InlinePreview from './InlinePreview';
+import {
+  PreviewProvider,
+  registerLocalPreview,
+  type PreviewContextValue,
+  type PreviewRecipeResult,
+} from './PreviewContext';
 import PreviewSource from './PreviewSource';
 import { usePreviewFrame } from './usePreviewFrame';
 import { useI18n } from './useI18n';
-import type { ThemeMode } from '../theme';
+import { docsThemeColors, themeColorVariables, type ThemeMode } from '../theme';
+import {
+  createDefaultRecipe,
+  resolveThemeBuilder,
+  validateRecipe,
+  type ThemeRecipe,
+} from '../theme-builder/model';
+import {
+  getServerThemeBuilderSnapshot,
+  getThemeBuilderSnapshot,
+  subscribeThemeBuilder,
+} from '../theme-builder/store';
+import { documentationVariables } from '../data/docs-brand';
 import { previewProfileForDevice, type PreviewProfile } from '../preview/profiles';
 import { previewWorkbenchLayout, useMacbookWideViewport } from '../preview/workbench-layout';
 import {
@@ -24,7 +46,7 @@ import {
   type PreviewDevice,
 } from '../data/preview-devices';
 
-export type PreviewWorkbenchProps = { id: string; title: string };
+export type PreviewWorkbenchProps = { id: string; title: string; children: ReactNode };
 type ExampleView = 'preview' | 'code';
 
 // Decorative 24×24 outline pictograms for the icon-only device options.
@@ -34,21 +56,26 @@ const deviceGlyphs: Record<PreviewDevice, string> = {
   ipad: 'M6.5 3h11a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-11a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2ZM12 5.75h.01',
   macbook:
     'M4 15.5V6a1.5 1.5 0 0 1 1.5-1.5h13A1.5 1.5 0 0 1 20 6v9.5M2 15.5h20V17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2ZM12 6.75h.01',
+  tv: 'M4.5 4.5h15a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-15a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2ZM8.5 20.5h7M12 17.5v3',
 };
 // Illustrative class names only; no hardware or viewport claim.
 const deviceLabels: Record<PreviewDevice, string> = {
   iphone: 'iPhone 18',
   ipad: 'iPad mini',
   macbook: 'MacBook 13',
+  tv: 'TV',
 };
 const profileLabels: Record<PreviewProfile, string> = {
   large: 'Large profile',
   medium: 'Medium profile',
   small: 'Small profile',
+  tv: 'TV profile',
 };
 // Every option keeps the shared target height through the wrapper's own height role.
 const controlStyle = { '--atlas-segmented-height': 'var(--preview-control-size)' } as CSSProperties;
 const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
+// One default recipe, so an unedited example keeps a stable effective recipe.
+const defaultRecipe = createDefaultRecipe();
 
 function DeviceGlyph({ device }: { device: PreviewDevice }) {
   return (
@@ -80,8 +107,9 @@ function IconOption({ icon, label }: { icon: ReactNode; label: string }) {
   );
 }
 
-/** Returning from the iframe, Firefox ignores an element's focus() until the parent document's
-    window is activated again, so each attempt first focuses the target's own window. */
+/** Returning focus from the expanded same-document preview, Firefox can ignore an element's
+    focus() until the target's window is activated again, so each attempt first focuses the
+    target's own window. */
 function focusInOwnWindow(target: HTMLElement | null | undefined) {
   if (!target) return;
   target.ownerDocument.defaultView?.focus();
@@ -100,38 +128,114 @@ function focusReturnTarget(dialog: HTMLDialogElement | null) {
   focusInOwnWindow(dialog?.querySelector<HTMLElement>('[data-preview-grid-control]'));
 }
 
-/** One example in one isolated preview document. Expand reuses the same dialog, DeviceFrame
-    and iframe browsing context; nothing is remounted or reparented. */
-export default function PreviewWorkbench({ id, title }: PreviewWorkbenchProps) {
+/** One example rendered on the page inside its device mockup. Device, theme, rotation, Code
+    and Expand restyle the same dialog, DeviceFrame and demo tree; nothing is remounted or
+    reparented. */
+export default function PreviewWorkbench({ id, title, children }: PreviewWorkbenchProps) {
   const { t } = useI18n();
   const titleId = `${useId()}-title`;
-  const frame = usePreviewFrame({ id, title });
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const frame = usePreviewFrame({ id, title, anchorRef: dialogRef });
   const [view, setView] = useState<ExampleView>('preview');
   const [zoom, setZoom] = useState<DeviceFrameZoom>('fit');
   const [scale, setScale] = useState(100);
   const [expanded, setExpanded] = useState(false);
-  const dialogRef = useRef<HTMLDialogElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const codePanelRef = useRef<HTMLDivElement>(null);
   // Close events queued by our own mode switches are not user closes.
   const ownCloses = useRef(0);
   // Set when leaving Expand; the return focus waits for that render.
   const returnFocus = useRef(false);
+  // Set when Open tweaker leaves Expand; that render opens the outer Tweaker instead.
+  const openAfterExpand = useRef(false);
+  // Set by Back to Preview; the checked Preview radio takes focus after that render.
+  const focusPreviewTab = useRef(false);
+  // Latest mode switch and mode for the document event listener below.
+  const presentRef = useRef<(modal: boolean) => void>(() => {});
+  const expandedRef = useRef(false);
   const wide = useMacbookWideViewport();
   const layout = previewWorkbenchLayout(frame.device, wide, zoom);
   const profile = previewProfileForDevice(frame.device);
   const screen = previewScreen(frame.device, frame.orientation);
   const rotatable = previewDeviceDefinition(frame.device).rotatable;
+  const openFrameSettings = frame.openSettings;
+  // This example's in-memory recipe; until its first apply it follows the global Theme Builder
+  // recipe, and nothing here writes global storage.
+  const [localRecipe, setLocalRecipe] = useState<ThemeRecipe | null>(null);
+  const globalRecipe = useSyncExternalStore(
+    subscribeThemeBuilder,
+    getThemeBuilderSnapshot,
+    getServerThemeBuilderSnapshot,
+  );
+  const effectiveRecipe = useMemo(
+    () => localRecipe ?? globalRecipe ?? defaultRecipe,
+    [localRecipe, globalRecipe],
+  );
+  const apply = useCallback((input: ThemeRecipe): PreviewRecipeResult => {
+    const checked = validateRecipe(input);
+    if (!checked.ok) return { ok: false, error: checked.error };
+    setLocalRecipe(checked.recipe);
+    return { ok: true };
+  }, []);
+  const reset = useCallback(() => setLocalRecipe(createDefaultRecipe()), []);
+  const previewValue = useMemo<PreviewContextValue>(
+    () => ({
+      exampleId: id,
+      profile,
+      mode: frame.theme,
+      orientation: screen.orientation,
+      recipe: localRecipe,
+      apply,
+      reset,
+    }),
+    [id, profile, frame.theme, screen.orientation, localRecipe, apply, reset],
+  );
+  // The page Tweaker finds this example while it holds focus; each new value replaces the
+  // registration and unmount removes it.
+  useEffect(() => registerLocalPreview(previewValue), [previewValue]);
+  // Theme roles and recipe variables for the screen alone; the page and the bezel keep theirs.
+  // The default recipe resolves every variable, so a reset restores the screen exactly.
+  const screenStyle = useMemo(
+    () =>
+      ({
+        ...themeColorVariables(docsThemeColors[frame.theme]),
+        ...documentationVariables(frame.theme),
+        ...resolveThemeBuilder(effectiveRecipe, frame.theme).variables,
+        colorScheme: frame.theme,
+        backgroundColor: 'var(--panel)',
+        color: 'var(--ink)',
+      }) as CSSProperties,
+    [effectiveRecipe, frame.theme],
+  );
 
   useIsomorphicLayoutEffect(() => {
     stageRef.current?.toggleAttribute('inert', view === 'code');
     codePanelRef.current?.toggleAttribute('inert', view !== 'code');
   }, [view]);
 
+  // Back to Preview inerts its own button, so focus moves to the checked Preview radio once the
+  // view has rendered; focus() keeps the current input modality.
+  useIsomorphicLayoutEffect(() => {
+    if (view !== 'preview' || !focusPreviewTab.current) return;
+    focusPreviewTab.current = false;
+    focusInOwnWindow(
+      dialogRef.current?.querySelector<HTMLElement>(
+        '.example-preview-view-tabs input[type="radio"]:checked',
+      ),
+    );
+  }, [view]);
+
   // The Inspector's settings action asks this example to show its Preview.
   useEffect(() => {
     const show = (event: Event) => {
-      if ((event as CustomEvent<{ id?: unknown } | null>).detail?.id === id) setView('preview');
+      if ((event as CustomEvent<{ id?: unknown } | null>).detail?.id !== id) return;
+      setView('preview');
+      // The settings opener runs right after this event, so an expanded example leaves the
+      // top layer now and skips its focus return; the outer Tweaker stays reachable.
+      if (!expandedRef.current) return;
+      expandedRef.current = false;
+      presentRef.current(false);
+      returnFocus.current = false;
     };
     document.addEventListener('genui-preview-show', show);
     return () => document.removeEventListener('genui-preview-show', show);
@@ -152,22 +256,42 @@ export default function PreviewWorkbench({ id, title }: PreviewWorkbenchProps) {
     setExpanded(modal);
     if (!modal && !expanded) focusReturnTarget(dialog);
   };
+  useIsomorphicLayoutEffect(() => {
+    presentRef.current = present;
+    expandedRef.current = expanded;
+  });
+
+  // The outer Tweaker lies outside an expanded example's top layer, so Expand closes first and
+  // the Tweaker opens after that render; the demo subtree stays where it is.
+  const openTweaker = () => {
+    frame.focus();
+    if (!expanded) {
+      openFrameSettings();
+      return;
+    }
+    openAfterExpand.current = true;
+    present(false);
+  };
 
   // Firefox can restore focus while it settles the queued native close, so the return waits
   // a frame until our own closes have landed; a mode switch or unmount cancels it.
   useIsomorphicLayoutEffect(() => {
     if (expanded || !returnFocus.current) return;
     returnFocus.current = false;
+    // A pending Open tweaker replaces the return focus once the closes have landed.
+    const settings = openAfterExpand.current;
+    openAfterExpand.current = false;
     let frame = 0;
     const settle = (frames: number) => {
       frame = requestAnimationFrame(() => {
         if (ownCloses.current > 0 && frames > 0) settle(frames - 1);
+        else if (settings) openFrameSettings();
         else focusReturnTarget(dialogRef.current);
       });
     };
     settle(3);
     return () => cancelAnimationFrame(frame);
-  }, [expanded]);
+  }, [expanded, openFrameSettings]);
 
   const caption = (
     <p className="example-preview-caption">
@@ -293,6 +417,7 @@ export default function PreviewWorkbench({ id, title }: PreviewWorkbenchProps) {
                 onClick={() => present(!expanded)}
               />
             )}
+            <AtlasButton fill="outline" size="sm" text={t('Open tweaker')} onClick={openTweaker} />
             <a href={frame.standaloneSrc} target="_blank" rel="noopener">
               {t('Open alone')}
             </a>
@@ -308,47 +433,29 @@ export default function PreviewWorkbench({ id, title }: PreviewWorkbenchProps) {
           aria-hidden={view === 'code' || undefined}
         >
           {caption}
-          {/* Honest state while the frame stays mounted but hidden until it reports ready. */}
-          {!frame.ready && (
-            <div className="example-preview-message" role={frame.error ? 'alert' : 'status'}>
-              <p className="example-preview-caption">
-                {t(frame.error ? 'The preview could not load.' : 'Loading preview')}
-              </p>
-              {frame.error && (
-                <>
-                  <AtlasButton
-                    fill="outline"
-                    size="sm"
-                    text={t('Retry')}
-                    onClick={() => frame.retry()}
-                  />
-                  <a href={frame.standaloneSrc} target="_blank" rel="noopener">
-                    {t('Open alone')}
-                  </a>
-                </>
-              )}
-            </div>
-          )}
-          <DeviceFrame
-            device={frame.device}
-            orientation={frame.orientation}
-            zoom={layout.zoom}
-            fitAxis={layout.fitAxis}
-            onScale={setScale}
-          >
-            <iframe
-              data-preview-iframe=""
-              data-preview-grid={String(frame.grid)}
-              title={t(title)}
-              src={frame.src}
-              ref={frame.frameRef}
-              onLoad={frame.onLoad}
-              onError={frame.onError}
-              style={{ visibility: frame.ready ? undefined : 'hidden' }}
-              sandbox="allow-scripts allow-same-origin allow-forms"
-              loading="lazy"
-            />
-          </DeviceFrame>
+          {/* The demo renders on this page as one stable, unkeyed subtree that device, theme,
+              rotation, Code and Expand restyle in place; the provider is always present. */}
+          <PreviewProvider value={previewValue}>
+            <DeviceFrame
+              device={frame.device}
+              orientation={frame.orientation}
+              zoom={layout.zoom}
+              fitAxis={layout.fitAxis}
+              onScale={setScale}
+              screenStyle={screenStyle}
+              screenTheme={frame.theme}
+            >
+              <InlinePreview
+                id={id}
+                device={frame.device}
+                theme={frame.theme}
+                orientation={screen.orientation}
+                grid={frame.grid}
+              >
+                {children}
+              </InlinePreview>
+            </DeviceFrame>
+          </PreviewProvider>
         </div>
         <div
           ref={codePanelRef}
@@ -362,7 +469,10 @@ export default function PreviewWorkbench({ id, title }: PreviewWorkbenchProps) {
               fill="outline"
               size="sm"
               text={t('Back to Preview')}
-              onClick={() => setView('preview')}
+              onClick={() => {
+                focusPreviewTab.current = true;
+                setView('preview');
+              }}
             />
           </div>
           <PreviewSource

@@ -2,7 +2,7 @@
 // opens non-modal with show() and docks before the contents rail; below it opens with
 // showModal(). It only speaks the preview stage contract on the document: stages publish
 // genui-preview-focus and the Inspector dispatches genui-preview-control.
-export type PreviewDevice = 'iphone' | 'ipad' | 'macbook';
+export type PreviewDevice = 'iphone' | 'ipad' | 'macbook' | 'tv';
 export type PreviewTheme = 'light' | 'dark';
 export interface PreviewControlDetail {
   scope: 'focused' | 'all';
@@ -22,7 +22,7 @@ export const previewControlEvent = 'genui-preview-control';
 export const previewFocusEvent = 'genui-preview-focus';
 // 118.75rem = 1900px; rem keeps zoomed text on the modal layout, as in layout.css.
 const dockedQuery = '(min-width: 118.75rem)';
-const devices: readonly unknown[] = ['iphone', 'ipad', 'macbook'];
+const devices: readonly unknown[] = ['iphone', 'ipad', 'macbook', 'tv'];
 const isDevice = (value: unknown): value is PreviewDevice => devices.includes(value);
 const isTheme = (value: unknown): value is PreviewTheme => value === 'light' || value === 'dark';
 

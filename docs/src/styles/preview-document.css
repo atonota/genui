@@ -1,5 +1,7 @@
-/* Isolated preview document. The fixed logical screen comes from preview/profiles through the
-   inline --preview-document-* roles; paint, type and focus reuse the documentation roles. */
+/* Preview document wrappers, shared by the standalone preview page and the inline device
+   mockups. The fixed logical screen comes from preview/profiles through the inline
+   --preview-document-* roles and content scrolls inside it. Paint, type and focus reuse the
+   documentation roles from the nearest theme scope, so a nested provider keeps its local palette. */
 /* The body carries the shared .live-preview scope, so the original web.css controls apply as on
    the docs page; its in-page margin, padding and radius reset so the logical screen stays exact. */
 body[data-preview-body] {
@@ -21,12 +23,15 @@ body[data-preview-body] {
 /* Central layout grid per profile: small 4 columns, 16px margins, 12px gutters; medium 8
    columns, 32px margins, 16px gutters; large 12 columns across the centered container (1024 on
    the 1440x900 MacBook screen), whose 208px outer margins come from the container fields of
-   the central device model, with 24px gutters. Frames pad by the margin and space by the
-   gutter. */
+   the central device model, with 24px gutters; tv 12 columns across the centered 1600
+   container on the 1920x1080 TV screen, with 32px gutters. Frames pad by the margin and space
+   by the gutter. */
 [data-preview-document] {
   --preview-grid-columns: 4;
   --preview-grid-margin: 16px;
   --preview-grid-gutter: 12px;
+  background: var(--panel);
+  color: var(--ink);
 }
 [data-preview-document][data-profile='medium'] {
   --preview-grid-columns: 8;
@@ -37,6 +42,11 @@ body[data-preview-body] {
   --preview-grid-columns: 12;
   --preview-grid-margin: 0px;
   --preview-grid-gutter: 24px;
+}
+[data-preview-document][data-profile='tv'] {
+  --preview-grid-columns: 12;
+  --preview-grid-margin: 0px;
+  --preview-grid-gutter: 32px;
 }
 
 [data-preview-container] {
@@ -70,6 +80,11 @@ body[data-preview-body] {
   padding: var(--preview-grid-gutter) var(--preview-grid-margin);
 }
 
+/* TV: the living-room layout inside the centered container, with the wider gutter. */
+.preview-tv {
+  padding: var(--preview-grid-gutter) var(--preview-grid-margin);
+}
+
 /* Grid guide: the actual columns between the margins, painted over the content without taking
    pointer, touch or focus. */
 [data-preview-grid] [data-preview-container]::after {
@@ -89,19 +104,4 @@ body[data-preview-body] {
       calc(var(--preview-grid-column) + var(--preview-grid-gutter))
   );
   pointer-events: none;
-}
-
-/* Once the matching cluster carries data-preview-content, everything around it hides; the real
-   Tweaker trigger and panel stay usable. Without :has() support the full demo stays visible. */
-[data-preview-container]:has([data-preview-content])
-  :not(
-    :has([data-preview-content], .atlas-tweaker-trigger, .atlas-tweaker-panel),
-    [data-preview-content],
-    [data-preview-content] *,
-    .atlas-tweaker-trigger,
-    .atlas-tweaker-trigger *,
-    .atlas-tweaker-panel,
-    .atlas-tweaker-panel *
-  ) {
-  display: none;
 }

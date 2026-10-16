@@ -362,9 +362,13 @@ export default function AtlasProvider({
     builderActive ? getThemeBuilderSnapshot : getServerThemeBuilderSnapshot,
     getServerThemeBuilderSnapshot,
   );
+  // Inside an actual preview, that example's in-memory recipe wins over the global one. The
+  // focused-preview registry is never read here, so ordinary page owners stay global.
+  const effectiveRecipe = preview?.recipe ?? builderRecipe;
   const builder = useMemo(
-    () => (builderActive && builderRecipe ? resolveThemeBuilder(builderRecipe, mode) : undefined),
-    [builderActive, builderRecipe, mode],
+    () =>
+      builderActive && effectiveRecipe ? resolveThemeBuilder(effectiveRecipe, mode) : undefined,
+    [builderActive, effectiveRecipe, mode],
   );
   const builderHeight = builder
     ? size === 'sm'
@@ -477,9 +481,11 @@ export default function AtlasProvider({
     getInputModalitySnapshot,
     getServerInputModalitySnapshot,
   );
-  // One body-level portal root per owner: native popups (Select, Dropdown, Picker, Modal,
-  // Drawer) without an explicit container render into it, so they inherit this owner's roles,
-  // local mode paint and adaptive surface. display: contents adds no box or containing block.
+  // One portal root per owner: native popups (Select, Dropdown, Picker, Modal, Drawer) without
+  // an explicit container render into it, so they inherit this owner's roles, local mode paint
+  // and adaptive surface. display: contents adds no box or containing block. A preview owner
+  // keeps it beside itself inside the same-page mockup, so its popups clip, scroll and paint
+  // with that screen; every other owner portals it to the body.
   // It mounts only after hydration, so SSR markup and the hydration render stay unchanged.
   // Each AdaptiveShell inside renders its own portal from this owner's descriptor instead.
   const ownerRef = useRef<HTMLDivElement>(null);
@@ -508,19 +514,18 @@ export default function AtlasProvider({
     style: sizeStyle,
     attributes: themeAttributes,
   };
+  const portalElement =
+    motionReady && typeof document !== 'undefined' ? (
+      <div
+        ref={portalRef}
+        className="atlas-demo"
+        data-atlas-portal=""
+        style={{ ...sizeStyle, display: 'contents' }}
+        {...ownerAttributes}
+      />
+    ) : null;
   const portalRoot =
-    motionReady && typeof document !== 'undefined'
-      ? createPortal(
-          <div
-            ref={portalRef}
-            className="atlas-demo"
-            data-atlas-portal=""
-            style={{ ...sizeStyle, display: 'contents' }}
-            {...ownerAttributes}
-          />,
-          document.body,
-        )
-      : null;
+    portalElement && !preview ? createPortal(portalElement, document.body) : portalElement;
   return (
     <AdaptiveContext.Provider value={adaptive}>
       <AtlasAppearanceContext.Provider value={appearance}>

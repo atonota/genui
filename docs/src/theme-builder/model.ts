@@ -104,7 +104,7 @@ export const THEME_TOKEN_COUNT =
   LISTY_SURFACE_THEME_TOKEN_COUNT;
 export const MAX_THEME_RECIPE_BYTES = 32 * 1024;
 export const MIN_TEXT_CONTRAST = 4.5;
-export const MIN_FONT_SIZE_PX = 12;
+export const MIN_FONT_SIZE_PX = 14;
 /** Fixed shapes are described in the builder but are never definition edits. */
 export const FIXED_RADII = Object.freeze({ none: 0, pill: FULL_ROUND_RADIUS_PX, circle: '50%' });
 
@@ -406,6 +406,18 @@ const roles = Object.freeze({
 });
 for (const def of Object.values(roles.shadow))
   if (!def.geometry) invalidDefinitions(`${def.id} must declare shadow geometry`);
+/** The six editable text sizes share the strict 14 px floor whatever their definition minimum. */
+const textSizeIds: ReadonlySet<string> = new Set(
+  [
+    roles.textBody,
+    roles.textLabel,
+    roles.textHelper,
+    roles.textTable,
+    roles.textHeading,
+    roles.textCode,
+  ].map(def => def.id),
+);
+const TEXT_BELOW_MINIMUM = `is below the ${MIN_FONT_SIZE_PX} px text minimum.`;
 // The Listy surface is a fixed two-keyword contract shared with the CSS and the Cascader popup.
 const listySurfaceOptions = roles.listySurface.options ?? [];
 if (
@@ -478,6 +490,8 @@ function validateMode(mode: ThemeMode, input: unknown): ThemeValues | string {
     if (!own(input, def.id)) return THEME_RECIPE_ERRORS.missingToken(mode, def.id);
     const checked = checkValue(def, input[def.id]);
     if (!checked.ok) return THEME_RECIPE_ERRORS.invalidToken(mode, def.id, checked.reason);
+    if (textSizeIds.has(def.id) && Number(checked.value) < MIN_FONT_SIZE_PX)
+      return THEME_RECIPE_ERRORS.invalidToken(mode, def.id, TEXT_BELOW_MINIMUM);
     values[def.id] = checked.value;
   }
   for (const group of orderedGroups) {
@@ -570,17 +584,56 @@ export function validateRecipe(input: unknown): ThemeRecipeResult {
   return { ok: true, recipe: Object.freeze({ version: THEME_RECIPE_VERSION, light, dark }) };
 }
 
-export function parseRecipe(text: string): ThemeRecipeResult {
+type RecipeJson = Readonly<{ ok: true; value: unknown }> | Readonly<{ ok: false; error: string }>;
+
+/** Shared by strict and stored reads: text type, 32 KiB bound and JSON syntax. */
+function readRecipeJson(text: string): RecipeJson {
   if (typeof text !== 'string') return { ok: false, error: THEME_RECIPE_ERRORS.notText };
   if (new TextEncoder().encode(text).byteLength > MAX_THEME_RECIPE_BYTES)
     return { ok: false, error: THEME_RECIPE_ERRORS.tooLarge };
-  let parsed: unknown;
   try {
-    parsed = JSON.parse(text);
+    return { ok: true, value: JSON.parse(text) as unknown };
   } catch {
     return { ok: false, error: THEME_RECIPE_ERRORS.syntax };
   }
-  return validateRecipe(parsed);
+}
+
+export function parseRecipe(text: string): ThemeRecipeResult {
+  const json = readRecipeJson(text);
+  return json.ok ? validateRecipe(json.value) : json;
+}
+
+/** Text sizes saved under the earlier 12 px floor; only storage lifts them to the minimum. */
+const STORED_TEXT_SIZES: ReadonlySet<unknown> = new Set([12, 13]);
+
+/** Copies a stored mode and lifts only exact 12 or 13 px text sizes; every other field is kept. */
+function migrateStoredText(input: unknown): unknown {
+  if (!isPlainRecord(input)) return input;
+  const migrated: Record<string, unknown> = { ...input };
+  for (const id of textSizeIds)
+    if (own(input, id) && STORED_TEXT_SIZES.has(input[id])) migrated[id] = MIN_FONT_SIZE_PX;
+  return migrated;
+}
+
+/** Storage-only read: a version 1 recipe has its 12-13 px text sizes lifted to 14 px, then the
+    strict validation and earlier-generation upgrade decide. Imports keep using parseRecipe. */
+export function parseStoredRecipe(text: string): ThemeRecipeResult {
+  const json = readRecipeJson(text);
+  if (!json.ok) return json;
+  const input = json.value;
+  if (
+    !isPlainRecord(input) ||
+    Object.keys(input).length !== 3 ||
+    input.version !== THEME_RECIPE_VERSION ||
+    !own(input, 'light') ||
+    !own(input, 'dark')
+  )
+    return validateRecipe(input);
+  return validateRecipe({
+    version: input.version,
+    light: migrateStoredText(input.light),
+    dark: migrateStoredText(input.dark),
+  });
 }
 
 /** Complete, stable export: version first, tokens in definition order. */

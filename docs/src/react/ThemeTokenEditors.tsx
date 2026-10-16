@@ -12,7 +12,7 @@ import {
   withGeneralRadius,
 } from '../data/radius-options';
 import type { ThemeMode } from '../theme';
-import { usePreviewContext, usePreviewTheme } from './PreviewContext';
+import { useLocalPreviewTarget, usePreviewTheme } from './PreviewContext';
 import {
   createDefaultRecipe,
   tokenDefinitions,
@@ -199,15 +199,22 @@ type Draft = Readonly<{ base: ThemeRecipe; recipe: ThemeRecipe; error: string }>
 export default function ThemeTokenEditors() {
   const { t } = useI18n();
   const prefix = useId();
-  const mode = usePreviewTheme();
-  // A preview document owns a local theme; the global Theme Builder stays separate.
-  const preview = usePreviewContext() !== null;
+  const pageMode = usePreviewTheme();
+  // The enclosing preview, else the focused example on this page, owns a local theme and an
+  // in-memory recipe; the global Theme Builder stays separate.
+  const target = useLocalPreviewTarget();
+  const preview = target !== null;
+  const mode = target?.mode ?? pageMode;
+  const localApply = target?.apply;
+  const localReset = target?.reset;
   const applied = useSyncExternalStore(
     subscribeThemeBuilder,
     getThemeBuilderSnapshot,
     getServerThemeBuilderSnapshot,
   );
-  const current = applied ?? defaultRecipe;
+  // A local recipe wins; until its first edit the example follows the global recipe.
+  const localRecipe = localApply ? target?.recipe : undefined;
+  const current = localRecipe ?? applied ?? defaultRecipe;
   const [draft, setDraft] = useState<Draft | null>(null);
   const [status, setStatus] = useState('');
   // A draft only applies to the store value it was edited from.
@@ -223,6 +230,17 @@ export default function ThemeTokenEditors() {
       if (!checked.ok) {
         error = checked.error;
         continue;
+      }
+      // A local example validates again and keeps the recipe in memory for itself only.
+      if (localApply) {
+        const local = localApply(checked.recipe);
+        if (local.ok) {
+          setDraft(null);
+          setStatus(PREVIEW_ONLY);
+          return;
+        }
+        error = local.error;
+        break;
       }
       // The shared store validates again and applies it: globally with its existing persistence,
       // or only in memory for this example inside a preview document.
@@ -241,7 +259,9 @@ export default function ThemeTokenEditors() {
   }
 
   function reset() {
-    resetThemeBuilder();
+    // A local example returns only itself to the defaults; the global recipe is untouched.
+    if (localReset) localReset();
+    else resetThemeBuilder();
     setDraft(null);
     setStatus('Theme reset to defaults.');
   }

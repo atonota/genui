@@ -29,6 +29,7 @@ import { serverDemos } from '../../../preview/registry.server';
 import SmallDelivery from '../../../react/preview/SmallDelivery';
 import MediumDelivery from '../../../react/preview/MediumDelivery';
 import LargeDelivery from '../../../react/preview/LargeDelivery';
+import TvDelivery from '../../../react/preview/TvDelivery';
 import { createElement } from 'react';
 
 interface Props {
@@ -73,10 +74,15 @@ const routeSheets = entry.styles.map(file => {
 });
 // Styles come from the chosen delivery entry itself, so the demo renders inside its
 // PreviewContext and wrappers exactly as the hydrated body does.
-const Delivery = { small: SmallDelivery, medium: MediumDelivery, large: LargeDelivery }[
-  selection.profile
-];
-const ssrStyles = extractDemoStyles(() => createElement(Delivery, { id, slug }), {
+const Delivery = {
+  small: SmallDelivery,
+  medium: MediumDelivery,
+  large: LargeDelivery,
+  tv: TvDelivery,
+}[selection.profile];
+// Only this route sets standalone, handing the document root theme, Theme Builder and URL query
+// to the entry; every other use of the entry embeds inline.
+const ssrStyles = extractDemoStyles(() => createElement(Delivery, { id, slug, standalone: true }), {
   documentation: true,
 });
 const base = import.meta.env.BASE_URL;
@@ -103,9 +109,12 @@ const favicon = (base.endsWith('/') ? base : base + '/') + 'favicon.svg';
     ))}
   </head>
   <body class="live-preview" data-atlas-surface="docs" data-preview-body>
-    {selection.profile === 'small' && <SmallDelivery id={id} slug={slug} client:load />}
-    {selection.profile === 'medium' && <MediumDelivery id={id} slug={slug} client:load />}
-    {selection.profile === 'large' && <LargeDelivery id={id} slug={slug} client:load />}
+    {selection.profile === 'small' && <SmallDelivery id={id} slug={slug} standalone client:load />}
+    {selection.profile === 'medium' && (
+      <MediumDelivery id={id} slug={slug} standalone client:load />
+    )}
+    {selection.profile === 'large' && <LargeDelivery id={id} slug={slug} standalone client:load />}
+    {selection.profile === 'tv' && <TvDelivery id={id} slug={slug} standalone client:load />}
     <script>
       import { installInputModality } from '../../../input-modality';
       import { installOverlayBackdrop } from '../../../overlay-backdrop';

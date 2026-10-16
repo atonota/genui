@@ -1,6 +1,6 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { expect, test, type Frame, type Locator, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 
 // Actual evidence screenshots, written only when the conductor provides a stage directory.
 async function saveShot(page: Page, name: string) {
@@ -126,7 +126,7 @@ type PreviewResourceMap = {
   id: string;
   base: string;
   distDir: string;
-  profiles: Record<'small' | 'medium' | 'large', ProfileResources>;
+  profiles: Record<'small' | 'medium' | 'large' | 'tv', ProfileResources>;
 };
 
 /** One preview id's emitted profile documents, read from the production docs dist. */
@@ -248,90 +248,254 @@ test('320 drawer keeps nav scroll; desktop tabs, sidebar and TOC fit', async ({ 
   await saveShot(page, 'docs-reference-1920.png');
 });
 
-test('Input preview isolates its iframe document, state, profile and delivery', async ({
+test('Input preview renders inline with kept node, state, profile and delivery', async ({
   page,
   browser,
 }) => {
-  // Requests tagged with the frame that issued them, so only the selected iframe is judged.
-  const requests: { url: string; frame: Frame | null; frameUrl: string }[] = [];
+  // Real OS/browser QA provenance for this run.
+  await test.info().attach('browser-runtime.json', {
+    body: JSON.stringify(
+      {
+        engine: browser.browserType().name(),
+        version: browser.version(),
+        platform: process.platform,
+        playwrightVersion: '1.64.0',
+      },
+      null,
+      2,
+    ),
+    contentType: 'application/json',
+  });
+  // Every iframe ever inserted is counted, so a transient embed fails as well as a kept one.
+  await page.addInitScript(() => {
+    const seen = { count: 0 };
+    (window as Window & { atlasIframesSeen?: typeof seen }).atlasIframesSeen = seen;
+    new MutationObserver(records => {
+      for (const record of records)
+        for (const node of Array.from(record.addedNodes))
+          if (
+            node instanceof Element &&
+            (node.localName === 'iframe' || node.querySelector('iframe'))
+          )
+            seen.count += 1;
+    }).observe(document, { childList: true, subtree: true });
+  });
+  const expectNoIframes = async () => {
+    await expect(page.locator('iframe')).toHaveCount(0);
+    const seen = await page.evaluate(
+      () => (window as Window & { atlasIframesSeen?: { count: number } }).atlasIframesSeen?.count,
+    );
+    expect(seen).toBe(0);
+  };
+  // Page requests with their type: an inline preview fetches no preview document or route.
+  const requests: { url: string; type: string }[] = [];
   page.on('request', request => {
-    let frame: Frame | null = null;
-    try {
-      frame = request.frame();
-    } catch {
-      // Service worker requests have no frame.
-    }
-    requests.push({ url: request.url(), frame, frameUrl: frame?.url() ?? '' });
+    requests.push({ url: request.url(), type: request.resourceType() });
   });
   await page.emulateMedia({ colorScheme: 'light' });
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto('/components/input/');
+  // The production component page holds zero iframe elements right after load.
+  await expectNoIframes();
   const preview = page.locator('[data-example-preview]').first();
   await expect(preview).toHaveAttribute('data-preview-mode', 'preview');
   await expect(preview.getByRole('radio', { name: /^preview$/i })).toBeChecked();
-
   const id = await preview.getAttribute('data-example-preview');
   expect(id).toBeTruthy();
-  const iframe = preview.locator('iframe[data-preview-iframe]');
-  await expect(iframe).toHaveCount(1);
-  const frame = preview.frameLocator('iframe[data-preview-iframe]');
-  const root = frame.locator('[data-preview-document]');
-  const hydrated = frame.locator('[data-preview-hydrated=true]');
-  // A profile change keeps the same iframe document, so the small delivery is judged only by
-  // requests that iframe issues after the switch.
-  const switchedAt = requests.length;
-  await choose(preview, /iphone/i);
-  await expect(root).toBeAttached();
-  await expect(iframe).toBeVisible();
-  await expect(preview).toHaveAttribute('data-preview-profile', /small/i);
-  const previewFrame = await (await iframe.elementHandle())?.contentFrame();
-  expect(previewFrame).toBeTruthy();
-  const selectedRequests = () => requests.slice(switchedAt).filter(r => r.frame === previewFrame);
 
-  // Fill only once the small delivery entry has loaded in that same document.
-  await expect.poll(() => selectedRequests().some(r => /SmallDelivery/.test(r.url))).toBe(true);
-  const workspace = frame.getByRole('textbox', { name: /workspace name/i });
-  // Native Tab from the parent's preview link enters the iframe on Workspace name; the shared
-  // modality crosses the frame boundary and the field shows one bottom marker, never a ring.
-  const frameRoot = frame.locator('html');
+  // The example's actual controls render directly inside this preview's device screen.
+  const screen = preview.locator('.example-preview-screen');
+  await expect(screen).toHaveCount(1);
+  const content = screen.locator('[data-preview-content]');
+  await expect(content).toHaveCount(1);
+  const hydrated = screen.locator('[data-preview-hydrated=true]');
+  await expect(hydrated).toBeAttached();
+  const workspace = content.getByRole('textbox', { name: /workspace name/i });
+  await expect(workspace).toBeEditable();
+  await expectNoIframes();
+  // Before any preview radio, control or form focus, the Inspector's Component settings opens
+  // the first example's Tweaker: a 3px corner edit lands on that preview's screen only, while
+  // the shell, its saved recipe and the sibling preview keep theirs, and reset restores it.
+  const builderKey = 'atlas-theme-builder-v1';
+  const parentRecipe = () => page.evaluate(key => localStorage.getItem(key), builderKey);
+  // Shell inline declarations on html and body compared as sorted name/value/priority entries.
+  // Excluded are exactly the two transient overlay roles the existing overlay runtime writes
+  // while the native Tweaker is open: --atlas-overlay-clip (overlay clip geometry) and
+  // --atlas-overlay-active-z (active overlay stacking). They measure overlay placement, not
+  // theme; every other declaration (theme, radius, color, font, header) must stay identical.
+  const transientOverlayRoles = ['--atlas-overlay-clip', '--atlas-overlay-active-z'];
+  const shellTheme = () =>
+    page.evaluate(
+      excluded =>
+        JSON.stringify(
+          [document.documentElement, document.body].map(node => {
+            const style = node.style;
+            return Array.from(style)
+              .filter(name => !excluded.includes(name))
+              .sort()
+              .map(name => [
+                name,
+                style.getPropertyValue(name).trim(),
+                style.getPropertyPriority(name),
+              ]);
+          }),
+        ),
+      transientOverlayRoles,
+    );
+  const sibling = page.locator('[data-example-preview]').nth(1);
+  const siblingScreen = sibling.locator('.example-preview-screen');
+  await expect(siblingScreen).toHaveCount(1);
+  // Inline declarations compared as sorted name/value/priority entries: SSR and CSSOM
+  // serialize the same declarations with different spacing.
+  const inlineTheme = (scope: Locator) =>
+    scope.evaluate(el => {
+      const style = (el as HTMLElement).style;
+      return JSON.stringify(
+        Array.from(style)
+          .sort()
+          .map(name => [
+            name,
+            style.getPropertyValue(name).trim(),
+            style.getPropertyPriority(name),
+          ]),
+      );
+    });
+  const tokenValues = (scope: Locator, names: string[]) =>
+    scope.evaluate((el, list) => {
+      const style = getComputedStyle(el);
+      return list.map(name => style.getPropertyValue(name).trim());
+    }, names);
+  const ownedTokens = () =>
+    screen.evaluate(el =>
+      Array.from((el as HTMLElement).style).filter(name => name.startsWith('--')),
+    );
+  const editors = page.locator('[data-theme-token-editors]');
+  const inspectorRecipe = await parentRecipe();
+  const inspectorShell = await shellTheme();
+  const inspectorScreen = await inlineTheme(screen);
+  const inspectorSibling = await inlineTheme(siblingScreen);
+  const inspector = page.locator('dialog[data-docs-inspector]');
+  await page
+    .locator('[aria-controls=docs-inspector]:not([data-docs-inspector-close])')
+    .first()
+    .click();
+  await expect(inspector).toBeVisible();
+  await expect(inspector.locator('[data-docs-inspector-focus]')).toBeVisible();
+  const settings = inspector.getByRole('button', { name: /^component settings$/i });
+  await expect(settings).toBeEnabled();
+  await settings.click();
+  const corner = editors.getByRole('combobox', { name: /radius|corner/i }).first();
+  await expect(corner).toBeVisible();
+  await corner.click();
+  await page.getByTitle('3px', { exact: true }).click();
+  await expect.poll(() => inlineTheme(screen)).not.toBe(inspectorScreen);
+  // Device geometry roles are not theme tokens; only the edited corner roles are judged.
+  const cornerNames = await screen.evaluate(el => {
+    const style = getComputedStyle(el);
+    return Array.from((el as HTMLElement).style).filter(
+      name =>
+        name.startsWith('--') &&
+        !name.startsWith('--preview-') &&
+        style.getPropertyValue(name).trim() === '3px',
+    );
+  });
+  expect(cornerNames).not.toEqual([]);
+  const siblingCorners = await tokenValues(siblingScreen, cornerNames);
+  const shellCorners = await tokenValues(page.locator('html'), cornerNames);
+  await test.info().attach('inspector-local-corner.json', {
+    body: JSON.stringify({ cornerNames, siblingCorners, shellCorners }, null, 2),
+    contentType: 'application/json',
+  });
+  expect(siblingCorners).not.toContain('3px');
+  expect(shellCorners).not.toContain('3px');
+  expect(await inlineTheme(siblingScreen)).toBe(inspectorSibling);
+  expect(await shellTheme()).toBe(inspectorShell);
+  expect(await parentRecipe()).toBe(inspectorRecipe);
+  await editors.getByRole('button', { name: /reset theme/i }).click();
+  await expect.poll(() => inlineTheme(screen)).toBe(inspectorScreen);
+  expect(await tokenValues(screen, cornerNames)).toEqual(siblingCorners);
+  expect(await inlineTheme(siblingScreen)).toBe(inspectorSibling);
+  expect(await shellTheme()).toBe(inspectorShell);
+  expect(await parentRecipe()).toBe(inspectorRecipe);
+  await page.getByRole('button', { name: /close tweaker/i }).click();
+  await expect(editors).toBeHidden();
+  if (await inspector.evaluate(dialog => (dialog as HTMLDialogElement).open))
+    await inspector.locator('[data-docs-inspector-close]').click();
+  await expect(inspector).toBeHidden();
+  // A kept handle and an expando prove the same input element stays mounted throughout.
+  const workspaceNode = await workspace.elementHandle();
+  if (!workspaceNode) throw new Error('The Workspace name field is missing.');
+  // Code mode hides the preview (aria-hidden + inert), so the role locator rightly finds no
+  // textbox there; identity checks use a DOM locator keyed to this actual node's id.
+  const workspaceId = await workspaceNode.evaluate(el => el.id);
+  if (!workspaceId) throw new Error('The Workspace name field has no id.');
+  const mountedWorkspace = content.locator(`[id=${JSON.stringify(workspaceId)}]`);
+  await expect(mountedWorkspace).toHaveCount(1);
+  await workspaceNode.evaluate(el => {
+    (el as Element & { atlasNodeProof?: string }).atlasNodeProof = 'kept';
+  });
+  const sameNode = async () => {
+    const current = await mountedWorkspace.elementHandle();
+    return page.evaluate(
+      ([kept, now]) =>
+        Boolean(kept?.isConnected) &&
+        kept === now &&
+        (kept as Element & { atlasNodeProof?: string }).atlasNodeProof === 'kept',
+      [workspaceNode, current],
+    );
+  };
+  await choose(preview, /iphone/i);
+  await expect(preview).toHaveAttribute('data-preview-device', 'iphone');
+  await expect(preview).toHaveAttribute('data-preview-profile', 'small');
+  expect(await sameNode()).toBe(true);
+
+  // Native Tab from the preview's standalone link enters Workspace name in this same document
+  // with no bridge; the field shows one bottom marker at readable size, never a ring.
+  const pageRoot = page.locator('html');
   const fieldFocus = () =>
     workspace.evaluate(el => {
       const style = getComputedStyle(el);
       const owner = getComputedStyle(el.closest('.atlas-input-frame[data-atlas-input]') ?? el);
-      return { backgroundImage: owner.backgroundImage, outlineStyle: style.outlineStyle };
+      const labelledBy = el.getAttribute('aria-labelledby')?.split(/\s+/)[0];
+      const label =
+        (el as HTMLInputElement).labels?.[0] ??
+        (labelledBy ? el.ownerDocument.getElementById(labelledBy) : null);
+      return {
+        backgroundImage: owner.backgroundImage,
+        outlineStyle: style.outlineStyle,
+        fontSize: Number.parseFloat(style.fontSize),
+        labelFontSize: label ? Number.parseFloat(getComputedStyle(label).fontSize) : 0,
+      };
     });
   await preview.getByRole('link', { name: /open\s+(?:stand)?alone/i }).press('Tab');
   await expect(workspace).toBeFocused();
-  await expect(frameRoot).toHaveAttribute('data-input-modality', 'keyboard');
+  await expect(pageRoot).toHaveAttribute('data-input-modality', 'keyboard');
   await expect.poll(async () => (await fieldFocus()).backgroundImage).not.toBe('none');
   const keyboardFocus = await fieldFocus();
   expect(keyboardFocus.outlineStyle).toBe('none');
-  // A native pointer press in the frame turns the visual mode off in both documents.
+  expect(keyboardFocus.fontSize).toBeGreaterThanOrEqual(14);
+  expect(keyboardFocus.labelFontSize).toBeGreaterThanOrEqual(14);
+  // A native pointer press turns the one visual mode off again.
   await workspace.click();
-  await expect(page.locator('html')).toHaveAttribute('data-input-modality', 'pointer');
-  await expect(frameRoot).toHaveAttribute('data-input-modality', 'pointer');
+  await expect(pageRoot).toHaveAttribute('data-input-modality', 'pointer');
   await expect.poll(async () => (await fieldFocus()).backgroundImage).toBe('none');
   await test.info().attach('preview-focus-modality.json', {
     body: JSON.stringify({ keyboard: keyboardFocus, pointer: await fieldFocus() }, null, 2),
     contentType: 'application/json',
   });
-  await workspace.fill('Atlas operations');
-  // A window property survives only while the same iframe browsing context stays mounted.
-  await root.evaluate(() => {
-    (window as Window & { atlasFrameProof?: string }).atlasFrameProof = 'kept';
-  });
-  const sameFrameWindow = () =>
-    root.evaluate(
-      () => (window as Window & { atlasFrameProof?: string }).atlasFrameProof === 'kept',
-    );
+  // A private draft with markup characters; neither it nor an escaped form may reach Code.
+  const draft = 'Zq7 <private> & draft';
+  const privateMarker = 'Zq7';
+  await workspace.fill(draft);
+  expect(await sameNode()).toBe(true);
 
-  // A controlled Department choice is React state that later profile changes must keep.
-  const department = frame.getByRole('combobox', { name: /department/i });
+  // A controlled Department choice is React state that later changes must keep.
+  const department = content.getByRole('combobox', { name: /department/i });
   await department.click();
-  await frame.getByTitle('Finance', { exact: true }).click();
+  await page.getByTitle('Finance', { exact: true }).click();
   const expectDepartmentSelected = async () => {
     await department.click();
-    await expect(frame.getByRole('option', { name: /^finance$/i })).toHaveAttribute(
+    await expect(page.getByRole('option', { name: /^finance$/i })).toHaveAttribute(
       'aria-selected',
       'true',
     );
@@ -339,150 +503,182 @@ test('Input preview isolates its iframe document, state, profile and delivery', 
   };
   await expectDepartmentSelected();
 
-  // The example Tweaker lives in the iframe; its native switch is example state as well.
-  const countSwitch = frame.locator('#input-tweaker-count');
-  await frame
+  // The example Tweaker belongs to this preview; its native switch is example state as well.
+  const countSwitch = page.locator('#input-tweaker-count');
+  await preview
     .getByRole('button', { name: /open tweaker/i })
     .first()
     .click();
+  await expect(countSwitch).toHaveCount(1);
   await expect(countSwitch).toBeVisible();
   await expect(countSwitch).toHaveAttribute('aria-checked', 'false');
   await countSwitch.click();
   await expect(countSwitch).toHaveAttribute('aria-checked', 'true');
 
-  // A token edited through this preview's Tweaker stays in this preview document: the docs
-  // shell's saved recipe and a sibling preview keep their values, and reset restores only this.
-  const builderKey = 'atlas-theme-builder-v1';
-  const parentRecipe = () => page.evaluate(key => localStorage.getItem(key), builderKey);
+  // A token edited through this preview's Tweaker lands on this preview's screen only: the docs
+  // shell, its saved recipe and a sibling preview keep their values, and reset restores this.
   const parentBefore = await parentRecipe();
-  const sibling = page.locator('[data-example-preview]').nth(1);
-  await sibling.scrollIntoViewIfNeeded();
-  const siblingFrame = sibling.frameLocator('iframe[data-preview-iframe]');
-  const siblingRoot = siblingFrame.locator('html');
-  await expect(sibling.locator('iframe[data-preview-iframe]')).toBeVisible();
-  await expect(siblingFrame.locator('[data-preview-document]')).toBeAttached();
-  const inlineTheme = (scope: Locator) =>
-    scope.evaluate(el =>
-      [el, el.ownerDocument.body].map(node => node?.getAttribute('style') ?? '').join('|'),
-    );
-  const tokenValues = (scope: Locator, names: string[]) =>
-    scope.evaluate((el, list) => {
-      const style = getComputedStyle(el.ownerDocument.body ?? el);
-      return list.map(name => style.getPropertyValue(name).trim());
-    }, names);
-  const ownedTokens = () =>
-    frameRoot.evaluate(el => Array.from(el.style).filter(name => name.startsWith('--')));
-  const firstBefore = await inlineTheme(frameRoot);
-  const siblingBefore = await inlineTheme(siblingRoot);
-  // Hydrating the sibling scrolled the first iframe away; bring it back so its Tweaker drawer,
-  // which cannot scroll the outer page, is reachable by real clicks.
-  await iframe.scrollIntoViewIfNeeded();
-  const editors = frame.locator('[data-theme-token-editors]');
+  const shellBefore = await shellTheme();
+  const firstBefore = await inlineTheme(screen);
+  const siblingBefore = await inlineTheme(siblingScreen);
   const token = editors.getByRole('spinbutton').first();
   const tokenValue = Number(await token.inputValue());
   const tokenMax = Number((await token.getAttribute('aria-valuemax')) ?? Infinity);
   await token.fill(String(tokenValue + 1 <= tokenMax ? tokenValue + 1 : tokenValue - 1));
-  await expect.poll(ownedTokens).not.toEqual([]);
-  const names = await ownedTokens();
-  const edited = await tokenValues(frameRoot, names);
-  const siblingEdited = await tokenValues(siblingRoot, names);
+  await expect.poll(() => inlineTheme(screen)).not.toBe(firstBefore);
+  // Device geometry roles are not theme tokens; only the edited recipe is judged.
+  const names = (await ownedTokens()).filter(name => !name.startsWith('--preview-'));
+  expect(names).not.toEqual([]);
+  const edited = await tokenValues(screen, names);
+  const siblingEdited = await tokenValues(siblingScreen, names);
   expect(await parentRecipe()).toBe(parentBefore);
-  expect(await inlineTheme(siblingRoot)).toBe(siblingBefore);
-  await iframe.scrollIntoViewIfNeeded();
+  expect(await shellTheme()).toBe(shellBefore);
+  expect(await inlineTheme(siblingScreen)).toBe(siblingBefore);
   await editors.getByRole('button', { name: /reset theme/i }).click();
-  await expect.poll(() => inlineTheme(frameRoot)).toBe(firstBefore);
-  const restored = await tokenValues(frameRoot, names);
+  await expect.poll(() => inlineTheme(screen)).toBe(firstBefore);
+  const restored = await tokenValues(screen, names);
   const changed = names.filter((_, index) => edited[index] !== restored[index]);
   await test.info().attach('preview-local-recipe.json', {
     body: JSON.stringify({ parentBefore, changed, edited, restored, siblingEdited }, null, 2),
     contentType: 'application/json',
   });
   expect(changed).not.toEqual([]);
-  expect(await tokenValues(siblingRoot, names)).toEqual(siblingEdited);
-  expect(await inlineTheme(siblingRoot)).toBe(siblingBefore);
+  expect(await tokenValues(siblingScreen, names)).toEqual(siblingEdited);
+  expect(await inlineTheme(siblingScreen)).toBe(siblingBefore);
   expect(await parentRecipe()).toBe(parentBefore);
-  await frame.getByRole('button', { name: /close tweaker/i }).click();
+  expect(await shellTheme()).toBe(shellBefore);
+  await page.getByRole('button', { name: /close tweaker/i }).click();
   await expect(countSwitch).toBeHidden();
 
   const expectDemoStateKept = async () => {
-    expect(await sameFrameWindow()).toBe(true);
-    await expect(workspace).toHaveValue('Atlas operations');
+    expect(await sameNode()).toBe(true);
+    await expect(workspace).toHaveValue(draft);
     await expectDepartmentSelected();
     await expect(countSwitch).toHaveAttribute('aria-checked', 'true');
   };
 
-  // The preview theme belongs to the iframe document; the docs shell keeps its own theme.
-  await expect(page.locator('html')).not.toHaveAttribute('data-theme', 'dark');
+  // The preview theme belongs to this preview's screen; the shell and the sibling keep theirs.
+  await expect(pageRoot).not.toHaveAttribute('data-theme', 'dark');
   await choose(preview, /dark/i);
-  await expect(root).toHaveAttribute('data-theme', 'dark');
-  await expect(page.locator('html')).not.toHaveAttribute('data-theme', 'dark');
-  // Dark field labels read on the dark panel the iframe actually paints, not light-mode ink.
+  await expect(screen).toHaveAttribute('data-theme', 'dark');
+  await expect(pageRoot).not.toHaveAttribute('data-theme', 'dark');
+  await expect(siblingScreen).not.toHaveAttribute('data-theme', 'dark');
+  expect(await shellTheme()).toBe(shellBefore);
+  // Dark field labels read on the dark panel the screen actually paints, not light-mode ink.
   await expect.poll(() => labelContrast(workspace)).toBeGreaterThanOrEqual(4.5);
-  // The shared web controls apply inside the iframe: the stepper is one three-track row.
-  const stepper = frame.locator('.atlas-number-stepper').first();
+  // The shared web controls apply inside the screen: the stepper is one three-track row.
+  const stepper = content.locator('.atlas-number-stepper').first();
   const stepperLayout = await stepper.evaluate(el => {
     const style = getComputedStyle(el);
     return { display: style.display, tracks: style.gridTemplateColumns.trim().split(/\s+/).length };
   });
   expect(stepperLayout).toEqual({ display: 'grid', tracks: 3 });
-  await expect(workspace).toHaveValue('Atlas operations');
+  await expectDemoStateKept();
 
-  // Source is opened lazily, only on Code.
+  // Each device is an explicit surface naming its profile. The logical screen is the layout
+  // size from the central model, never the scaled drawing and never the page width.
+  const viewport = preview.locator('[data-preview-viewport]');
+  const logicalSize = () =>
+    viewport.evaluate(el => {
+      const screenBox = el as HTMLElement;
+      return `${screenBox.offsetWidth}x${screenBox.offsetHeight}`;
+    });
+  const rotate = preview.getByRole('button', { name: /landscape|orientation|rotate/i });
+  const caption = preview.locator('.example-preview-stage > .example-preview-caption');
+  const devices = [
+    { name: /iphone/i, value: 'iphone', profile: 'small', sizes: /^402x874$/, rotatable: true },
+    {
+      name: /ipad/i,
+      value: 'ipad',
+      profile: 'medium',
+      sizes: /^(744x1133|1133x744)$/,
+      rotatable: true,
+    },
+    { name: /macbook/i, value: 'macbook', profile: 'large', sizes: /^1440x900$/, rotatable: false },
+    // TV is chosen explicitly on a 1280 page: a 1920x1080 living-room logical reference.
+    { name: /^tv$/i, value: 'tv', profile: 'tv', sizes: /^1920x1080$/, rotatable: false },
+  ];
+
+  // Source opens lazily, only on Code; the preview stays mounted but inert meanwhile.
   await expect(preview.getByRole('region', { name: /source code/i })).toHaveCount(0);
-  await choose(preview, /^code$/i);
-  await expect(preview).toHaveAttribute('data-preview-mode', 'code');
-  const source = preview.getByRole('region', { name: /source code/i });
-  await expect(source).toContainText(/small/i);
-  // Code hides the device selector and names the actual small entry file, not just the word.
-  await expect(preview.getByRole('radio', { name: /iphone|ipad|macbook/i })).toHaveCount(0);
-  // The first block is the preview configuration; the path lives in the Profile entry block.
-  const profileEntry = source
-    .locator('.preview-source-block')
-    .filter({ has: page.getByRole('heading', { name: /^profile entry:\s*small$/i }) });
-  await expect(profileEntry).toHaveCount(1);
-  await expect(profileEntry.locator('p > code')).toHaveText(
-    /^docs\/src\/react\/(?:[\w.-]+\/)*\w*SmallDelivery\w*\.tsx$/,
-  );
-  // The primary usage is the documented HTML embed of the existing small preview route in the
-  // current dark theme, not an import of an internal entry module.
-  const usage = source.locator('.preview-source-block').first().locator('pre').first();
-  await expect(usage).toContainText(/^\s*<iframe\b[^]*<\/iframe>\s*$/);
-  await expect(usage).not.toContainText(/\bimport\b/);
-  // The exact displayed markup is what a reader copies; the cold host below embeds it as-is.
-  const usageMarkup = (await usage.textContent()) ?? '';
-  // Parsed inert in a template, so nothing in it runs in the docs page.
-  const usageEmbed = await page.evaluate(markup => {
-    const template = document.createElement('template');
-    template.innerHTML = markup;
-    const embed = template.content.querySelector('iframe');
-    return {
-      elements: Array.from(template.content.querySelectorAll('*')).map(el => el.localName),
-      src: embed?.getAttribute('src') ?? '',
-      width: embed?.getAttribute('width') ?? '',
-      height: embed?.getAttribute('height') ?? '',
-    };
-  }, usageMarkup);
-  expect(usageEmbed.elements).toEqual(['iframe']);
-  // The embed is sized to the selected small profile's portrait logical screen.
-  expect([usageEmbed.width, usageEmbed.height]).toEqual(['402', '874']);
-  expect(usageEmbed.src).toContain(`/preview/${id}/small`);
-  // The canonical route path ends in a slash, so the host loads it without a redirect.
-  expect(new URL(usageEmbed.src).pathname.endsWith('/small/')).toBe(true);
-  expect(usageEmbed.src).toContain('theme=dark');
-  // An ordinary host page has no docs base URL, so the embed names this site's origin.
-  expect(new URL(usageEmbed.src).origin).toBe(new URL(page.url()).origin);
-  // The selected small iframe loads its own entry and no medium/large entry after the switch;
-  // other frames are not judged.
-  const selected = selectedRequests().map(({ url, frameUrl }) => ({ url, frameUrl }));
-  await test.info().attach('selected-preview-requests.json', {
-    body: JSON.stringify(selected, null, 2),
-    contentType: 'application/json',
-  });
-  expect(selected.map(r => r.url).filter(url => /SmallDelivery/.test(url))).not.toEqual([]);
-  expect(selected.map(r => r.url).filter(url => /(Medium|Large)Delivery/.test(url))).toEqual([]);
-  await choose(preview, /^preview$/i);
-  await expect(workspace).toHaveValue('Atlas operations');
-  expect(await sameFrameWindow()).toBe(true);
+  const expectCode = async (profile: string, viaBack = false) => {
+    await choose(preview, /^code$/i);
+    await expect(preview).toHaveAttribute('data-preview-mode', 'code');
+    const source = preview.getByRole('region', { name: /source code/i });
+    await expect(source).toBeVisible();
+    await expect(preview.getByRole('radio', { name: /iphone|ipad|macbook|^tv$/i })).toHaveCount(0);
+    expect(await sameNode()).toBe(true);
+    // Hidden from the accessibility tree while inert; the DOM node itself stays mounted.
+    await expect(content.getByRole('textbox', { name: /workspace name/i })).toHaveCount(0);
+    expect(await mountedWorkspace.evaluate(el => el.closest('[inert]') !== null)).toBe(true);
+    // The Profile entry block names the selected profile's actual entry file.
+    const profileEntry = source.locator('.preview-source-block').filter({
+      has: page.getByRole('heading', {
+        name: new RegExp(String.raw`^profile entry:\s*${profile}$`, 'i'),
+      }),
+    });
+    await expect(profileEntry).toHaveCount(1);
+    await expect(profileEntry.locator('p > code')).toHaveText(
+      new RegExp(String.raw`^docs/src/(?:[\w.-]+/)*\w*${profile}\w*\.tsx$`, 'i'),
+    );
+    // The primary usage imports the real React component and renders it as JSX, no embed;
+    // only line comments, such as the internal-entry and standalone-page notes, may precede it.
+    const usage = source.locator('.preview-source-block').first().locator('pre').first();
+    await expect(usage).toContainText(/^(?:[ \t]*\/\/[^\n]*\n)*\s*import\s[^]*\sfrom\s+\S+/);
+    await expect(usage).toContainText(/<[A-Z][\w.]*[\s/>]/);
+    await expect(usage).not.toContainText(/<\/?iframe\b/i);
+    // The private draft never reaches the source, raw or escaped.
+    const shown = await source.evaluate(el => [el.textContent ?? '', el.innerHTML].join(' '));
+    expect(shown).not.toContain(privateMarker);
+    if (viaBack) {
+      // Keyboard Enter on Code's Back to Preview returns to the checked, focused Preview radio
+      // with the same mounted form and the central modality left exactly as it was.
+      const modality = await pageRoot.getAttribute('data-input-modality');
+      await preview.getByRole('button', { name: /back to preview/i }).press('Enter');
+      const previewView = preview.getByRole('radio', { name: /^preview$/i });
+      await expect(previewView).toBeChecked();
+      await expect(previewView).toBeFocused();
+      await expect(
+        preview
+          .locator('label.ant-segmented-item')
+          .filter({ has: page.getByRole('radio', { name: /^preview$/i }) }),
+      ).toBeVisible();
+      expect(await pageRoot.getAttribute('data-input-modality')).toBe(modality);
+    } else {
+      await choose(preview, /^preview$/i);
+    }
+    await expect(preview).toHaveAttribute('data-preview-mode', 'preview');
+    await expect(workspace).toBeEditable();
+    expect(await workspace.evaluate(el => el.closest('[inert]') === null)).toBe(true);
+    await expectDemoStateKept();
+  };
+
+  for (const device of devices) {
+    await choose(preview, device.name);
+    await expect(preview).toHaveAttribute('data-preview-device', device.value);
+    await expect(preview).toHaveAttribute('data-preview-profile', device.profile);
+    await expect.poll(logicalSize).toMatch(device.sizes);
+    const opened = await logicalSize();
+    const [width, height] = opened.split('x');
+    await expect(caption).toContainText(`${width}×${height}`);
+    if (device.rotatable) {
+      await rotate.click();
+      await expect.poll(logicalSize).toBe(`${height}x${width}`);
+      await expectDemoStateKept();
+      await rotate.click();
+      await expect.poll(logicalSize).toBe(opened);
+    }
+    await expectDemoStateKept();
+    await expectCode(device.profile, device === devices[0]);
+  }
+  await expectNoIframes();
+
+  // Back on the portrait iPhone for the segmented focus checks below.
+  await choose(preview, /iphone/i);
+  await expect(preview).toHaveAttribute('data-preview-profile', 'small');
+  await expect.poll(logicalSize).toBe('402x874');
+  await expect(workspace).toHaveValue(draft);
+  expect(await sameNode()).toBe(true);
 
   // Back on Preview, the same native radio follows the shared modality: the pointer press shows
   // no ring and no marker, real Shift+Tab from the checked device radio returns to it with only
@@ -524,6 +720,15 @@ test('Input preview isolates its iframe document, state, profile and delivery', 
   await expect.poll(async () => (await segmentFocus()).backgroundImage).toBe('none');
   const pointerSegment = await segmentFocus();
   expect(pointerSegment.outlines).toEqual(['none']);
+  // Each group keeps exactly one explicit native Tab stop on its checked radio; WebKit skips
+  // implicit radio stops, so unchecked radios carry -1 rather than no index.
+  await expect(previewRadio).toBeChecked();
+  await expect(previewRadio).toHaveAttribute('tabindex', '0');
+  const uncheckedViews = await viewTabs.getByRole('radio', { checked: false }).all();
+  expect(uncheckedViews.length).toBeGreaterThan(0);
+  for (const radio of uncheckedViews) await expect(radio).toHaveAttribute('tabindex', '-1');
+  await expect(preview.getByRole('radio', { name: /iphone/i })).toBeChecked();
+  await expect(preview.getByRole('radio', { name: /iphone/i })).toHaveAttribute('tabindex', '0');
   // Segmented roots leave the Tab order, so Shift+Tab lands on the checked Preview radio.
   await preview.getByRole('radio', { name: /iphone/i }).press('Shift+Tab');
   await expect(previewRadio).toBeFocused();
@@ -605,78 +810,84 @@ test('Input preview isolates its iframe document, state, profile and delivery', 
     contentType: 'application/json',
   });
 
-  const viewport = frame.locator('[data-preview-viewport]');
-  const rotate = preview.getByRole('button', { name: /landscape|orientation|rotate/i });
-  const size = async () => {
-    const b = await box(viewport);
-    return `${Math.round(b.width)}x${Math.round(b.height)}`;
-  };
-  await expect.poll(size).toBe('402x874');
-  // Evidence waits for the requested theme, hydration, a ready frame and settled finite motion.
+  // Phone evidence waits for the requested theme, hydration and settled finite motion.
   const settledShot = async (name: string) => {
-    await expect(root).toHaveAttribute('data-theme', 'dark');
+    await expect(screen).toHaveAttribute('data-theme', 'dark');
     await expect(hydrated).toBeAttached();
-    await expect(iframe).toBeVisible();
-    await settleMotion(preview, frameRoot);
+    await expect(screen).toBeVisible();
+    await settleMotion(preview);
     await saveViewportShot(page, name);
   };
+  await expect.poll(logicalSize).toBe('402x874');
   await settledShot('preview-phone-portrait.png');
   await rotate.click();
-  await expect.poll(size).toBe('874x402');
-  await expect(workspace).toHaveValue('Atlas operations');
-  expect(await sameFrameWindow()).toBe(true);
+  await expect.poll(logicalSize).toBe('874x402');
+  await expect(workspace).toHaveValue(draft);
+  expect(await sameNode()).toBe(true);
   await settledShot('preview-phone-landscape.png');
+  await rotate.click();
+  await expect.poll(logicalSize).toBe('402x874');
 
-  // Actual size 1:1 and back to Fit only rescale the same document.
+  // Actual size 1:1 and back to Fit only rescale the same node.
   const actual = preview.getByRole('button', { name: /actual size 1:1/i });
-  const caption = preview.locator('.example-preview-stage > .example-preview-caption');
   await expect(actual).toHaveAttribute('aria-pressed', 'false');
   await actual.click();
   await expect(actual).toHaveAttribute('aria-pressed', 'true');
   await expect(caption).toContainText('100%');
-  await expect(workspace).toHaveValue('Atlas operations');
+  await expect(workspace).toHaveValue(draft);
   await actual.click();
   await expect(actual).toHaveAttribute('aria-pressed', 'false');
-  await expect(workspace).toHaveValue('Atlas operations');
-  expect(await sameFrameWindow()).toBe(true);
+  await expect(workspace).toHaveValue(draft);
+  expect(await sameNode()).toBe(true);
 
-  // Expand reuses the same dialog and iframe; keyboard Escape and the close button return inline.
+  // Expand shows the same node in one reused dialog; keyboard Escape and the close button
+  // return inline with focus back on Expand.
   const expand = preview.getByRole('button', { name: /^(expand|close expanded preview)$/i });
+  const expandedDialog = () => workspace.evaluateHandle(el => el.closest('dialog, [role=dialog]'));
   await expand.click();
   await expect(preview).toHaveAttribute('data-preview-expanded', 'true');
   await expect(expand).toHaveAccessibleName(/close expanded preview/i);
-  await expect(workspace).toHaveValue('Atlas operations');
-  expect(await sameFrameWindow()).toBe(true);
+  const firstDialog = await expandedDialog();
+  expect(await firstDialog.evaluate(dialog => dialog !== null)).toBe(true);
+  await expect(workspace).toHaveValue(draft);
+  expect(await sameNode()).toBe(true);
   await page.keyboard.press('Escape');
   await expect(preview).toHaveAttribute('data-preview-expanded', 'false');
   await expect(preview).toBeVisible();
-  await expect(workspace).toHaveValue('Atlas operations');
-  expect(await sameFrameWindow()).toBe(true);
+  await expect(expand).toBeFocused();
+  await expect(workspace).toHaveValue(draft);
+  expect(await sameNode()).toBe(true);
   await expand.click();
   await expect(preview).toHaveAttribute('data-preview-expanded', 'true');
+  const secondDialog = await expandedDialog();
+  const sameDialog = await page.evaluate(
+    ([first, second]) => first !== null && first === second,
+    [firstDialog, secondDialog],
+  );
+  expect(sameDialog).toBe(true);
   await expand.click();
   await expect(preview).toHaveAttribute('data-preview-expanded', 'false');
   await expect(expand).toHaveAccessibleName(/^expand$/i);
-  await expect(workspace).toHaveValue('Atlas operations');
-  expect(await sameFrameWindow()).toBe(true);
+  await expect(expand).toBeFocused();
+  await expect(workspace).toHaveValue(draft);
+  expect(await sameNode()).toBe(true);
 
-  // iPad: 744x1133 portrait and 1133x744 landscape, whichever it opens in.
-  await choose(preview, /ipad/i);
-  await expect.poll(size).toMatch(/^(744x1133|1133x744)$/);
-  const ipad = await size();
-  await rotate.click();
-  await expect.poll(size).toBe(ipad === '744x1133' ? '1133x744' : '744x1133');
-  await expectDemoStateKept();
-
-  // MacBook: 1440x900 (16:10) logical screen with a centered 1024 container and 208px
-  // margins; the caption reads the same central size.
+  // MacBook: the central 1440x900 (16:10) logical screen with a centered 1024 container and
+  // 208px margins, read as layout lengths so the stage scale never changes them.
   await choose(preview, /macbook/i);
-  await expect.poll(size).toBe('1440x900');
+  await expect(preview).toHaveAttribute('data-preview-profile', 'large');
+  await expect.poll(logicalSize).toBe('1440x900');
   await expect(caption).toContainText('1440×900');
-  const screen = await box(viewport);
-  const container = await box(frame.locator('[data-preview-container]'));
-  expect(container.width).toBeCloseTo(1024, 0);
-  expect(container.left - screen.left).toBeCloseTo(208, 0);
+  const logicalContainer = await viewport.evaluate(el => {
+    const screenBox = el as HTMLElement;
+    const inner = screenBox.querySelector<HTMLElement>('[data-preview-container]');
+    if (!inner) throw new Error('The logical screen has no container.');
+    const scale = screenBox.getBoundingClientRect().width / screenBox.offsetWidth;
+    const drawnMargin = inner.getBoundingClientRect().left - screenBox.getBoundingClientRect().left;
+    return { width: inner.offsetWidth, margin: drawnMargin / scale };
+  });
+  expect(logicalContainer.width).toBe(1024);
+  expect(logicalContainer.margin).toBeCloseTo(208, 0);
   await expectDemoStateKept();
 
   // Automatic Fit below 1920, automatic 1:1 from 1920, the 200px rails and the wide column
@@ -687,14 +898,12 @@ test('Input preview isolates its iframe document, state, profile and delivery', 
   await page.setViewportSize({ width: 1919, height: 1080 });
   await expand.click();
   await expect(preview).toHaveAttribute('data-preview-expanded', 'true');
-  await expect(frame.locator('[data-preview-container]')).toBeVisible();
+  await expect(preview.locator('[data-preview-container]')).toBeVisible();
   // The whole fitted device stays inside the expanded stage and the page viewport.
-  await settleMotion(preview, frameRoot);
+  await settleMotion(preview);
   const stage = preview.locator('.example-preview-stage');
   const stageBox = await rect(stage);
-  const deviceBox = await rect(
-    stage.locator(':scope > *').filter({ has: page.locator('iframe[data-preview-iframe]') }),
-  );
+  const deviceBox = await rect(stage.locator('.example-preview-device'));
   expect(deviceBox.left).toBeGreaterThanOrEqual(Math.max(stageBox.left, 0) - 1);
   expect(deviceBox.top).toBeGreaterThanOrEqual(Math.max(stageBox.top, 0) - 1);
   expect(deviceBox.right).toBeLessThanOrEqual(Math.min(stageBox.right, 1919) + 1);
@@ -703,7 +912,7 @@ test('Input preview isolates its iframe document, state, profile and delivery', 
   // instead of shrinking the device, and scrolling it to the end reaches the device bottom.
   const dialogScroll = await stage.locator('.example-preview-device').evaluate(device => {
     const viewportHeight = device.ownerDocument.documentElement.clientHeight;
-    const dialog = device.closest('dialog, [role="dialog"]');
+    const dialog = device.closest('dialog, [role=dialog]');
     let scroller: Element | null = null;
     for (
       let node = device.parentElement;
@@ -762,71 +971,360 @@ test('Input preview isolates its iframe document, state, profile and delivery', 
   await page.keyboard.press('Escape');
   await expect(preview).toHaveAttribute('data-preview-expanded', 'false');
   await expect(preview.getByRole('button', { name: /^expand$/i })).toBeHidden();
-  await expect(workspace).toHaveValue('Atlas operations');
-  expect(await sameFrameWindow()).toBe(true);
+  // A 1920 page never turns the MacBook into the TV surface.
+  await expect(preview).toHaveAttribute('data-preview-device', 'macbook');
+  await expect(preview).toHaveAttribute('data-preview-profile', 'large');
+  await expect.poll(logicalSize).toBe('1440x900');
+  await expect(workspace).toHaveValue(draft);
+  expect(await sameNode()).toBe(true);
 
-  // Production delivery: a cold context with no service worker or HTTP cache hosts only the
-  // documented usage markup in an ordinary page; the embedded small profile document, its
-  // emitted entry and static closure load, other profile entry roots do not.
+  // Every switch rendered in place: the page loaded only its own document, never this
+  // preview's standalone route, and no iframe was ever inserted.
+  await expectNoIframes();
+  const documents = requests
+    .filter(({ type }) => type === 'document')
+    .map(({ url }) => new URL(url).pathname);
+  const routeRequests = requests
+    .map(({ url }) => url)
+    .filter(url => new URL(url).pathname.includes(`/preview/${id}/`));
+  await test.info().attach('inline-preview-requests.json', {
+    body: JSON.stringify({ documents, routeRequests, requests }, null, 2),
+    contentType: 'application/json',
+  });
+  expect(documents).toEqual([new URL(page.url()).pathname]);
+  expect(routeRequests).toEqual([]);
+
+  // Production delivery: each standalone profile route opens directly in a cold context with
+  // no service worker or HTTP cache and without any iframe host; it loads its own emitted entry
+  // and static closure and no other profile's entry roots.
   const baseURL = test.info().project.use.baseURL;
   expect(baseURL).toBeTruthy();
   const resources = await loadPreviewResourceMap(id!, new URL(baseURL!).pathname);
-  const { small, medium, large } = resources.profiles;
+  // The TV preview must ship the living-room layout controller. Its emitted entry comes from the
+  // canonical production map, which also passes the cold phone isolation gate before returning.
+  const { dirname, resolve } = await import('node:path');
+  const { pathToFileURL } = await import('node:url');
+  const helperURL = pathToFileURL(
+    resolve(dirname(test.info().file), '../../tools/docs-adaptive-resource-map.mjs'),
+  ).href;
+  const { buildAdaptiveResourceMap } = (await import(helperURL)) as {
+    buildAdaptiveResourceMap: (options: {
+      outDir: string;
+      base?: string;
+    }) => Promise<{ profiles: Record<string, { entry: string }> }>;
+  };
+  const adaptiveMap = await buildAdaptiveResourceMap({
+    outDir: resolve(dirname(test.info().file), '../dist'),
+    base: new URL(baseURL!).pathname,
+  });
+  const livingRoomEntry = adaptiveMap.profiles['living-room'].entry;
+  expect(livingRoomEntry).toMatch(/[.]m?js$/);
+  const profileNames = ['small', 'medium', 'large', 'tv'] as const;
   // Every profile's static closure reaches past its island and renderer roots, so an import
   // walk that silently follows nothing cannot satisfy the delivery checks below.
-  for (const profile of [small, medium, large])
+  for (const name of profileNames) {
+    const profile = resources.profiles[name];
     expect(profile.js.length).toBeGreaterThan(profile.entries.length + 1);
-  const smallRequired = [...small.js, ...small.stylesheets].map(resource => resource.url);
-  const otherRoots = [...medium.entries, ...large.entries].filter(
-    url => !small.entries.includes(url) && !smallRequired.includes(url),
+  }
+  for (const name of profileNames) {
+    const profile = resources.profiles[name];
+    const required = [...profile.js, ...profile.stylesheets].map(resource => resource.url);
+    const otherRoots = profileNames
+      .filter(other => other !== name)
+      .flatMap(other => resources.profiles[other].entries)
+      .filter(url => !profile.entries.includes(url) && !required.includes(url));
+    expect(otherRoots).not.toEqual([]);
+    // TV opens on a short 320x200 host; its logical 1920x1080 viewport must still win after
+    // hydration, not only in the initial SSR seed. Other profiles keep the default viewport.
+    const hostViewport = name === 'tv' ? { width: 320, height: 200 } : null;
+    const cold = await browser.newContext({
+      baseURL,
+      serviceWorkers: 'block',
+      ...(hostViewport ? { viewport: hostViewport } : {}),
+    });
+    const coldRequests: string[] = [];
+    cold.on('request', request => coldRequests.push(request.url()));
+    try {
+      const coldPage = await cold.newPage();
+      await coldPage.goto(profile.url);
+      await expect(coldPage.locator('[data-preview-hydrated=true]').first()).toBeAttached();
+      await expect(coldPage.locator(`[data-profile=${name}]`).first()).toBeAttached();
+      let adaptive: { surface: string | null; shortHeight: string | null } | null = null;
+      if (name === 'tv') {
+        const adaptiveRoot = coldPage.locator('.atlas-demo[data-adaptive-short-height]').first();
+        await expect(adaptiveRoot).toHaveAttribute('data-adaptive-surface', 'living-room');
+        await expect(adaptiveRoot).toHaveAttribute('data-adaptive-short-height', 'false');
+        adaptive = {
+          surface: await adaptiveRoot.getAttribute('data-adaptive-surface'),
+          shortHeight: await adaptiveRoot.getAttribute('data-adaptive-short-height'),
+        };
+        // The living-room controller must be requested and own the native Workspace field; a
+        // pointer focus followed by one real ArrowDown moves focus spatially to another owned
+        // control inside the TV root and switches the central modality to keyboard.
+        await expect
+          .poll(() => coldRequests.some(url => new URL(url).pathname === livingRoomEntry))
+          .toBe(true);
+        const workspace = adaptiveRoot.getByRole('textbox', {
+          name: 'Workspace name',
+          exact: true,
+        });
+        await expect(workspace).toHaveAttribute('data-spatial-target', 'living-room');
+        const documentRoot = coldPage.locator('html');
+        const workspaceHandle = await workspace.elementHandle();
+        const rootHandle = await adaptiveRoot.elementHandle();
+        await workspace.click();
+        await expect(workspace).toBeFocused();
+        await expect(documentRoot).toHaveAttribute('data-input-modality', 'pointer');
+        await coldPage.keyboard.press('ArrowDown');
+        await expect
+          .poll(() =>
+            coldPage.evaluate(
+              ([field, tvRoot]) => {
+                const active = document.activeElement;
+                return {
+                  moved: active !== null && active !== field,
+                  inside: active !== null && tvRoot !== null && tvRoot.contains(active),
+                  target: active?.getAttribute('data-spatial-target') ?? null,
+                };
+              },
+              [workspaceHandle, rootHandle],
+            ),
+          )
+          .toEqual({ moved: true, inside: true, target: 'living-room' });
+        await expect(documentRoot).toHaveAttribute('data-input-modality', 'keyboard');
+      }
+      await expect(coldPage.locator('iframe')).toHaveCount(0);
+      const requested = new Set(coldRequests.map(url => new URL(url).pathname));
+      await test.info().attach(`cold-${name}-delivery.json`, {
+        body: JSON.stringify(
+          {
+            baseURL,
+            cache: { context: 'fresh', serviceWorkers: 'block' },
+            hostViewport,
+            adaptive,
+            profile,
+            otherRoots,
+            livingRoomEntry,
+            requests: coldRequests,
+          },
+          null,
+          2,
+        ),
+        contentType: 'application/json',
+      });
+      expect(required.filter(url => !requested.has(url))).toEqual([]);
+      expect(otherRoots.filter(url => requested.has(url))).toEqual([]);
+      // Only the TV profile may load the living-room controller.
+      expect(requested.has(livingRoomEntry)).toBe(name === 'tv');
+    } finally {
+      await cold.close();
+    }
+  }
+
+  // The generated Code entry also mounts as an explicit client-rendered (CSR) island on an
+  // ordinary docs route. The standalone route renders its preloaded demo without a Suspense
+  // boundary, so its SSR markup is not the embedded tree and this fixture claims no embedded SSR
+  // hydration. It keeps the selected standalone page's own emitted island, assets and allowlisted
+  // props, removes only the internal standalone prop, and switches only that island to Astro's
+  // installed client:only contract: the only client mode, the ssr marker the React renderer
+  // requires and no server children, so the embed loads its demo through React.lazy. It is served
+  // from a non-/preview/ URL whose host html keeps its own opposite theme.
+  const entryProfile = resources.profiles.small;
+  const standalone = await page.request.get(new URL(entryProfile.url, baseURL).href);
+  expect(standalone.ok()).toBe(true);
+  const fixture = await page.evaluate(
+    html => {
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      const islands = Array.from(doc.querySelectorAll('astro-island'));
+      // Read the emitted theme before the CSR island's server children are cleared.
+      const previewTheme =
+        doc.querySelector('[data-preview-document]')?.getAttribute('data-theme') ?? '';
+      const removed: string[] = [];
+      const cleared: number[] = [];
+      for (const island of islands) {
+        const props = JSON.parse(island.getAttribute('props') ?? '{}') as Record<string, unknown>;
+        if (!('standalone' in props)) continue;
+        delete props.standalone;
+        island.setAttribute('props', JSON.stringify(props));
+        // CSR: client:only renders through createRoot and keeps the ssr marker until it mounts.
+        island.setAttribute('client', 'only');
+        island.removeAttribute('await-children');
+        cleared.push(island.querySelectorAll('[data-preview-document]').length);
+        island.replaceChildren();
+        // An ordinary docs page already owns its main landmark, so the embed is served inside it.
+        const hostMain = doc.createElement('main');
+        hostMain.id = 'code-host-main';
+        island.replaceWith(hostMain);
+        hostMain.append(island);
+        removed.push(island.getAttribute('component-url') ?? '');
+      }
+      // A page inlines only the directives it uses, so add the installed client:only directive
+      // (astro/dist/runtime/client/only.js) the way Astro inlines a directive.
+      const only = doc.createElement('script');
+      only.textContent = `(self.Astro||(self.Astro={})).only=async load=>{await (await load())()};dispatchEvent(new Event('astro:only'));`;
+      doc.head.append(only);
+      // The standalone body marks the memory-only preview document (data-preview-body and the
+      // live-preview class); an ordinary docs host carries neither, so drop only those markers.
+      const standaloneBody = {
+        previewBody: doc.body.hasAttribute('data-preview-body'),
+        livePreview: doc.body.classList.contains('live-preview'),
+      };
+      doc.body.removeAttribute('data-preview-body');
+      doc.body.classList.remove('live-preview');
+      if (doc.body.classList.length === 0) doc.body.removeAttribute('class');
+      const hostTheme = previewTheme === 'dark' ? 'light' : 'dark';
+      doc.documentElement.setAttribute('data-theme', hostTheme);
+      return {
+        html: `<!doctype html>${doc.documentElement.outerHTML}`,
+        islands: islands.map(island => island.getAttribute('component-url') ?? ''),
+        removed,
+        cleared,
+        previewTheme,
+        hostTheme,
+        hostStyle: doc.documentElement.getAttribute('style'),
+        standaloneBody,
+        hostBody: {
+          previewBody: doc.body.hasAttribute('data-preview-body'),
+          classes: Array.from(doc.body.classList),
+        },
+      };
+    },
+    await standalone.text(),
   );
-  expect(otherRoots).not.toEqual([]);
-  const cold = await browser.newContext({ baseURL, serviceWorkers: 'block' });
-  const coldRequests: string[] = [];
-  cold.on('request', request => coldRequests.push(request.url()));
+  expect(fixture.islands.length).toBeGreaterThan(0);
+  expect(fixture.removed).toHaveLength(1);
+  // The standalone SSR route emitted its preview document; only this CSR host clears it.
+  expect(fixture.cleared).toEqual([1]);
+  expect(fixture.previewTheme).toMatch(/^(light|dark)$/);
+  // The standalone route is the memory-only preview body; the ordinary host must not be.
+  expect(fixture.standaloneBody).toEqual({ previewBody: true, livePreview: true });
+  expect(fixture.hostBody.previewBody).toBe(false);
+  expect(fixture.hostBody.classes).not.toContain('live-preview');
+  expect(entryProfile.entries.some(url => fixture.islands.includes(url))).toBe(true);
+  const fixtureBase = new URL(baseURL!);
+  if (!fixtureBase.pathname.endsWith('/')) fixtureBase.pathname += '/';
+  const fixtureURL = new URL('code-example-fixture/', fixtureBase).href;
+  expect(new URL(fixtureURL).pathname).not.toContain('/preview/');
+  const host = await browser.newContext({
+    baseURL,
+    serviceWorkers: 'block',
+    viewport: { width: 402, height: 874 },
+  });
+  const hostErrors: string[] = [];
+  const hostRequests: string[] = [];
+  host.on('request', request => hostRequests.push(request.url()));
   try {
-    const coldPage = await cold.newPage();
-    // An ordinary host page holding only the usage markup exactly as the Code view displayed it.
-    await coldPage.setContent(usageMarkup);
-    const host = await coldPage.evaluate(() => ({
-      url: location.href,
-      elements: Array.from(document.body.querySelectorAll('*')).map(el => el.localName),
-      scripts: document.scripts.length,
-    }));
-    expect(host.elements).toEqual(['iframe']);
-    expect(host.scripts).toBe(0);
-    // The ordinary host lays the embed out at the small portrait size its attributes declare.
-    const embedSize = await coldPage.locator('iframe').evaluate(el => ({
-      width: el.getAttribute('width'),
-      height: el.getAttribute('height'),
-      clientWidth: el.clientWidth,
-      clientHeight: el.clientHeight,
-    }));
-    expect(embedSize).toEqual({ width: '402', height: '874', clientWidth: 402, clientHeight: 874 });
-    const embedded = coldPage.frameLocator('iframe');
-    await expect(embedded.locator('[data-preview-hydrated=true]')).toBeAttached();
-    await expect(embedded.locator('[data-profile="small"]').first()).toBeAttached();
-    await expect(embedded.locator('[data-preview-document]')).toHaveAttribute('data-theme', 'dark');
-    const requested = new Set(coldRequests.map(url => new URL(url).pathname));
-    await test.info().attach('cold-small-delivery.json', {
+    await host.route(fixtureURL, route =>
+      route.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: fixture.html }),
+    );
+    const hostPage = await host.newPage();
+    hostPage.on('console', message => {
+      if (message.type() === 'error') hostErrors.push(message.text());
+    });
+    hostPage.on('pageerror', error => hostErrors.push(error.message));
+    await hostPage.goto(fixtureURL);
+    expect(new URL(hostPage.url()).pathname).toBe(new URL(fixtureURL).pathname);
+    const hostDocument = hostPage.locator('[data-preview-document]');
+    await expect(hostDocument).toHaveCount(1);
+    await expect(hostDocument).toHaveAttribute('data-profile', 'small');
+    await expect(hostPage.locator('[data-preview-hydrated=true]')).toHaveCount(1);
+    await expect(hostDocument).toHaveAttribute('data-preview-hydrated', 'true');
+    // The embed sits inside the host page's existing main and adds no landmark of its own.
+    await expect(hostPage.locator('main')).toHaveCount(1);
+    await expect(hostPage.locator('main#code-host-main')).toHaveCount(1);
+    await expect(hostPage.locator('main main')).toHaveCount(0);
+    await expect(hostPage.locator('main#code-host-main [data-preview-document]')).toHaveCount(1);
+    // The CSR island completed Astro's client:only mount, so it dropped its ssr marker.
+    await expect(hostPage.locator('astro-island[client=only]:not([ssr])')).toHaveCount(1);
+    await expect(hostDocument.getByRole('textbox', { name: /workspace name/i })).toBeEditable();
+    await expect(hostDocument).toHaveAttribute('data-theme', fixture.previewTheme);
+    await expect(hostPage.locator('html')).toHaveAttribute('data-theme', fixture.hostTheme);
+    expect(await hostPage.evaluate(() => document.documentElement.getAttribute('style'))).toBe(
+      fixture.hostStyle,
+    );
+    // Embedded Tweaker isolation: the native Input demo renders the one Tweaker trigger. Its
+    // corner edit and reset own only this preview document; the ordinary host keeps its theme
+    // globals and stored builder state. The two overlay roles are host overlay plumbing.
+    const readHostTheme = () =>
+      hostPage.evaluate(() => {
+        const overlayRoles = new Set(['--atlas-overlay-clip', '--atlas-overlay-active-z']);
+        const declarations = (element: HTMLElement) =>
+          Array.from(element.style)
+            .filter(name => !overlayRoles.has(name))
+            .sort()
+            .map(name => ({
+              name,
+              value: element.style.getPropertyValue(name),
+              priority: element.style.getPropertyPriority(name),
+            }));
+        return {
+          html: declarations(document.documentElement),
+          body: declarations(document.body),
+          stored: localStorage.getItem('atlas-theme-builder-v1'),
+        };
+      });
+    const readOwnRadius = () =>
+      hostDocument.evaluate((root: HTMLElement) => {
+        const computed = getComputedStyle(root);
+        const names = new Set(['--radius', '--radius-md']);
+        for (const name of Array.from(root.style)) if (name.startsWith('--radius')) names.add(name);
+        return Object.fromEntries(
+          [...names].sort().map(name => [name, computed.getPropertyValue(name).trim()]),
+        ) as Record<string, string>;
+      });
+    const hostThemeBefore = await readHostTheme();
+    const ownRadiusBefore = await readOwnRadius();
+    // Compare the canonical owned radius roles at the 5px default, not the whole own style.
+    const ownRadiusRoles = Object.keys(ownRadiusBefore).filter(
+      name => ownRadiusBefore[name] === '5px',
+    );
+    expect(ownRadiusRoles).toContain('--radius');
+    const ownRadius = async () => {
+      const radius = await readOwnRadius();
+      return ownRadiusRoles.map(name => radius[name]);
+    };
+    const trigger = hostPage.locator('.atlas-tweaker-trigger');
+    await expect(trigger).toHaveCount(1);
+    await trigger.click();
+    const editors = hostPage.locator('[data-theme-token-editors]');
+    await expect(editors).toBeVisible();
+    await editors
+      .getByRole('combobox', { name: /radius|corner/i })
+      .first()
+      .click();
+    await hostPage.locator('.ant-select-item-option[title="3px"]:visible').click();
+    await expect.poll(ownRadius).toEqual(ownRadiusRoles.map(() => '3px'));
+    expect(await readHostTheme()).toEqual(hostThemeBefore);
+    await hostPage.getByRole('button', { name: /reset theme/i }).click();
+    await expect.poll(ownRadius).toEqual(ownRadiusRoles.map(name => ownRadiusBefore[name]));
+    expect(await readHostTheme()).toEqual(hostThemeBefore);
+    await expect(hostDocument).toHaveAttribute('data-theme', fixture.previewTheme);
+    await hostPage.keyboard.press('Escape');
+    await expect(editors).toBeHidden();
+    await expect(hostPage.locator('iframe')).toHaveCount(0);
+    const hostRequested = new Set(hostRequests.map(url => new URL(url).pathname));
+    const hostRequired = [...entryProfile.js, ...entryProfile.stylesheets].map(
+      resource => resource.url,
+    );
+    await test.info().attach('code-entry-ordinary-route.json', {
       body: JSON.stringify(
         {
-          baseURL,
-          cache: { context: 'fresh', serviceWorkers: 'block' },
-          usageMarkup,
-          host,
-          embedSize,
-          manifest: resources,
-          requests: coldRequests,
+          fixtureURL,
+          islands: fixture.islands,
+          removed: fixture.removed,
+          previewTheme: fixture.previewTheme,
+          hostTheme: fixture.hostTheme,
+          errors: hostErrors,
+          requests: hostRequests,
         },
         null,
         2,
       ),
       contentType: 'application/json',
     });
-    expect(smallRequired.filter(url => !requested.has(url))).toEqual([]);
-    expect(otherRoots.filter(url => requested.has(url))).toEqual([]);
+    expect(hostRequired.filter(url => !hostRequested.has(url))).toEqual([]);
+    expect(hostErrors).toEqual([]);
   } finally {
-    await cold.close();
+    await host.close();
   }
 });

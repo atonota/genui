@@ -1,12 +1,12 @@
-// Maps one preview id's built small/medium/large documents to what production actually emits:
-// astro-island entry modules, their static import closure and explicit stylesheet links. Only
-// that id's three pages and the files they reach are read; no hashed file name is guessed.
+// Maps one preview id's built small/medium/large/tv documents to what production actually
+// emits: astro-island entry modules, their static import closure and explicit stylesheet links.
+// Only that id's four pages and the files they reach are read; no hashed file name is guessed.
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { init, parse } from 'es-module-lexer';
 
-export const previewProfiles = ['small', 'medium', 'large'];
+export const previewProfiles = ['small', 'medium', 'large', 'tv'];
 
 // Resolves emitted URLs without a server; other origins are external, never emitted files.
 const ORIGIN = 'http://docs.invalid';

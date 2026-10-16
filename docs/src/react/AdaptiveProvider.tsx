@@ -37,11 +37,16 @@ const readClient = () => true;
 const readServer = () => false;
 const webOptions: AdaptiveOptions = Object.freeze({ surface: 'web' });
 
+/** Fixed logical size of a mockup screen in CSS px; replaces only the host's size signals. */
+export type AdaptiveViewport = Readonly<{ width: number; height: number }>;
+
 // The shared document store is read lazily during render, never at module init, so SSR
-// and the hydration pass both see the stable initial snapshot.
+// and the hydration pass both see the stable initial snapshot. A controlled viewport replaces
+// only width, height and the visual size; capabilities, preferences and input stay the host's.
 function useEnvironment(
   enabled: boolean,
   initial: AdaptiveEnvironment,
+  viewport?: AdaptiveViewport,
 ): { environment: AdaptiveEnvironment; measured: boolean } {
   const store = useMemo(
     () => (enabled && typeof window !== 'undefined' ? getEnvironmentStore(window) : null),
@@ -53,7 +58,22 @@ function useEnvironment(
   );
   const getSnapshot = useCallback(() => (store ? store.getSnapshot() : initial), [store, initial]);
   const getServerSnapshot = useCallback(() => initial, [initial]);
-  const environment = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const host = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const logicalWidth = viewport?.width;
+  const logicalHeight = viewport?.height;
+  const environment = useMemo<AdaptiveEnvironment>(
+    () =>
+      logicalWidth === undefined || logicalHeight === undefined
+        ? host
+        : Object.freeze({
+            ...host,
+            width: logicalWidth,
+            height: logicalHeight,
+            visualWidth: logicalWidth,
+            visualHeight: logicalHeight,
+          }),
+    [host, logicalWidth, logicalHeight],
+  );
   // Hydration renders the initial snapshot too; only later client renders are measured.
   const hydrated = useSyncExternalStore(subscribeNothing, readClient, readServer);
   return { environment, measured: store !== null && hydrated };
@@ -97,17 +117,25 @@ function useResolution(
   );
 }
 
-/** Explicit product surface, locked profile and SSR snapshot for every nested consumer. */
+/** Explicit product surface, locked profile, SSR snapshot and optional fixed logical viewport
+    for every nested consumer. */
 export default function AdaptiveProvider({
   children,
   options,
   initialEnvironment,
+  viewport,
 }: {
   children: ReactNode;
   options?: AdaptiveOptions;
   initialEnvironment?: AdaptiveEnvironment;
+  /** Controlled logical size, for example a fixed device mockup screen. */
+  viewport?: AdaptiveViewport;
 }) {
-  const { environment, measured } = useEnvironment(true, initialEnvironment ?? serverEnvironment);
+  const { environment, measured } = useEnvironment(
+    true,
+    initialEnvironment ?? serverEnvironment,
+    viewport,
+  );
   const value = useResolution(environment, measured, options ?? {});
   return <AdaptiveContext.Provider value={value}>{children}</AdaptiveContext.Provider>;
 }

@@ -14,6 +14,7 @@ import { createPortal } from 'react-dom';
 import { ConfigProvider } from 'antd';
 import { registerSpatialPortal } from '../input-modality';
 import type { AdaptiveContextValue } from './AdaptiveProvider';
+import { previewDocumentSelector, usePreviewContext } from './PreviewContext';
 
 /** Theme attributes of an AtlasProvider owner; every portal it scopes repeats them. */
 export type AtlasPortalAttributes = Readonly<{
@@ -76,8 +77,9 @@ export function AtlasPortalOwner({
  * they were, and native popups render into this scope's own body portal: the provider's theme
  * roles, this resolution's adaptive attributes, no layout class and display: contents outside
  * every container query. The portal registers to the actual owner element (the Shell root),
- * mounts after mount in the owner's own document and releases on unmount. Without a provider
- * the scope adds nothing.
+ * mounts after mount in the owner's own document and releases on unmount. Inside a preview it
+ * mounts in the nearest preview document instead of the body, so popups stay in that same-page
+ * mockup. Without a provider the scope adds nothing.
  */
 export default function AtlasPortalScope({
   ownerRef,
@@ -90,12 +92,17 @@ export default function AtlasPortalScope({
 }) {
   const descriptor = useContext(PortalDescriptorContext);
   const owned = descriptor !== null;
+  const inPreview = usePreviewContext() !== null;
   const portalRef = useRef<HTMLDivElement>(null);
-  // The owner's own document body, read after mount: SSR and the hydration render add nothing.
+  // The portal target, read after mount: SSR and the hydration render add nothing. A preview
+  // keeps it in the nearest preview document; elsewhere it is the owner's own document body.
   const [body, setBody] = useState<HTMLElement | null>(null);
   useLayoutEffect(() => {
-    if (owned) setBody(ownerRef.current?.ownerDocument.body ?? null);
-  }, [owned, ownerRef]);
+    if (!owned) return;
+    const owner = ownerRef.current;
+    const scope = inPreview ? owner?.closest<HTMLElement>(previewDocumentSelector) : null;
+    setBody(scope ?? owner?.ownerDocument.body ?? null);
+  }, [owned, ownerRef, inPreview]);
   useLayoutEffect(() => {
     const owner = ownerRef.current;
     const portal = portalRef.current;

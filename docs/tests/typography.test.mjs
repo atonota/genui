@@ -133,17 +133,42 @@ test('documentation styles use pixel dimensions and retain readable type and tou
   );
 });
 
-test('theme builder accepts scoped 12px text and 300 weight floors with 14px Outfit defaults', async t => {
+test('theme builder enforces 14px text floors, migrates stored 12-13px text and keeps 300 weight and 14px Outfit defaults', async t => {
   const file = `docs/tests/.typography-${randomUUID()}.tsx`;
   await writeFile(
     file,
     `
-import {createDefaultRecipe,resolveThemeBuilder,tokenDefinitions,validateRecipe} from '../src/theme-builder/model';
+import * as model from '../src/theme-builder/model';
+import {LISTY_SURFACE_TOKEN_ID,createDefaultRecipe,parseRecipe,resolveThemeBuilder,tokenDefinitions,validateRecipe} from '../src/theme-builder/model';
 const modes=['light','dark'] as const;
-function attempt(id:string,mode:'light'|'dark',value:number){const recipe:any=createDefaultRecipe();recipe[mode]={...recipe[mode],[id]:value};const result=validateRecipe(recipe);if(!result.ok)return {ok:false,error:result.error};const resolved=resolveThemeBuilder(result.recipe,mode);return {ok:true,variables:resolved.variables,fontSize:resolved.token.fontSize}}
+type Mode=(typeof modes)[number];
+// Looked up dynamically: before storage migration exists the strict-floor assertions must fail, not the import.
+const storedName=['parseStored','Recipe'].join('');
+const storedExport=(model as unknown as Record<string,unknown>)[storedName];
+const parseStored=(typeof storedExport==='function'?storedExport:parseRecipe) as typeof parseRecipe;
+const clone=(value:unknown):any=>JSON.parse(JSON.stringify(value));
+function withValues(mode:Mode,values:Record<string,unknown>){const recipe=clone(createDefaultRecipe());recipe[mode]={...recipe[mode],...values};return recipe}
+function attempt(id:string,mode:Mode,value:number){const recipe=withValues(mode,{[id]:value});const parsedOk=parseRecipe(JSON.stringify(recipe)).ok;const result=validateRecipe(recipe);if(!result.ok)return {ok:false,parsedOk,error:result.error};const resolved=resolveThemeBuilder(result.recipe,mode);return {ok:true,parsedOk,variables:resolved.variables,fontSize:resolved.token.fontSize}}
+function stored(input:unknown,expected?:unknown,mode?:Mode,css?:string){const text=JSON.stringify(input);const result=parseStored(text);if(!result.ok)return {ok:false,error:result.error};return {ok:true,recipe:clone(result.recipe),expected,emitted:mode&&css?resolveThemeBuilder(result.recipe,mode).variables[css]:undefined,inputUnchanged:JSON.stringify(input)===text}}
 const typography=tokenDefinitions.filter(def=>def.group==='typography'&&def.kind==='number');
+const sizes=typography.filter(def=>def.unit==='px');
+const weightId=String(typography.find(def=>def.unit==='')?.id);
+function migration(id:string,css:string,mode:Mode,value:number){const other=String(sizes.find(def=>def.id!==id)?.id);const custom={[weightId]:300,[other]:15};return stored(withValues(mode,{...custom,[id]:value}),withValues(mode,{...custom,[id]:14}),mode,css)}
+const legacyInput=clone(createDefaultRecipe());
+const legacyExpected=clone(createDefaultRecipe());
+for(const mode of modes){for(const [index,def] of sizes.entries()){legacyInput[mode][def.id]=index%2?13:12;legacyExpected[mode][def.id]=14}legacyInput[mode][weightId]=300;legacyExpected[mode][weightId]=300;delete legacyInput[mode][LISTY_SURFACE_TOKEN_ID]}
+function broken(label:string,edit:(recipe:any)=>void){const recipe=withValues('light',{[sizes[0].id]:12});edit(recipe);return {label,result:stored(recipe)}}
 const report={
-sizes:typography.filter(def=>def.unit==='px').map(def=>({id:def.id,css:def.css,defaults:def.defaults,cases:modes.map(mode=>({mode,at12:attempt(def.id,mode,12),at11:attempt(def.id,mode,11)}))})),
+sizes:sizes.map(def=>({id:def.id,css:def.css,defaults:def.defaults,cases:modes.map(mode=>({mode,at11:attempt(def.id,mode,11),at12:attempt(def.id,mode,12),at13:attempt(def.id,mode,13),at14:attempt(def.id,mode,14),stored11:stored(withValues(mode,{[def.id]:11})),stored12:migration(def.id,def.css,mode,12),stored13:migration(def.id,def.css,mode,13)}))})),
+legacy:stored(legacyInput,legacyExpected),
+invalidStored:[
+broken('a null text size',recipe=>{recipe.light[sizes[0].id]=null}),
+broken('a string text size',recipe=>{recipe.light[sizes[0].id]='12'}),
+broken('an unknown token field',recipe=>{recipe.light.unexpected=14}),
+broken('an unknown recipe field',recipe=>{recipe.extra=true}),
+broken('a partial mode',recipe=>{delete recipe.light[sizes[1].id]}),
+broken('an unknown version',recipe=>{recipe.version=String(recipe.version)+'-unknown'}),
+],
 weights:typography.filter(def=>def.unit==='').map(def=>({id:def.id,defaults:def.defaults,cases:modes.map(mode=>({mode,at300:attempt(def.id,mode,300),at299:attempt(def.id,mode,299),at200:attempt(def.id,mode,200)}))})),
 defaults:modes.map(mode=>{const {token,variables}=resolveThemeBuilder(createDefaultRecipe(),mode);return {mode,fontSize:token.fontSize,fontSizeLG:token.fontSizeLG,fontFamily:token.fontFamily,weight:variables['--font-weight-body']}}),
 };
@@ -161,23 +186,66 @@ export default function Fixture(){return <output data-builder-typography>{JSON.s
     await unlink(file);
   });
   const report = JSON.parse(h.document.querySelector('[data-builder-typography]').textContent);
+  assert.equal(report.sizes.length, 6, 'the builder exposes six editable text sizes');
   const body = report.sizes.find(size => size.css === '--text-body');
   assert.ok(body, 'body text stays an editable builder size');
   for (const size of report.sizes) {
     for (const mode of ['light', 'dark'])
       assert.ok(size.defaults[mode] >= 14, `${size.id}: ${mode} default stays at least 14px`);
-    for (const { mode, at12, at11 } of size.cases) {
-      assert.equal(at12.ok, true, `${size.id}: ${mode} rejects 12px (${at12.error})`);
-      assert.equal(at12.variables[size.css], '12px', `${size.id}: ${mode} emits accepted 12px`);
-      assert.equal(at11.ok, false, `${size.id}: ${mode} accepts text below 12px`);
-      assert.ok(
-        at11.error.includes(`"${size.id}"`),
-        `${size.id}: ${mode} rejection names the token`,
-      );
+    for (const { mode, at11, at12, at13, at14 } of size.cases) {
+      for (const [value, below] of [
+        [12, at12],
+        [13, at13],
+        [11, at11],
+      ]) {
+        assert.equal(below.ok, false, `${size.id}: ${mode} accepts ${value}px text below 14px`);
+        assert.ok(
+          below.error.includes(`"${size.id}"`),
+          `${size.id}: ${mode} rejection names the token`,
+        );
+        assert.equal(below.parsedOk, false, `${size.id}: ${mode} parseRecipe accepts ${value}px`);
+      }
+      assert.equal(at14.ok, true, `${size.id}: ${mode} rejects 14px (${at14.error})`);
+      assert.equal(at14.parsedOk, true, `${size.id}: ${mode} parseRecipe rejects 14px`);
+      assert.equal(at14.variables[size.css], '14px', `${size.id}: ${mode} emits accepted 14px`);
     }
   }
-  for (const { mode, at12 } of body.cases)
-    assert.equal(at12.fontSize, 12, `${mode}: accepted 12px body text is not clamped back to 14px`);
+  for (const { mode, at14 } of body.cases)
+    assert.equal(at14.fontSize, 14, `${mode}: accepted 14px body text resolves to 14px`);
+  // Storage alone upgrades earlier 12-13px recipes; strict validation above stays at 14px.
+  for (const size of report.sizes)
+    for (const { mode, stored11, stored12, stored13 } of size.cases) {
+      for (const [value, migrated] of [
+        [12, stored12],
+        [13, stored13],
+      ]) {
+        assert.equal(
+          migrated.ok,
+          true,
+          `${size.id}: ${mode} stored ${value}px is rejected instead of migrated (${migrated.error})`,
+        );
+        assert.deepEqual(
+          migrated.recipe,
+          migrated.expected,
+          `${size.id}: ${mode} stored ${value}px becomes 14px and keeps every other value`,
+        );
+        assert.equal(migrated.emitted, '14px', `${size.id}: ${mode} migrated text emits 14px`);
+        assert.equal(migrated.inputUnchanged, true, `${size.id}: ${mode} stored input is kept`);
+      }
+      assert.equal(stored11.ok, false, `${size.id}: ${mode} storage accepts 11px text`);
+    }
+  assert.equal(
+    report.legacy.ok,
+    true,
+    `earlier-generation 12-13px storage is rejected (${report.legacy.error})`,
+  );
+  assert.deepEqual(
+    report.legacy.recipe,
+    report.legacy.expected,
+    'earlier-generation storage gains defaults, migrates text to 14px and keeps weight 300',
+  );
+  for (const { label, result } of report.invalidStored)
+    assert.equal(result.ok, false, `storage migration accepts ${label}`);
   assert.equal(report.weights.length, 1, 'the builder exposes exactly one editable font weight');
   const [weight] = report.weights;
   for (const { mode, at300, at299, at200 } of weight.cases) {

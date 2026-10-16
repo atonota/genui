@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "strict": true,
+    "skipLibCheck": false,
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "types": ["node", "react", "vite/client"],
+    "noEmit": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "declarationMap": false,
+    "noEmitOnError": true,
+    "rootDir": "../..",
+    "outDir": "dist/types"
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "../../docs/src/adaptive/spatial.ts",
+    "../../docs/src/adaptive/pointer.ts",
+    "../../docs/src/adaptive/webos.ts"
+  ],
+  "exclude": ["dist"]
+}

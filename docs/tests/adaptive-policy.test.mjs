@@ -486,6 +486,10 @@ test('docs AntD themes follow the shared breakpoints; the policy resolves profil
       ['390x844 844x390 844x200', 'phone phone phone'],
       ['390x844 844x390 900x390', 'phone phone tablet'],
       ['390x844 390x300', 'phone phone'],
+      // A keyboard shrinks the phone's height, then it rotates while the keyboard stays open.
+      ['390x844 390x300 844x200', 'phone phone phone'],
+      // Repeated rotations with the keyboard open keep the established portrait reference.
+      ['390x844 390x300 844x200 390x300 844x200', 'phone phone phone phone phone'],
       ['768x300', 'tablet'],
       ['1280x400', 'desktop'],
       ['844x390', 'tablet'],
@@ -662,6 +666,8 @@ test('docs AntD themes follow the shared breakpoints; the policy resolves profil
   // auto-repeat, the outer onBack must not run again. A real React CSR mount through
   // harness.mjs runs in a child process, so this window-free process never caches a
   // DOM-enabled React. Untrusted JSDOM keys only: no physical remote proof, styles ignored.
+  // A second mount of the same fixture holds an open phone drawer: composing or modified
+  // Escape/Back stays with the platform, while a plain Back closes the drawer before onBack.
   const backId = randomUUID();
   const backFixture = `docs/tests/.adaptive-back-fixture-${backId}.mjs`;
   const backScript = path.join(testDirectory, `.adaptive-back-${backId}.mjs`);
@@ -673,6 +679,22 @@ test('docs AntD themes follow the shared breakpoints; the policy resolves profil
     { key: 'GoBack', prevented: true, expected: [0, 0, true] },
     { key: 'GoBack', childHandles: false, expected: [1, 1, true] },
   ];
+  // Drawer results are [onBack calls, defaultPrevented, drawer open afterwards].
+  const DRAWER_IGNORED = {
+    composingEscape: { key: 'Escape', isComposing: true },
+    modifierEscape: { key: 'Escape', ctrlKey: true },
+    modifierBack: { key: 'GoBack', altKey: true },
+  };
+  const DRAWER_EXPECTED = {
+    layout: 'phone',
+    navigation: 'drawer',
+    composingEscape: [0, false, true],
+    modifierEscape: [0, false, true],
+    modifierBack: [0, false, true],
+    escape: [0, true, false],
+    backClosesDrawer: [0, true, false],
+    backAfterClose: [1, true, false],
+  };
   try {
     await build({
       absWorkingDir: projectDirectory,
@@ -687,6 +709,10 @@ test('docs AntD themes follow the shared breakpoints; the policy resolves profil
           `} }, children);`,
           `export const NestedBack = ({ probe }) => h(AdaptiveProvider, null, shell(probe, 'parent',`,
           `  shell(probe, 'child', h('button', { id: 'adaptive-back-target', type: 'button' }, 'Back'))));`,
+          `export const DrawerBack = ({ probe }) => h(AdaptiveProvider, { options: { lockedProfile: 'phone' } }, h(AdaptiveShell, {`,
+          `  onBack: () => { probe.back += 1; return true; },`,
+          `  navigation: h('button', { id: 'adaptive-drawer-item', type: 'button' }, 'Item'),`,
+          `}, h('button', { id: 'adaptive-drawer-main', type: 'button' }, 'Main')));`,
         ].join('\n'),
         resolveDir: projectDirectory,
         sourcefile: 'adaptive-back-fixture.js',
@@ -723,7 +749,40 @@ test('docs AntD themes follow the shared breakpoints; the policy resolves profil
         `} finally {`,
         `  await harness.dispose();`,
         `}`,
-        `process.stdout.write(JSON.stringify(results), () => process.exit(0));`,
+        `const drawerProbe = { back: 0 };`,
+        `const drawerHarness = await mountPattern('DrawerBack', ${JSON.stringify(backFixture)}, { probe: drawerProbe });`,
+        `const drawer = {};`,
+        `try {`,
+        `  const { document, window } = drawerHarness;`,
+        `  const settle = () => drawerHarness.act(async () => { await new Promise(resolve => setTimeout(resolve, 0)); });`,
+        `  const shell = () => document.querySelector('[data-adaptive-shell]');`,
+        `  for (let step = 0; step < 400 && shell()?.getAttribute('data-layout') !== 'phone'; step++) await settle();`,
+        `  drawer.layout = shell()?.getAttribute('data-layout') ?? null;`,
+        `  drawer.navigation = shell()?.getAttribute('data-navigation') ?? null;`,
+        `  const item = document.getElementById('adaptive-drawer-item');`,
+        `  const main = document.getElementById('adaptive-drawer-main');`,
+        `  const toggle = shell()?.querySelector('.adaptive-shell-bar [aria-controls]');`,
+        `  const isOpen = () => shell()?.getAttribute('data-nav-open') === 'true';`,
+        `  const open = async () => { if (!isOpen()) await drawerHarness.act(async () => { toggle.click(); }); };`,
+        `  const press = async (target, init) => {`,
+        `    drawerProbe.back = 0;`,
+        `    const event = new window.KeyboardEvent('keydown', { bubbles: true, cancelable: true, ...init });`,
+        `    await drawerHarness.act(async () => { target.dispatchEvent(event); });`,
+        `    return [drawerProbe.back, event.defaultPrevented, isOpen()];`,
+        `  };`,
+        `  for (const [name, init] of Object.entries(${JSON.stringify(DRAWER_IGNORED)})) {`,
+        `    await open();`,
+        `    drawer[name] = await press(item, init);`,
+        `  }`,
+        `  await open();`,
+        `  drawer.escape = await press(item, { key: 'Escape' });`,
+        `  await open();`,
+        `  drawer.backClosesDrawer = await press(item, { key: 'GoBack' });`,
+        `  drawer.backAfterClose = await press(main, { key: 'GoBack' });`,
+        `} finally {`,
+        `  await drawerHarness.dispose();`,
+        `}`,
+        `process.stdout.write(JSON.stringify({ nested: results, drawer }), () => process.exit(0));`,
       ].join('\n'),
       { flag: 'wx' },
     );
@@ -731,13 +790,18 @@ test('docs AntD themes follow the shared breakpoints; the policy resolves profil
       cwd: testDirectory,
       timeout: 20_000,
     });
-    const results = JSON.parse(stdout.trim().split('\n').at(-1));
+    const { nested, drawer } = JSON.parse(stdout.trim().split('\n').at(-1));
     BACK_CASES.forEach(({ expected, ...backCase }, index) =>
       expect(
-        isDeepStrictEqual(results[index], expected),
-        `nested Shell Back ${JSON.stringify(backCase)} gave [child, parent, defaultPrevented] ${JSON.stringify(results[index])}; expected ${JSON.stringify(expected)}`,
+        isDeepStrictEqual(nested?.[index], expected),
+        `nested Shell Back ${JSON.stringify(backCase)} gave [child, parent, defaultPrevented] ${JSON.stringify(nested?.[index])}; expected ${JSON.stringify(expected)}`,
       ),
     );
+    for (const [name, expected] of Object.entries(DRAWER_EXPECTED))
+      expect(
+        isDeepStrictEqual(drawer?.[name], expected),
+        `open phone drawer ${name} ${JSON.stringify(DRAWER_IGNORED[name] ?? {})} gave ${JSON.stringify(drawer?.[name])}; expected ${JSON.stringify(expected)} as [onBack calls, defaultPrevented, drawer open]`,
+      );
   } catch (error) {
     failures.push(`nested Shell Back mount failed: ${error.stderr || error.message}`);
   } finally {

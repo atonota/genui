@@ -9,6 +9,7 @@ import DocsInspector from '../../components/DocsInspector.astro';
 import packageManifest from '../../../../package.json';
 import PageBreadcrumb from '../../components/shell/PageBreadcrumb.astro';
 import { components } from '../../data/catalog';
+import { previewProfiles } from '../../preview/profiles';
 import documentationRules from '../../data/documentation-rules.json';
 import type { GenUIComponentName } from '../../genui/contracts';
 import { WebButtonDemo as ButtonDemo } from '../../react/ButtonDemo';
@@ -98,6 +99,7 @@ import richMenuStyles from '../../styles/atlas-rich-menu.css?url';
 import chartStyles from '../../styles/atlas-chart.css?url';
 import listyStyles from '../../styles/atlas-listy.css?url';
 import badgeStyles from '../../styles/atlas-badge.css?url';
+import previewDocumentStyles from '../../styles/preview-document.css?url';
 import previewWorkbenchStyles from '../../styles/preview-workbench.css?url';
 export function getStaticPaths() {
   return components.map(component => ({ params: { slug: component.slug }, props: { component } }));
@@ -161,7 +163,9 @@ const feedbackRoutes = ['toast', 'alert', 'notification', 'modal', 'popconfirm']
 const identityRoutes = ['data-table', 'collection-views', 'record-workspace'];
 const kitRoute = Boolean(featureSheet) || slug === 'record-workspace';
 const routeSheetRules: RouteSheetRule[] = [
-  // Every component route frames its examples with the shared preview workbench.
+  // Every component route renders its inline previews with the shared preview document
+  // styles and frames its examples with the shared preview workbench.
+  [true, 'preview-document.css', previewDocumentStyles],
   [true, 'preview-workbench.css', previewWorkbenchStyles],
   [['slider', 'record-workspace'].includes(slug), 'slider.css', sliderStyles],
   [slug === 'button', 'button-catalog.css', buttonCatalogStyles],
@@ -597,6 +601,7 @@ const resourceGroups = [
     label: 'Styles and tokens',
     paths: [
       ...(sources?.styles ?? []).map(file => 'docs/src/styles/' + file),
+      'docs/src/styles/preview-document.css',
       'docs/src/styles/preview-workbench.css',
       'docs/src/components/shell/layout.css',
       'docs/src/styles/docs.css',
@@ -835,12 +840,12 @@ const tabGroups = [
           )}
           <h3 data-i18n="Preview profiles">Preview profiles</h3>
           <p>
-            <span data-i18n="Each live example also has three preview URLs, one per profile:">
-              Each live example also has three preview URLs, one per profile:
+            <span data-i18n="Each live example also has one preview URL per profile:">
+              Each live example also has one preview URL per profile:
             </span>
           </p>
           <ul>
-            {['small', 'medium', 'large'].map(profile => (
+            {previewProfiles.map(profile => (
               <li>
                 <code>{`/preview/<id>/${profile}/`}</code>
               </li>

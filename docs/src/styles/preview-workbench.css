@@ -1,7 +1,8 @@
 /* Shared example workbench (ExamplePreview.tsx, DeviceFrame.tsx). Each device is one fixed
    illustrative mockup, not device emulation: data/preview-devices.ts is the central geometry,
    inlined as --preview-* roles. The logical screen never shrinks or grows; content scrolls
-   inside it and an iframe fills it. DeviceFrame fits the whole device by a transform scale of
+   inside it and an inline preview document fills it. DeviceFrame fits the whole device by a
+   transform scale of
    at most 1, or keeps Actual 1:1 and scrolls only inside its own stage region. Every other
    value reads the shell space, radius, surface and focus roles. Moving surfaces ease in both
    directions with the central positive duration and Cubic easing, while view state,
@@ -247,7 +248,10 @@
 /* Landscape on the rotatable devices: the island or camera moves to the inline start edge and
    the home indicator to the inline end edge, each centred in the uniform side bezel. Positions
    stay numeric, so both directions ease with the central motion roles. */
-.example-preview-device[data-preview-orientation='landscape']:not([data-preview-device='macbook'])
+.example-preview-device[data-preview-orientation='landscape']:not(
+    [data-preview-device='macbook'],
+    [data-preview-device='tv']
+  )
   .example-preview-bezel::before {
   inset-block-start: 50%;
   inset-inline-start: calc((var(--preview-bezel-inline) - var(--preview-sensor-height)) / 2);
@@ -255,7 +259,10 @@
   block-size: var(--preview-sensor-width);
   transform: translateY(-50%);
 }
-.example-preview-device[data-preview-orientation='landscape']:not([data-preview-device='macbook'])
+.example-preview-device[data-preview-orientation='landscape']:not(
+    [data-preview-device='macbook'],
+    [data-preview-device='tv']
+  )
   .example-preview-bezel::after {
   inset-block-end: 50%;
   inset-inline-start: calc(
@@ -283,19 +290,19 @@
   color: var(--ink);
   transition-property: var(--control-transition-properties), inline-size, block-size, border-radius;
 }
-/* An isolated preview document fills the whole screen. */
-.example-preview-screen:has(> iframe:only-child) {
+/* An inline preview document fills the whole screen: it inherits the fixed screen and container
+   size roles, its own viewport scrolls inside and the screen adds no padding. */
+.example-preview-screen:has(> [data-preview-document]:only-child) {
   display: block;
   padding: 0;
-  overflow: hidden;
+  overflow: auto;
 }
-.example-preview-screen > iframe {
-  display: block;
-  inline-size: 100%;
-  block-size: 100%;
-  border: 0;
+.example-preview-screen > [data-preview-document] {
+  --preview-document-width: var(--preview-screen-width);
+  --preview-document-height: var(--preview-screen-height);
+  --preview-document-container-width: var(--preview-container-width);
+  --preview-document-container-margin: var(--preview-container-margin);
   border-radius: inherit;
-  background-color: var(--panel);
 }
 .example-preview-screen > * {
   min-inline-size: 0;
@@ -517,9 +524,12 @@ dialog.example-preview {
   -webkit-backdrop-filter: blur(var(--overlay-backdrop-blur));
   backdrop-filter: blur(var(--overlay-backdrop-blur));
 }
-/* A full-height MacBook can make the expanded dialog scroll; its toolbar, Close included,
-   stays reachable at the top of the dialog scrollport. */
-.example-preview[data-preview-expanded='true'][data-preview-device='macbook']
+/* A full-height MacBook or TV can make the expanded dialog scroll; its toolbar, Close
+   included, stays reachable at the top of the dialog scrollport. */
+.example-preview[data-preview-expanded='true']:is(
+    [data-preview-device='macbook'],
+    [data-preview-device='tv']
+  )
   > .example-preview-toolbar {
   position: sticky;
   inset-block-start: 0;
@@ -553,7 +563,8 @@ dialog.example-preview {
     border-block-end-color: Canvas;
   }
   .example-preview-bezel,
-  .example-preview-device[data-preview-device='macbook'] .example-preview-base {
+  .example-preview-device:is([data-preview-device='macbook'], [data-preview-device='tv'])
+    .example-preview-base {
     border: 1px solid CanvasText;
   }
   .example-preview-bezel::before,
