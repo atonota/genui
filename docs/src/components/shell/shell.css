@@ -9,13 +9,16 @@
   background-color: var(--shell-bg);
   color: var(--shell-ink);
 }
+/* Header flow keeps the DOM and Tab order: menu and wordmark, the meta line on its own row,
+   then language, theme and Getting started. Below the 875px breakpoint that is three rows,
+   at most 192px tall at 320px; layout.css joins them into one band from the breakpoint. */
 .docs-header {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: var(--space-md);
+  gap: var(--space-xs) var(--space-sm);
   margin: auto;
-  padding: var(--space-lg) var(--page-gutter);
+  padding: var(--space-md) var(--page-gutter);
   border-bottom: 1px solid var(--line);
   background-color: var(--shell-bg);
   color: var(--shell-ink);
@@ -37,12 +40,15 @@
 .header-meta {
   color: var(--muted);
   font-size: var(--text);
-  flex: 1;
+  flex: 1 1 100%;
 }
 .header-link {
+  flex: 1 1 0;
   min-height: var(--target-min);
   display: flex;
   align-items: center;
+  justify-content: flex-end;
+  text-align: end;
 }
 .docs-menu-toggle,
 .docs-menu-close {
@@ -184,6 +190,7 @@
 .sidebar-note {
   color: var(--muted);
   margin-top: var(--space-lg);
+  padding-inline: var(--space-sm);
   font-size: var(--text);
 }
 .docs-main {

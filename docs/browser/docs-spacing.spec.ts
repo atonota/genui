@@ -429,3 +429,430 @@ test('TOC rail has readable width and inner padding', async ({ page }, testInfo)
     }
   }
 });
+
+/** Frozen shell, panel and field surfaces per theme for the shell aesthetic case. */
+const frozenColors = {
+  light: { shell: 'rgb(230, 226, 215)', panel: 'rgb(255, 255, 255)', field: 'rgb(236, 236, 236)' },
+  dark: { shell: 'rgb(25, 19, 2)', panel: 'rgb(44, 44, 44)', field: 'rgb(27, 27, 27)' },
+} as const;
+
+/** The shell helper, eager React islands and fonts are ready after navigation. */
+async function waitForShell(page: Page) {
+  await expect(page.locator('[data-docs-shell]').first()).toHaveAttribute(
+    'data-docs-shell-ready',
+    /.*/,
+  );
+  await expect(page.locator(`astro-island[client='load'][ssr]`)).toHaveCount(0);
+  await page.evaluate(() => document.fonts.ready.then(() => undefined));
+}
+
+async function expectFrozenColors(page: Page, colors: (typeof frozenColors)[Mode], label: string) {
+  const surfaces = [
+    ['shell root', page.locator('[data-docs-shell]').first(), colors.shell],
+    ['header', page.getByRole('banner'), colors.shell],
+    ['footer', page.getByRole('contentinfo'), colors.shell],
+    ['main panel', page.getByRole('main'), colors.panel],
+    ['search field', page.locator('#component-search'), colors.field],
+  ] as const;
+  for (const [name, target, color] of surfaces)
+    await expect.soft(target, `${label}: ${name} surface`).toHaveCSS('background-color', color);
+}
+
+/**
+ * Visible header controls: centre hit, clipping and placement inside the header. A control clips
+ * only on an axis whose overflow is not visible (a text field always clips its value) while its
+ * scroll content exceeds the client box on that axis. Decorative SVG parts may stay clipped on
+ * purpose; their painted boxes, including visible overflow, stay inside the header and viewport.
+ * Readable text is measured by its full Range rects before any clip: text cut by a clip-path or by
+ * an overflow-clipping box up to the header is reported, never discarded, and clips its control.
+ * Text inside a box of 1px or less is assistive-only. `text` covers every readable header text.
+ */
+async function headerControls(header: Locator) {
+  return header.evaluate((root, tolerance) => {
+    const edge = root.getBoundingClientRect();
+    const shown = { opacityProperty: true, visibilityProperty: true };
+    const within = (box: Rect) =>
+      box.left >= Math.max(edge.left, 0) - tolerance &&
+      box.right <= Math.min(edge.right, window.innerWidth) + tolerance &&
+      box.top >= edge.top - tolerance &&
+      box.bottom <= edge.bottom + tolerance;
+    /** The painted box of a part after every overflow clip from the part up to its control. */
+    const paintedBox = (part: Element, control: Element, rect: DOMRect): Rect | null => {
+      let { left, right, top, bottom } = rect;
+      let node: Element | null = part;
+      while (node) {
+        const style = getComputedStyle(node);
+        if (style.clipPath !== 'none') return null;
+        const box = node.getBoundingClientRect();
+        if (style.overflowX !== 'visible') {
+          left = Math.max(left, box.left);
+          right = Math.min(right, box.right);
+        }
+        if (style.overflowY !== 'visible') {
+          top = Math.max(top, box.top);
+          bottom = Math.min(bottom, box.bottom);
+        }
+        node = node === control ? null : node.parentElement;
+      }
+      return right > left && bottom > top ? { left, right, top, bottom } : null;
+    };
+    /** Painted boxes of decorative SVG parts, including parts that overflow a control visibly. */
+    const decorativeParts = (control: HTMLElement) =>
+      Array.from(control.querySelectorAll('svg')).flatMap(svg => {
+        const rect = svg.getBoundingClientRect();
+        if (!svg.checkVisibility(shown) || rect.width === 0 || rect.height === 0) return [];
+        const box = paintedBox(svg, control, rect);
+        return box ? [box] : [];
+      });
+    /** Full Range rects of readable text in a scope, before any clip, and the text a clip cuts. */
+    const readableText = (scope: Element) => {
+      const rects: Rect[] = [];
+      const cut: string[] = [];
+      const walker = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT);
+      for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+        const parent = node.parentElement;
+        const text = (node.textContent ?? '').trim();
+        if (!parent || !text || parent.closest('script') || !parent.checkVisibility(shown))
+          continue;
+        const boxes: Element[] = [];
+        for (let item: Element | null = parent; item; item = item.parentElement) {
+          if (getComputedStyle(item).display !== 'contents') boxes.push(item);
+          if (item === root) break;
+        }
+        const assistive = boxes.some(item => {
+          const box = item.getBoundingClientRect();
+          return scope.contains(item) && (box.width <= 1 || box.height <= 1);
+        });
+        if (assistive) continue;
+        const range = document.createRange();
+        range.selectNodeContents(node);
+        const lines = Array.from(range.getClientRects()).filter(
+          line => line.width * line.height > 0,
+        );
+        rects.push(...lines);
+        const isCut = boxes.some(item => {
+          const style = getComputedStyle(item);
+          if (style.clipPath !== 'none') return true;
+          if (style.display === 'inline') return false;
+          const box = item.getBoundingClientRect();
+          const clipsX = style.overflowX !== 'visible';
+          const clipsY = style.overflowY !== 'visible';
+          return lines.some(line => {
+            const inline = line.left < box.left - tolerance || line.right > box.right + tolerance;
+            const block = line.top < box.top - tolerance || line.bottom > box.bottom + tolerance;
+            return (clipsX && inline) || (clipsY && block);
+          });
+        });
+        if (isCut) cut.push(text);
+      }
+      return { rects, cut, inside: rects.every(within) };
+    };
+    const controls = Array.from(root.querySelectorAll<HTMLElement>('a[href], button, input'));
+    return {
+      text: readableText(root),
+      controls: controls.flatMap(control => {
+        const rect = control.getBoundingClientRect();
+        if (!control.checkVisibility() || rect.width === 0 || rect.height === 0) return [];
+        const hit = document.elementFromPoint(
+          rect.left + rect.width / 2,
+          rect.top + rect.height / 2,
+        );
+        const computed = getComputedStyle(control);
+        const field = control instanceof HTMLInputElement;
+        const clipsInline = field || computed.overflowX !== 'visible';
+        const clipsBlock = field || computed.overflowY !== 'visible';
+        const labels = readableText(control);
+        return [
+          {
+            name: control.getAttribute('aria-label') ?? (control.textContent ?? '').trim(),
+            target: control.matches('[data-docs-menu-toggle], .locale-option, .header-link'),
+            width: rect.width,
+            height: rect.height,
+            inside: within(rect) && labels.inside && decorativeParts(control).every(within),
+            clipped:
+              labels.cut.length > 0 ||
+              (control.clientWidth > 0 &&
+                ((clipsInline && control.scrollWidth > control.clientWidth + 1) ||
+                  (clipsBlock && control.scrollHeight > control.clientHeight + 1))),
+            cutText: labels.cut,
+            hit: hit !== null && control.contains(hit),
+          },
+        ];
+      }),
+    };
+  }, tolerancePx);
+}
+
+/** Settled paint of a control and its parts, to compare rest with keyboard focus. */
+async function focusPaint(target: Locator) {
+  return target.evaluate(async element => {
+    await Promise.all(
+      element
+        .getAnimations({ subtree: true })
+        .map(animation => animation.finished.catch(() => undefined)),
+    );
+    const parts = [element, ...Array.from(element.querySelectorAll('*'))];
+    const computed = getComputedStyle(element);
+    return {
+      focusVisible: element.matches(':focus-visible'),
+      outline: computed.outlineStyle === 'none' ? 0 : parseFloat(computed.outlineWidth),
+      boxShadow: computed.boxShadow,
+      paint: parts
+        .map(part => {
+          const style = getComputedStyle(part);
+          return [
+            style.backgroundColor,
+            style.backgroundImage,
+            style.color,
+            style.textDecorationLine,
+            style.boxShadow,
+            style.scale,
+          ].join(' ');
+        })
+        .join('|'),
+    };
+  });
+}
+
+/** A region scrolls on its own: overflow, height, last link reachable and link heights. */
+async function ownScroll(region: Locator) {
+  return region.evaluate(element => {
+    const links = Array.from(element.querySelectorAll('a'));
+    const linkHeights = links.map(link => link.getBoundingClientRect().height);
+    const previous = element.scrollTop;
+    element.scrollTo({ top: element.scrollHeight, behavior: 'instant' });
+    const rect = element.getBoundingClientRect();
+    const last = links.at(-1)?.getBoundingClientRect();
+    element.scrollTo({ top: previous, behavior: 'instant' });
+    return {
+      overflowY: getComputedStyle(element).overflowY,
+      height: rect.height,
+      bottom: rect.bottom,
+      lastLinkBottom: last ? last.bottom : Number.MAX_VALUE,
+      linkHeights,
+    };
+  });
+}
+
+test('shell aesthetic: compact header, navigation rhythm and frozen colors', async ({
+  page,
+}, testInfo) => {
+  test.setTimeout(120_000);
+  const baseURL = testInfo.project.use.baseURL;
+  if (!baseURL) throw new Error('shell aesthetic: testInfo.project.use.baseURL must be configured');
+  const url = new URL('/components/button/', baseURL).href;
+  const maximumHeaderHeightPx = 192;
+  const minimumTargetPx = 48;
+  const minimumHitAreaPx = 24;
+  const maximumGroupGapPx = 24;
+  const minimumRailWidthPx = 240;
+  const desktop = { width: 1920, height: 1000 };
+
+  // 320 light: compact header, header controls, keyboard focus and the menu Drawer.
+  let label = 'button shell 320 light';
+  await page.setViewportSize({ width: 320, height: 800 });
+  await page.goto(url);
+  await applyMode(page, 'light');
+  await waitForShell(page);
+  await saveViewport(page, testInfo, 'shell-aesthetic-320-light');
+  const header = page.getByRole('banner');
+  const headerBox = await rectOf(header);
+  expect
+    .soft(headerBox.bottom - headerBox.top, `${label}: header height`)
+    .toBeLessThanOrEqual(maximumHeaderHeightPx + tolerancePx);
+  const expectedControls = [
+    ['menu toggle', header.locator('button[data-docs-menu-toggle]')],
+    ['GenUI home wordmark', header.locator(`a[href='/']`)],
+    ['EN · English', header.getByRole('button', { name: 'EN · English', exact: true })],
+    ['TR · Turkish', header.getByRole('button', { name: 'TR · Turkish', exact: true })],
+    ['dark theme switch', header.getByRole('switch')],
+    ['Getting started', header.getByRole('link', { name: 'Getting started', exact: true })],
+  ] as const;
+  for (const [name, control] of expectedControls) {
+    await expect.soft(control, `${label}: one ${name} control`).toHaveCount(1);
+    await expect.soft(control, `${label}: ${name} is visible`).toBeVisible();
+  }
+  await expect
+    .soft(header.locator(`a[href='/']`), `${label}: the home wordmark names GenUI`)
+    .toHaveAccessibleName(/GenUI/);
+  const { controls, text: readable } = await headerControls(header);
+  expect.soft(controls.length, `${label}: header renders controls`).toBeGreaterThan(0);
+  for (const control of controls) {
+    const name = `${label}: header ${control.name}`;
+    expect.soft(control.hit, `${name} receives pointer hits at its centre`).toBe(true);
+    expect.soft(control.inside, `${name} stays inside the header and viewport`).toBe(true);
+    expect.soft(control.clipped, `${name} is not clipped`).toBe(false);
+    expect.soft(control.cutText, `${name} keeps its full text label`).toEqual([]);
+    expect
+      .soft(Math.min(control.width, control.height), `${name} hit area`)
+      .toBeGreaterThanOrEqual(minimumHitAreaPx - tolerancePx);
+    if (control.target)
+      expect
+        .soft(control.height, `${name} keeps its target height`)
+        .toBeGreaterThanOrEqual(minimumTargetPx - tolerancePx);
+  }
+  const headerText = await header.evaluate(root => {
+    const sizes: { text: string; size: number }[] = [];
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      const parent = node.parentElement;
+      const text = (node.textContent ?? '').trim();
+      if (!parent || !text || parent.closest('script') || !parent.checkVisibility()) continue;
+      sizes.push({ text, size: parseFloat(getComputedStyle(parent).fontSize) });
+    }
+    return sizes;
+  });
+  expect.soft(headerText.length, `${label}: header renders text`).toBeGreaterThan(0);
+  for (const { text, size } of headerText)
+    expect.soft(size, `${label}: header text ${text} font size`).toBeGreaterThanOrEqual(14);
+  expect.soft(readable.cut, `${label}: header text, metadata included, is not cut off`).toEqual([]);
+  expect
+    .soft(readable.inside, `${label}: header text stays inside the header and viewport`)
+    .toBe(true);
+  await expect
+    .soft(header.getByRole('button', { name: 'EN · English', exact: true }), `${label}: EN label`)
+    .toHaveAttribute('aria-pressed', 'true');
+  await expect
+    .soft(header.getByRole('button', { name: 'TR · Turkish', exact: true }), `${label}: TR label`)
+    .toHaveAttribute('aria-pressed', 'false');
+  await expectNoHorizontalOverflow(page, label);
+  await expectFrozenColors(page, frozenColors.light, label);
+
+  const firstControl = header.locator('a[href], button, input').filter({ visible: true }).first();
+  const resting = await focusPaint(firstControl);
+  for (let press = 0; press < 8; press++) {
+    if (await header.evaluate(root => root.contains(document.activeElement))) break;
+    await page.keyboard.press('Tab');
+  }
+  await expect.soft(firstControl, `${label}: Tab reaches the first header control`).toBeFocused();
+  await expect
+    .soft(page.locator('html'), `${label}: Tab turns on keyboard modality`)
+    .toHaveAttribute('data-input-modality', 'keyboard');
+  const focused = await focusPaint(firstControl);
+  expect.soft(focused.focusVisible, `${label}: first header control is focus-visible`).toBe(true);
+  expect.soft(focused.outline, `${label}: first header control has no outline`).toBe(0);
+  expect
+    .soft(focused.boxShadow, `${label}: first header control has no box-shadow ring`)
+    .not.toMatch(/ 0px 0px 0px [1-9]/);
+  expect
+    .soft(focused.paint, `${label}: first header control shows one focus indicator`)
+    .not.toBe(resting.paint);
+
+  const toggle = header.locator('button[data-docs-menu-toggle]');
+  const drawer = page.locator('dialog[data-docs-drawer]');
+  await expect
+    .soft(toggle, `${label}: menu toggle is a native button`)
+    .toHaveAttribute('type', 'button');
+  await toggle.click();
+  await expect.soft(drawer, `${label}: menu opens the Drawer`).toHaveAttribute('open', '');
+  await expect
+    .soft(toggle, `${label}: menu toggle reports the open Drawer`)
+    .toHaveAttribute('aria-expanded', 'true');
+  await expect
+    .soft(documentationNav(page), `${label}: one Documentation navigation`)
+    .toHaveCount(1);
+  await expect
+    .soft(documentationNav(drawer), `${label}: Documentation navigation is in the Drawer`)
+    .toBeVisible();
+  const search = drawer.getByRole('searchbox', { name: 'Find a component' });
+  await expect.soft(search, `${label}: native search field`).toHaveAttribute('type', 'search');
+  const inputRow = drawer.locator(`[data-component-link^='Input ']`);
+  const buttonRow = drawer.locator(`[data-component-link^='Button ']`);
+  await expect.soft(inputRow, `${label}: one Input row`).toHaveCount(1);
+  await search.fill('Button');
+  await expect.soft(buttonRow, `${label}: search keeps the Button row`).toBeVisible();
+  await expect.soft(inputRow, `${label}: search filters the Input row`).toBeHidden();
+  await search.fill('');
+  await expect.soft(inputRow, `${label}: clearing returns the Input row`).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect.soft(drawer, `${label}: Escape closes the Drawer`).not.toHaveAttribute('open', /.*/);
+  await expect
+    .soft(toggle, `${label}: menu toggle reports the closed Drawer`)
+    .toHaveAttribute('aria-expanded', 'false');
+  await expect.soft(toggle, `${label}: focus returns to the menu toggle`).toBeFocused();
+
+  // 1920 dark: sidebar and contents rail, navigation rhythm and the detail columns.
+  label = 'button shell 1920 dark';
+  await page.setViewportSize(desktop);
+  await page.goto(url);
+  await applyMode(page, 'dark');
+  await waitForShell(page);
+  await saveViewport(page, testInfo, 'shell-aesthetic-1920-dark');
+  await expectNoHorizontalOverflow(page, label);
+  await expectFrozenColors(page, frozenColors.dark, label);
+  const aside = page
+    .getByRole('complementary')
+    .filter({ has: documentationNav(page) })
+    .first();
+  const rail = page.locator(`[data-docs-shell] .page-grid > .toc[data-doc-nav='toc']`);
+  await expect.soft(aside, `${label}: sidebar is visible`).toBeVisible();
+  await expect.soft(rail, `${label}: contents rail is visible`).toBeVisible();
+  if ((await aside.count()) > 0) {
+    await expectInlineInset(aside, minimumChromeInsetPx, `${label}: sidebar`);
+    const groupGap = await documentationNav(aside).evaluate(nav => {
+      const groups = Array.from(nav.querySelectorAll(':scope > section'));
+      const list = groups[0]?.querySelector('ul');
+      const heading = groups[1]?.querySelector('h2');
+      if (!list || !heading) return null;
+      return heading.getBoundingClientRect().top - list.getBoundingClientRect().bottom;
+    });
+    expect.soft(groupGap, `${label}: sidebar renders two navigation groups`).not.toBeNull();
+    expect
+      .soft(groupGap ?? Number.MAX_VALUE, `${label}: first group end to the next heading`)
+      .toBeLessThanOrEqual(maximumGroupGapPx + tolerancePx);
+  }
+  if ((await rail.count()) > 0) {
+    const railBox = await rail.evaluate(element => {
+      const { paddingTop, paddingRight, paddingBottom, paddingLeft } = getComputedStyle(element);
+      return {
+        width: element.getBoundingClientRect().width,
+        padding: [paddingTop, paddingRight, paddingBottom, paddingLeft].map(v => parseFloat(v)),
+      };
+    });
+    expect
+      .soft(railBox.width, `${label}: rail width`)
+      .toBeGreaterThanOrEqual(minimumRailWidthPx - tolerancePx);
+    ['top', 'right', 'bottom', 'left'].forEach((side, index) =>
+      expect
+        .soft(railBox.padding[index], `${label}: rail padding-${side}`)
+        .toBeGreaterThanOrEqual(minimumChromeInsetPx - tolerancePx),
+    );
+  }
+  const regions = [
+    ['sidebar', aside],
+    ['contents rail', rail],
+  ] as const;
+  for (const [name, region] of regions) {
+    if ((await region.count()) === 0) continue;
+    const scroll = await ownScroll(region);
+    expect
+      .soft(['auto', 'scroll'], `${label}: ${name} scrolls on its own`)
+      .toContain(scroll.overflowY);
+    expect
+      .soft(scroll.height, `${label}: ${name} fits the viewport`)
+      .toBeLessThanOrEqual(desktop.height + tolerancePx);
+    expect
+      .soft(scroll.lastLinkBottom, `${label}: ${name} reaches its last link`)
+      .toBeLessThanOrEqual(scroll.bottom + tolerancePx);
+    expect.soft(scroll.linkHeights.length, `${label}: ${name} renders links`).toBeGreaterThan(0);
+    scroll.linkHeights.forEach((height, index) =>
+      expect
+        .soft(height, `${label}: ${name} link ${index + 1} height`)
+        .toBeGreaterThanOrEqual(minimumTargetPx - tolerancePx),
+    );
+  }
+  const showcase = page.locator('[data-docs-shell] .component-showcase').first();
+  const reference = page.locator('[data-docs-shell] .component-reference').first();
+  await expect.soft(showcase, `${label}: showcase is visible`).toBeVisible();
+  await expect.soft(reference, `${label}: API and resources are visible`).toBeVisible();
+  if ((await showcase.count()) > 0 && (await reference.count()) > 0) {
+    const left = await rectOf(showcase);
+    const right = await rectOf(reference);
+    expect
+      .soft(right.left, `${label}: API and resources sit right of the showcase`)
+      .toBeGreaterThanOrEqual(left.right - tolerancePx);
+    expect
+      .soft(right.top, `${label}: API and resources start beside the showcase`)
+      .toBeLessThan(left.bottom);
+  }
+});

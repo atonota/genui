@@ -22,8 +22,11 @@
   --nav-item-bg-active-hover: color-mix(in srgb, var(--accent) 20%, transparent);
   --nav-item-indicator-active: var(--accent);
 }
+/* Title, search label, group labels and link text share one start edge at the row inset; the
+   sidebar or the Drawer owns the outer inset. */
 .sidebar .navigation-title {
   margin: 0;
+  padding-inline: var(--space-sm);
   font-size: var(--text);
   font-weight: var(--font-weight-label, 600);
 }
@@ -33,7 +36,10 @@
 .sidebar .nav-search {
   display: grid;
   gap: var(--space-xs);
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-md);
+}
+.sidebar .nav-search > span {
+  padding-inline: var(--space-sm);
 }
 .sidebar .nav-search input {
   width: 100%;
@@ -56,13 +62,14 @@
 .sidebar .navigation ul {
   list-style: none;
   padding: 0;
-  margin: var(--space-xs) 0 var(--space-lg);
+  margin: var(--space-xs) 0 var(--space-md);
 }
 .sidebar .navigation li {
   margin: 0;
 }
 .sidebar .nav-group h2 {
   font-size: var(--text);
+  line-height: var(--line-height);
   font-weight: var(--font-weight-label, 600);
   padding-inline: var(--space-sm);
 }
@@ -137,8 +144,5 @@
 @media (min-width: 62rem) {
   .sidebar .navigation-title {
     font-size: var(--text-large, 1.125rem);
-  }
-  .sidebar .navigation nav {
-    padding-inline-end: var(--space-md);
   }
 }

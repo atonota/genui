@@ -57,7 +57,7 @@
 }
 .documentation-resources {
   display: grid;
-  gap: var(--space-lg);
+  gap: var(--space-md);
   margin-block: var(--space-lg) 0;
   padding: 0;
   list-style: none;
@@ -85,9 +85,19 @@
 :where([data-doc-section]:not(:first-child)) {
   margin-block-start: var(--space-section-sm, 32px);
 }
-/* Reading prose keeps one shared measure; demos, code, tables and resources keep the page width. */
+/* Reading prose keeps one shared measure; demos, code, tables and resources keep the page width.
+   Shell sections share one 48px rhythm above each section heading instead of the base 56px on
+   both sides; live demonstrations keep their panel paint with one inset step inside the padded
+   main column instead of a second 32px layer. */
 :where(:root) {
   --prose-measure: 65ch;
+  --doc-section-gap: calc(var(--space-xl) + var(--space-md));
+}
+[data-docs-shell] .doc-section {
+  margin-block: var(--doc-section-gap) 0;
+}
+[data-docs-shell] .live-preview {
+  padding: var(--space-md);
 }
 .page-grid > article > .lead,
 .doc-section > :is(.section-intro, p[data-i18n]),
@@ -99,6 +109,11 @@
   )
   > ul {
   max-inline-size: var(--prose-measure, 65ch);
+}
+@media (min-width: 40rem) {
+  [data-docs-shell] .live-preview {
+    padding: var(--space-lg);
+  }
 }
 @media (min-width: 70.625rem) {
   /* The contents rail replaces the section links from its 1130px breakpoint

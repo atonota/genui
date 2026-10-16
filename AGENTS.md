@@ -1,5 +1,37 @@
 # GenUI maintenance contract
 
+## Shell and shared documentation geometry, colors frozen — human task 2026-10-16
+
+Newest human task; it supersedes the dated docs-spacing count below only for
+this case. The preview workbench entry (164/40 rows, native behavior) and the
+frozen 59-package backlog stay unchanged. This entry claims no executed check.
+
+- Improve the shell and shared documentation pages through geometry, spacing and
+  type hierarchy only. Every existing color, background, border color/width/
+  style, shadow, opacity, filter and other paint declaration keeps its exact
+  value, selector and media context; no new paint, decoration, cards,
+  gradients, sticky header or JS behavior. Outfit, the current font and type
+  tokens (frozen, unchanged), central roles, Cubic motion and keyboard focus
+  stay; every readable shell and shared documentation text stays at least 14
+  CSS px, and no text or control shrinks.
+- Owned styles: `docs/src/components/shell/{shell,layout,nav}.css` and
+  `docs/src/styles/documentation.css`. Definitions, theme, docs brand,
+  `docs.css`, `preview-workbench.css` and application components stay
+  unchanged; test changes are owned by the test author only as listed under
+  test accounting below.
+- Header keeps DOM and Tab order (menu, wordmark, meta, language, theme,
+  Getting started): at 320px at most 192px with 48px targets and no hidden or
+  truncated label; one band from 875px. Sidebar title, search label, group
+  labels and link text share one start edge; spacing after a group's last row
+  stays within 24px; the sticky desktop sidebar contains its own scroll and the
+  Drawer alone insets the moved sidebar. The contents rail keeps 240/256px,
+  16px padding and touching 48px rows. Shell sections use one semantic
+  `--doc-section-gap`; live previews use one inset step.
+- Test accounting (authorized scope, not results): the existing
+  `docs/browser/docs-spacing.spec.ts` goes 2 -> 3, the only new case, owned by
+  the test author; browser spec files stay 28 and source test files 80. The root
+  conductor records the actual RED/GREEN receipt. No PASS/DONE/GREEN claim.
+
 ## Component preview workbench and detail layout — human task 2026-10-16
 
 Newest human task; it supersedes the dated Badge/radius scope counts and status

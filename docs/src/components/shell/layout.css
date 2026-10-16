@@ -223,16 +223,30 @@ dialog[data-docs-drawer][open]::backdrop {
 }
 
 @media (min-width: 54.6875rem) {
+  /* One header band: the meta line grows between the wordmark and the controls. */
+  [data-docs-shell] .docs-header {
+    column-gap: var(--space-md);
+  }
+  [data-docs-shell] .header-meta {
+    flex: 1 1 auto;
+  }
+  [data-docs-shell] .header-link {
+    flex: none;
+  }
   [data-docs-shell] .docs-shell {
     grid-template-columns: var(--shell-sidebar-inline-size) minmax(0, 1fr);
   }
+  /* The sticky rail scrolls on its own without chaining to the page or shifting its links. */
   [data-docs-shell] .docs-shell > .sidebar {
     display: block;
     position: sticky;
     inset-block-start: var(--shell-sticky-offset);
     align-self: start;
     max-block-size: calc(100dvh - 2 * var(--shell-sticky-offset));
+    padding-block-end: var(--space-md);
     overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
   }
   [data-docs-shell] [data-docs-menu-toggle] {
     display: none;
@@ -250,11 +264,12 @@ dialog[data-docs-drawer][open]::backdrop {
     grid-template-columns: minmax(0, 1fr) var(--shell-toc-inline-size);
   }
   /* The painted rail insets its heading and links with the container-sm role inside its own
-     border box and scrolls on its own when the labels exceed the sticky height. */
+     border box and scrolls on its own when the labels exceed the sticky height. Its 48px link
+     rows touch without an extra row gap, and labels wrap naturally between words. */
   [data-docs-shell] .page-grid > [data-doc-nav='toc'] {
     display: flex;
     flex-direction: column;
-    gap: var(--space-xs);
+    gap: 0;
     box-sizing: border-box;
     padding: var(--inset-container-sm, 16px);
     position: sticky;
@@ -263,6 +278,7 @@ dialog[data-docs-drawer][open]::backdrop {
     max-block-size: calc(100dvh - 2 * var(--shell-sticky-offset));
     overflow-y: auto;
     overscroll-behavior: contain;
+    scrollbar-gutter: stable;
   }
   /* The rail replaces the disclosure; only one set of section links is visible. */
   [data-docs-shell] .page-grid:has(> [data-doc-nav='toc']) [data-doc-contents] {

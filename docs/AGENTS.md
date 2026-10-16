@@ -1,5 +1,32 @@
 # Astro documentation maintenance contract
 
+## Shell and shared documentation geometry, colors frozen — human task 2026-10-16
+
+Newest human task; it supersedes the dated docs-spacing count below only for
+this case. The preview workbench entry (164/40 rows, native behavior) and the
+frozen 59-package backlog stay unchanged. This entry claims no executed check.
+
+- Geometry, spacing and type hierarchy only: every existing paint declaration
+  (color, background, border color/width/style, shadow, opacity, filter, fill,
+  stroke, custom paint) keeps its exact value, selector and media context. No
+  new paint, decoration, cards, gradients, sticky header or JS. Outfit, the
+  current font and type tokens (frozen, unchanged), central roles, Cubic motion
+  and Tab-only ringless focus stay; readable shell and shared documentation
+  text stays at least 14 CSS px, and no text or control shrinks.
+- Owned: `src/components/shell/{shell,layout,nav}.css` and
+  `src/styles/documentation.css`; `docs.css`, `preview-workbench.css`,
+  definitions, theme, docs brand and application components are unchanged;
+  test changes belong to the test author only as listed under test accounting.
+- Header: DOM/Tab order preserved, <=192px at 320px with 48px targets, one band
+  from 875px. Sidebar: one start edge for title, search label, group labels and
+  links; <=24px after a group's last row; desktop sticky scroll contained;
+  Drawer padding only inside the Drawer. Contents rail 240/256px, 16px padding,
+  touching 48px rows. Shell sections share `--doc-section-gap`; live previews
+  use one inset step.
+- Test accounting (authorized scope, not results): `browser/docs-spacing.spec.ts`
+  2 -> 3, the only new case (test author); browser spec files stay 28, source
+  test files 80. The root conductor records actual receipts. No PASS claim.
+
 ## Component preview workbench and detail layout — human task 2026-10-16
 
 Newest human task; it supersedes the dated Badge/radius counts and status text
