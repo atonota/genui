@@ -4,6 +4,8 @@
 // copies and the desktop layout exposes no dialog. The query matches layout.css
 // (54.6875rem = 875px).
 const sidebarQuery = '(min-width: 54.6875rem)';
+// Announces the opened Drawer to nav-state, which restores the list scroll synchronously.
+const navShownEvent = 'atlas-docs-nav-shown';
 
 /** Wires the menu Drawer; the returned disposer restores the server markup. */
 export function installDocsShell(root: Document): () => void {
@@ -35,7 +37,9 @@ export function installDocsShell(root: Document): () => void {
     if (wide.matches || drawer.open) return;
     drawer.showModal();
     toggle.setAttribute('aria-expanded', 'true');
-    close?.focus();
+    // The list has layout now; nav-state restores its scroll before focus moves into it.
+    root.dispatchEvent(new view.CustomEvent(navShownEvent));
+    close?.focus({ preventScroll: true });
   };
   const closeDrawer = (restoreFocus: boolean) => {
     if (!drawer.open) return;

@@ -11,7 +11,8 @@ import {
   radiusSelectOptions,
   withGeneralRadius,
 } from '../data/radius-options';
-import { getThemeSnapshot, subscribeTheme, type ThemeMode } from '../theme';
+import type { ThemeMode } from '../theme';
+import { usePreviewContext, usePreviewTheme } from './PreviewContext';
 import {
   createDefaultRecipe,
   tokenDefinitions,
@@ -31,8 +32,9 @@ import {
 
 const HEX_PATTERN = /^#[0-9a-f]{6}$/i;
 const SESSION_ONLY = 'Theme applied for this session; browser storage is unavailable.';
+const PREVIEW_ONLY = 'Preview theme applied only to this example.';
+const PREVIEW_NOTE = 'Changes here affect only this example. The global Theme Builder is separate.';
 const defaultRecipe = createDefaultRecipe();
-const serverMode = (): ThemeMode => 'light';
 /** Matches the Theme Builder captions: overlay is registered capitalised, other groups by id. */
 const groupCaption = (group: string): string => (group === 'overlay' ? 'Overlay' : group);
 
@@ -197,7 +199,9 @@ type Draft = Readonly<{ base: ThemeRecipe; recipe: ThemeRecipe; error: string }>
 export default function ThemeTokenEditors() {
   const { t } = useI18n();
   const prefix = useId();
-  const mode = useSyncExternalStore(subscribeTheme, getThemeSnapshot, serverMode);
+  const mode = usePreviewTheme();
+  // A preview document owns a local theme; the global Theme Builder stays separate.
+  const preview = usePreviewContext() !== null;
   const applied = useSyncExternalStore(
     subscribeThemeBuilder,
     getThemeBuilderSnapshot,
@@ -220,11 +224,13 @@ export default function ThemeTokenEditors() {
         error = checked.error;
         continue;
       }
-      // The shared store validates again, applies globally and persists in its existing key.
+      // The shared store validates again and applies it: globally with its existing persistence,
+      // or only in memory for this example inside a preview document.
       const result = applyThemeBuilder(checked.recipe);
       if (result.ok) {
         setDraft(null);
-        setStatus(result.persisted ? '' : SESSION_ONLY);
+        // A preview stays local on purpose; only a global apply reports missing storage.
+        setStatus(result.persisted ? '' : preview ? PREVIEW_ONLY : SESSION_ONLY);
         return;
       }
       error = result.error;
@@ -255,6 +261,7 @@ export default function ThemeTokenEditors() {
         <p className="atlas-tweaker-description">
           {mode === 'dark' ? t('Editing dark mode') : t('Editing light mode')}
         </p>
+        {preview ? <p className="atlas-tweaker-description">{t(PREVIEW_NOTE)}</p> : null}
         <div className="atlas-tweaker-token-actions">
           <AtlasButton htmlType="button" onClick={reset} text={t('Reset theme')} />
         </div>

@@ -1,0 +1,43 @@
+---
+// The commands install the Ant Design and React versions pinned in the repository manifest;
+// the GenUI adapters and styles come from Source and resources.
+import manifest from '../../../package.json';
+import { repositoryUrl } from './docs-page';
+
+const versions = manifest.devDependencies;
+const packages = (['antd', 'react', 'react-dom'] as const)
+  .map(name => `${name}@${versions[name]}`)
+  .join(' ');
+const managers = [
+  ['npm', 'npm install'],
+  ['yarn', 'yarn add'],
+  ['pnpm', 'pnpm add'],
+  ['bun', 'bun add'],
+] as const;
+---
+
+<div class="docs-install" data-install>
+  <h3 data-i18n="Install prerequisites">Install prerequisites</h3>
+  <p data-i18n="Install the pinned Ant Design and React versions GenUI is built on, then use the adapters and styles listed under Source and resources.">
+    Install the pinned Ant Design and React versions GenUI is built on, then use the adapters and
+    styles listed under Source and resources.
+  </p>
+  <div
+    class="docs-install-managers"
+    role="group"
+    aria-label="Package manager"
+    data-i18n-aria-label="Package manager"
+    data-install-managers
+    hidden
+  >
+    {managers.map(([id]) => (
+      <button type="button" class="doc-choice" data-install-manager={id} aria-pressed="false">
+        {id}
+      </button>
+    ))}
+  </div>
+  {managers.map(([id, command]) => <pre
+    data-install-command={id}
+  ><code>{`${command} ${packages}`}</code></pre>)}
+  <pre><code>{`git clone ${repositoryUrl}.git`}</code></pre>
+</div>

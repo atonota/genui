@@ -10,7 +10,7 @@ import { contrastRatio as contrast } from '../data/color-system';
 import { paletteForeground } from '../data/button-palette';
 import { buttonPresetTone } from '../data/button-palette';
 import { docsAccessibleThemeColors } from '../data/accessibility';
-import { getThemeSnapshot, subscribeTheme, type ThemeMode } from '../theme';
+import { usePreviewTheme } from './PreviewContext';
 import {
   getServerThemeBuilderSnapshot,
   getThemeBuilderSnapshot,
@@ -19,7 +19,6 @@ import {
 import { resolveThemeBuilder } from '../theme-builder/model';
 
 const subscribeNothing = () => () => {};
-const serverThemeMode = (): ThemeMode => 'light';
 
 export type Palette = keyof typeof atlas.palettes;
 export type Tone = keyof typeof atlas.tones.coral | 'middle';
@@ -116,7 +115,7 @@ export default function AtlasButton({
     builderActive ? getThemeBuilderSnapshot : getServerThemeBuilderSnapshot,
     getServerThemeBuilderSnapshot,
   );
-  const themeMode = useSyncExternalStore(subscribeTheme, getThemeSnapshot, serverThemeMode);
+  const themeMode = usePreviewTheme();
   const builder = useMemo(
     () =>
       builderActive && builderRecipe ? resolveThemeBuilder(builderRecipe, themeMode) : undefined,

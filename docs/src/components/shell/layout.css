@@ -1,17 +1,26 @@
 /* Documentation shell layout. The single aside.sidebar (14rem) sits in the shell grid from the
    875px content breakpoint and moves into the native modal menu Drawer below it (docs-shell.ts).
-   Component detail splits into showcase and reference columns from a 1280px laptop; page
-   contents stay a closed disclosure until the 1600px contents rail. Queries use rem so text zoom
-   keeps the narrow layout: 54.6875rem = 875px, 70.625rem = 1130px and 80.625rem = 1290px (rail
-   width values only), 80rem = 1280px (component detail columns), 100rem = 1600px (contents
-   rail). Surfaces only use the shell and panel roles. */
+   From a 1280px laptop (80rem) the component article is one centered column between the
+   sidebar and the contents rail; narrower pages keep the closed Contents disclosure. Queries use
+   rem so text zoom keeps the narrow layout: 54.6875rem = 875px, 70.625rem = 1130px (rail width)
+   and 80rem = 1280px (wide sidebar, contents rail and header links). Surfaces only use the shell and panel roles. */
 :where(:root) {
   --shell-sidebar-inline-size: 14rem;
   --shell-layout-gap: var(--space-lg);
   --shell-toc-inline-size: var(--toc-width, 10rem);
   --shell-drawer-inline-size: 20rem;
   --shell-drawer-edge: var(--target-min);
-  --shell-sticky-offset: var(--space-md);
+  /* Sticky rails start below the sticky header; DocsShell measures its wrapped height. */
+  --shell-header-block-size: var(--docs-header-height, 4rem);
+  --shell-sticky-end: var(--space-md);
+  --shell-sticky-offset: calc(var(--shell-header-block-size) + var(--shell-sticky-end));
+  --shell-rail-block-size: calc(100dvh - var(--shell-sticky-offset) - var(--shell-sticky-end));
+}
+/* Compact sticky header over the scrolling page; its paint stays in shell.css. */
+[data-docs-shell] .docs-header {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: var(--z-sticky, 10);
 }
 [data-docs-shell] {
   background: var(--shell-bg, var(--paper));
@@ -31,9 +40,10 @@
 /* Below the 875px breakpoint the fixed Tweaker trigger (tweaker.css) sits at the middle of the
    inline end edge. Only a main column that holds one keeps the trigger size, the container-sm
    gap and the safe area clear beside its content; the header, the footer and wider layouts
-   keep their inset. */
+   keep their inset. Component pages hide that outer trigger, so their main column keeps the
+   container-sm inset on both sides: 288px of content at 320px. */
 @media (width < 54.6875rem) {
-  [data-docs-shell] .docs-main:has([data-tweaker-trigger]) {
+  [data-docs-shell]:not([data-docs-component-page]) .docs-main:has([data-tweaker-trigger]) {
     padding-inline-end: calc(
       var(--inset-container-sm, 16px) + var(--atlas-tweaker-trigger-size, var(--target-min, 48px)) +
         env(safe-area-inset-right, 0px)
@@ -81,6 +91,7 @@ dialog[data-docs-drawer] {
   max-inline-size: none;
   block-size: 100dvh;
   max-block-size: none;
+  box-sizing: border-box;
   margin: 0;
   padding: var(--space-md) var(--page-gutter) var(--space-xl);
   border: 0;
@@ -94,8 +105,22 @@ dialog[data-docs-drawer] {
   transition-timing-function: var(--motion-easing);
   transition-behavior: allow-discrete;
 }
+/* Open: the Drawer header stays put and the sidebar fills the rest, so only its list scrolls. */
 dialog[data-docs-drawer][open] {
+  display: flex;
+  flex-direction: column;
   translate: 0 0;
+}
+[data-docs-drawer-body],
+[data-docs-drawer-body] > .sidebar {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-block-size: 0;
+}
+[data-docs-drawer-header],
+.sidebar > .sidebar-note {
+  flex: none;
 }
 @starting-style {
   dialog[data-docs-drawer][open] {
@@ -228,13 +253,28 @@ dialog[data-docs-drawer][open]::backdrop {
   text-align: end;
 }
 
-/* Component detail: the showcase and the API/resources reference stack naturally until a 1280px
-   laptop (80rem) gives the article room for both beside the 14rem sidebar, at least 560px and
-   320px; the contents rail only joins from 100rem. Header, section links and neighbours span
-   both columns; the reference is one continuous, non-sticky stack and its tables scroll inside
-   their own regions. */
+/* Component detail is one centered column of at most 1120px (70rem) at every width. The
+   showcase and reference wrappers keep their nodes but render no box, so the eight sections
+   stack in DOM order and API tables scroll inside their own regions. */
 [data-docs-shell] :is(.component-showcase, .component-reference) {
+  display: contents;
+}
+[data-docs-shell] .page-grid > .component-detail {
+  inline-size: 100%;
   min-inline-size: 0;
+  max-inline-size: 70rem;
+  margin-inline: auto;
+}
+/* Compact primary links join the header band from 80rem; the Drawer navigation covers
+   narrower widths. */
+[data-docs-shell] .header-primary {
+  display: none;
+  gap: var(--space-sm);
+}
+[data-docs-shell] .header-primary a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--target-min);
 }
 
 @media (min-width: 54.6875rem) {
@@ -251,17 +291,17 @@ dialog[data-docs-drawer][open]::backdrop {
   [data-docs-shell] .docs-shell {
     grid-template-columns: var(--shell-sidebar-inline-size) minmax(0, 1fr);
   }
-  /* The sticky rail scrolls on its own without chaining to the page or shifting its links. */
+  /* The sticky rail fills the viewport below the header; title and search stay put and only
+     the bounded [data-docs-nav-scroll] list scrolls (nav.css). */
   [data-docs-shell] .docs-shell > .sidebar {
-    display: block;
+    display: flex;
+    flex-direction: column;
     position: sticky;
     inset-block-start: var(--shell-sticky-offset);
     align-self: start;
-    max-block-size: calc(100dvh - 2 * var(--shell-sticky-offset));
+    box-sizing: border-box;
+    block-size: var(--shell-rail-block-size);
     padding-block-end: var(--space-md);
-    overflow: auto;
-    overscroll-behavior: contain;
-    scrollbar-gutter: stable;
   }
   [data-docs-shell] [data-docs-menu-toggle] {
     display: none;
@@ -271,20 +311,23 @@ dialog[data-docs-drawer][open]::backdrop {
   }
 }
 @media (min-width: 70.625rem) {
-  /* Rail width values only: a readable 240px minimum (15rem) that widens to 16rem at 1290px.
-     The rail itself is shown from 100rem. */
+  /* Rail width value only: a readable 240px (15rem); the rail itself is shown from 80rem. */
   :where(:root) {
     --shell-toc-inline-size: 15rem;
   }
 }
-@media (min-width: 80.625rem) {
+@media (min-width: 80rem) {
+  /* Full-width laptop geometry: the sidebar widens to 224-248px flush left, the 240px rail sits
+     flush right without a main inline-end inset, and the Contents disclosure yields to it. */
   :where(:root) {
-    --shell-toc-inline-size: 16rem;
+    --shell-sidebar-inline-size: clamp(14rem, 16vw, 15.5rem);
   }
-}
-@media (min-width: 100rem) {
-  /* Below 1600px the Contents disclosure leaves the space to the preview; the far rail joins
-     here. */
+  [data-docs-shell] .header-primary {
+    display: flex;
+  }
+  [data-docs-shell] .docs-main:has(.page-grid > [data-doc-nav='toc']) {
+    padding-inline-end: 0;
+  }
   [data-docs-shell] .page-grid:has(> [data-doc-nav='toc']) {
     grid-template-columns: minmax(0, 1fr) var(--shell-toc-inline-size);
   }
@@ -300,7 +343,7 @@ dialog[data-docs-drawer][open]::backdrop {
     position: sticky;
     inset-block-start: var(--shell-sticky-offset);
     align-self: start;
-    max-block-size: calc(100dvh - 2 * var(--shell-sticky-offset));
+    max-block-size: var(--shell-rail-block-size);
     overflow-y: auto;
     overscroll-behavior: contain;
     scrollbar-gutter: stable;
@@ -308,16 +351,5 @@ dialog[data-docs-drawer][open]::backdrop {
   /* The rail replaces the disclosure; only one set of section links is visible. */
   [data-docs-shell] .page-grid:has(> [data-doc-nav='toc']) [data-doc-contents] {
     display: none;
-  }
-}
-@media (min-width: 80rem) {
-  [data-docs-shell] .component-detail {
-    display: grid;
-    grid-template-columns: minmax(0, 1.65fr) minmax(20rem, 1fr);
-    column-gap: var(--shell-layout-gap);
-    align-items: start;
-  }
-  [data-docs-shell] .component-detail > :not(.component-showcase, .component-reference) {
-    grid-column: 1 / -1;
   }
 }

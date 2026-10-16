@@ -1,0 +1,106 @@
+/* Isolated preview document. The fixed logical screen comes from preview/profiles through the
+   inline --preview-document-* roles; paint, type and focus reuse the documentation roles. */
+/* The body carries the shared .live-preview scope, so the original web.css controls apply as on
+   the docs page; its in-page margin, padding and radius reset so the logical screen stays exact. */
+body[data-preview-body] {
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+  background: var(--panel);
+  color: var(--ink);
+}
+
+[data-preview-viewport] {
+  box-sizing: border-box;
+  width: var(--preview-document-width);
+  height: var(--preview-document-height);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+/* Central layout grid per profile: small 4 columns, 16px margins, 12px gutters; medium 8
+   columns, 32px margins, 16px gutters; large 12 columns across the 1280 container, whose 160px
+   outer margins come from the container fields, with 24px gutters. Frames pad by the margin
+   and space by the gutter. */
+[data-preview-document] {
+  --preview-grid-columns: 4;
+  --preview-grid-margin: 16px;
+  --preview-grid-gutter: 12px;
+}
+[data-preview-document][data-profile='medium'] {
+  --preview-grid-columns: 8;
+  --preview-grid-margin: 32px;
+  --preview-grid-gutter: 16px;
+}
+[data-preview-document][data-profile='large'] {
+  --preview-grid-columns: 12;
+  --preview-grid-margin: 0px;
+  --preview-grid-gutter: 24px;
+}
+
+[data-preview-container] {
+  position: relative;
+  box-sizing: border-box;
+  width: var(--preview-document-container-width);
+  min-height: 100%;
+  margin-inline: var(--preview-document-container-margin);
+}
+
+/* Small: one touch-first stacked column. */
+.preview-small {
+  display: flex;
+  flex-direction: column;
+  gap: var(--preview-grid-gutter);
+  padding: var(--preview-grid-gutter) var(--preview-grid-margin);
+  touch-action: manipulation;
+}
+
+/* Medium: a tablet grid track with wider margins. */
+.preview-medium {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: var(--preview-grid-gutter);
+  padding: var(--preview-grid-gutter) var(--preview-grid-margin);
+}
+
+/* Large: the 1280 container keeps the model's inline margins. */
+.preview-large {
+  padding: var(--preview-grid-gutter) var(--preview-grid-margin);
+}
+
+/* Grid guide: the actual columns between the margins, painted over the content without taking
+   pointer, touch or focus. */
+[data-preview-grid] [data-preview-container]::after {
+  --preview-grid-column: calc(
+    (100% - (var(--preview-grid-columns) - 1) * var(--preview-grid-gutter)) /
+      var(--preview-grid-columns)
+  );
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline: var(--preview-grid-margin);
+  z-index: 1;
+  background-image: repeating-linear-gradient(
+    to right,
+    color-mix(in srgb, var(--line) 40%, transparent) 0 var(--preview-grid-column),
+    transparent var(--preview-grid-column)
+      calc(var(--preview-grid-column) + var(--preview-grid-gutter))
+  );
+  pointer-events: none;
+}
+
+/* Once the matching cluster carries data-preview-content, everything around it hides; the real
+   Tweaker trigger and panel stay usable. Without :has() support the full demo stays visible. */
+[data-preview-container]:has([data-preview-content])
+  :not(
+    :has([data-preview-content], .atlas-tweaker-trigger, .atlas-tweaker-panel),
+    [data-preview-content],
+    [data-preview-content] *,
+    .atlas-tweaker-trigger,
+    .atlas-tweaker-trigger *,
+    .atlas-tweaker-panel,
+    .atlas-tweaker-panel *
+  ) {
+  display: none;
+}

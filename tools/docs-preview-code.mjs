@@ -15,6 +15,20 @@ const machineHome = /\/Users\/[^/\s'"`)\]>]*/g;
 const credential =
   /-----BEGIN [A-Z ]*PRIVATE KEY-----|\bgh[pousr]_[A-Za-z0-9]{20,}|\bAKIA[0-9A-Z]{16}\b|\bsk-[A-Za-z0-9_-]{20,}/;
 
+// Guards text bound for a published Code payload with the rule above. Exported so the
+// endpoint applies the same fail-closed check and redaction to raw profile entries.
+/**
+ * @param {string} text
+ * @param {string} label
+ * @param {boolean} [redactHome]
+ * @returns {string}
+ */
+export const publishablePreviewText = (text, label, redactHome = false) => {
+  if (credential.test(text))
+    throw new Error(`Refusing to publish ${label}: credential-shaped content`);
+  return redactHome ? text.replace(machineHome, '<workspace>') : text;
+};
+
 /**
  * @typedef {{ path: string, text: string }} PreviewSource
  * @typedef {{ id: string, code: string, sourcePath: string, sourceUrl: string }} PreviewCode
@@ -272,14 +286,14 @@ export const collectPreviewCode = (sources, { sourceUrl, redactHome = false }) =
       const previous = locations.get(id);
       if (previous) throw new Error(`Duplicate ExamplePreview id '${id}' at ${at} and ${previous}`);
       locations.set(id, at);
-      const code = codeFor(sf, element);
-      if (credential.test(code))
-        throw new Error(
-          `Refusing to publish preview code '${id}' from ${path}: credential-shaped content`,
-        );
+      const code = publishablePreviewText(
+        codeFor(sf, element),
+        `preview code '${id}' from ${path}`,
+        redactHome,
+      );
       payloads.push({
         id,
-        code: redactHome ? code.replace(machineHome, '<workspace>') : code,
+        code,
         sourcePath: path,
         sourceUrl: sourceUrl(path),
       });

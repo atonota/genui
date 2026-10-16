@@ -30,8 +30,31 @@
   font-size: var(--text);
   font-weight: var(--font-weight-label, 600);
 }
+/* Title and search stay in place while only the categories list scrolls in its own bounded
+   container, so the scrollbar stays inside the navigation column. */
+.sidebar .navigation {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-block-size: 0;
+}
+.sidebar .navigation-title,
+.sidebar .nav-search {
+  flex: none;
+}
 .sidebar .navigation nav {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-block-size: 0;
   padding-block: var(--space-md);
+}
+.sidebar [data-docs-nav-scroll] {
+  flex: 1 1 auto;
+  min-block-size: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
 }
 .sidebar .nav-search {
   display: grid;

@@ -2,6 +2,7 @@ import { access, readdir, readFile, writeFile } from 'node:fs/promises';
 import { relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { JSDOM } from 'jsdom';
+import { collectPreviewCode } from './docs-preview-code.mjs';
 
 // Structural ECA gate for built documentation HTML. It inspects generated markup only;
 // it is not browser, computed-style, visual, device or CI evidence.
@@ -15,6 +16,30 @@ const foundationRoutes = new Map(
   ),
 );
 const componentRoute = new RegExp(rules.pageKinds.component.routePattern);
+// Preview documents are not documentation pages: a route is admitted only for a literal
+// ExamplePreview id collected from the fixed docs/src/react allowlist and a declared profile.
+const previewRoute = new RegExp(rules.previewDocuments.routePattern);
+const reactRoot = resolve(import.meta.dirname, '../docs/src/react');
+const previewIds = new Set(
+  collectPreviewCode(
+    await Promise.all(
+      (await readdir(reactRoot, { recursive: true }))
+        .filter(file => file.endsWith('.tsx'))
+        .map(async file => ({
+          path: `docs/src/react/${file.split(sep).join('/')}`,
+          text: await readFile(resolve(reactRoot, file), 'utf8'),
+        })),
+    ),
+    { sourceUrl: () => '' },
+  ).map(({ id }) => id),
+);
+function previewOf(path) {
+  const match = previewRoute.exec(path);
+  if (!match) return null;
+  const [, id, profile] = match;
+  const known = previewIds.has(id) && Object.hasOwn(rules.previewDocuments.deliveries, profile);
+  return { id, profile, known };
+}
 // Declared redirects: each retired route names one canonical documentation route as its target.
 const redirectTargets = new Map(Object.entries(rules.pageKinds.redirect?.targets ?? {}));
 for (const route of rules.pageKinds.redirect?.routes ?? [])
@@ -46,6 +71,7 @@ function finding(ruleId, message) {
 /** Page kind for a built route; null means the route is unknown and fails closed. */
 export function pageKind(path) {
   if (foundationRoutes.has(path)) return foundationRoutes.get(path);
+  if (previewOf(path)?.known) return 'preview';
   return componentRoute.test(path) ? 'component' : null;
 }
 
@@ -128,6 +154,9 @@ function checkStructure(document, findings) {
     const seen = new Set();
     const listed = new Set();
     for (const link of nav.querySelectorAll('a')) {
+      // Page tools slotted into a navigation link to sources and the repository, not sections.
+      const tools = link.closest('[data-doc-tools]');
+      if (tools && tools !== nav && nav.contains(tools)) continue;
       const href = link.getAttribute('href');
       const id = fragment(href);
       if (id === null || !targets.has(id))
@@ -394,19 +423,88 @@ function checkRedirect(document, path, findings) {
     );
 }
 
+// A preview page is one server-rendered example document hydrated only by the selected
+// profile's delivery entry; client-only placeholders and documentation chrome fail.
+// Preview content is the example's own server-rendered markup: presentational text, graphics and
+// native controls all count. Hidden nodes and unresolved React Suspense boundaries ($? pending,
+// $! client-rendered) are not server-rendered content, so empty wrappers and loading-only or
+// client-only placeholders still fail.
+const previewMarkup = `img, svg, canvas, video, audio, picture, iframe, [role='img'], button, input, select, textarea, a[href], summary, [contenteditable=true], [tabindex]:not([tabindex='-1'])`;
+const unresolvedBoundary = new Set(['$?', '$!']);
+const docsChrome = '[data-doc-section], [data-doc-nav], [data-doc-contents], [data-doc-tools]';
+const islandFile = island => (island.getAttribute('component-url') ?? '').split('/').at(-1);
+
+function renderedPreview(document, contents) {
+  if (contents.length !== 1) return false;
+  const content = contents[0].cloneNode(true);
+  for (const node of content.querySelectorAll('script, style, template, noscript, [hidden]'))
+    node.remove();
+  const comments = document.createTreeWalker(content, document.defaultView.NodeFilter.SHOW_COMMENT);
+  while (comments.nextNode()) if (unresolvedBoundary.has(comments.currentNode.data)) return false;
+  return (
+    Boolean(content.firstElementChild) &&
+    (Boolean(text(content)) || Boolean(content.querySelector(previewMarkup)))
+  );
+}
+
+function checkPreview(document, profile, findings) {
+  const delivery = rules.previewDocuments.deliveries[profile];
+  const islands = [...document.querySelectorAll('astro-island')];
+  const [island] = islands;
+  const selected =
+    islands.length === 1 &&
+    island.getAttribute('client') !== 'only' &&
+    islandFile(island).startsWith(`${delivery}.`) &&
+    islandFile(island).endsWith('.js');
+  if (!selected)
+    findings.push(
+      finding(
+        'preview-island-invalid',
+        `Expected exactly one hydrating ${delivery} island; found ${islands.map(islandFile).join(', ') || 'none'}.`,
+      ),
+    );
+  const documents = [...document.querySelectorAll('[data-preview-document]')];
+  const root =
+    documents.length === 1 && selected && island.contains(documents[0]) ? documents[0] : null;
+  if (!root || root.getAttribute('data-profile') !== profile) {
+    findings.push(
+      finding(
+        'preview-document-invalid',
+        `Expected one server-rendered ${profile} preview document inside the ${delivery} island; found ${documents.length}.`,
+      ),
+    );
+    return;
+  }
+  if (root.querySelector(docsChrome))
+    findings.push(
+      finding('preview-shell-nested', 'The preview document embeds documentation page chrome.'),
+    );
+  const contents = root.querySelectorAll('[data-preview-content]');
+  if (!renderedPreview(document, contents))
+    findings.push(
+      finding(
+        'preview-content-invalid',
+        `Expected exactly one [data-preview-content] with server-rendered text, graphics or controls; found ${contents.length}.`,
+      ),
+    );
+}
+
 /** Structural findings for one generated page; cross-page checks belong to validateBuild. */
 export function validateBuiltPage(html, { path }) {
   const kind = pageKind(path);
   if (!kind)
     return [
-      finding(
-        'page-kind-unknown',
-        `${path} is neither a listed foundation route nor a /components/<slug>/ route.`,
-      ),
+      previewOf(path)
+        ? finding('preview-route-unknown', `${path} names no literal ExamplePreview id.`)
+        : finding(
+            'page-kind-unknown',
+            `${path} is neither a listed foundation route nor a /components/<slug>/ route.`,
+          ),
     ];
   const { window } = new JSDOM(html);
   const findings = [];
-  if (kind === 'redirect') checkRedirect(window.document, path, findings);
+  if (kind === 'preview') checkPreview(window.document, previewOf(path).profile, findings);
+  else if (kind === 'redirect') checkRedirect(window.document, path, findings);
   else {
     const sections = checkStructure(window.document, findings);
     if (kind === 'component') checkComponent(window.document, sections, path, findings);

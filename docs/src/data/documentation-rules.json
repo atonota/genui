@@ -120,6 +120,12 @@
     "protocol": "https:",
     "hosts": ["ant.design"]
   },
+  "previewDocuments": {
+    "label": "Isolated example preview",
+    "description": "Prerendered document for one literal ExamplePreview id and one profile. It is not a documentation page and is checked by the preview rules only.",
+    "routePattern": "^/preview/([a-z0-9]+(?:-[a-z0-9]+)*)/(small|medium|large)/$",
+    "deliveries": { "small": "SmallDelivery", "medium": "MediumDelivery", "large": "LargeDelivery" }
+  },
   "verification": "The gate inspects generated HTML structure only. It is not browser, computed-style, visual, device or CI evidence.",
   "rules": [
     {
@@ -324,6 +330,41 @@
       "event": "The complete build output is inspected.",
       "condition": "A declared redirect route or its canonical target was not generated.",
       "action": "Fail the build; generate the redirect page and its target, or correct the declared target."
+    },
+    {
+      "ruleId": "preview-route-unknown",
+      "severity": "error",
+      "event": "A generated HTML page is inspected after the Astro build.",
+      "condition": "The route has the /preview/<id>/<profile>/ shape but names no literal ExamplePreview id from docs/src/react.",
+      "action": "Fail the build; prerender previews only for literal ExamplePreview ids."
+    },
+    {
+      "ruleId": "preview-island-invalid",
+      "severity": "error",
+      "event": "A preview document is inspected.",
+      "condition": "The page does not hydrate exactly one island, the delivery entry of its route profile.",
+      "action": "Fail the build; hydrate only the selected profile's delivery entry."
+    },
+    {
+      "ruleId": "preview-document-invalid",
+      "severity": "error",
+      "event": "A preview document is inspected.",
+      "condition": "The selected island does not server-render exactly one data-preview-document for the route profile.",
+      "action": "Fail the build; server-render the preview document; client-only placeholders do not count."
+    },
+    {
+      "ruleId": "preview-shell-nested",
+      "severity": "error",
+      "event": "A preview document is inspected.",
+      "condition": "The preview document contains documentation page chrome such as sections, section navigation or page tools.",
+      "action": "Fail the build; render the example alone, without the documentation shell."
+    },
+    {
+      "ruleId": "preview-content-invalid",
+      "severity": "error",
+      "event": "A preview document is inspected.",
+      "condition": "The preview document lacks exactly one data-preview-content with native interactive markup.",
+      "action": "Fail the build; mark the rendered example cluster with data-preview-content."
     }
   ]
 }

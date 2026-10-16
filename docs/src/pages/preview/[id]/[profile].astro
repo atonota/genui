@@ -1,0 +1,118 @@
+---
+// Isolated build-time SSR document for one example cluster and one manually chosen profile.
+// Static hosting cannot render per request, so every literal ExamplePreview id × profile is
+// prerendered and only the selected profile's delivery entry hydrates.
+import { collectPreviewCode } from '../../../../../tools/docs-preview-code.mjs';
+import { docsThemeStyleText as themeStyleText } from '../../../theme';
+import { docsBrandStyleText } from '../../../data/docs-brand';
+import { docsTypographyStyleText } from '../../../data/typography';
+import { docsAccessibilityStyleText } from '../../../data/accessibility';
+import { selectionSizeStyleText } from '../../../data/selection-sizes';
+import '../../../styles/docs.css';
+import '../../../styles/atlas-shadows.css';
+import '../../../styles/components.css';
+import '../../../styles/web.css';
+import '../../../styles/size-profiles.css';
+import '../../../styles/interaction-feedback.css';
+import '../../../styles/docs-brand.css';
+import '../../../styles/docs-accessibility.css';
+import '../../../styles/documentation.css';
+import '../../../styles/atlas-input.css';
+import '../../../styles/theme-builder.css';
+import '../../../styles/focus-01.css';
+import '../../../styles/preview-document.css';
+import { extractDemoStyles } from '../../../ssr/styles';
+import { parsePreviewProfile, previewProfiles } from '../../../preview/profiles';
+import { previewRegistry, previewSlugForId } from '../../../preview/registry';
+import { serverDemos } from '../../../preview/registry.server';
+import SmallDelivery from '../../../react/preview/SmallDelivery';
+import MediumDelivery from '../../../react/preview/MediumDelivery';
+import LargeDelivery from '../../../react/preview/LargeDelivery';
+import { createElement } from 'react';
+
+interface Props {
+  slug: string;
+}
+
+export function getStaticPaths() {
+  // Same fixed docs/src/react allowlist as the Code payloads; sources are parsed, never run.
+  const sources = import.meta.glob<string>('../../../react/**/*.tsx', {
+    query: '?raw',
+    import: 'default',
+    eager: true,
+  });
+  const payloads = collectPreviewCode(
+    Object.entries(sources).map(([key, text]) => ({
+      path: 'docs/src/' + key.slice('../../../'.length),
+      text,
+    })),
+    { sourceUrl: () => '' },
+  );
+  return payloads.flatMap(({ id }) => {
+    const slug = previewSlugForId(id);
+    return previewProfiles.map(profile => ({ params: { id, profile }, props: { slug } }));
+  });
+}
+
+const { id, profile } = Astro.params as { id: string; profile: string };
+const { slug } = Astro.props;
+const selection = parsePreviewProfile(profile);
+const entry = previewRegistry[slug];
+const Demo = serverDemos[slug];
+if (!entry || !Demo) throw new Error(`Preview '${id}' has no registered demo.`);
+const styleUrls = import.meta.glob<string>('../../../styles/*.css', {
+  query: '?url',
+  import: 'default',
+  eager: true,
+});
+const routeSheets = entry.styles.map(file => {
+  const href = styleUrls[`../../../styles/${file}`];
+  if (!href) throw new Error(`Preview stylesheet ${file} is missing.`);
+  return href;
+});
+// Styles come from the chosen delivery entry itself, so the demo renders inside its
+// PreviewContext and wrappers exactly as the hydrated body does.
+const Delivery = { small: SmallDelivery, medium: MediumDelivery, large: LargeDelivery }[
+  selection.profile
+];
+const ssrStyles = extractDemoStyles(() => createElement(Delivery, { id, slug }), {
+  documentation: true,
+});
+const base = import.meta.env.BASE_URL;
+const favicon = (base.endsWith('/') ? base : base + '/') + 'favicon.svg';
+---
+
+<!doctype html>
+<html lang="en" data-theme="light" style="color-scheme: light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" type="image/svg+xml" href={favicon} />
+    <style is:inline set:html={themeStyleText} />
+    <style is:inline data-docs-brand-tokens set:html={docsBrandStyleText} />
+    <style is:inline data-docs-typography set:html={docsTypographyStyleText} />
+    <style is:inline data-docs-accessibility set:html={docsAccessibilityStyleText} />
+    <style is:inline data-selection-sizes set:html={selectionSizeStyleText} />
+    <title>{`${id} · ${selection.profile} · Preview · GenUI`}</title>
+    <Fragment set:html={ssrStyles} />
+    {routeSheets.map(href => (
+      <link rel="stylesheet" href={href} />
+    ))}
+  </head>
+  <body class="live-preview" data-atlas-surface="docs" data-preview-body>
+    {selection.profile === 'small' && <SmallDelivery id={id} slug={slug} client:load />}
+    {selection.profile === 'medium' && <MediumDelivery id={id} slug={slug} client:load />}
+    {selection.profile === 'large' && <LargeDelivery id={id} slug={slug} client:load />}
+    <script>
+      import { installInputModality } from '../../../input-modality';
+      import { installOverlayBackdrop } from '../../../overlay-backdrop';
+      import { restoreLocale } from '../../../i18n';
+      // The document's own modality owner keeps the keyboard-only focus indicator contract.
+      installOverlayBackdrop();
+      installInputModality(document);
+      void restoreLocale().catch(() => {});
+    </script>
+  </body>
+</html>

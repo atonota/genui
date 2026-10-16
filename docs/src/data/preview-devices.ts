@@ -1,23 +1,35 @@
-/** Device illustrations for the shared example workbench. They are bounded illustrative
-    container previews, not browser or device emulation: the preferred screen width is a
-    reference maximum, a smaller central display cap bounds the drawn screen so it never
-    dominates the page, and the frame still fits its column. Phones and tablets keep portrait
-    proportions, the MacBook keeps landscape proportions, and every screen shares one minimum
-    height and grows with its content. These chrome curves and hardware details are the only
-    device-specific geometry. Lengths are CSS px. */
+/** Device frames for the shared example workbench. Each device draws one fixed logical
+    screen: the size is an illustrative reference, not browser or device emulation and no
+    hardware claim. Phones and tablets rotate by swapping width and height, the MacBook is
+    always landscape, and the screen never grows with its content. The whole device width
+    includes the bezel and the base. The chrome curves stay neutral roles for the existing
+    CSS. Lengths are CSS px; this module is the one central source of preview dimensions. */
 export type PreviewDevice = 'iphone' | 'ipad' | 'macbook';
+export type PreviewOrientation = 'portrait' | 'landscape';
+
+export const previewOrientations: readonly PreviewOrientation[] = ['portrait', 'landscape'];
+
+export function isPreviewOrientation(value: unknown): value is PreviewOrientation {
+  return value === 'portrait' || value === 'landscape';
+}
 
 export type PreviewDeviceDefinition = {
   readonly value: PreviewDevice;
   /** Canonical English option label, translated where rendered. */
   readonly label: string;
-  /** Preferred screen width: a reference maximum, never a viewport promise. */
+  /** Fixed logical screen width in the device's natural orientation. */
   readonly screenWidthPx: number;
-  /** Illustrative display cap on the drawn screen width; no scaling, text keeps its size. */
+  /** Fixed logical screen height; content scrolls inside, the screen never grows. */
+  readonly screenHeightPx: number;
+  /** Centered content container width; equals the screen width when unbounded. */
+  readonly containerWidthPx: number;
+  /** Phones and tablets rotate; the MacBook stays landscape. */
+  readonly rotatable: boolean;
+  /** @deprecated Compat alias of screenWidthPx until the workbench reads the fixed roles. */
   readonly displayMaxScreenWidthPx: number;
-  /** One shared minimum block size, so device changes keep the same floor. */
+  /** @deprecated Compat alias of screenHeightPx. */
   readonly screenMinHeightPx: number;
-  /** Preferred proportions: portrait iPhone and iPad, landscape MacBook; content still grows. */
+  /** @deprecated Compat alias of the fixed screen proportions. */
   readonly screenAspectWidth: number;
   readonly screenAspectHeight: number;
   readonly bezelTopPx: number;
@@ -42,29 +54,40 @@ export type PreviewDeviceDefinition = {
   readonly notchHeightPx: number;
 };
 
+/** Fixed screen fields; the deprecated roles alias the actual fixed size. */
+function fixedScreen(width: number, height: number, container = width) {
+  return {
+    screenWidthPx: width,
+    screenHeightPx: height,
+    containerWidthPx: container,
+    displayMaxScreenWidthPx: width,
+    screenMinHeightPx: height,
+    screenAspectWidth: width,
+    screenAspectHeight: height,
+  };
+}
+
+// Illustrative MacBook 13 class: 1600×1000 logical screen, 1280 container, 160 margins.
 const macbook: PreviewDeviceDefinition = {
   value: 'macbook',
   label: 'MacBook',
-  screenWidthPx: 1280,
-  displayMaxScreenWidthPx: 384,
-  screenMinHeightPx: 200,
-  screenAspectWidth: 1280,
-  screenAspectHeight: 800,
-  bezelTopPx: 16,
-  bezelInlinePx: 10,
-  bezelBottomPx: 10,
-  frameRadiusPx: 12,
-  frameEndRadiusPx: 3,
+  ...fixedScreen(1600, 1000, 1280),
+  rotatable: false,
+  bezelTopPx: 18,
+  bezelInlinePx: 12,
+  bezelBottomPx: 12,
+  frameRadiusPx: 14,
+  frameEndRadiusPx: 2,
   screenRadiusPx: 4,
   sensorWidthPx: 6,
   sensorHeightPx: 6,
   indicatorWidthPx: 0,
   indicatorHeightPx: 0,
-  baseHeightPx: 10,
-  baseOverhangPx: 14,
-  baseRadiusPx: 8,
-  notchWidthPx: 88,
-  notchHeightPx: 4,
+  baseHeightPx: 12,
+  baseOverhangPx: 28,
+  baseRadiusPx: 10,
+  notchWidthPx: 112,
+  notchHeightPx: 5,
 };
 
 export const DEFAULT_PREVIEW_DEVICE: PreviewDevice = 'macbook';
@@ -73,20 +96,19 @@ export const previewDevices: readonly PreviewDeviceDefinition[] = [
   {
     value: 'iphone',
     label: 'iPhone',
-    screenWidthPx: 390,
-    displayMaxScreenWidthPx: 260,
-    screenMinHeightPx: 200,
-    screenAspectWidth: 390,
-    screenAspectHeight: 844,
-    bezelTopPx: 20,
-    bezelInlinePx: 8,
-    bezelBottomPx: 20,
-    frameRadiusPx: 40,
-    frameEndRadiusPx: 40,
-    screenRadiusPx: 32,
-    sensorWidthPx: 72,
-    sensorHeightPx: 12,
-    indicatorWidthPx: 96,
+    // Illustrative iPhone 18 class logical screen. Rotatable devices keep one uniform bezel, so
+    // landscape moves the island and indicator to the side edges without resizing the frame.
+    ...fixedScreen(402, 874),
+    rotatable: true,
+    bezelTopPx: 16,
+    bezelInlinePx: 16,
+    bezelBottomPx: 16,
+    frameRadiusPx: 56,
+    frameEndRadiusPx: 56,
+    screenRadiusPx: 40,
+    sensorWidthPx: 84,
+    sensorHeightPx: 10,
+    indicatorWidthPx: 104,
     indicatorHeightPx: 4,
     baseHeightPx: 0,
     baseOverhangPx: 0,
@@ -97,17 +119,15 @@ export const previewDevices: readonly PreviewDeviceDefinition[] = [
   {
     value: 'ipad',
     label: 'iPad',
-    screenWidthPx: 820,
-    displayMaxScreenWidthPx: 400,
-    screenMinHeightPx: 200,
-    screenAspectWidth: 820,
-    screenAspectHeight: 1180,
-    bezelTopPx: 14,
-    bezelInlinePx: 14,
-    bezelBottomPx: 14,
-    frameRadiusPx: 24,
-    frameEndRadiusPx: 24,
-    screenRadiusPx: 10,
+    // Illustrative iPad mini class logical screen.
+    ...fixedScreen(744, 1133),
+    rotatable: true,
+    bezelTopPx: 20,
+    bezelInlinePx: 20,
+    bezelBottomPx: 20,
+    frameRadiusPx: 32,
+    frameEndRadiusPx: 32,
+    screenRadiusPx: 12,
     sensorWidthPx: 6,
     sensorHeightPx: 6,
     indicatorWidthPx: 0,
@@ -125,22 +145,79 @@ export function previewDeviceDefinition(device: PreviewDevice): PreviewDeviceDef
   return previewDevices.find(item => item.value === device) ?? macbook;
 }
 
+function naturalOrientation(definition: PreviewDeviceDefinition): PreviewOrientation {
+  return definition.screenWidthPx >= definition.screenHeightPx ? 'landscape' : 'portrait';
+}
+
+/** Rotatable devices honour a valid requested orientation; the MacBook stays landscape. */
+export function previewOrientation(
+  device: PreviewDevice,
+  orientation?: PreviewOrientation,
+): PreviewOrientation {
+  const definition = previewDeviceDefinition(device);
+  return definition.rotatable && isPreviewOrientation(orientation)
+    ? orientation
+    : naturalOrientation(definition);
+}
+
+export type PreviewScreen = {
+  readonly device: PreviewDevice;
+  readonly orientation: PreviewOrientation;
+  readonly widthPx: number;
+  readonly heightPx: number;
+  readonly containerWidthPx: number;
+  /** Inline margin on each side of the centered container. */
+  readonly containerMarginPx: number;
+};
+
+/** The fixed logical screen for a device and orientation; rotating swaps width and height. */
+export function previewScreen(
+  device: PreviewDevice,
+  orientation?: PreviewOrientation,
+): PreviewScreen {
+  const definition = previewDeviceDefinition(device);
+  const resolved = previewOrientation(device, orientation);
+  const swap = resolved !== naturalOrientation(definition);
+  const widthPx = swap ? definition.screenHeightPx : definition.screenWidthPx;
+  const heightPx = swap ? definition.screenWidthPx : definition.screenHeightPx;
+  // An unbounded container follows the screen; a bounded one never exceeds it.
+  const containerWidthPx =
+    definition.containerWidthPx >= definition.screenWidthPx
+      ? widthPx
+      : Math.min(definition.containerWidthPx, widthPx);
+  return {
+    device: definition.value,
+    orientation: resolved,
+    widthPx,
+    heightPx,
+    containerWidthPx,
+    containerMarginPx: (widthPx - containerWidthPx) / 2,
+  };
+}
+
 /** Inline --preview-* roles read by preview-workbench.css. */
 export function previewDeviceVariables(
   device: PreviewDevice,
+  orientation?: PreviewOrientation,
 ): Record<`--preview-${string}`, string> {
   const definition = previewDeviceDefinition(device);
+  const screen = previewScreen(device, orientation);
   const px = (value: number) => `${value}px`;
-  // Frame width around a screen width: the lid bezel and the base overhang on both sides.
-  const frame = (screenWidth: number) =>
-    screenWidth + 2 * definition.bezelInlinePx + 2 * definition.baseOverhangPx;
-  // Every screen keeps numeric preferred proportions, so device changes interpolate them.
-  const aspect = `${definition.screenAspectWidth} / ${definition.screenAspectHeight}`;
+  // The whole device: lid bezel and base overhang on both sides, the base below.
+  const deviceWidth = screen.widthPx + 2 * definition.bezelInlinePx + 2 * definition.baseOverhangPx;
+  const deviceHeight =
+    definition.bezelTopPx + screen.heightPx + definition.bezelBottomPx + definition.baseHeightPx;
   return {
-    '--preview-device-width': px(frame(definition.screenWidthPx)),
-    '--preview-device-display-width': px(frame(definition.displayMaxScreenWidthPx)),
-    '--preview-screen-min-height': px(definition.screenMinHeightPx),
-    '--preview-screen-aspect': aspect,
+    '--preview-device-width': px(deviceWidth),
+    '--preview-device-height': px(deviceHeight),
+    '--preview-screen-width': px(screen.widthPx),
+    '--preview-screen-height': px(screen.heightPx),
+    '--preview-container-width': px(screen.containerWidthPx),
+    '--preview-container-margin': px(screen.containerMarginPx),
+    // Compat aliases for the current workbench CSS: the actual fixed size, no display cap.
+    '--preview-device-display-width': px(deviceWidth),
+    '--preview-screen-min-height': px(screen.heightPx),
+    '--preview-screen-aspect': `${screen.widthPx} / ${screen.heightPx}`,
     '--preview-bezel-top': px(definition.bezelTopPx),
     '--preview-bezel-inline': px(definition.bezelInlinePx),
     '--preview-bezel-bottom': px(definition.bezelBottomPx),

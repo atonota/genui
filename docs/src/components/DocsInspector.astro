@@ -1,0 +1,108 @@
+---
+// Inspector for component pages: one closed native dialog wired by docs-inspector.ts. Its
+// controls dispatch the preview stage contract and stay disabled until a stage reports focus.
+import '../styles/docs-inspector.css';
+
+const choiceGroups = [
+  {
+    control: 'scope',
+    label: 'Scope',
+    options: [
+      ['focused', 'Focused example'],
+      ['all', 'All examples'],
+    ],
+  },
+  {
+    control: 'device',
+    label: 'Device',
+    options: [
+      ['iphone', 'iPhone'],
+      ['ipad', 'iPad'],
+      ['macbook', 'MacBook'],
+    ],
+  },
+  {
+    control: 'theme',
+    label: 'Theme',
+    options: [
+      ['light', 'Light'],
+      ['dark', 'Dark'],
+    ],
+  },
+];
+---
+
+<dialog
+  id="docs-inspector"
+  class="docs-inspector"
+  data-docs-inspector
+  aria-labelledby="docs-inspector-title"
+>
+  <div class="docs-inspector-header">
+    <h2 id="docs-inspector-title">
+      <span data-i18n="Inspector">Inspector</span>
+    </h2>
+    <button
+      type="button"
+      class="doc-choice"
+      data-docs-inspector-close
+      aria-controls="docs-inspector"
+      aria-expanded="false"
+    >
+      <span data-i18n="Close inspector">Close inspector</span>
+    </button>
+  </div>
+  <p data-docs-inspector-empty>
+    <span data-i18n="No preview stage is connected yet, so these controls are unavailable.">
+      No preview stage is connected yet, so these controls are unavailable.
+    </span>
+  </p>
+  <p data-docs-inspector-focus hidden>
+    <span data-i18n="Focused stage:">Focused stage:</span>
+    <strong data-docs-inspector-title></strong>
+  </p>
+  {choiceGroups.map(group => (
+    <fieldset class="docs-inspector-group" data-docs-inspector-controls disabled>
+      <legend>
+        <span data-i18n={group.label}>{group.label}</span>
+      </legend>
+      <div class="docs-inspector-choices">
+        {group.options.map(([value, label]) => (
+          <button
+            type="button"
+            class="doc-choice"
+            data-preview-control={group.control}
+            data-preview-value={value}
+            aria-pressed="false"
+          >
+            <span data-i18n={label}>{label}</span>
+          </button>
+        ))}
+      </div>
+    </fieldset>
+  ))}
+  <fieldset class="docs-inspector-group" data-docs-inspector-controls disabled>
+    <legend>
+      <span data-i18n="Preview">Preview</span>
+    </legend>
+    <div class="docs-inspector-choices">
+      <button type="button" class="doc-choice" data-preview-control="grid" aria-pressed="false">
+        <span data-i18n="Layout grid">Layout grid</span>
+      </button>
+      <button
+        type="button"
+        class="doc-choice"
+        data-preview-control="action"
+        data-preview-value="settings"
+      >
+        <span data-i18n="Component settings">Component settings</span>
+      </button>
+    </div>
+  </fieldset>
+</dialog>
+
+<script>
+  import { installDocsInspector } from './docs-inspector';
+
+  installDocsInspector(document);
+</script>

@@ -1,5 +1,29 @@
 # GenUI maintenance contract
 
+## Component page tabs, full-width rails and install guidance — human task 2026-10-16
+
+Newest human task for component pages; it supersedes the 80rem showcase/reference
+split and the 100rem rail threshold below. Colors, fonts, type tokens and
+definitions are unchanged; older entries stay as history. Results are PENDING:
+no check was run and no test was added in this source phase.
+
+- From 80rem the sidebar is 224-248px flush left, the 240px contents rail flush
+  right, and the article one centered column of at most 1120px; showcase and
+  reference wrappers are `display: contents`.
+- Overview/Examples/API/Integration tabs (Examples default) group the eight
+  unchanged sections through `data-doc-panel`. `docs/src/components/docs-page.ts`
+  applies `hidden`/`inert` only after load, syncs `?tab=` and legacy section
+  hashes with history, roves Left/Right/Home/End and filters section and
+  contents links to the active tab. Without JS every section stays visible.
+- DocsPageTools: published source, copy as Markdown; edit/issue/GitHub/clone
+  links only with `PUBLIC_GENUI_REPOSITORY_URL` (edit also needs `_BRANCH`).
+  DocsInstall: npm/yarn/pnpm/bun commands for antd/react/react-dom versions
+  from package.json (GenUI is not on npm), persisted as `genui-package-manager`.
+  ApiReference splits joined identifier names; ambiguous types/defaults point
+  to the official reference and keep the joined original.
+- PENDING: i18n dictionary entries, optional inspector, regression tests, build
+  gate, tab focus marker, hash/keyboard browser checks and 320px overflow.
+
 ## Black dark documentation shell and canonical sidebar search — human task 2026-10-16
 
 Newest human task; a precise, human-authorized exception to the color freeze in

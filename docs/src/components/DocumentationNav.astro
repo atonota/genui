@@ -24,6 +24,7 @@ const name = variant === 'toc' ? 'Contents' : 'On this page';
         <span data-i18n={item.label}>{item.label}</span>
       </a>
     ))}
+    <slot />
   </nav>
 ) : (
   <details class="documentation-contents" data-doc-contents>

@@ -96,6 +96,10 @@
 [data-docs-shell] .doc-section {
   margin-block: var(--doc-section-gap) 0;
 }
+/* Anchored sections and headings land below the sticky header (layout.css). */
+[data-docs-shell] .docs-main :is([id], [data-doc-section]) {
+  scroll-margin-block-start: var(--shell-sticky-offset);
+}
 [data-docs-shell] .live-preview {
   padding: var(--space-md);
 }
@@ -115,10 +119,78 @@
     padding: var(--space-lg);
   }
 }
-@media (min-width: 100rem) {
-  /* The contents rail replaces the section links from its 1600px breakpoint
-     (layout.css, 100rem = 1600px). */
-  .page-grid:has(> [data-doc-nav='toc']) [data-doc-nav='sections'] {
+/* Tabs and package managers share one choice button; selection reuses the pressed locale
+   paint and stays separate from the keyboard focus marker. */
+.doc-tabs {
+  display: flex;
+  gap: var(--space-xs);
+  margin-block: var(--space-lg) 0;
+  overflow-x: auto;
+}
+.docs-install-managers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+.doc-choice {
+  flex: none;
+  min-block-size: var(--target-min);
+  padding-inline: var(--space-md);
+  border: 0;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+}
+.doc-choice:is([aria-selected='true'], [aria-pressed='true']) {
+  background: var(--surface);
+  color: var(--ink);
+}
+@media (any-hover: hover) {
+  .doc-choice:hover {
+    color: var(--ink);
+  }
+}
+.docs-page-tools {
+  display: grid;
+  justify-items: start;
+  margin-block-start: var(--space-lg);
+}
+.docs-page-tools a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--target-min);
+}
+.docs-page-tools p {
+  margin: 0;
+}
+/* Script-applied hidden states win over the display rules above and in layout.css. */
+:is(.doc-tabs, .docs-install-managers, .docs-page-tools > *)[hidden],
+[data-docs-shell] :is([data-doc-panel], .page-grid [data-doc-nav] a)[hidden] {
+  display: none;
+}
+/* API tables scroll in their own region: text wraps only between words and the description
+   column takes the remaining width. */
+.doc-section .table-scroll {
+  max-inline-size: 100%;
+  overflow-x: auto;
+}
+.doc-section .table-scroll table {
+  min-inline-size: 40rem;
+}
+.doc-section .table-scroll :is(th, td, code) {
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+.doc-section .table-scroll :is(th, td):last-child {
+  inline-size: 45%;
+}
+@media (min-width: 80rem) {
+  /* The contents rail and its page tools replace the section links and the article tools from
+     the 1280px breakpoint (layout.css, 80rem). */
+  .page-grid:has(> [data-doc-nav='toc'])
+    :is([data-doc-nav='sections'], [data-doc-tools='article']) {
     display: none;
   }
 }

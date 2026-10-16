@@ -9,9 +9,10 @@
   background-color: var(--shell-bg);
   color: var(--shell-ink);
 }
-/* Header flow keeps the DOM and Tab order: menu and wordmark, the meta line on its own row,
-   then language, theme and Getting started. Below the 875px breakpoint that is three rows,
-   at most 192px tall at 320px; layout.css joins them into one band from the breakpoint. */
+/* Header flow keeps the DOM and Tab order: menu, wordmark and Search documentation, then
+   language, theme, primary links and Getting started. Below the 875px breakpoint that is two
+   rows at 320px; layout.css joins them into one band from the breakpoint. The meta line only
+   shows from 1920px (120rem), where the band has room for it. */
 .docs-header {
   display: flex;
   align-items: center;
@@ -41,6 +42,41 @@
   color: var(--muted);
   font-size: var(--text);
   flex: 1 1 100%;
+}
+@media (width < 120rem) {
+  .header-meta {
+    display: none;
+  }
+}
+.docs-search-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  min-block-size: max(48px, var(--target-min));
+  min-inline-size: max(48px, var(--target-min));
+  margin-inline-end: auto;
+  padding: var(--space-xs) var(--space-sm);
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--field-bg);
+  color: var(--shell-ink);
+  font: inherit;
+  font-weight: var(--font-weight-label, 600);
+}
+.docs-search-trigger kbd {
+  color: var(--muted);
+  font: inherit;
+  font-size: var(--text);
+}
+@media (width < 54.6875rem) {
+  .docs-search-trigger kbd {
+    display: none;
+  }
+}
+@media (any-hover: hover) {
+  .docs-search-trigger:hover {
+    background: var(--surface);
+  }
 }
 .header-link {
   flex: 1 1 0;

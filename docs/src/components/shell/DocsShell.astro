@@ -11,18 +11,25 @@
  * - The single `aside.sidebar` (navigation and note) follows the dialog, before `main#content`,
  *   rendered once and never duplicated. Without the helper it stays inline; the helper moves it
  *   into the Drawer body below the sidebar breakpoint and back to its place above it.
+ * - Component detail pages (the components/[slug] catalog route) mark the root with
+ *   `data-docs-component-page` and skip the global footer; their article renders its own.
+ * - `button[data-docs-search]` and Cmd/Ctrl+K focus the canonical sidebar `#component-search`,
+ *   opening the Drawer through the menu toggle when the sidebar lives there.
  */
 import AtlasIcon from '../../react/AtlasIcon';
 import DocsNav from './DocsNav.astro';
+import { repositoryUrl } from '../docs-page';
 import './shell.css';
 import './layout.css';
 interface Props {
   slug?: string;
 }
 const { slug = '' } = Astro.props;
+// Server-only: the components/[slug] route renders one page per catalog component.
+const componentPage = Boolean(slug) && Astro.routePattern === '/components/[slug]';
 ---
 
-<div class="docs-root" data-docs-shell>
+<div class="docs-root" data-docs-shell data-docs-component-page={componentPage ? '' : undefined}>
   <header class="docs-header">
     <button
       type="button"
@@ -36,6 +43,17 @@ const { slug = '' } = Astro.props;
     <a class="wordmark" href="/" aria-label="GenUI home" data-i18n-aria-label="GenUI home">
       Gen<span>UI</span>
     </a>
+    <button
+      type="button"
+      class="docs-search-trigger"
+      data-docs-search
+      aria-keyshortcuts="Meta+K Control+K"
+      aria-label="Search documentation"
+      data-i18n-aria-label="Search documentation"
+    >
+      <span data-i18n="Search">Search</span>
+      <kbd aria-hidden="true">⌘/Ctrl K</kbd>
+    </button>
     <span class="header-meta">Flat 2.0 · Ant Design 6.6.6</span>
     <div class="locale-controls" role="group" aria-label="Language" data-i18n-aria-label="Language">
       <button
@@ -81,6 +99,16 @@ const { slug = '' } = Astro.props;
         .querySelector('[data-theme-toggle]')
         ?.setAttribute('aria-checked', String(document.documentElement.dataset.theme === 'dark'));
     </script>
+    <nav class="header-primary" aria-label="Primary" data-i18n-aria-label="Primary">
+      <a href="/">
+        <span data-i18n="Components">Components</span>
+      </a>
+      <a href="/genui/">GenUI</a>
+      <a href="/theme-builder/">
+        <span data-i18n="Theme Builder">Theme Builder</span>
+      </a>
+      <a href={repositoryUrl}>GitHub</a>
+    </nav>
     <a class="header-link" href="/getting-started/">
       <span data-i18n="Getting started">Getting started</span>
     </a>
@@ -115,18 +143,76 @@ const { slug = '' } = Astro.props;
       <slot />
     </main>
   </div>
-  <footer class="docs-footer">
-    <span data-i18n="GenUI · Technical component documentation">
-      GenUI · Technical component documentation
-    </span>
-    <a href="/licenses/">
-      <span data-i18n="Third-party licenses">Third-party licenses</span>
-    </a>
-  </footer>
+  {!componentPage && (
+    <footer class="docs-footer">
+      <span data-i18n="GenUI · Technical component documentation">
+        GenUI · Technical component documentation
+      </span>
+      <a href="/licenses/">
+        <span data-i18n="Third-party licenses">Third-party licenses</span>
+      </a>
+    </footer>
+  )}
 </div>
 
 <script>
   import { installDocsShell } from './docs-shell';
 
   installDocsShell(document);
+
+  // Search documentation: the header button and Cmd/Ctrl+K focus the canonical sidebar search.
+  // Below the breakpoint the sidebar lives in the closed Drawer, which the menu toggle opens.
+  // One listener set per document; pagehide removes it and a restored page reinstalls it.
+  const focusSearch = () => {
+    const input = document.getElementById('component-search');
+    if (!input) return;
+    const drawer = input.closest('dialog');
+    if (drawer && !drawer.open)
+      document.querySelector<HTMLButtonElement>('[data-docs-menu-toggle]')?.click();
+    input.focus();
+  };
+  const installSearch = () => {
+    const controller = new AbortController();
+    const { signal } = controller;
+    document
+      .querySelector('[data-docs-search]')
+      ?.addEventListener('click', focusSearch, { signal });
+    document.addEventListener(
+      'keydown',
+      event => {
+        if (event.defaultPrevented || event.isComposing || event.altKey || event.shiftKey) return;
+        if (!(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== 'k') return;
+        event.preventDefault();
+        focusSearch();
+      },
+      { signal },
+    );
+    return () => controller.abort();
+  };
+  // The single owner of --docs-header-height: the sticky header's actual, possibly wrapped
+  // height, read by the sticky rails and section scroll margins in the shell CSS.
+  const installHeaderHeight = () => {
+    const header = document.querySelector<HTMLElement>('[data-docs-shell] .docs-header');
+    const style = document.documentElement.style;
+    if (!header || typeof ResizeObserver === 'undefined') return () => {};
+    const observer = new ResizeObserver(() => {
+      style.setProperty('--docs-header-height', `${header.getBoundingClientRect().height}px`);
+    });
+    observer.observe(header);
+    return () => {
+      observer.disconnect();
+      style.removeProperty('--docs-header-height');
+    };
+  };
+  const install = () => {
+    const disposers = [installSearch(), installHeaderHeight()];
+    return () => disposers.forEach(dispose => dispose());
+  };
+  let disposeShell = install();
+  window.addEventListener('pagehide', () => disposeShell());
+  window.addEventListener('pageshow', event => {
+    if (!event.persisted) return;
+    disposeShell();
+    disposeShell = install();
+  });
 </script>

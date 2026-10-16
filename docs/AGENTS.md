@@ -1,5 +1,52 @@
 # Astro documentation maintenance contract
 
+## Preview profile runtime contract — permanent, human task 2026-10-16
+
+Permanent runtime contract for the isolated example preview; later entries
+change it only through an explicit human decision. Results are PENDING: this
+entry claims no executed check, no live or CI pass and no human approval.
+
+- Initial load: every live example has three explicit profile URLs (small,
+  medium, large). Each profile document is server-rendered once at build time
+  as static HTML that GitHub Pages serves; there is no request-time SSR and no
+  request-time device detection.
+- After hydration, a profile switch dynamically imports only the selected
+  layout entry (`previewEntrySources` in `src/preview/registry.ts`) and its
+  preset inside the SAME iframe and the SAME business React subtree, so demo
+  state is kept. The profile URL is synced through the bridge with
+  `history.replaceState`; no document replacement, iframe reload or DOM
+  snapshot scraping.
+- Local preview token recipes are memory-only and scoped to that example; they
+  are never written to the global Theme Builder 30-day store. The actual global
+  Theme Builder stays on its explicit route, unchanged.
+- Code view usage comes from `previewDeliveryUsage` and contains only the
+  accepted `id`, `slug`, `theme`, `orientation` and `grid` values, never form
+  data or other private business state inside the example. Source payloads
+  render as escaped text only.
+- Mandatory verification before any DONE: the docs package's configured
+  format, lint, type-check, unit and build commands, plus the existing targeted
+  two-case browser spec for the preview profile switch. Copy exact script names
+  and the spec path from `package.json` and the Playwright config; they were
+  not available when this entry was written. None of them has been run.
+
+## Component page tabs, full-width rails and install guidance — human task 2026-10-16
+
+Newest human task for component pages; it supersedes the 80rem split and the
+100rem rail threshold below. Colors, fonts and type tokens are unchanged.
+Results are PENDING: no check was run and no test was added.
+
+- From 80rem: sidebar 224-248px flush left, 240px rail flush right, one
+  centered article column of at most 1120px; reference wrappers use
+  `display: contents`.
+- Four tabs (Examples default) group the eight unchanged sections by
+  `data-doc-panel`; `src/components/docs-page.ts` hides inactive sections only
+  after load, syncs `?tab=` and legacy hashes, roves arrow/Home/End keys and
+  filters section/contents links. No-JS pages show every section.
+- DocsPageTools, DocsInstall (package.json versions, GenUI not on npm) and the
+  ApiReference one-property-per-row split are new; repository links render only
+  with `PUBLIC_GENUI_REPOSITORY_URL`.
+- PENDING: translations, inspector, tests, build gate and browser checks.
+
 ## Black dark documentation shell and canonical sidebar search — human task 2026-10-16
 
 Newest human task; a precise, human-authorized exception to the color freeze in
@@ -65,7 +112,7 @@ are PENDING; this entry claims no executed check and no DONE.
   unchanged.
 - `article[data-component-detail]` splits from 80rem (1280px): showcase left,
   API/resources one continuous non-sticky right stack, `minmax(0, 1.65fr)
-  minmax(20rem, 1fr)` with a 24px gap (showcase >= 560px, reference >= 320px
+minmax(20rem, 1fr)` with a 24px gap (showcase >= 560px, reference >= 320px
   at 1280 and 1920); narrower layouts stack, 320px without page overflow. The
   far contents rail (16px padding) appears from 100rem (1600px) in layout.css
   and documentation.css alike; below it the Contents disclosure and section

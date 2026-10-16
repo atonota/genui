@@ -5,6 +5,38 @@ interface Props {
   label: string;
 }
 const { rows, label } = Astro.props;
+// One property per row. Joined names split only into plain identifiers; a type or default
+// splits on a spaced slash only when its count matches, one value applies to every name, and
+// any other shape points to the official reference while keeping the joined original.
+type Row = Omit<ComponentDoc['api'][number], 'type' | 'defaultValue'> & {
+  type: string | undefined;
+  defaultValue: string | undefined;
+  joined: string | undefined;
+};
+const identifier = /^[A-Za-z_$][A-Za-z0-9_$.-]*$/;
+const align = (value: string, count: number) => {
+  const values = value.split(' / ');
+  if (values.length === 1) return Array.from({ length: count }, () => value);
+  return values.length === count ? values : undefined;
+};
+const expanded = rows.flatMap((row): Row[] => {
+  const names = row.property
+    .split(row.property.includes(',') ? ',' : ' / ')
+    .map(name => name.trim());
+  if (names.length < 2 || !names.every(name => identifier.test(name)))
+    return [{ ...row, joined: undefined }];
+  const types = align(row.type, names.length);
+  const defaults = align(row.defaultValue, names.length);
+  const joined =
+    types && defaults ? undefined : `${row.property}: ${row.type} · ${row.defaultValue}`;
+  return names.map((property, index) => ({
+    ...row,
+    property,
+    type: types?.[index],
+    defaultValue: defaults?.[index],
+    joined,
+  }));
+});
 ---
 
 <div
@@ -32,18 +64,29 @@ const { rows, label } = Astro.props;
       </tr>
     </thead>
     <tbody>
-      {rows.map(row => (
+      {expanded.map(row => (
         <tr>
           <th scope="row">
             <code>{row.property}</code>
           </th>
+          {[row.type, row.defaultValue].map(value => (
+            <td>
+              {value === undefined ? (
+                <span data-i18n="See the official reference">See the official reference</span>
+              ) : (
+                <code data-i18n={value}>{value}</code>
+              )}
+            </td>
+          ))}
           <td>
-            <code data-i18n={row.type}>{row.type}</code>
+            <span data-i18n={row.description}>{row.description}</span>
+            {row.joined && (
+              <p>
+                <span data-i18n="Documented together as">Documented together as</span>{' '}
+                <code>{row.joined}</code>
+              </p>
+            )}
           </td>
-          <td>
-            <code data-i18n={row.defaultValue}>{row.defaultValue}</code>
-          </td>
-          <td data-i18n={row.description}>{row.description}</td>
         </tr>
       ))}
     </tbody>

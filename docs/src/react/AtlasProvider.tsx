@@ -11,10 +11,11 @@ import { ConfigProvider, theme, type ThemeConfig } from 'antd';
 import trTR from 'antd/locale/tr_TR.js';
 import enUS from 'antd/locale/en_US.js';
 import { useI18n } from './useI18n';
+import { usePreviewTheme } from './PreviewContext';
 import { StyleProvider, px2remTransformer } from '@ant-design/cssinjs';
 import atlas from '../data/atlas.json';
 import motion from '../data/motion.json';
-import { getThemeSnapshot, subscribeTheme, themeColors, type ThemeMode } from '../theme';
+import { themeColors, type ThemeMode } from '../theme';
 import { documentationColors } from '../data/docs-brand';
 import { tweakerVariables } from '../data/tweaker';
 import { selectionSizeProfiles } from '../data/selection-sizes';
@@ -328,7 +329,9 @@ export default function AtlasProvider({
   const selectionSizeDefinition =
     selectionSizeProfiles.find(item => item.value === size) ?? selectionSizeProfiles[1];
   const serverMode = useContext(AtlasSsrTheme);
-  const mode = useSyncExternalStore(subscribeTheme, getThemeSnapshot, () => serverMode);
+  // An isolated preview document owns its mode; it neither follows nor writes shared-origin
+  // theme storage. Everywhere else the global theme store stays the source.
+  const mode = usePreviewTheme(() => serverMode);
   // Only documentation surfaces follow the applied Theme Builder recipe.
   const builderActive = appearance === 'docs';
   const builderRecipe = useSyncExternalStore(

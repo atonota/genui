@@ -62,9 +62,11 @@ import inputTweaker from './input-tweaker.json';
 import tweakerOptions from './tweaker-options.json';
 import { translations as themeBuilderStates } from '../../theme-builder/states';
 import previewWorkbench from './preview-workbench.json';
+import docsReference from './docs-reference.json';
 
 const messages: Readonly<Record<string, string>> = {
   // First so existing phrase translations keep precedence over the new dictionaries.
+  ...docsReference,
   ...previewWorkbench,
   ...listy,
   ...listyPatterns,

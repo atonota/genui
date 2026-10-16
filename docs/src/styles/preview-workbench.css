@@ -1,15 +1,16 @@
-/* Shared example workbench (ExamplePreview.tsx). Preferred device widths, bounded display
-   caps, the shared minimum screen height, portrait phone and tablet and landscape MacBook
-   proportions and decorative hardware details are the central geometry in
-   data/preview-devices.ts, inlined as --preview-* roles on the frame. The frames are bounded
-   illustrative mockups, not device emulation: nothing scales, and screens grow with their
-   content; every other value reads the shell space, radius and surface roles. Neither the
-   frame nor the screen clips, so inline popups and portals keep their own positioning; only the code
-   view scrolls, inside itself. Device geometry and the Preview/Code views ease in both
-   directions with the central positive duration and Cubic easing, while the view state,
+/* Shared example workbench (ExamplePreview.tsx, DeviceFrame.tsx). Each device is one fixed
+   illustrative mockup, not device emulation: data/preview-devices.ts is the central geometry,
+   inlined as --preview-* roles. The logical screen never shrinks or grows; content scrolls
+   inside it and an iframe fills it. DeviceFrame fits the whole device by a transform scale of
+   at most 1, or keeps Actual 1:1 and scrolls only inside its own stage region. Every other
+   value reads the shell space, radius, surface and focus roles. Moving surfaces ease in both
+   directions with the central positive duration and Cubic easing, while view state,
    aria-hidden and inert switch at once; reduced motion is the explicit instant exception.
+   Class API for the next phase: .example-preview[data-preview-expanded] >
+   .example-preview-toolbar (.example-preview-title, .example-preview-view-tabs,
+   .example-preview-settings) and .example-preview-stage > .example-preview-fit (DeviceFrame).
    The theme stays one atomic palette. */
-.example-preview {
+:is(.example-preview, .example-preview-fit) {
   --preview-motion-duration: var(--motion-duration-standard);
   --preview-motion-easing: var(--motion-easing);
   --preview-motion-delay: var(--motion-delay, 0s);
@@ -17,6 +18,10 @@
   --preview-gap-tight: var(--space-sm, 8px);
   --preview-chrome: color-mix(in srgb, var(--ink) 16%, var(--surface));
   --preview-sensor: color-mix(in srgb, var(--ink) 55%, var(--surface));
+  /* Semantic stage cap, mirrored by DEVICE_STAGE_MAX_HEIGHT_PX in DeviceFrame.tsx. */
+  --preview-stage-max-height: 720px;
+}
+.example-preview {
   /* Toolbar options keep the shared target; the caption sits close to its frame. */
   --preview-control-size: max(48px, var(--target-min, 48px));
   --preview-caption-gap: var(--space-xs, 4px);
@@ -36,13 +41,37 @@
   inline-size: 100%;
   min-inline-size: 0;
 }
-/* Title and controls form one centred band and wrap as a whole. */
+/* The title leads and the view tabs close the first row; device, theme and other settings
+   form an aligned second row after the break item. Every group wraps as a whole. */
 .example-preview-toolbar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
-  gap: var(--preview-gap-tight) var(--preview-gap);
+  gap: 0 var(--preview-gap);
+  min-inline-size: 0;
+}
+.example-preview-toolbar::after {
+  content: '';
+  flex-basis: 100%;
+  order: 2;
+}
+.example-preview-toolbar > .example-preview-title {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+}
+:is(.example-preview-view-tabs, .example-preview-controls > :last-child) {
+  order: 1;
+  margin-inline-start: auto;
+}
+:is(.example-preview-settings, .example-preview-controls > :not(:last-child)) {
+  order: 3;
+  margin-block-start: var(--preview-gap-tight);
+}
+.example-preview-settings {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--preview-gap-tight);
   min-inline-size: 0;
 }
 .example-preview-title {
@@ -72,12 +101,9 @@
   white-space: nowrap;
   border: 0;
 }
+/* Legacy wrapper: its groups join the toolbar rows directly. */
 .example-preview-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--preview-gap-tight);
-  min-inline-size: 0;
-  max-inline-size: 100%;
+  display: contents;
 }
 .example-preview-controls > * {
   max-inline-size: 100%;
@@ -115,7 +141,8 @@
 .example-preview-bezel::after,
 .example-preview-screen,
 .example-preview-base,
-.example-preview-base::before {
+.example-preview-base::before,
+.example-preview-scaler {
   transition-duration: var(--preview-motion-duration);
   transition-timing-function: var(--preview-motion-easing);
   transition-delay: var(--preview-motion-delay);
@@ -132,9 +159,11 @@
   display: flex;
   flex-direction: column;
   grid-area: 1 / 1;
-  align-items: center;
+  align-items: safe center;
   gap: var(--preview-caption-gap);
   min-inline-size: 0;
+  /* Legacy unscaled frames scroll here, never the page. */
+  overflow: auto;
   overflow-anchor: none;
   transition-property: var(--control-transition-properties), visibility;
 }
@@ -151,26 +180,32 @@
   opacity: 0;
   pointer-events: none;
 }
-/* Bounded illustration: the central display cap keeps the frame below its preferred width
-   and within the column, without scaling. */
+/* The whole fixed device from the central model: lid bezel, base overhang and base. It never
+   shrinks or grows; DeviceFrame scales it as one transform from its start corner. */
 .example-preview-device {
   display: flex;
+  flex: none;
   flex-direction: column;
   align-items: center;
-  inline-size: min(100%, var(--preview-device-width), var(--preview-device-display-width));
-  min-inline-size: 0;
-  transition-property: var(--control-transition-properties), inline-size;
+  box-sizing: border-box;
+  inline-size: var(--preview-device-width);
+  block-size: var(--preview-device-height);
+  transform-origin: 0 0;
+  transition-property: var(--control-transition-properties), inline-size, block-size, transform;
 }
-/* One screen cell at the shared minimum height: the screen fills it, and its content still
-   grows the cell past the floor and the preferred proportions. */
+.example-preview-scaler .example-preview-device {
+  transform: scale(var(--preview-scale, 1));
+}
+.example-preview-scaler .example-preview-device:dir(rtl) {
+  transform-origin: 100% 0;
+}
+/* Lid: the bezel padding around the fixed screen. */
 .example-preview-bezel {
   position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: minmax(var(--preview-screen-min-height), auto);
+  display: block;
+  flex: none;
   box-sizing: border-box;
   inline-size: calc(100% - 2 * var(--preview-base-overhang));
-  min-inline-size: 0;
   padding: var(--preview-bezel-top) var(--preview-bezel-inline) var(--preview-bezel-bottom);
   border-radius: var(--preview-frame-radius) var(--preview-frame-radius)
     var(--preview-frame-end-radius) var(--preview-frame-end-radius);
@@ -190,7 +225,8 @@
   transform: translateX(-50%);
   pointer-events: none;
   transition-property:
-    var(--control-transition-properties), inset-block-start, inline-size, block-size, border-radius;
+    var(--control-transition-properties), inset-block-start, inset-inline-start, inline-size,
+    block-size, border-radius, transform;
 }
 /* Home indicator on iPhone, centred in the bottom bezel; zero size on the other devices. */
 .example-preview-bezel::after {
@@ -205,29 +241,61 @@
   transform: translateX(-50%);
   pointer-events: none;
   transition-property:
-    var(--control-transition-properties), inset-block-end, inline-size, block-size, border-radius;
+    var(--control-transition-properties), inset-block-end, inset-inline-start, inline-size,
+    block-size, border-radius, transform;
 }
-/* Phones and tablets keep portrait and the MacBook landscape proportions; the bezel cell
-   holds the shared minimum. Direct children stay mounted in order and centre in the free
-   space. */
+/* Landscape on the rotatable devices: the island or camera moves to the inline start edge and
+   the home indicator to the inline end edge, each centred in the uniform side bezel. Positions
+   stay numeric, so both directions ease with the central motion roles. */
+.example-preview-device[data-preview-orientation='landscape']:not([data-preview-device='macbook'])
+  .example-preview-bezel::before {
+  inset-block-start: 50%;
+  inset-inline-start: calc((var(--preview-bezel-inline) - var(--preview-sensor-height)) / 2);
+  inline-size: var(--preview-sensor-height);
+  block-size: var(--preview-sensor-width);
+  transform: translateY(-50%);
+}
+.example-preview-device[data-preview-orientation='landscape']:not([data-preview-device='macbook'])
+  .example-preview-bezel::after {
+  inset-block-end: 50%;
+  inset-inline-start: calc(
+    100% - (var(--preview-bezel-inline) + var(--preview-indicator-height)) / 2
+  );
+  inline-size: var(--preview-indicator-height);
+  block-size: var(--preview-indicator-width);
+  transform: translateY(50%);
+}
+/* The fixed logical screen: rotation swaps its roles, content scrolls inside and never grows
+   it. Direct children stay mounted in order and centre in the free space. */
 .example-preview-screen {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   align-content: safe center;
   justify-items: safe center;
-  /* Explicit stretch fills the bezel cell; a ratio item would otherwise start-align. */
-  align-self: stretch;
-  justify-self: stretch;
   box-sizing: border-box;
-  min-inline-size: 0;
-  max-inline-size: 100%;
-  /* Preferred proportions only: the automatic minimum lets content grow past them. */
-  aspect-ratio: var(--preview-screen-aspect);
+  inline-size: var(--preview-screen-width);
+  block-size: var(--preview-screen-height);
   padding: var(--preview-gap);
+  overflow: auto;
+  overscroll-behavior: contain;
   border-radius: var(--preview-screen-radius);
   background-color: var(--panel);
   color: var(--ink);
-  transition-property: var(--control-transition-properties), aspect-ratio, border-radius;
+  transition-property: var(--control-transition-properties), inline-size, block-size, border-radius;
+}
+/* An isolated preview document fills the whole screen. */
+.example-preview-screen:has(> iframe:only-child) {
+  display: block;
+  padding: 0;
+  overflow: hidden;
+}
+.example-preview-screen > iframe {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  border: 0;
+  border-radius: inherit;
+  background-color: var(--panel);
 }
 .example-preview-screen > * {
   min-inline-size: 0;
@@ -360,7 +428,98 @@
   margin: 0;
   color: var(--muted);
 }
+/* DeviceFrame stage: a full-width region at most the stage cap tall. Fit scales the whole
+   device into it and never scrolls; Actual keeps 1:1 and scrolls only here, both ways, so the
+   page never overflows. The transparent start edge is the keyboard focus bar. */
+.example-preview-fit {
+  display: flex;
+  box-sizing: border-box;
+  inline-size: 100%;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  max-block-size: var(--preview-stage-max-height);
+  overflow: auto;
+  overscroll-behavior: contain;
+  overflow-anchor: none;
+  border-inline-start: var(--focus-indicator-width, 3px) solid transparent;
+}
+.example-preview-fit[data-preview-zoom='fit'] {
+  overflow: hidden;
+}
+/* Holds the scaled footprint; auto margins centre it and fall back to the start when Actual
+   overflows, so every edge stays reachable. */
+.example-preview-scaler {
+  display: block;
+  flex: none;
+  margin: auto;
+  inline-size: var(--preview-fit-width);
+  block-size: var(--preview-fit-height);
+  transition-property: inline-size, block-size;
+}
+:root[data-input-modality='keyboard'] .example-preview-fit:focus-visible {
+  border-inline-start-color: var(--focus-indicator-color);
+  background-color: var(--focus-bg);
+}
+/* Next-phase dialog root: a closed dialog workbench stays the inline grid, so the inline
+   stage is never hidden; only [data-preview-expanded='true'] fills the viewport over the
+   shared backdrop. Modal behaviour belongs to the next phase. */
+dialog.example-preview {
+  position: relative;
+  display: grid;
+  inset: auto;
+  inline-size: 100%;
+  max-inline-size: 100%;
+  block-size: auto;
+  max-block-size: none;
+  margin-inline: 0;
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+  color: inherit;
+}
+.example-preview[data-preview-expanded='true'] {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay, 1000);
+  box-sizing: border-box;
+  inline-size: auto;
+  max-inline-size: none;
+  block-size: auto;
+  max-block-size: none;
+  margin: 0;
+  padding: var(--inset-container-sm, 16px);
+  overflow: auto;
+  overscroll-behavior: contain;
+  align-content: start;
+  background-color: var(--panel);
+  color: var(--ink);
+}
+.example-preview[data-preview-expanded='true']::backdrop {
+  background: var(--overlay-scrim);
+  -webkit-backdrop-filter: blur(var(--overlay-backdrop-blur));
+  backdrop-filter: blur(var(--overlay-backdrop-blur));
+}
+/* Expanded Fit uses the viewport below the toolbar rows; DeviceFrame reads this computed cap.
+   Actual 1:1 still scrolls only inside its own stage. */
+.example-preview[data-preview-expanded='true'] .example-preview-fit {
+  --preview-stage-max-height: max(
+    15rem,
+    calc(100dvh - 2 * var(--preview-control-size) - 8 * var(--preview-gap))
+  );
+}
+@media (min-width: 40rem) {
+  .example-preview[data-preview-expanded='true'] {
+    padding: var(--inset-container-md, 24px);
+  }
+}
 @media (forced-colors: active) {
+  .example-preview-fit,
+  :root[data-input-modality='keyboard'] .example-preview-fit:focus-visible {
+    border-inline-start-color: Canvas;
+  }
+  :root[data-input-modality='keyboard'] .example-preview-fit:focus-visible {
+    outline: 2px solid CanvasText;
+  }
   .example-preview-bezel,
   .example-preview-device[data-preview-device='macbook'] .example-preview-base {
     border: 1px solid CanvasText;
@@ -373,7 +532,7 @@
 }
 @media (prefers-reduced-motion: reduce) {
   /* Explicit exception: device and view changes apply instantly. */
-  .example-preview {
+  :is(.example-preview, .example-preview-fit) {
     --preview-motion-duration: 0ms;
   }
 }

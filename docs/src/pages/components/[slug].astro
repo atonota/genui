@@ -3,6 +3,10 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
 import CodeExample from '../../components/CodeExample.astro';
 import ApiReference from '../../components/ApiReference.astro';
 import DocumentationNav from '../../components/DocumentationNav.astro';
+import DocsInstall from '../../components/DocsInstall.astro';
+import DocsPageTools from '../../components/DocsPageTools.astro';
+import DocsInspector from '../../components/DocsInspector.astro';
+import packageManifest from '../../../../package.json';
 import PageBreadcrumb from '../../components/shell/PageBreadcrumb.astro';
 import { components } from '../../data/catalog';
 import documentationRules from '../../data/documentation-rules.json';
@@ -626,10 +630,20 @@ const sectionItems = documentationRules.componentSections.map(id => ({
   id,
   label: sectionLabels[id] ?? id,
 }));
+// The article footer names the package release from package.json, major and minor only.
+const releaseVersion = packageManifest.version.split('.').slice(0, 2).join('.');
 // Previous and next follow the catalog order used by the navigation.
 const catalogPosition = components.findIndex(item => item.slug === component.slug);
 const previousComponent = catalogPosition > 0 ? components.at(catalogPosition - 1) : undefined;
 const nextComponent = catalogPosition >= 0 ? components.at(catalogPosition + 1) : undefined;
+// Four tabs group the eight sections without moving them; docs-page.ts applies them after load
+// and every section stays readable without JavaScript.
+const tabGroups = [
+  { id: 'overview', label: 'Overview', sections: ['usage', 'accessibility', 'notes'] },
+  { id: 'examples', label: 'Examples', sections: ['examples'] },
+  { id: 'api', label: 'API', sections: ['api'] },
+  { id: 'integration', label: 'Integration', sections: ['code', 'astro', 'resources'] },
+];
 ---
 
 <DocsLayout title={component.title} description={component.summary} slug={component.slug}>
@@ -656,11 +670,35 @@ const nextComponent = catalogPosition >= 0 ? components.at(catalogPosition + 1) 
         </a>
       </div>
       <DocumentationNav items={sectionItems} />
+      <div
+        class="doc-tabs"
+        role="tablist"
+        aria-label="Documentation views"
+        data-i18n-aria-label="Documentation views"
+        data-doc-tabs
+        hidden
+      >
+        {tabGroups.map(tab => (
+          <button
+            type="button"
+            class="doc-choice"
+            role="tab"
+            id={`doc-tab-${component.slug}-${tab.id}`}
+            data-doc-tab={tab.id}
+            aria-selected="false"
+            aria-controls={tab.sections.join(' ')}
+            tabindex="-1"
+          >
+            <span data-i18n={tab.label}>{tab.label}</span>
+          </button>
+        ))}
+      </div>
       <div class="component-showcase" data-component-showcase>
         <section
           id="usage"
           class="doc-section"
           data-doc-section="usage"
+          data-doc-panel="overview"
           aria-labelledby="usage-title"
         >
           <h2 id="usage-title">
@@ -676,17 +714,31 @@ const nextComponent = catalogPosition >= 0 ? components.at(catalogPosition + 1) 
           id="examples"
           class="doc-section"
           data-doc-section="examples"
+          data-doc-panel="examples"
           aria-labelledby="examples-title"
         >
           <h2 id="examples-title">
             <span data-i18n="Live examples">Live examples</span>
           </h2>
           <p class="section-intro">
-            <span data-i18n="Open Tweaker from the middle of the right edge to explore component settings and sizes.">
-              Open Tweaker from the middle of the right edge to explore component settings and
-              sizes.
+            <span data-i18n="Open the inspector to choose the preview device, theme, grid and component settings.">
+              Open the inspector to choose the preview device, theme, grid and component settings.
             </span>
           </p>
+          <div class="docs-inspector-opener">
+            <button
+              type="button"
+              id="docs-inspector-open"
+              class="doc-choice"
+              data-docs-inspector-open
+              aria-controls="docs-inspector"
+              aria-expanded="false"
+              aria-haspopup="dialog"
+              hidden
+            >
+              <span data-i18n="Open inspector">Open inspector</span>
+            </button>
+          </div>
           <div class="live-preview" data-doc-demo>
             {component.slug === 'button' && <ButtonDemo documentation client:load />}
             {component.slug === 'input' && <InputDemo documentation client:load />}
@@ -742,10 +794,17 @@ const nextComponent = catalogPosition >= 0 ? components.at(catalogPosition + 1) 
             </p>
           </noscript>
         </section>
-        <section id="code" class="doc-section" data-doc-section="code" aria-labelledby="code-title">
+        <section
+          id="code"
+          class="doc-section"
+          data-doc-section="code"
+          data-doc-panel="integration"
+          aria-labelledby="code-title"
+        >
           <h2 id="code-title">
             <span data-i18n="Usage code">Usage code</span>
           </h2>
+          <DocsInstall />
           {component.examples.map(example => (
             <div class="example-code">
               <h3 data-i18n={example.title}>{example.title}</h3>
@@ -758,6 +817,7 @@ const nextComponent = catalogPosition >= 0 ? components.at(catalogPosition + 1) 
           id="astro"
           class="doc-section"
           data-doc-section="astro"
+          data-doc-panel="integration"
           aria-labelledby="astro-title"
         >
           <h2 id="astro-title">
@@ -773,6 +833,37 @@ const nextComponent = catalogPosition >= 0 ? components.at(catalogPosition + 1) 
           {astroExample && (
             <CodeExample code={astroExample} title="Astro page with a React island" />
           )}
+          <h3 data-i18n="Preview profiles">Preview profiles</h3>
+          <p>
+            <span data-i18n="Each live example also has three preview URLs, one per profile:">
+              Each live example also has three preview URLs, one per profile:
+            </span>
+          </p>
+          <ul>
+            {['small', 'medium', 'large'].map(profile => (
+              <li>
+                <code>{`/preview/<id>/${profile}/`}</code>
+              </li>
+            ))}
+          </ul>
+          <p>
+            <span data-i18n="The build server-renders every profile document ahead of time, so GitHub Pages serves static HTML. The browser hydrates only the delivery entry of that same profile.">
+              The build server-renders every profile document ahead of time, so GitHub Pages serves
+              static HTML. The browser hydrates only the delivery entry of that same profile.
+            </span>
+          </p>
+          <p>
+            <span data-i18n="The device selector in these docs chooses the profile manually. Request-time device detection for a product is not implemented.">
+              The device selector in these docs chooses the profile manually. Request-time device
+              detection for a product is not implemented.
+            </span>
+          </p>
+          <p>
+            <span data-i18n="All profiles reuse the same shared example logic. Only the selected profile entry is loaded, together with the shared modules it requires.">
+              All profiles reuse the same shared example logic. Only the selected profile entry is
+              loaded, together with the shared modules it requires.
+            </span>
+          </p>
           <p class="documentation-link">
             <a href="/getting-started/#astro-integration">
               <span data-i18n="Read the Astro integration guide">
@@ -785,6 +876,7 @@ const nextComponent = catalogPosition >= 0 ? components.at(catalogPosition + 1) 
           id="accessibility"
           class="doc-section"
           data-doc-section="accessibility"
+          data-doc-panel="overview"
           aria-labelledby="accessibility-title"
         >
           <h2 id="accessibility-title">
@@ -800,6 +892,7 @@ const nextComponent = catalogPosition >= 0 ? components.at(catalogPosition + 1) 
           id="notes"
           class="doc-section"
           data-doc-section="notes"
+          data-doc-panel="overview"
           aria-labelledby="notes-title"
         >
           <h2 id="notes-title">
@@ -813,20 +906,27 @@ const nextComponent = catalogPosition >= 0 ? components.at(catalogPosition + 1) 
         </section>
       </div>
       <div class="component-reference" data-component-reference>
-        <section id="api" class="doc-section" data-doc-section="api" aria-labelledby="api-title">
+        <section
+          id="api"
+          class="doc-section"
+          data-doc-section="api"
+          data-doc-panel="api"
+          aria-labelledby="api-title"
+        >
           <h2 id="api-title">API</h2>
           <p class="section-intro">
             <span data-i18n="Commonly used properties. See the official component reference for the full contract.">
               Commonly used properties. See the official component reference for the full contract.
             </span>
           </p>
+          <h3 data-i18n="GenUI usage API">GenUI usage API</h3>
           {component.apiDescription && (
             <p data-i18n={component.apiDescription}>{component.apiDescription}</p>
           )}
           <ApiReference rows={component.api} label={component.title + ' API table'} />
+          <h3 data-i18n="Underlying Ant Design API">Underlying Ant Design API</h3>
           {component.nativeApi && (
             <>
-              <h3 data-i18n="Underlying Ant Design API">Underlying Ant Design API</h3>
               <p data-i18n="These library settings are used inside the example. They are separate from the Atlas component props above.">
                 These library settings are used inside the example. They are separate from the Atlas
                 component props above.
@@ -844,6 +944,7 @@ const nextComponent = catalogPosition >= 0 ? components.at(catalogPosition + 1) 
           id="resources"
           class="doc-section"
           data-doc-section="resources"
+          data-doc-panel="integration"
           aria-labelledby="resources-title"
         >
           <h2 id="resources-title">
@@ -885,6 +986,7 @@ const nextComponent = catalogPosition >= 0 ? components.at(catalogPosition + 1) 
           )}
         </section>
       </div>
+      <DocsPageTools placement="article" />
       <nav
         class="page-neighbors"
         aria-label="Other components"
@@ -903,7 +1005,24 @@ const nextComponent = catalogPosition >= 0 ? components.at(catalogPosition + 1) 
           </a>
         )}
       </nav>
+      <footer class="component-footer" data-component-footer>
+        <span>GenUI</span>
+        <span>
+          <span data-i18n="Version">Version</span> {releaseVersion}
+        </span>
+        <a href="/licenses/">
+          <span data-i18n="Third-party licenses">Third-party licenses</span>
+        </a>
+      </footer>
     </article>
-    <DocumentationNav items={sectionItems} variant="toc" />
+    <DocsInspector />
+    <DocumentationNav items={sectionItems} variant="toc">
+      <DocsPageTools placement="rail" />
+    </DocumentationNav>
   </div>
+  <script>
+    import { installDocsPage } from '../../components/docs-page';
+
+    installDocsPage(document);
+  </script>
 </DocsLayout>

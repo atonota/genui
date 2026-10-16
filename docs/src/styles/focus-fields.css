@@ -81,9 +81,10 @@
   box-shadow: none !important;
 }
 
-/* Choices: checkbox, radio, radio button, switch, slider, rate and segmented scale on
-   keyboard focus by the central step. Fill and selection marks stay native. The theme
-   toggle keeps the foundation thumb cue only, never a whole-toggle scale. */
+/* Choices: checkbox, radio, radio button, switch, slider and rate scale on keyboard focus
+   by the central step. Segmented takes the bottom marker below instead, never both cues.
+   Fill and selection marks stay native. The theme toggle keeps the foundation thumb cue
+   only, never a whole-toggle scale. */
 :root[data-input-modality='keyboard']
   .atlas-demo
   :is(
@@ -92,13 +93,76 @@
     .ant-radio-button-wrapper:has(input:focus-visible),
     .ant-switch:focus-visible,
     .ant-slider-handle:focus-visible,
-    .ant-segmented-item:has(input:focus-visible) .ant-segmented-item-label,
-    .ant-segmented:focus-visible
-      :is(.ant-segmented-item-selected, .ant-segmented-item-selected-text)
-      .ant-segmented-item-label,
     .ant-rate-star:has(> :focus-visible),
     .ant-rate:focus-visible .ant-rate-star-focused,
     .ant-rate:focus-visible:not(:has(.ant-rate-star-focused)) .ant-rate-star:first-child
   ) {
   scale: var(--focus-choice-scale);
+}
+
+/* Segmented: the library paints a surrounding primary outline on the -focused item class,
+   which it sets on any focus including pointer, and on the root's :focus-visible. Both are
+   dropped for every Segmented consumer in every mode and theme. The forced-colors keyboard
+   outline on the real :focus-visible element in focus-01.css stays the only outline. */
+:root body .ant-segmented .ant-segmented-item-focused {
+  outline: none !important;
+}
+@media (forced-colors: none) {
+  :root body .ant-segmented:focus-visible {
+    outline: none;
+  }
+}
+@media (forced-colors: active) {
+  :root:not([data-input-modality='keyboard']) body .ant-segmented:focus-visible {
+    outline: none;
+  }
+}
+
+/* One non-enclosing cue: the focused item label takes the focus surface and a separate
+   bottom marker, painted as a background layer like the unframed fields. The native
+   selected fill and thumb shadow stay on the item underneath. Pointer input clears the
+   keyboard mode, so pointer focus paints nothing. */
+@media (forced-colors: none) {
+  :root[data-input-modality='keyboard']
+    body
+    :is(
+      .ant-segmented-item:has(input:focus-visible),
+      .ant-segmented:focus-visible
+        :is(.ant-segmented-item-selected, .ant-segmented-item-selected-text)
+    )
+    .ant-segmented-item-label {
+    background-color: var(--focus-bg);
+    background-image: linear-gradient(var(--focus-indicator-color), var(--focus-indicator-color));
+    background-position: bottom;
+    background-size: 100% var(--field-focus-indicator-width);
+    background-repeat: no-repeat;
+  }
+}
+
+/* Forced colors may drop the gradient layer, and icon-only labels such as Device and Theme
+   hold only an SVG and screen-reader text, so a text underline would paint nothing. The
+   hidden native input's label instead takes one system-color bottom bar on ::after; the
+   label only becomes its positioning box, so geometry is unchanged and nothing surrounds.
+   A focused root already takes the forced-colors keyboard outline in focus-01.css, so it
+   gets no second label cue. */
+@media (forced-colors: active) {
+  :root[data-input-modality='keyboard']
+    body
+    .ant-segmented-item:has(input:focus-visible)
+    .ant-segmented-item-label {
+    position: relative;
+  }
+  :root[data-input-modality='keyboard']
+    body
+    .ant-segmented-item:has(input:focus-visible)
+    .ant-segmented-item-label::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    height: var(--field-focus-indicator-width);
+    background-color: CanvasText;
+    forced-color-adjust: none;
+    pointer-events: none;
+  }
 }

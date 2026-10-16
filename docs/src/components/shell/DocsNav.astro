@@ -51,42 +51,50 @@ const searchFrameStyle: Record<string, string> = {
         />
       </span>
     </label>
-    {foundationGroups.map(group => (
-      <section class="nav-group">
-        <h2 data-i18n={group.label}>{group.label}</h2>
-        <ul class="nav-foundations">
-          {group.links.map(item => (
-            <li>
-              <a href={item.href} aria-current={slug === item.slug ? 'page' : undefined}>
-                <span data-i18n={item.label}>{item.label}</span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      </section>
-    ))}
-    {groups.map(group => (
-      <section class="nav-group">
-        <h2 data-i18n={group}>{group}</h2>
-        <ul>
-          {components
-            .filter(item => item.category === group)
-            .map(item => (
-              <li data-component-link={item.title + ' ' + item.slug}>
-                <a
-                  href={'/components/' + item.slug + '/'}
-                  aria-current={slug === item.slug ? 'page' : undefined}
-                  data-i18n={item.title}
-                >
-                  {item.title}
+    <div class="nav-scroll" data-docs-nav-scroll>
+      {foundationGroups.map(group => (
+        <section class="nav-group">
+          <h2 data-i18n={group.label}>{group.label}</h2>
+          <ul class="nav-foundations">
+            {group.links.map(item => (
+              <li>
+                <a href={item.href} aria-current={slug === item.slug ? 'page' : undefined}>
+                  <span data-i18n={item.label}>{item.label}</span>
                 </a>
               </li>
             ))}
-        </ul>
-      </section>
-    ))}
-    <p id="search-status" role="status" hidden>
-      <span data-i18n="No results found.">No results found.</span>
-    </p>
+          </ul>
+        </section>
+      ))}
+      {groups.map(group => (
+        <section class="nav-group">
+          <h2 data-i18n={group}>{group}</h2>
+          <ul>
+            {components
+              .filter(item => item.category === group)
+              .map(item => (
+                <li data-component-link={item.title + ' ' + item.slug}>
+                  <a
+                    href={'/components/' + item.slug + '/'}
+                    aria-current={slug === item.slug ? 'page' : undefined}
+                    data-i18n={item.title}
+                  >
+                    {item.title}
+                  </a>
+                </li>
+              ))}
+          </ul>
+        </section>
+      ))}
+      <p id="search-status" role="status" hidden>
+        <span data-i18n="No results found.">No results found.</span>
+      </p>
+    </div>
   </nav>
 </div>
+
+<script>
+  import { installDocsNavState } from './nav-state';
+
+  installDocsNavState(document);
+</script>

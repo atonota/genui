@@ -32,6 +32,8 @@ type StoredRecipe =
 
 let snapshot: ThemeRecipe | null = null;
 let snapshotText: string | null = null;
+// Whether the snapshot came from, or was saved to, the global storage key.
+let snapshotGlobal = false;
 const listeners = new Set<() => void>();
 
 // Original inline values of every custom property this store has written.
@@ -40,6 +42,16 @@ let ownedAttribute: { element: HTMLElement; value: string | null } | null = null
 
 let initializeCount = 0;
 let detach: (() => void) | null = null;
+
+/** A document that owns its theme mode, such as an isolated preview, instead of the global theme. */
+export type ThemeBuilderModeOwner = { getMode: () => ThemeMode; eventName: string };
+// The first mode owner keeps the document until the final dispose.
+let modeOwner: ThemeBuilderModeOwner | null = null;
+
+function currentMode(): ThemeMode {
+  const owned = modeOwner?.getMode();
+  return isThemeMode(owned) ? owned : getThemeSnapshot();
+}
 
 function notify(): void {
   for (const listener of [...listeners]) listener();
@@ -123,7 +135,7 @@ function writeVariables(element: HTMLElement, variables: Record<string, string>)
   }
 }
 
-function applyDocument(recipe: ThemeRecipe, mode: ThemeMode = getThemeSnapshot()): void {
+function applyDocument(recipe: ThemeRecipe, mode: ThemeMode = currentMode()): void {
   if (typeof document === 'undefined') return;
   const { variables } = resolveThemeBuilder(recipe, mode);
   const root = document.documentElement;
@@ -139,7 +151,8 @@ function applyDocument(recipe: ThemeRecipe, mode: ThemeMode = getThemeSnapshot()
   }
 }
 
-function commit(recipe: ThemeRecipe): void {
+function commit(recipe: ThemeRecipe, shared: boolean): void {
+  snapshotGlobal = shared;
   const text = JSON.stringify(recipe);
   if (text !== snapshotText) {
     snapshot = deepFreeze(recipe);
@@ -153,6 +166,7 @@ function commit(recipe: ThemeRecipe): void {
 
 function clearSnapshot(): void {
   restoreOwnedStyles();
+  snapshotGlobal = false;
   if (snapshot === null) return;
   snapshot = null;
   snapshotText = null;
@@ -243,12 +257,19 @@ function isLocalStorageEvent(event: StorageEvent): boolean {
   }
 }
 
-function attach(): () => void {
-  const stored = readStoredRecipe();
-  if (stored?.kind === 'recipe') commit(stored.recipe);
-  // Expired or impossible save times return the defaults instead of an older in-memory theme.
-  else if (stored?.kind === 'discard') clearSnapshot();
-  else if (snapshot) applyDocument(snapshot);
+function attach(owner: ThemeBuilderModeOwner | null): () => void {
+  const themeEvent = owner?.eventName ?? THEME_EVENT;
+  if (owner) {
+    // A mode owner keeps its recipe in memory only and never inherits the global recipe.
+    if (snapshotGlobal) clearSnapshot();
+    else if (snapshot) applyDocument(snapshot);
+  } else {
+    const stored = readStoredRecipe();
+    if (stored?.kind === 'recipe') commit(stored.recipe, true);
+    // Expired or impossible save times return the defaults instead of an older in-memory theme.
+    else if (stored?.kind === 'discard') clearSnapshot();
+    else if (snapshot) applyDocument(snapshot);
+  }
 
   const onThemeChange = () => {
     if (snapshot) applyDocument(snapshot);
@@ -260,7 +281,9 @@ function attach(): () => void {
       return;
     }
     if (event.key === THEME_STORAGE_KEY) {
-      if (snapshot && isThemeMode(event.newValue)) applyDocument(snapshot, event.newValue);
+      // A mode owner decides its own mode; the shared-origin global theme cannot recolor it.
+      if (!owner && snapshot && isThemeMode(event.newValue))
+        applyDocument(snapshot, event.newValue);
       return;
     }
     if (event.key !== THEME_BUILDER_STORAGE_KEY) return;
@@ -270,13 +293,14 @@ function attach(): () => void {
     }
     // Malformed, expired or future cross-tab data is ignored; the current theme stays active.
     const stored = readStoredText(event.newValue, Date.now());
-    if (stored.kind === 'recipe') commit(stored.recipe);
+    if (stored.kind === 'recipe') commit(stored.recipe, true);
   };
 
-  window.addEventListener(THEME_EVENT, onThemeChange);
-  window.addEventListener('storage', onStorage);
+  window.addEventListener(themeEvent, onThemeChange);
+  // Global storage events never reach a mode owner's memory-local recipe.
+  if (!owner) window.addEventListener('storage', onStorage);
   return () => {
-    window.removeEventListener(THEME_EVENT, onThemeChange);
+    window.removeEventListener(themeEvent, onThemeChange);
     window.removeEventListener('storage', onStorage);
     restoreOwnedStyles();
   };
@@ -300,13 +324,16 @@ export function subscribeThemeBuilder(listener: () => void): () => void {
 export function applyThemeBuilder(recipe: ThemeRecipe): ThemeBuilderResult {
   const result = serialize(recipe);
   if (!result.ok) return { ok: false, error: result.error };
-  commit(result.recipe);
-  const persisted = typeof window !== 'undefined' && persist(result.recipe);
+  // A mode owner's recipe stays in memory and is never written to global storage.
+  const shared = modeOwner === null;
+  commit(result.recipe, shared);
+  const persisted = shared && typeof window !== 'undefined' && persist(result.recipe);
   return { ok: true, persisted };
 }
 
 export function resetThemeBuilder(): void {
-  if (typeof window !== 'undefined') {
+  // A mode owner resets only its memory-local recipe.
+  if (modeOwner === null && typeof window !== 'undefined') {
     try {
       window.localStorage.removeItem(THEME_BUILDER_STORAGE_KEY);
     } catch {
@@ -316,10 +343,17 @@ export function resetThemeBuilder(): void {
   clearSnapshot();
 }
 
-export function initializeThemeBuilder(): () => void {
+/** Without an owner the document follows the global theme. A mode owner replaces an earlier
+    ownerless attachment, so effect order cannot hand an isolated document to the global theme;
+    later callers, with or without an owner, never replace it before the final dispose. */
+export function initializeThemeBuilder(owner?: ThemeBuilderModeOwner): () => void {
   if (typeof window === 'undefined' || typeof document === 'undefined') return () => {};
   initializeCount += 1;
-  if (initializeCount === 1) detach = attach();
+  if (owner && !modeOwner) {
+    detach?.();
+    modeOwner = owner;
+    detach = attach(owner);
+  } else if (initializeCount === 1) detach = attach(null);
   let released = false;
   return () => {
     if (released) return;
@@ -328,6 +362,7 @@ export function initializeThemeBuilder(): () => void {
     if (initializeCount === 0) {
       detach?.();
       detach = null;
+      modeOwner = null;
     }
   };
 }
