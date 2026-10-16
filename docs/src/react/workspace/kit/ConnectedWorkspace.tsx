@@ -22,6 +22,7 @@ import {
 import AtlasButton from '../../AtlasButton';
 import AtlasSplitter from '../../AtlasSplitter';
 import AtlasProvider from '../../AtlasProvider';
+import ExamplePreview from '../../ExamplePreview';
 import { useI18n } from '../../useI18n';
 import { TweakerSettings } from '../../AtlasTweaker';
 import WorkspaceFrame, { type WorkspaceProfile } from '../WorkspaceFrame';
@@ -521,7 +522,12 @@ export default function ConnectedWorkspace({
 }: { documentation?: boolean } = {}) {
   return (
     <AtlasProvider appearance={documentation ? 'docs' : undefined}>
-      <ConnectedWorkspaceExamples />
+      <ExamplePreview
+        id="record-workspace-connected"
+        title="Connected Collection, Form and Record display"
+      >
+        <ConnectedWorkspaceExamples />
+      </ExamplePreview>
     </AtlasProvider>
   );
 }

@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import AtlasIcon from './AtlasIcon';
 import AtlasListy, { type AtlasListyEntry } from './AtlasListy';
+import ExamplePreview from './ExamplePreview';
 import { useI18n } from './useI18n';
 
 type BasicPatternId = 'plain' | 'unordered' | 'ordered' | 'icon' | 'nested';
@@ -97,75 +98,85 @@ export default function ListyBasicPatterns() {
         title={t('Plain list')}
         summary={t('Single line rows and key-value details share one list surface.')}
       >
-        <AtlasListy
-          label={t('Plain list')}
-          items={plainRows.map(label => ({ key: label, label: t(label) }))}
-        />
-        <AtlasListy
-          label={t('Record details')}
-          items={details.map(([key, label, value]) => ({
-            key,
-            label: t(label),
-            trailing: t(value),
-          }))}
-        />
+        <ExamplePreview id="listy-plain" title={t('Plain list')}>
+          <AtlasListy
+            label={t('Plain list')}
+            items={plainRows.map(label => ({ key: label, label: t(label) }))}
+          />
+          <AtlasListy
+            label={t('Record details')}
+            items={details.map(([key, label, value]) => ({
+              key,
+              label: t(label),
+              trailing: t(value),
+            }))}
+          />
+        </ExamplePreview>
       </Pattern>
       <Pattern
         id="unordered"
         title={t('Unordered list')}
         summary={t('Items without a sequence carry a quiet marker.')}
       >
-        <AtlasListy
-          label={t('Unordered list')}
-          items={bullets.map(([key, label]) => ({
-            key,
-            label: t(label),
-            leading: <span aria-hidden="true">•</span>,
-          }))}
-        />
+        <ExamplePreview id="listy-unordered" title={t('Unordered list')}>
+          <AtlasListy
+            label={t('Unordered list')}
+            items={bullets.map(([key, label]) => ({
+              key,
+              label: t(label),
+              leading: <span aria-hidden="true">•</span>,
+            }))}
+          />
+        </ExamplePreview>
       </Pattern>
       <Pattern
         id="ordered"
         title={t('Ordered list')}
         summary={t('Numbers state the order the steps happen in.')}
       >
-        <AtlasListy
-          label={t('Ordered list')}
-          items={steps.map(([key, label], index) => ({
-            key,
-            label: t(label),
-            leading: <span>{`${index + 1}.`}</span>,
-          }))}
-        />
+        <ExamplePreview id="listy-ordered" title={t('Ordered list')}>
+          <AtlasListy
+            label={t('Ordered list')}
+            items={steps.map(([key, label], index) => ({
+              key,
+              label: t(label),
+              leading: <span>{`${index + 1}.`}</span>,
+            }))}
+          />
+        </ExamplePreview>
       </Pattern>
       <Pattern
         id="icon"
         title={t('Icon list')}
         summary={t('A decorative icon supports each label without replacing it.')}
       >
-        <AtlasListy
-          label={t('Icon list')}
-          items={icons.map(([key, icon, label, description]) => ({
-            key,
-            label: t(label),
-            description: t(description),
-            leading: <AtlasIcon name={icon} />,
-          }))}
-        />
+        <ExamplePreview id="listy-icon" title={t('Icon list')}>
+          <AtlasListy
+            label={t('Icon list')}
+            items={icons.map(([key, icon, label, description]) => ({
+              key,
+              label: t(label),
+              description: t(description),
+              leading: <AtlasIcon name={icon} />,
+            }))}
+          />
+        </ExamplePreview>
       </Pattern>
       <Pattern
         id="nested"
         title={t('Nested list')}
         summary={t('Group headers name each area; descriptions state where every item sits.')}
       >
-        <AtlasListy
-          label={t('Nested list')}
-          items={nested}
-          group={{
-            key: item => item.key.split('/')[0] ?? item.key,
-            title: groupKey => name(groupKey),
-          }}
-        />
+        <ExamplePreview id="listy-nested" title={t('Nested list')}>
+          <AtlasListy
+            label={t('Nested list')}
+            items={nested}
+            group={{
+              key: item => item.key.split('/')[0] ?? item.key,
+              title: groupKey => name(groupKey),
+            }}
+          />
+        </ExamplePreview>
       </Pattern>
     </>
   );

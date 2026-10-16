@@ -1,7 +1,8 @@
-import { useCallback, useId, useRef, useState, type CSSProperties } from 'react';
+import { useCallback, useId, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { Checkbox, Radio, Switch, type GetRef } from 'antd';
 import AtlasButton from './AtlasButton';
 import AtlasIcon from './AtlasIcon';
+import ExamplePreview from './ExamplePreview';
 import { atlasLength, useAtlasAppearance } from './AtlasAppearance';
 import { atlasSizeProfiles, useAtlasSize } from './AtlasSizeProfile';
 import { selectionSizeProfiles } from '../data/selection-sizes';
@@ -440,6 +441,121 @@ function SelectionOptions({
   );
 }
 
+/** The preview-code collector reads literal ids only, so every kind and layout keeps its own
+    ExamplePreview call; the selection engine and children stay shared. */
+function SelectionVariantPreview({
+  kind,
+  layout,
+  title,
+  children,
+}: {
+  kind: SelectionKind;
+  layout: SelectionLayout;
+  title: string;
+  children: ReactNode;
+}) {
+  if (kind === 'radio') {
+    switch (layout) {
+      case 'horizontal':
+        return (
+          <ExamplePreview id="radio-horizontal-example" title={title}>
+            {children}
+          </ExamplePreview>
+        );
+      case 'vertical':
+        return (
+          <ExamplePreview id="radio-vertical-example" title={title}>
+            {children}
+          </ExamplePreview>
+        );
+      case 'boxes':
+        return (
+          <ExamplePreview id="radio-boxes-example" title={title}>
+            {children}
+          </ExamplePreview>
+        );
+      case 'icon-cards':
+        return (
+          <ExamplePreview id="radio-icon-cards-example" title={title}>
+            {children}
+          </ExamplePreview>
+        );
+      case 'image-cards':
+        return (
+          <ExamplePreview id="radio-image-cards-example" title={title}>
+            {children}
+          </ExamplePreview>
+        );
+    }
+  }
+  if (kind === 'checkbox') {
+    switch (layout) {
+      case 'horizontal':
+        return (
+          <ExamplePreview id="checkbox-horizontal-example" title={title}>
+            {children}
+          </ExamplePreview>
+        );
+      case 'vertical':
+        return (
+          <ExamplePreview id="checkbox-vertical-example" title={title}>
+            {children}
+          </ExamplePreview>
+        );
+      case 'boxes':
+        return (
+          <ExamplePreview id="checkbox-boxes-example" title={title}>
+            {children}
+          </ExamplePreview>
+        );
+      case 'icon-cards':
+        return (
+          <ExamplePreview id="checkbox-icon-cards-example" title={title}>
+            {children}
+          </ExamplePreview>
+        );
+      case 'image-cards':
+        return (
+          <ExamplePreview id="checkbox-image-cards-example" title={title}>
+            {children}
+          </ExamplePreview>
+        );
+    }
+  }
+  switch (layout) {
+    case 'horizontal':
+      return (
+        <ExamplePreview id="switch-horizontal-example" title={title}>
+          {children}
+        </ExamplePreview>
+      );
+    case 'vertical':
+      return (
+        <ExamplePreview id="switch-vertical-example" title={title}>
+          {children}
+        </ExamplePreview>
+      );
+    case 'boxes':
+      return (
+        <ExamplePreview id="switch-boxes-example" title={title}>
+          {children}
+        </ExamplePreview>
+      );
+    case 'icon-cards':
+      return (
+        <ExamplePreview id="switch-icon-cards-example" title={title}>
+          {children}
+        </ExamplePreview>
+      );
+    case 'image-cards':
+      return (
+        <ExamplePreview id="switch-image-cards-example" title={title}>
+          {children}
+        </ExamplePreview>
+      );
+  }
+}
+
 function SelectionVariantGroup({
   kind,
   variant,
@@ -451,20 +567,22 @@ function SelectionVariantGroup({
   const helpId = useId();
   const statusId = useId();
   return (
-    <section
-      className="atlas-selection-variant"
-      data-selection-variant={kind === 'checkbox' ? undefined : variant.value}
-    >
-      <fieldset aria-describedby={`${helpId} ${statusId}`}>
-        <legend>
-          <h4>{t(variant.title)}</h4>
-        </legend>
-        <p id={helpId} className="atlas-selection-variant-help">
-          {t(variant.help)}
-        </p>
-        <SelectionOptions kind={kind} layout={variant.value} statusId={statusId} />
-      </fieldset>
-    </section>
+    <SelectionVariantPreview kind={kind} layout={variant.value} title={t(variant.title)}>
+      <section
+        className="atlas-selection-variant"
+        data-selection-variant={kind === 'checkbox' ? undefined : variant.value}
+      >
+        <fieldset aria-describedby={`${helpId} ${statusId}`}>
+          <legend>
+            <h4>{t(variant.title)}</h4>
+          </legend>
+          <p id={helpId} className="atlas-selection-variant-help">
+            {t(variant.help)}
+          </p>
+          <SelectionOptions kind={kind} layout={variant.value} statusId={statusId} />
+        </fieldset>
+      </section>
+    </SelectionVariantPreview>
   );
 }
 

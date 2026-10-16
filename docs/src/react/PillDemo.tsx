@@ -9,6 +9,7 @@ import AtlasPill, { AtlasCheckablePill } from './AtlasPill';
 import AtlasIcon from './AtlasIcon';
 import PillIcon from './PillIcon';
 import PillColorExample from './PillColorExample';
+import ExamplePreview from './ExamplePreview';
 import { pillColorPresets } from '../data/pill-palette';
 import { pillVariants, pillSizes, type PillVariant, type PillSize } from '../data/pill-surfaces';
 
@@ -142,35 +143,37 @@ export default function PillDemo({ documentation = false }: { documentation?: bo
         'A filled surface inherits the current color scheme. Explore all properties in Tweaker.',
       ),
       content: (
-        <div className="pill-playground">
-          <div className="atlas-pill-list">
-            {previewVisible ? (
-              <AtlasPill
-                variant={variant}
-                radius={radius}
-                color={statuses.some(s => s.color === color) ? color : undefined}
-                colorIndex={
-                  pillColorPresets.findIndex(p => p.value === color) >= 0
-                    ? pillColorPresets.findIndex(p => p.value === color)
-                    : undefined
-                }
-                icon={icon ? <AtlasIcon name="check" /> : undefined}
-                closable={closable}
-                disabled={disabled}
-                onClose={() => setPreviewVisible(false)}
-              >
-                {t('Workspace label')}
-              </AtlasPill>
-            ) : (
-              <Button type="text" onClick={() => setPreviewVisible(true)}>
-                {t('Restore preview')}
-              </Button>
-            )}
+        <ExamplePreview id="pill-playground" title={t('Playground')}>
+          <div className="pill-playground">
+            <div className="atlas-pill-list">
+              {previewVisible ? (
+                <AtlasPill
+                  variant={variant}
+                  radius={radius}
+                  color={statuses.some(s => s.color === color) ? color : undefined}
+                  colorIndex={
+                    pillColorPresets.findIndex(p => p.value === color) >= 0
+                      ? pillColorPresets.findIndex(p => p.value === color)
+                      : undefined
+                  }
+                  icon={icon ? <AtlasIcon name="check" /> : undefined}
+                  closable={closable}
+                  disabled={disabled}
+                  onClose={() => setPreviewVisible(false)}
+                >
+                  {t('Workspace label')}
+                </AtlasPill>
+              ) : (
+                <Button type="text" onClick={() => setPreviewVisible(true)}>
+                  {t('Restore preview')}
+                </Button>
+              )}
+            </div>
+            <p>
+              {t('Filled is the default. Solid adds emphasis; outlined keeps the surface light.')}
+            </p>
           </div>
-          <p>
-            {t('Filled is the default. Solid adds emphasis; outlined keeps the surface light.')}
-          </p>
-        </div>
+        </ExamplePreview>
       ),
     },
     {
@@ -180,31 +183,33 @@ export default function PillDemo({ documentation = false }: { documentation?: bo
         'One component, three surfaces. Meaning stays visible through a label and an icon.',
       ),
       content: (
-        <div className="pill-surface-grid">
-          {pillVariants.map(surface => (
-            <div className="example-block" key={surface}>
-              <h4>{t(surface)}</h4>
-              <div className="atlas-pill-list">
-                <AtlasPill variant={surface} radius={radius}>
-                  {t('Current color scheme')}
-                </AtlasPill>
-              </div>
-              <div className="atlas-pill-list" data-pill-status={surface}>
-                {statuses.map(status => (
-                  <AtlasPill
-                    key={status.color}
-                    color={status.color}
-                    variant={surface}
-                    radius={radius}
-                    icon={<StatusIcon name={status.icon} />}
-                  >
-                    {t(status.label)}
+        <ExamplePreview id="pill-surfaces-status" title={t('Surfaces and status')}>
+          <div className="pill-surface-grid">
+            {pillVariants.map(surface => (
+              <div className="example-block" key={surface}>
+                <h4>{t(surface)}</h4>
+                <div className="atlas-pill-list">
+                  <AtlasPill variant={surface} radius={radius}>
+                    {t('Current color scheme')}
                   </AtlasPill>
-                ))}
+                </div>
+                <div className="atlas-pill-list" data-pill-status={surface}>
+                  {statuses.map(status => (
+                    <AtlasPill
+                      key={status.color}
+                      color={status.color}
+                      variant={surface}
+                      radius={radius}
+                      icon={<StatusIcon name={status.icon} />}
+                    >
+                      {t(status.label)}
+                    </AtlasPill>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </ExamplePreview>
       ),
     },
     {
@@ -214,31 +219,33 @@ export default function PillDemo({ documentation = false }: { documentation?: bo
         '17 shared chromatic families across all three surfaces. Filled colors retain 75% white and 5% black.',
       ),
       content: (
-        <div className="pill-preset-stack">
-          {pillVariants.map(surface => (
-            <div className="example-block" key={surface}>
-              <h4>
-                {surface === 'filled' ? t('Color sequence · 75% white / 5% black') : t(surface)}
-              </h4>
-              <div
-                className="atlas-pill-list"
-                data-pill-palette={surface === 'filled' ? '' : undefined}
-                data-pill-presets={surface}
-              >
-                {pillColorPresets.map((preset, index) => (
-                  <AtlasPill
-                    key={preset.value}
-                    variant={surface}
-                    radius={radius}
-                    colorIndex={index}
-                  >
-                    {t(preset.label)}
-                  </AtlasPill>
-                ))}
+        <ExamplePreview id="pill-color-families" title={t('Color families')}>
+          <div className="pill-preset-stack">
+            {pillVariants.map(surface => (
+              <div className="example-block" key={surface}>
+                <h4>
+                  {surface === 'filled' ? t('Color sequence · 75% white / 5% black') : t(surface)}
+                </h4>
+                <div
+                  className="atlas-pill-list"
+                  data-pill-palette={surface === 'filled' ? '' : undefined}
+                  data-pill-presets={surface}
+                >
+                  {pillColorPresets.map((preset, index) => (
+                    <AtlasPill
+                      key={preset.value}
+                      variant={surface}
+                      radius={radius}
+                      colorIndex={index}
+                    >
+                      {t(preset.label)}
+                    </AtlasPill>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </ExamplePreview>
       ),
     },
     {
@@ -249,88 +256,99 @@ export default function PillDemo({ documentation = false }: { documentation?: bo
       ),
       content: (
         <div className="pill-surface-grid" data-pill-icons>
-          <div className="example-block">
-            <h4>{t('With icon')}</h4>
-            <div className="atlas-pill-list">
-              {(
-                [
-                  { name: 'twitter-logo', label: 'Twitter', color: 10 },
-                  { name: 'youtube-logo', label: 'YouTube', color: 0 },
-                  { name: 'facebook-logo', label: 'Facebook', color: 11 },
-                  { name: 'linkedin-logo', label: 'LinkedIn', color: 9 },
-                ] as const
-              ).map(item => (
-                <AtlasPill
-                  key={item.name}
-                  radius={radius}
-                  colorIndex={item.color}
-                  icon={<PillIcon name={item.name} />}
-                >
-                  {item.label}
+          <ExamplePreview id="pill-icons" title={t('With icon')}>
+            <div className="example-block">
+              <h4>{t('With icon')}</h4>
+              <div className="atlas-pill-list">
+                {(
+                  [
+                    { name: 'twitter-logo', label: 'Twitter', color: 10 },
+                    { name: 'youtube-logo', label: 'YouTube', color: 0 },
+                    { name: 'facebook-logo', label: 'Facebook', color: 11 },
+                    { name: 'linkedin-logo', label: 'LinkedIn', color: 9 },
+                  ] as const
+                ).map(item => (
+                  <AtlasPill
+                    key={item.name}
+                    radius={radius}
+                    colorIndex={item.color}
+                    icon={<PillIcon name={item.name} />}
+                  >
+                    {item.label}
+                  </AtlasPill>
+                ))}
+              </div>
+              <div className="atlas-pill-list">
+                <AtlasPill radius={radius} colorIndex={7} icon={<AtlasIcon name="check" />}>
+                  {t('Published')}
                 </AtlasPill>
-              ))}
+                <AtlasPill radius={radius} colorIndex={10} icon={<AtlasIcon name="download" />}>
+                  {t('Download')}
+                </AtlasPill>
+                <AtlasPill radius={radius} colorIndex={14} icon={<AtlasIcon name="lock-simple" />}>
+                  {t('Private')}
+                </AtlasPill>
+              </div>
             </div>
-            <div className="atlas-pill-list">
-              <AtlasPill radius={radius} colorIndex={7} icon={<AtlasIcon name="check" />}>
-                {t('Published')}
-              </AtlasPill>
-              <AtlasPill radius={radius} colorIndex={10} icon={<AtlasIcon name="download" />}>
-                {t('Download')}
-              </AtlasPill>
-              <AtlasPill radius={radius} colorIndex={14} icon={<AtlasIcon name="lock-simple" />}>
-                {t('Private')}
-              </AtlasPill>
+          </ExamplePreview>
+          <ExamplePreview id="pill-custom-icons" title={t('Alternative and custom icons')}>
+            <div className="example-block">
+              <h4>{t('Alternative and custom icons')}</h4>
+              <div className="atlas-pill-list">
+                <AtlasPill
+                  radius={radius}
+                  colorIndex={12}
+                  icon={<AtlasIcon library="antd" name="settings" />}
+                >
+                  {t('Settings')}
+                </AtlasPill>
+                <AtlasPill
+                  radius={radius}
+                  colorIndex={4}
+                  icon={
+                    <span className="pill-custom-mark" aria-hidden="true">
+                      A
+                    </span>
+                  }
+                >
+                  {t('Custom mark')}
+                </AtlasPill>
+                <AtlasPill
+                  radius={radius}
+                  colorIndex={16}
+                  icon={<PillIcon name="heart" />}
+                  closable
+                >
+                  {t('Favorite')}
+                </AtlasPill>
+              </div>
             </div>
-          </div>
-          <div className="example-block">
-            <h4>{t('Alternative and custom icons')}</h4>
-            <div className="atlas-pill-list">
-              <AtlasPill
-                radius={radius}
-                colorIndex={12}
-                icon={<AtlasIcon library="antd" name="settings" />}
-              >
-                {t('Settings')}
-              </AtlasPill>
-              <AtlasPill
-                radius={radius}
-                colorIndex={4}
-                icon={
-                  <span className="pill-custom-mark" aria-hidden="true">
-                    A
-                  </span>
-                }
-              >
-                {t('Custom mark')}
-              </AtlasPill>
-              <AtlasPill radius={radius} colorIndex={16} icon={<PillIcon name="heart" />} closable>
-                {t('Favorite')}
-              </AtlasPill>
+          </ExamplePreview>
+          <ExamplePreview id="pill-semantic-styling" title={t('Semantic styling')}>
+            <div className="example-block">
+              <h4>{t('Semantic styling')}</h4>
+              <div className="pill-semantic-group">
+                <AtlasPill
+                  radius={radius}
+                  colorIndex={9}
+                  icon={<AtlasIcon name="settings" />}
+                  styles={{ content: { fontStyle: 'italic' } }}
+                >
+                  {t('Object styles')}
+                </AtlasPill>
+                <AtlasPill
+                  radius={radius}
+                  colorIndex={14}
+                  icon={<AtlasIcon name="check" />}
+                  styles={({ props }) => ({
+                    content: { fontStyle: props.variant === 'filled' ? 'italic' : 'normal' },
+                  })}
+                >
+                  {t('Function styles')}
+                </AtlasPill>
+              </div>
             </div>
-          </div>
-          <div className="example-block">
-            <h4>{t('Semantic styling')}</h4>
-            <div className="pill-semantic-group">
-              <AtlasPill
-                radius={radius}
-                colorIndex={9}
-                icon={<AtlasIcon name="settings" />}
-                styles={{ content: { fontStyle: 'italic' } }}
-              >
-                {t('Object styles')}
-              </AtlasPill>
-              <AtlasPill
-                radius={radius}
-                colorIndex={14}
-                icon={<AtlasIcon name="check" />}
-                styles={({ props }) => ({
-                  content: { fontStyle: props.variant === 'filled' ? 'italic' : 'normal' },
-                })}
-              >
-                {t('Function styles')}
-              </AtlasPill>
-            </div>
-          </div>
+          </ExamplePreview>
         </div>
       ),
     },
@@ -342,66 +360,74 @@ export default function PillDemo({ documentation = false }: { documentation?: bo
       ),
       content: (
         <div className="pill-surface-grid">
-          <div className="example-block" data-pill-checkable>
-            <h4>{t('Checkable tags with icon')}</h4>
-            <div className="atlas-pill-list">
-              {['Design', 'Engineering', 'Operations'].map((label, index) => (
+          <ExamplePreview id="pill-checkable" title={t('Checkable tags with icon')}>
+            <div className="example-block" data-pill-checkable>
+              <h4>{t('Checkable tags with icon')}</h4>
+              <div className="atlas-pill-list">
+                {['Design', 'Engineering', 'Operations'].map((label, index) => (
+                  <AtlasCheckablePill
+                    key={label}
+                    radius={radius}
+                    colorIndex={index * 5}
+                    variant={variant}
+                    icon={<AtlasIcon name={checked.includes(label) ? 'check' : 'plus'} />}
+                    checked={checked.includes(label)}
+                    onChange={active =>
+                      setChecked(current =>
+                        active ? [...current, label] : current.filter(v => v !== label),
+                      )
+                    }
+                  >
+                    {t(label)}
+                  </AtlasCheckablePill>
+                ))}
                 <AtlasCheckablePill
-                  key={label}
+                  aria-label={t('Favorite')}
                   radius={radius}
-                  colorIndex={index * 5}
+                  colorIndex={3}
                   variant={variant}
-                  icon={<AtlasIcon name={checked.includes(label) ? 'check' : 'plus'} />}
-                  checked={checked.includes(label)}
+                  icon={<PillIcon name="star" />}
+                  checked={checked.includes('Favorite')}
                   onChange={active =>
                     setChecked(current =>
-                      active ? [...current, label] : current.filter(v => v !== label),
+                      active
+                        ? [...current, 'Favorite']
+                        : current.filter(value => value !== 'Favorite'),
                     )
                   }
+                />
+                <AtlasCheckablePill
+                  radius={radius}
+                  checked
+                  disabled
+                  icon={<AtlasIcon name="lock-simple" />}
                 >
-                  {t(label)}
+                  {t('Disabled')}
                 </AtlasCheckablePill>
-              ))}
-              <AtlasCheckablePill
-                aria-label={t('Favorite')}
-                radius={radius}
-                colorIndex={3}
-                variant={variant}
-                icon={<PillIcon name="star" />}
-                checked={checked.includes('Favorite')}
-                onChange={active =>
-                  setChecked(current =>
-                    active
-                      ? [...current, 'Favorite']
-                      : current.filter(value => value !== 'Favorite'),
-                  )
-                }
-              />
-              <AtlasCheckablePill
-                radius={radius}
-                checked
-                disabled
-                icon={<AtlasIcon name="lock-simple" />}
-              >
-                {t('Disabled')}
-              </AtlasCheckablePill>
+              </div>
+              <p role="status">{t('{count} labels selected', { count: checked.length })}</p>
             </div>
-            <p role="status">{t('{count} labels selected', { count: checked.length })}</p>
-          </div>
-          <div className="example-block">
-            <h4>{t('Basic and removable')}</h4>
-            {basic}
-            <p role="status">
-              {removed
-                ? t('{label} removed', { label: t(removed) })
-                : t('Remove a tag to try the close action.')}
-            </p>
-          </div>
-          <div className="example-block">
-            <h4>{t('Long text and disabled')}</h4>
-            {longText}
-          </div>
-          <PillColorExample radius={radius} variant={variant} />
+          </ExamplePreview>
+          <ExamplePreview id="pill-closable" title={t('Basic and removable')}>
+            <div className="example-block" data-pill-closable>
+              <h4>{t('Basic and removable')}</h4>
+              {basic}
+              <p role="status">
+                {removed
+                  ? t('{label} removed', { label: t(removed) })
+                  : t('Remove a tag to try the close action.')}
+              </p>
+            </div>
+          </ExamplePreview>
+          <ExamplePreview id="pill-long-text" title={t('Long text and disabled')}>
+            <div className="example-block">
+              <h4>{t('Long text and disabled')}</h4>
+              {longText}
+            </div>
+          </ExamplePreview>
+          <ExamplePreview id="pill-color-family" title={t('Color family')}>
+            <PillColorExample radius={radius} variant={variant} />
+          </ExamplePreview>
         </div>
       ),
     },
@@ -410,33 +436,35 @@ export default function PillDemo({ documentation = false }: { documentation?: bo
       title: t('Cross combinations'),
       description: t('Compare size, surface, corner, icon and availability together.'),
       content: (
-        <div className="pill-surface-grid">
-          {(Object.keys(pillSizes) as PillSize[]).map(size => (
-            <div className="example-block" key={size}>
-              <h4>
-                {t(size)} · {pillSizes[size]} px
-              </h4>
-              <div className="atlas-pill-list">
-                {pillVariants.map((surface, index) => (
-                  <AtlasPill
-                    key={surface}
-                    size={size}
-                    variant={surface}
-                    colorIndex={index * 6}
-                    radius={index === 2 ? 'pill' : radius}
-                    icon={index > 0 ? <AtlasIcon name="check" /> : undefined}
-                    closable={index === 1}
-                  >
-                    {t(surface)}
+        <ExamplePreview id="pill-cross-combinations" title={t('Cross combinations')}>
+          <div className="pill-surface-grid">
+            {(Object.keys(pillSizes) as PillSize[]).map(size => (
+              <div className="example-block" key={size}>
+                <h4>
+                  {t(size)} · {pillSizes[size]} px
+                </h4>
+                <div className="atlas-pill-list">
+                  {pillVariants.map((surface, index) => (
+                    <AtlasPill
+                      key={surface}
+                      size={size}
+                      variant={surface}
+                      colorIndex={index * 6}
+                      radius={index === 2 ? 'pill' : radius}
+                      icon={index > 0 ? <AtlasIcon name="check" /> : undefined}
+                      closable={index === 1}
+                    >
+                      {t(surface)}
+                    </AtlasPill>
+                  ))}
+                  <AtlasPill size={size} radius={radius} disabled>
+                    {t('Disabled')}
                   </AtlasPill>
-                ))}
-                <AtlasPill size={size} radius={radius} disabled>
-                  {t('Disabled')}
-                </AtlasPill>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </ExamplePreview>
       ),
     },
   ];

@@ -1,6 +1,7 @@
 import { selectedLabel } from './selectedLabel';
 import { useI18n } from './useI18n';
 import DataEntryCatalog from './DataEntryCatalog';
+import ExamplePreview from './ExamplePreview';
 import { useState, type CSSProperties } from 'react';
 import { Checkbox, Select } from 'antd';
 import AtlasProvider from './AtlasProvider';
@@ -112,7 +113,11 @@ export default function CheckboxDemo({
                 description: t(
                   'Select teams independently, or use Select all to compare checked and partial selection.',
                 ),
-                content: <div className="example-block">{selection}</div>,
+                content: (
+                  <ExamplePreview id="checkbox-group-selection" title={t('Group selection')}>
+                    <div className="example-block">{selection}</div>
+                  </ExamplePreview>
+                ),
               },
               {
                 id: 'states',
@@ -120,12 +125,17 @@ export default function CheckboxDemo({
                 description: t(
                   'Compare checked, unchecked and unavailable options without changing the group above.',
                 ),
-                content: <div className="data-entry-state-grid">{states}</div>,
+                content: (
+                  <ExamplePreview id="checkbox-states" title={t('States')}>
+                    <div className="data-entry-state-grid">{states}</div>
+                  </ExamplePreview>
+                ),
               },
               {
                 id: 'selection-variants',
                 title: t('Selection layouts and cards'),
                 description: t('Choose any workspaces.'),
+                // Each layout owns its workbench inside AtlasSelectionVariants.
                 content: <AtlasSelectionVariants kind="checkbox" />,
               },
             ]}

@@ -12,14 +12,15 @@ const loadGate = () => import(pathToFileURL(resolve(root, 'tools/docs-presentati
 const readRules = async () =>
   JSON.parse(await readFile(resolve(root, 'docs/src/data/documentation-rules.json'), 'utf8'));
 
+// Showcase sections first, then the API and resources reference column.
 const componentOrder = [
   'usage',
   'examples',
   'code',
   'astro',
-  'api',
   'accessibility',
   'notes',
+  'api',
   'resources',
 ];
 const headings = {
@@ -36,12 +37,17 @@ const foundationKinds = {
   '/': 'overview',
   '/getting-started/': 'guide',
   '/tokens/': 'tokens',
+  '/standards/': 'ux-standards',
+  '/genui/': 'genui',
   '/color-system/': 'color-lab',
+  '/theme-builder/': 'color-lab',
   '/decisions/': 'decisions',
   '/licenses/': 'legal',
   '/documentation/': 'standard',
 };
-const pageKinds = [...Object.values(foundationKinds), 'component'];
+// Retired routes only redirect to their canonical documentation route.
+const redirectTargets = { '/token-standards/': '/tokens/', '/components/': '/' };
+const pageKinds = [...new Set([...Object.values(foundationKinds), 'redirect', 'component'])];
 const resourceSources = {
   catalog: ['docs/src/data/catalog.ts'],
   route: ['docs/src/pages/components/[slug].astro', 'docs/src/layouts/DocsLayout.astro'],
@@ -290,11 +296,27 @@ async function tempSite(t, files) {
   }
   return directory;
 }
+const redirectPage = target => `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" /><title>Redirecting · Atlas Components</title>
+    <link rel="canonical" href="${target}" />
+    <meta http-equiv="refresh" content="0; url=${target}" />
+  </head>
+  <body><a href="${target}">Continue to the documentation</a></body>
+</html>`;
 const validSite = ruleIds => ({
   'index.html': foundationPage(),
   'getting-started/index.html': guidePage(),
+  'tokens/index.html': foundationPage(),
   'documentation/index.html': standardPage(ruleIds),
   'components/timeline/index.html': componentPage(),
+  ...Object.fromEntries(
+    Object.entries(redirectTargets).map(([route, target]) => [
+      `${route.slice(1)}index.html`,
+      redirectPage(target),
+    ]),
+  ),
   '_astro/client.js': 'export {};',
 });
 async function buildFindings(directory) {
@@ -319,6 +341,11 @@ test('documentation-rules.json is the single machine-readable ECA source', async
   for (const [route, kind] of Object.entries(foundationKinds)) {
     assert.ok(rules.pageKinds[kind].routes.includes(route), `${route} belongs to ${kind}`);
   }
+  assert.deepEqual(
+    [...rules.pageKinds.redirect.routes].sort(),
+    Object.keys(redirectTargets).sort(),
+  );
+  assert.deepEqual(rules.pageKinds.redirect.targets, redirectTargets);
   assert.deepEqual(rules.componentSections, componentOrder);
   const ids = rules.rules.map(rule => rule.ruleId);
   assert.equal(new Set(ids).size, ids.length, 'rule IDs are unique');
@@ -351,6 +378,8 @@ test('component routes are classified by path, never by an enumerated slug list'
     }
   };
   walk(rules);
+  const componentRoute = new RegExp(rules.pageKinds.component.routePattern);
+  assert.ok(componentRoute.test('/components/timeline/'), 'the component pattern admits slugs');
   const literalComponentRoute = /\/components\/[a-z0-9]+(?:-[a-z0-9]+)*\//;
   assert.deepEqual(
     strings.filter(value => literalComponentRoute.test(value)),
@@ -361,7 +390,7 @@ test('component routes are classified by path, never by an enumerated slug list'
     for (const route of list) {
       assert.equal(typeof route, 'string');
       assert.equal(
-        route.startsWith('/components/'),
+        componentRoute.test(route) || literalComponentRoute.test(route),
         false,
         `${route} is not a listed component route`,
       );
@@ -378,7 +407,10 @@ test('known and future component routes pass when the full common contract is me
 test('future component routes are admitted only through the complete contract', async () => {
   const partial = componentPage({ sections: componentOrder.filter(id => id !== 'resources') });
   await rejects(partial, '/components/timeline/', 'component-section-missing');
-  await rejects(componentPage(), '/components/', 'page-kind-unknown');
+  await rejects(componentPage(), '/components', 'page-kind-unknown');
+  await rejects(componentPage(), '/components/Timeline/', 'page-kind-unknown');
+  // The component index is a declared redirect, never a component page.
+  await rejects(componentPage(), '/components/', 'redirect-metadata-invalid');
   await rejects(componentPage(), '/components/timeline/history/', 'page-kind-unknown');
 });
 

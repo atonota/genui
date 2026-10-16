@@ -9,6 +9,7 @@ import NumberStepper from './NumberStepper';
 import AtlasIcon from './AtlasIcon';
 import AtlasClearIcon from './AtlasClearIcon';
 import DataEntryCatalog, { DataEntryGrid } from './DataEntryCatalog';
+import ExamplePreview from './ExamplePreview';
 
 // Local sample check only; the field keeps native email semantics.
 const EMAIL_PATTERN = /^[^@ ]+@[^@ ]+[.][^@ ]+$/;
@@ -259,19 +260,31 @@ export default function InputDemo({
               description: t(
                 'A workspace form combines names, contact details, a department, a website, a budget, a password and a note on one shared field surface.',
               ),
-              content: workspace,
+              content: (
+                <ExamplePreview id="input-text-entry" title={t('Text entry')}>
+                  {workspace}
+                </ExamplePreview>
+              ),
             },
             {
               id: 'special',
               title: t('Special fields'),
               description: t('Search runs locally and reports its result next to the field.'),
-              content: <DataEntryGrid>{search}</DataEntryGrid>,
+              content: (
+                <ExamplePreview id="input-special-fields" title={t('Special fields')}>
+                  <DataEntryGrid>{search}</DataEntryGrid>
+                </ExamplePreview>
+              ),
             },
             {
               id: 'validation',
               title: t('Validation'),
               description: t('Errors and warnings keep their explanations next to the field.'),
-              content: validation,
+              content: (
+                <ExamplePreview id="input-validation-states" title={t('Validation')}>
+                  {validation}
+                </ExamplePreview>
+              ),
             },
             {
               id: 'availability',
@@ -280,11 +293,13 @@ export default function InputDemo({
                 'Read-only values remain selectable. Disabled fields and actions remain unavailable.',
               ),
               content: (
-                <DataEntryGrid>
-                  {readonly}
-                  {readonlyNumber}
-                  {disabled}
-                </DataEntryGrid>
+                <ExamplePreview id="input-availability-states" title={t('Availability')}>
+                  <DataEntryGrid>
+                    {readonly}
+                    {readonlyNumber}
+                    {disabled}
+                  </DataEntryGrid>
+                </ExamplePreview>
               ),
             },
           ]}

@@ -1077,18 +1077,21 @@ body .ant-modal-root .ant-modal-mask.ant-fade-leave-active {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
-/* Controls left and preview right once the playground has room for two columns.
-   A Tweaker-hosted control panel leaves the preview on the full row. */
+/* Controls left and preview right once the playground has room for two columns. The bare
+   preview and its shared workbench (.example-preview) are the preview, never the control
+   panel; a Tweaker-hosted control panel leaves the preview on the full row. */
 @media (min-width: 48rem) {
-  .atlas-demo .button-playground:has(> :not(.playground-preview, p)) {
+  .atlas-demo .button-playground:has(> :not(.playground-preview, .example-preview, p)) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: start;
   }
-  .atlas-demo .button-playground > :not(.playground-preview, p) {
+  .atlas-demo .button-playground > :not(.playground-preview, .example-preview, p) {
     grid-column: 1;
     grid-row: 1;
   }
-  .atlas-demo .button-playground:has(> :not(.playground-preview, p)) > .playground-preview {
+  .atlas-demo
+    .button-playground:has(> :not(.playground-preview, .example-preview, p))
+    > :is(.playground-preview, .example-preview) {
     grid-column: 2;
     grid-row: 1;
   }

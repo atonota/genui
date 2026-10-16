@@ -2,6 +2,7 @@ import { useId, useState, type MouseEvent, type ReactNode } from 'react';
 import { Checkbox, Flex, Radio, Switch, Typography } from 'antd';
 import AtlasButton from './AtlasButton';
 import AtlasListy, { type AtlasListyEntry } from './AtlasListy';
+import ExamplePreview from './ExamplePreview';
 import { useI18n } from './useI18n';
 
 /** Native controls toggle themselves; a row click only forwards clicks that land on its text. */
@@ -73,8 +74,14 @@ export function ListySelectPattern() {
       title={t('Single select')}
       description={t('Each row holds one native radio; the row text picks the same choice.')}
     >
-      <AtlasListy label={t('Role')} items={items} />
-      <p role="status">{chosen ? `${t('Selected')} ${t(chosen.label)}` : t('Nothing selected')}</p>
+      <ExamplePreview id="listy-select" title={t('Single select')}>
+        <Flex vertical gap="small">
+          <AtlasListy label={t('Role')} items={items} />
+          <p role="status">
+            {chosen ? `${t('Selected')} ${t(chosen.label)}` : t('Nothing selected')}
+          </p>
+        </Flex>
+      </ExamplePreview>
     </ListyPattern>
   );
 }
@@ -122,18 +129,22 @@ export function ListyCheckboxPattern() {
       title={t('Multiple select')}
       description={t('Pick any number of teams; Select all reflects a partial choice.')}
     >
-      <Flex wrap align="center" justify="space-between" gap="small">
-        <Checkbox
-          checked={count === teams.length}
-          indeterminate={count > 0 && count < teams.length}
-          onChange={event => setPicked(event.target.checked ? teamKeys : [])}
-        >
-          {t('Select all')}
-        </Checkbox>
-        <AtlasButton text={t('Clear selection')} fill="text" onClick={() => setPicked([])} />
-      </Flex>
-      <AtlasListy label={t('Teams')} items={items} />
-      <p role="status">{`${count} ${t('selected')}`}</p>
+      <ExamplePreview id="listy-checkbox" title={t('Multiple select')}>
+        <Flex vertical gap="small">
+          <Flex wrap align="center" justify="space-between" gap="small">
+            <Checkbox
+              checked={count === teams.length}
+              indeterminate={count > 0 && count < teams.length}
+              onChange={event => setPicked(event.target.checked ? teamKeys : [])}
+            >
+              {t('Select all')}
+            </Checkbox>
+            <AtlasButton text={t('Clear selection')} fill="text" onClick={() => setPicked([])} />
+          </Flex>
+          <AtlasListy label={t('Teams')} items={items} />
+          <p role="status">{`${count} ${t('selected')}`}</p>
+        </Flex>
+      </ExamplePreview>
     </ListyPattern>
   );
 }
@@ -194,12 +205,16 @@ export function ListySettingsPattern() {
       title={t('Settings')}
       description={t('Switches change this page only; nothing is saved.')}
     >
-      <AtlasListy label={t('Preferences')} items={items} />
-      <p role="status">
-        {changed
-          ? `${t(changed.label)}: ${enabled[changed.key] ? t('On') : t('Off')}`
-          : t('No changes yet')}
-      </p>
+      <ExamplePreview id="listy-settings" title={t('Settings')}>
+        <Flex vertical gap="small">
+          <AtlasListy label={t('Preferences')} items={items} />
+          <p role="status">
+            {changed
+              ? `${t(changed.label)}: ${enabled[changed.key] ? t('On') : t('Off')}`
+              : t('No changes yet')}
+          </p>
+        </Flex>
+      </ExamplePreview>
     </ListyPattern>
   );
 }
@@ -236,8 +251,14 @@ export function ListyActionsPattern() {
       title={t('Row actions')}
       description={t('Each record carries its own action button.')}
     >
-      <AtlasListy label={t('Records')} items={items} />
-      <p role="status">{current ? `${t('Opened')} ${t(current.label)}` : t('No record opened')}</p>
+      <ExamplePreview id="listy-actions" title={t('Row actions')}>
+        <Flex vertical gap="small">
+          <AtlasListy label={t('Records')} items={items} />
+          <p role="status">
+            {current ? `${t('Opened')} ${t(current.label)}` : t('No record opened')}
+          </p>
+        </Flex>
+      </ExamplePreview>
     </ListyPattern>
   );
 }

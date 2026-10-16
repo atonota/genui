@@ -3,6 +3,7 @@ import { Select } from 'antd';
 import AtlasProvider from './AtlasProvider';
 import AtlasAutoComplete, { type AtlasSuggestion } from './AtlasAutoComplete';
 import { TweakerSettings } from './AtlasTweaker';
+import ExamplePreview from './ExamplePreview';
 import { useI18n } from './useI18n';
 
 const knowledge = [
@@ -184,55 +185,59 @@ function AutoCompleteExamples() {
             )}
           </p>
         </header>
-        <div className="autocomplete-discovery-grid" data-autocomplete-primary>
-          <div className="autocomplete-primary-field">
-            <AtlasAutoComplete
-              id={`${id}-knowledge`}
-              label={t('Find in the documentation')}
-              value={query}
-              onChange={value => {
-                setQuery(value);
-                if (value !== query) setSelectedKey(null);
-              }}
-              items={knowledgeItems}
-              onSelect={item => setSelectedKey(item.key)}
-              placeholder={t('Try Button, color or workspace')}
-              help={t('Type freely. Choose a suggestion to see its context before opening a page.')}
-            />
-            <p className="autocomplete-guidance">
-              {t('Suggestions come from six local documentation entries.')}
-            </p>
+        <ExamplePreview id="autocomplete-find-with-context" title={t('Find with context')}>
+          <div className="autocomplete-discovery-grid" data-autocomplete-primary>
+            <div className="autocomplete-primary-field">
+              <AtlasAutoComplete
+                id={`${id}-knowledge`}
+                label={t('Find in the documentation')}
+                value={query}
+                onChange={value => {
+                  setQuery(value);
+                  if (value !== query) setSelectedKey(null);
+                }}
+                items={knowledgeItems}
+                onSelect={item => setSelectedKey(item.key)}
+                placeholder={t('Try Button, color or workspace')}
+                help={t(
+                  'Type freely. Choose a suggestion to see its context before opening a page.',
+                )}
+              />
+              <p className="autocomplete-guidance">
+                {t('Suggestions come from six local documentation entries.')}
+              </p>
+            </div>
+            <div
+              className="autocomplete-context"
+              data-autocomplete-context
+              data-selected-key={selected?.key ?? ''}
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              {selected ? (
+                <>
+                  <p className="eyebrow">{t(selected.group.label)}</p>
+                  <h4>{t(selected.title)}</h4>
+                  <p>{t(selected.description)}</p>
+                  <div className="autocomplete-context-actions">
+                    <a href={selected.href}>{t('Open documentation')}</a>
+                    <a href={selected.related}>{t(selected.relatedLabel)}</a>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="eyebrow">{t('Before you open a page')}</p>
+                  <h4>{t('A little context, a clearer choice')}</h4>
+                  <p>
+                    {t(
+                      'Choose a result to preview its purpose and related documentation. Editing the search clears the previous choice.',
+                    )}
+                  </p>
+                </>
+              )}
+            </div>
           </div>
-          <div
-            className="autocomplete-context"
-            data-autocomplete-context
-            data-selected-key={selected?.key ?? ''}
-            aria-live="polite"
-            aria-atomic="true"
-          >
-            {selected ? (
-              <>
-                <p className="eyebrow">{t(selected.group.label)}</p>
-                <h4>{t(selected.title)}</h4>
-                <p>{t(selected.description)}</p>
-                <div className="autocomplete-context-actions">
-                  <a href={selected.href}>{t('Open documentation')}</a>
-                  <a href={selected.related}>{t(selected.relatedLabel)}</a>
-                </div>
-              </>
-            ) : (
-              <>
-                <p className="eyebrow">{t('Before you open a page')}</p>
-                <h4>{t('A little context, a clearer choice')}</h4>
-                <p>
-                  {t(
-                    'Choose a result to preview its purpose and related documentation. Editing the search clears the previous choice.',
-                  )}
-                </p>
-              </>
-            )}
-          </div>
-        </div>
+        </ExamplePreview>
       </section>
 
       <section
@@ -249,34 +254,36 @@ function AutoCompleteExamples() {
             )}
           </p>
         </header>
-        <div className="autocomplete-example-grid">
-          <div className="autocomplete-example" data-autocomplete-example="company">
-            <h4>{t('Team name')}</h4>
-            <AtlasAutoComplete
-              id={`${id}-team`}
-              label={t('Find or enter a team')}
-              value={company}
-              onChange={setCompany}
-              items={companyItems}
-              placeholder={t('Try Atlas or enter your own team')}
-              help={t('These are sample teams. A new name remains valid free text.')}
-            />
+        <ExamplePreview id="autocomplete-useful-completions" title={t('Useful completions')}>
+          <div className="autocomplete-example-grid">
+            <div className="autocomplete-example" data-autocomplete-example="company">
+              <h4>{t('Team name')}</h4>
+              <AtlasAutoComplete
+                id={`${id}-team`}
+                label={t('Find or enter a team')}
+                value={company}
+                onChange={setCompany}
+                items={companyItems}
+                placeholder={t('Try Atlas or enter your own team')}
+                help={t('These are sample teams. A new name remains valid free text.')}
+              />
+            </div>
+            <div className="autocomplete-example" data-autocomplete-example="email">
+              <h4>{t('Email completion')}</h4>
+              <AtlasAutoComplete
+                id={`${id}-email`}
+                label={t('Contact email')}
+                value={email}
+                onChange={setEmail}
+                items={emailItems}
+                placeholder="name@example.com"
+                help={t(
+                  'Type a name to see sample domains. Your address changes only when you choose one.',
+                )}
+              />
+            </div>
           </div>
-          <div className="autocomplete-example" data-autocomplete-example="email">
-            <h4>{t('Email completion')}</h4>
-            <AtlasAutoComplete
-              id={`${id}-email`}
-              label={t('Contact email')}
-              value={email}
-              onChange={setEmail}
-              items={emailItems}
-              placeholder="name@example.com"
-              help={t(
-                'Type a name to see sample domains. Your address changes only when you choose one.',
-              )}
-            />
-          </div>
-        </div>
+        </ExamplePreview>
       </section>
 
       <section
@@ -293,36 +300,41 @@ function AutoCompleteExamples() {
             )}
           </p>
         </header>
-        <div
-          className="autocomplete-recovery"
-          data-autocomplete-recovery
-          data-availability={availability}
+        <ExamplePreview
+          id="autocomplete-suggestions-recovery"
+          title={t('Suggestions and recovery')}
         >
-          <AtlasAutoComplete
-            id={`${id}-recovery`}
-            label={t('Documentation suggestions')}
-            value={recoveryValue}
-            onChange={setRecoveryValue}
-            items={knowledgeItems}
-            placeholder={t('Try a term with no matches')}
-            help={t('A missing suggestion never removes your text or prevents a custom value.')}
-            availability={availability}
-            onRetry={() => setAvailability('ready')}
-          />
-          <p className="autocomplete-guidance" data-autocomplete-sample-note>
-            {availability === 'ready'
-              ? t(
-                  'This example filters local entries. Loading and error samples are available in Tweaker.',
-                )
-              : availability === 'loading'
+          <div
+            className="autocomplete-recovery"
+            data-autocomplete-recovery
+            data-availability={availability}
+          >
+            <AtlasAutoComplete
+              id={`${id}-recovery`}
+              label={t('Documentation suggestions')}
+              value={recoveryValue}
+              onChange={setRecoveryValue}
+              items={knowledgeItems}
+              placeholder={t('Try a term with no matches')}
+              help={t('A missing suggestion never removes your text or prevents a custom value.')}
+              availability={availability}
+              onRetry={() => setAvailability('ready')}
+            />
+            <p className="autocomplete-guidance" data-autocomplete-sample-note>
+              {availability === 'ready'
                 ? t(
-                    'Loading sample is held until you change it in Tweaker. No request or timer is running.',
+                    'This example filters local entries. Loading and error samples are available in Tweaker.',
                   )
-                : t(
-                    'This is a local error sample. Retry restores the available entries and keeps your text.',
-                  )}
-          </p>
-        </div>
+                : availability === 'loading'
+                  ? t(
+                      'Loading sample is held until you change it in Tweaker. No request or timer is running.',
+                    )
+                  : t(
+                      'This is a local error sample. Retry restores the available entries and keeps your text.',
+                    )}
+            </p>
+          </div>
+        </ExamplePreview>
       </section>
 
       <section
@@ -339,50 +351,54 @@ function AutoCompleteExamples() {
             )}
           </p>
         </header>
-        <div className="autocomplete-example-grid">
-          <div className="autocomplete-example" data-autocomplete-example="warning">
-            <h4>{t('Review suggested')}</h4>
-            <AtlasAutoComplete
-              id={`${id}-warning`}
-              label={t('Team to review')}
-              value={warningValue}
-              onChange={setWarningValue}
-              items={companyItems}
-              status="warning"
-              placeholder={t('Enter or choose a team')}
-              help={t('A custom team name is allowed. Check the spelling before you continue.')}
-            />
+        <ExamplePreview id="autocomplete-field-availability" title={t('Field availability')}>
+          <div className="autocomplete-example-grid">
+            <div className="autocomplete-example" data-autocomplete-example="warning">
+              <h4>{t('Review suggested')}</h4>
+              <AtlasAutoComplete
+                id={`${id}-warning`}
+                label={t('Team to review')}
+                value={warningValue}
+                onChange={setWarningValue}
+                items={companyItems}
+                status="warning"
+                placeholder={t('Enter or choose a team')}
+                help={t('A custom team name is allowed. Check the spelling before you continue.')}
+              />
+            </div>
+            <div className="autocomplete-example" data-autocomplete-example="error">
+              <h4>{t('Correction needed')}</h4>
+              <AtlasAutoComplete
+                id={`${id}-error`}
+                label={t('Email to correct')}
+                value={errorValue}
+                onChange={setErrorValue}
+                items={[]}
+                status={/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(errorValue) ? undefined : 'error'}
+                error={
+                  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(errorValue)
+                    ? undefined
+                    : t('Enter a complete address, such as team@example.com.')
+                }
+                help={t(
+                  'This local example checks the address shape; it does not verify delivery.',
+                )}
+              />
+            </div>
+            <div className="autocomplete-example" data-autocomplete-example="disabled">
+              <h4>{t('Unavailable field')}</h4>
+              <AtlasAutoComplete
+                id={`${id}-disabled`}
+                label={t('Assigned team')}
+                value="Atlas Studio"
+                onChange={() => {}}
+                items={companyItems}
+                disabled
+                help={t('Team assignment is unavailable in this local example.')}
+              />
+            </div>
           </div>
-          <div className="autocomplete-example" data-autocomplete-example="error">
-            <h4>{t('Correction needed')}</h4>
-            <AtlasAutoComplete
-              id={`${id}-error`}
-              label={t('Email to correct')}
-              value={errorValue}
-              onChange={setErrorValue}
-              items={[]}
-              status={/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(errorValue) ? undefined : 'error'}
-              error={
-                /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(errorValue)
-                  ? undefined
-                  : t('Enter a complete address, such as team@example.com.')
-              }
-              help={t('This local example checks the address shape; it does not verify delivery.')}
-            />
-          </div>
-          <div className="autocomplete-example" data-autocomplete-example="disabled">
-            <h4>{t('Unavailable field')}</h4>
-            <AtlasAutoComplete
-              id={`${id}-disabled`}
-              label={t('Assigned team')}
-              value="Atlas Studio"
-              onChange={() => {}}
-              items={companyItems}
-              disabled
-              help={t('Team assignment is unavailable in this local example.')}
-            />
-          </div>
-        </div>
+        </ExamplePreview>
       </section>
     </div>
   );

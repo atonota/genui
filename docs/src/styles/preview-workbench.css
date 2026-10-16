@@ -1,0 +1,226 @@
+/* Shared example workbench (ExamplePreview.tsx). Device widths, screen proportions and chrome
+   curves are the central geometry in data/preview-devices.ts, inlined as --preview-* roles on the frame;
+   every other value reads the shell space, radius and surface roles. Neither the frame nor
+   the screen clips, so inline popups and portals keep their own positioning; only the code
+   view scrolls, inside itself. Device geometry and the Preview/Code views ease in both
+   directions with the central positive duration and Cubic easing, while the view state,
+   aria-hidden and inert switch at once; reduced motion is the explicit instant exception.
+   The theme stays one atomic palette. */
+.example-preview {
+  --preview-motion-duration: var(--motion-duration-standard);
+  --preview-motion-easing: var(--motion-easing);
+  --preview-motion-delay: var(--motion-delay, 0s);
+  --preview-gap: var(--space-md, 12px);
+  --preview-gap-tight: var(--space-sm, 8px);
+  --preview-chrome: color-mix(in srgb, var(--ink) 16%, var(--surface));
+  --preview-sensor: color-mix(in srgb, var(--ink) 55%, var(--surface));
+  display: grid;
+  gap: var(--preview-gap);
+  grid-column: 1 / -1;
+  inline-size: 100%;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  margin-block: var(--space-lg, 24px);
+}
+/* Docs demo grids never split a workbench from its prose: the workbench and the example owner
+   holding it span every column at full width. Grids inside a preview screen stay the
+   component's own layout. */
+:is(.example-block, .data-entry-section):has(.example-preview):not(.example-preview-screen *) {
+  grid-column: 1 / -1;
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+.example-preview-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--preview-gap-tight) var(--preview-gap);
+  min-inline-size: 0;
+}
+.example-preview-title {
+  margin: 0;
+  color: var(--ink);
+  font-weight: var(--font-weight-strong, 600);
+}
+.example-preview-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--preview-gap-tight);
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+.example-preview-controls > * {
+  max-inline-size: 100%;
+}
+/* One central timing for every moving workbench surface; each lists only what it moves. */
+.example-preview-stage,
+.example-preview-code-panel,
+.example-preview-device,
+.example-preview-bezel,
+.example-preview-bezel::before,
+.example-preview-screen,
+.example-preview-base {
+  transition-duration: var(--preview-motion-duration);
+  transition-timing-function: var(--preview-motion-easing);
+  transition-delay: var(--preview-motion-delay);
+}
+/* Both views share one cell and stay mounted; the active view sets the height. */
+.example-preview-views {
+  position: relative;
+  display: grid;
+  min-inline-size: 0;
+}
+.example-preview-stage {
+  display: flex;
+  grid-area: 1 / 1;
+  justify-content: center;
+  min-inline-size: 0;
+  transition-property: var(--control-transition-properties), visibility;
+}
+/* The inactive view leaves the layout at once, takes no pointer (and no focus: inert) and is
+   clipped to the active view, so it never widens or lengthens the page. Visibility flips
+   only when its fade-out ends and as soon as a fade-in starts. */
+:is(.example-preview-stage, .example-preview-code-panel)[data-preview-active='false'] {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  max-block-size: 100%;
+  overflow: hidden;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+.example-preview-device {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  inline-size: min(100%, var(--preview-device-width));
+  min-inline-size: 0;
+  transition-property: var(--control-transition-properties), inline-size;
+}
+.example-preview-bezel {
+  position: relative;
+  box-sizing: border-box;
+  inline-size: calc(100% - 2 * var(--preview-base-overhang));
+  min-inline-size: 0;
+  padding: var(--preview-bezel-top) var(--preview-bezel-inline) var(--preview-bezel-bottom);
+  border-radius: var(--preview-frame-radius) var(--preview-frame-radius)
+    var(--preview-frame-end-radius) var(--preview-frame-end-radius);
+  background-color: var(--preview-chrome);
+  transition-property: var(--control-transition-properties), inline-size, padding, border-radius;
+}
+/* Dynamic island on iPhone, camera dot on iPad and MacBook, centred in the top bezel. */
+.example-preview-bezel::before {
+  content: '';
+  position: absolute;
+  inset-block-start: calc((var(--preview-bezel-top) - var(--preview-sensor-height)) / 2);
+  inset-inline-start: 50%;
+  inline-size: var(--preview-sensor-width);
+  block-size: var(--preview-sensor-height);
+  border-radius: calc(var(--preview-sensor-height) / 2);
+  background-color: var(--preview-sensor);
+  transform: translateX(-50%);
+  transition-property:
+    var(--control-transition-properties), inset-block-start, inline-size, block-size, border-radius;
+}
+.example-preview-screen {
+  box-sizing: border-box;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  /* Preferred proportions only: the automatic minimum lets content grow past them. */
+  aspect-ratio: var(--preview-screen-aspect);
+  padding: var(--preview-gap);
+  border-radius: var(--preview-screen-radius);
+  background-color: var(--panel);
+  color: var(--ink);
+  transition-property: var(--control-transition-properties), aspect-ratio, border-radius;
+}
+/* MacBook base: wider than the lid by the overhang; zero height on the other devices. */
+.example-preview-base {
+  display: block;
+  box-sizing: border-box;
+  inline-size: 100%;
+  block-size: var(--preview-base-height);
+  border-end-start-radius: var(--preview-base-radius);
+  border-end-end-radius: var(--preview-base-radius);
+  background-color: var(--preview-chrome);
+  transition-property: var(--control-transition-properties), block-size, border-radius;
+}
+.example-preview-code-panel {
+  display: grid;
+  grid-area: 1 / 1;
+  gap: var(--preview-gap-tight);
+  min-inline-size: 0;
+  transition-property: var(--control-transition-properties), visibility;
+}
+.example-preview-source {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--preview-gap-tight) var(--preview-gap);
+  min-inline-size: 0;
+}
+.example-preview-source-label {
+  margin: 0;
+  min-inline-size: 0;
+  color: var(--muted);
+}
+.example-preview-source-label a {
+  overflow-wrap: anywhere;
+}
+.example-preview-code {
+  box-sizing: border-box;
+  max-inline-size: 100%;
+  max-block-size: min(70vh, 40rem);
+  margin: 0;
+  padding: var(--preview-gap);
+  overflow: auto;
+  border-radius: var(--radius, 5px);
+  background-color: var(--field-bg);
+  color: var(--ink);
+  font: inherit;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  line-height: 1.6;
+  tab-size: 2;
+  white-space: pre;
+}
+.example-preview-code code {
+  font: inherit;
+}
+/* Keyboard-only, non-enclosing: the focus surface plus one start-edge bar. */
+:root[data-input-modality='keyboard'] .example-preview-code:focus-visible {
+  background-color: var(--focus-bg);
+  box-shadow: inset var(--focus-indicator-width) 0 0 0 var(--focus-indicator-color);
+}
+.example-preview-message {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--preview-gap-tight) var(--preview-gap);
+  margin: 0;
+  color: var(--ink);
+}
+.example-preview-message p {
+  margin: 0;
+}
+.example-preview-status {
+  margin: 0;
+  color: var(--muted);
+}
+@media (forced-colors: active) {
+  .example-preview-bezel,
+  .example-preview-device[data-preview-device='macbook'] .example-preview-base {
+    border: 1px solid CanvasText;
+  }
+  .example-preview-bezel::before {
+    background-color: CanvasText;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  /* Explicit exception: device and view changes apply instantly. */
+  .example-preview {
+    --preview-motion-duration: 0ms;
+  }
+}

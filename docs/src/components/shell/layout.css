@@ -2,7 +2,8 @@
    content breakpoint and moves into the native modal menu Drawer below it (docs-shell.ts). Page
    contents stay a closed disclosure until the 1130px contents rail, which widens at 1290px.
    Queries use rem so text zoom keeps the narrow layout: 54.6875rem = 875px,
-   70.625rem = 1130px, 80.625rem = 1290px. Surfaces only use the shell and panel roles. */
+   70.625rem = 1130px, 80.625rem = 1290px, 100rem = 1600px (component detail columns).
+   Surfaces only use the shell and panel roles. */
 :where(:root) {
   --shell-sidebar-inline-size: var(--sidebar-width, 16rem);
   --shell-toc-inline-size: var(--toc-width, 10rem);
@@ -213,6 +214,14 @@ dialog[data-docs-drawer][open]::backdrop {
   text-align: end;
 }
 
+/* Component detail: the showcase and the API/resources reference stack naturally until the
+   article has room for both (about 960px beside the 16rem rail from 100rem). Header, section
+   links and neighbours span both columns; the reference is one continuous, non-sticky stack and
+   its tables scroll inside their own regions. */
+[data-docs-shell] :is(.component-showcase, .component-reference) {
+  min-inline-size: 0;
+}
+
 @media (min-width: 54.6875rem) {
   [data-docs-shell] .docs-shell {
     grid-template-columns: var(--shell-sidebar-inline-size) minmax(0, 1fr);
@@ -263,5 +272,16 @@ dialog[data-docs-drawer][open]::backdrop {
 @media (min-width: 80.625rem) {
   :where(:root) {
     --shell-toc-inline-size: 16rem;
+  }
+}
+@media (min-width: 100rem) {
+  [data-docs-shell] .component-detail {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(20rem, 4fr);
+    column-gap: var(--layout-gap);
+    align-items: start;
+  }
+  [data-docs-shell] .component-detail > :not(.component-showcase, .component-reference) {
+    grid-column: 1 / -1;
   }
 }

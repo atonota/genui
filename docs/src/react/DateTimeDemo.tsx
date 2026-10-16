@@ -11,6 +11,7 @@ import AtlasDateTime, {
 import DataEntryCatalog, { DataEntryGrid, type DataEntrySection } from './DataEntryCatalog';
 import DateRangeFilterExample from './DateRangeFilterExample';
 import { TweakerSettings } from './AtlasTweaker';
+import ExamplePreview from './ExamplePreview';
 import { useI18n } from './useI18n';
 
 /** Fixed sample reference keeps presets and server markup deterministic. */
@@ -226,9 +227,11 @@ function DateTimeExamples() {
         'Pick a shortcut or your own period, optionally compare it with another period, then apply. The sample report changes only when you apply.',
       ),
       content: (
-        <DataEntryGrid>
-          <DateRangeFilterExample />
-        </DataEntryGrid>
+        <ExamplePreview id="date-time-report-filter" title={t('Report date filter')}>
+          <DataEntryGrid>
+            <DateRangeFilterExample />
+          </DataEntryGrid>
+        </ExamplePreview>
       ),
     },
     {
@@ -238,25 +241,27 @@ function DateTimeExamples() {
         'Each picker opens the native calendar for its unit. Use Tweaker to compare editable, read-only and disabled fields.',
       ),
       content: (
-        <DataEntryGrid>
-          {singleExamples.map(example => (
-            <Example
-              key={example.mode}
-              title={t(example.title)}
-              resultFor={`${id}-${example.mode}`}
-              result={show(singles[example.mode], example.mode)}
-            >
-              <AtlasDateTime
-                {...single(example.mode)}
-                {...availabilityProps}
-                mode={example.mode}
-                label={t(example.label)}
-                help={t(example.help)}
-                defaultPickerValue={REFERENCE}
-              />
-            </Example>
-          ))}
-        </DataEntryGrid>
+        <ExamplePreview id="date-time-single" title={t('Single selections')}>
+          <DataEntryGrid>
+            {singleExamples.map(example => (
+              <Example
+                key={example.mode}
+                title={t(example.title)}
+                resultFor={`${id}-${example.mode}`}
+                result={show(singles[example.mode], example.mode)}
+              >
+                <AtlasDateTime
+                  {...single(example.mode)}
+                  {...availabilityProps}
+                  mode={example.mode}
+                  label={t(example.label)}
+                  help={t(example.help)}
+                  defaultPickerValue={REFERENCE}
+                />
+              </Example>
+            ))}
+          </DataEntryGrid>
+        </ExamplePreview>
       ),
     },
     {
@@ -266,24 +271,26 @@ function DateTimeExamples() {
         'A moment combines a calendar day with a time. Confirm the selection to commit it.',
       ),
       content: (
-        <DataEntryGrid>
-          {momentExamples.map(example => (
-            <Example
-              key={example.mode}
-              title={t(example.title)}
-              resultFor={`${id}-${example.mode}`}
-              result={show(singles[example.mode], example.mode)}
-            >
-              <AtlasDateTime
-                {...single(example.mode)}
-                mode={example.mode}
-                label={t(example.label)}
-                help={t(example.help)}
-                {...(example.mode === 'moment' ? { defaultPickerValue: REFERENCE } : {})}
-              />
-            </Example>
-          ))}
-        </DataEntryGrid>
+        <ExamplePreview id="date-time-moment" title={t('Moments and time')}>
+          <DataEntryGrid>
+            {momentExamples.map(example => (
+              <Example
+                key={example.mode}
+                title={t(example.title)}
+                resultFor={`${id}-${example.mode}`}
+                result={show(singles[example.mode], example.mode)}
+              >
+                <AtlasDateTime
+                  {...single(example.mode)}
+                  mode={example.mode}
+                  label={t(example.label)}
+                  help={t(example.help)}
+                  {...(example.mode === 'moment' ? { defaultPickerValue: REFERENCE } : {})}
+                />
+              </Example>
+            ))}
+          </DataEntryGrid>
+        </ExamplePreview>
       ),
     },
     {
@@ -293,24 +300,28 @@ function DateTimeExamples() {
         'Choose a start, then an end. The value is committed only after both endpoints are chosen.',
       ),
       content: (
-        <DataEntryGrid>
-          {rangeExamples.map(example => (
-            <Example
-              key={example.mode}
-              title={t(example.title)}
-              resultFor={`${id}-range-${example.mode}`}
-              result={showRange(ranges[`range-${example.mode}`], example.mode)}
-            >
-              <AtlasDateTimeRange
-                {...range(`range-${example.mode}`)}
-                mode={example.mode}
-                label={t(example.label)}
-                help={t(example.help)}
-                {...(example.mode === 'time' ? {} : { defaultPickerValue: [REFERENCE, REFERENCE] })}
-              />
-            </Example>
-          ))}
-        </DataEntryGrid>
+        <ExamplePreview id="date-time-range" title={t('Ranges')}>
+          <DataEntryGrid>
+            {rangeExamples.map(example => (
+              <Example
+                key={example.mode}
+                title={t(example.title)}
+                resultFor={`${id}-range-${example.mode}`}
+                result={showRange(ranges[`range-${example.mode}`], example.mode)}
+              >
+                <AtlasDateTimeRange
+                  {...range(`range-${example.mode}`)}
+                  mode={example.mode}
+                  label={t(example.label)}
+                  help={t(example.help)}
+                  {...(example.mode === 'time'
+                    ? {}
+                    : { defaultPickerValue: [REFERENCE, REFERENCE] })}
+                />
+              </Example>
+            ))}
+          </DataEntryGrid>
+        </ExamplePreview>
       ),
     },
     {
@@ -321,34 +332,36 @@ function DateTimeExamples() {
         { date: REFERENCE_TEXT },
       ),
       content: (
-        <DataEntryGrid>
-          <Example
-            title={t('Single preset')}
-            resultFor={`${id}-preset`}
-            result={show(singles.preset, 'date')}
-          >
-            <AtlasDateTime
-              {...single('preset')}
-              label={t('Report date')}
-              help={t('Choose Yesterday, Last week or Last month, or pick any day.')}
-              presets={singlePresets}
-              defaultPickerValue={REFERENCE}
-            />
-          </Example>
-          <Example
-            title={t('Range presets')}
-            resultFor={`${id}-preset-range`}
-            result={showRange(ranges['preset-range'], 'date')}
-          >
-            <AtlasDateTimeRange
-              {...range('preset-range')}
-              label={t('Report period')}
-              help={t('Choose a recent period or pick both endpoints.')}
-              presets={rangePresets}
-              defaultPickerValue={[REFERENCE, REFERENCE]}
-            />
-          </Example>
-        </DataEntryGrid>
+        <ExamplePreview id="date-time-presets" title={t('Quick presets')}>
+          <DataEntryGrid>
+            <Example
+              title={t('Single preset')}
+              resultFor={`${id}-preset`}
+              result={show(singles.preset, 'date')}
+            >
+              <AtlasDateTime
+                {...single('preset')}
+                label={t('Report date')}
+                help={t('Choose Yesterday, Last week or Last month, or pick any day.')}
+                presets={singlePresets}
+                defaultPickerValue={REFERENCE}
+              />
+            </Example>
+            <Example
+              title={t('Range presets')}
+              resultFor={`${id}-preset-range`}
+              result={showRange(ranges['preset-range'], 'date')}
+            >
+              <AtlasDateTimeRange
+                {...range('preset-range')}
+                label={t('Report period')}
+                help={t('Choose a recent period or pick both endpoints.')}
+                presets={rangePresets}
+                defaultPickerValue={[REFERENCE, REFERENCE]}
+              />
+            </Example>
+          </DataEntryGrid>
+        </ExamplePreview>
       ),
     },
     {
@@ -358,62 +371,64 @@ function DateTimeExamples() {
         'Calendar cells can carry local sample data. Every marker is written as text, so meaning never depends on color alone.',
       ),
       content: (
-        <DataEntryGrid>
-          <Example
-            title={t('Office calendar')}
-            resultFor={`${id}-office`}
-            result={show(singles.office, 'date')}
-          >
-            <AtlasDateTime
-              {...single('office')}
-              label={t('Office day')}
-              help={t('Weekends and the Republic Day holiday on 29 October are unavailable.')}
-              cellRender={officeCells}
-              disabledDate={day => !isOffice(day)}
-              defaultPickerValue={REFERENCE}
-            />
-          </Example>
-          <Example
-            title={t('E-commerce')}
-            resultFor={`${id}-sales`}
-            result={
-              sales
-                ? t('{date}: {count} orders', {
-                    date: sales.format(valueFormats.date),
-                    count: numbers.format(ordersOn(sales)),
-                  })
-                : t('Nothing selected')
-            }
-          >
-            <AtlasDateTime
-              {...single('sales')}
-              label={t('Sales day')}
-              help={t('Each day shows its order count from a fixed local sample.')}
-              cellRender={salesCells}
-              defaultPickerValue={REFERENCE}
-            />
-          </Example>
-          <Example
-            title={t('Finance')}
-            resultFor={`${id}-finance`}
-            result={
-              trading
-                ? t('{date}: {change}', {
-                    date: trading.format(valueFormats.date),
-                    change: formatChange(trading),
-                  })
-                : t('Nothing selected')
-            }
-          >
-            <AtlasDateTime
-              {...single('finance')}
-              label={t('Trading day')}
-              help={t('Each day shows a sample daily change with its sign.')}
-              cellRender={financeCells}
-              defaultPickerValue={REFERENCE}
-            />
-          </Example>
-        </DataEntryGrid>
+        <ExamplePreview id="date-time-cells" title={t('Informative cells')}>
+          <DataEntryGrid>
+            <Example
+              title={t('Office calendar')}
+              resultFor={`${id}-office`}
+              result={show(singles.office, 'date')}
+            >
+              <AtlasDateTime
+                {...single('office')}
+                label={t('Office day')}
+                help={t('Weekends and the Republic Day holiday on 29 October are unavailable.')}
+                cellRender={officeCells}
+                disabledDate={day => !isOffice(day)}
+                defaultPickerValue={REFERENCE}
+              />
+            </Example>
+            <Example
+              title={t('E-commerce')}
+              resultFor={`${id}-sales`}
+              result={
+                sales
+                  ? t('{date}: {count} orders', {
+                      date: sales.format(valueFormats.date),
+                      count: numbers.format(ordersOn(sales)),
+                    })
+                  : t('Nothing selected')
+              }
+            >
+              <AtlasDateTime
+                {...single('sales')}
+                label={t('Sales day')}
+                help={t('Each day shows its order count from a fixed local sample.')}
+                cellRender={salesCells}
+                defaultPickerValue={REFERENCE}
+              />
+            </Example>
+            <Example
+              title={t('Finance')}
+              resultFor={`${id}-finance`}
+              result={
+                trading
+                  ? t('{date}: {change}', {
+                      date: trading.format(valueFormats.date),
+                      change: formatChange(trading),
+                    })
+                  : t('Nothing selected')
+              }
+            >
+              <AtlasDateTime
+                {...single('finance')}
+                label={t('Trading day')}
+                help={t('Each day shows a sample daily change with its sign.')}
+                cellRender={financeCells}
+                defaultPickerValue={REFERENCE}
+              />
+            </Example>
+          </DataEntryGrid>
+        </ExamplePreview>
       ),
     },
   ];

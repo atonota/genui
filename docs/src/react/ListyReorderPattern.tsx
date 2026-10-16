@@ -2,6 +2,7 @@ import { useId, useLayoutEffect, useRef, useState, type DragEvent } from 'react'
 import { Radio } from 'antd';
 import AtlasButton from './AtlasButton';
 import AtlasListy, { type AtlasListyEntry } from './AtlasListy';
+import ExamplePreview from './ExamplePreview';
 import { useI18n } from './useI18n';
 
 type Step = -1 | 1;
@@ -131,29 +132,31 @@ export default function ListyReorderPattern() {
     >
       <h3 id={headingId}>{t('Draggable')}</h3>
       <p>{t('Drag a row with a mouse, or select a row and use Move up or Move down.')}</p>
-      <AtlasListy label={t('Reorderable teams')} items={items} />
-      <div
-        ref={toolbar}
-        className="atlas-listy-pattern-toolbar"
-        role="group"
-        aria-label={t('Move selected row')}
-      >
-        <AtlasButton
-          text={t('Move up')}
-          fill="outline"
-          data-listy-move="up"
-          onClick={() => shift(-1)}
-        />
-        <AtlasButton
-          text={t('Move down')}
-          fill="outline"
-          data-listy-move="down"
-          onClick={() => shift(1)}
-        />
-      </div>
-      <p className="atlas-listy-pattern-status" role="status">
-        {message}
-      </p>
+      <ExamplePreview id="listy-draggable" title={t('Draggable')}>
+        <AtlasListy label={t('Reorderable teams')} items={items} />
+        <div
+          ref={toolbar}
+          className="atlas-listy-pattern-toolbar"
+          role="group"
+          aria-label={t('Move selected row')}
+        >
+          <AtlasButton
+            text={t('Move up')}
+            fill="outline"
+            data-listy-move="up"
+            onClick={() => shift(-1)}
+          />
+          <AtlasButton
+            text={t('Move down')}
+            fill="outline"
+            data-listy-move="down"
+            onClick={() => shift(1)}
+          />
+        </div>
+        <p className="atlas-listy-pattern-status" role="status">
+          {message}
+        </p>
+      </ExamplePreview>
     </section>
   );
 }

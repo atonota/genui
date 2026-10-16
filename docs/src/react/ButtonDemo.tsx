@@ -18,6 +18,7 @@ import AtlasButtonGroup from './AtlasButtonGroup';
 import { type AtlasSize } from './AtlasSizeProfile';
 import { buttonColorPresets } from '../data/button-palette';
 import { ButtonVisualDecisions, ButtonVisualGroup } from './ButtonVisualDecisions';
+import ExamplePreview from './ExamplePreview';
 import atlas from '../data/atlas.json';
 import motionTokens from '../data/motion.json';
 
@@ -120,22 +121,24 @@ export default function ButtonDemo({
     ['button-color-depth', 'Color and depth'],
   ] as const;
   const iconCorners = (
-    <ul className="atlas-button-visuals" data-icon-radius-examples>
-      {decisions.radius_variants.map(corner => (
-        <li key={corner.value} data-icon-radius={corner.value}>
-          <div className="control-row">
-            <AtlasIconButton
-              icon="download"
-              aria-label={t('Download · {corner}', { corner: t(corner.label) })}
-              radius={corner.value}
-              size={size}
-            />
-            <AtlasButton text={t('Download')} icon="download" radius={corner.value} size={size} />
-          </div>
-          <p>{t(corner.label)}</p>
-        </li>
-      ))}
-    </ul>
+    <ExamplePreview id="button-icon-corners-example" title={t('Icon corners')}>
+      <ul className="atlas-button-visuals" data-icon-radius-examples>
+        {decisions.radius_variants.map(corner => (
+          <li key={corner.value} data-icon-radius={corner.value}>
+            <div className="control-row">
+              <AtlasIconButton
+                icon="download"
+                aria-label={t('Download · {corner}', { corner: t(corner.label) })}
+                radius={corner.value}
+                size={size}
+              />
+              <AtlasButton text={t('Download')} icon="download" radius={corner.value} size={size} />
+            </div>
+            <p>{t(corner.label)}</p>
+          </li>
+        ))}
+      </ul>
+    </ExamplePreview>
   );
   const iconDescription = (
     <p>
@@ -162,11 +165,13 @@ export default function ButtonDemo({
     <section className="example-block" data-icon-button-examples>
       <ActionHeading className="variant-heading">{t('Icon-only actions')}</ActionHeading>
       {!documentation && iconDescription}
-      <div className="control-row">
-        <AtlasIconButton {...iconAppearance} icon="minus" aria-label={t('Decrease')} />
-        <AtlasIconButton {...iconAppearance} icon="plus" aria-label={t('Increase')} />
-        <AtlasIconButton {...iconAppearance} icon="trash" aria-label={t('Remove')} />
-      </div>
+      <ExamplePreview id="button-icon-only-example" title={t('Icon-only actions')}>
+        <div className="control-row">
+          <AtlasIconButton {...iconAppearance} icon="minus" aria-label={t('Decrease')} />
+          <AtlasIconButton {...iconAppearance} icon="plus" aria-label={t('Increase')} />
+          <AtlasIconButton {...iconAppearance} icon="trash" aria-label={t('Remove')} />
+        </div>
+      </ExamplePreview>
       {documentation && iconDescription}
       {!documentation && iconCorners}
     </section>
@@ -174,32 +179,36 @@ export default function ButtonDemo({
   const doubleExample = (
     <>
       <ChoiceHeading className="variant-heading">{t('Double button')}</ChoiceHeading>
-      <AtlasButtonGroup
-        aria-label={t('Double button example')}
-        value={doubleChoice}
-        onChange={setDoubleChoice}
-        size={size}
-        options={[
-          { value: 'light', label: t('Light') },
-          { value: 'dark', label: t('Dark') },
-        ]}
-      />
+      <ExamplePreview id="button-double-example" title={t('Double button')}>
+        <AtlasButtonGroup
+          aria-label={t('Double button example')}
+          value={doubleChoice}
+          onChange={setDoubleChoice}
+          size={size}
+          options={[
+            { value: 'light', label: t('Light') },
+            { value: 'dark', label: t('Dark') },
+          ]}
+        />
+      </ExamplePreview>
     </>
   );
   const tripleExample = (
     <>
       <ChoiceHeading className="variant-heading">{t('Triple button')}</ChoiceHeading>
-      <AtlasButtonGroup
-        aria-label={t('Triple button example')}
-        value={tripleChoice}
-        onChange={setTripleChoice}
-        size={size}
-        options={[
-          { value: 'list', label: t('List') },
-          { value: 'table', label: t('Table') },
-          { value: 'calendar', label: t('Calendar') },
-        ]}
-      />
+      <ExamplePreview id="button-triple-example" title={t('Triple button')}>
+        <AtlasButtonGroup
+          aria-label={t('Triple button example')}
+          value={tripleChoice}
+          onChange={setTripleChoice}
+          size={size}
+          options={[
+            { value: 'list', label: t('List') },
+            { value: 'table', label: t('Table') },
+            { value: 'calendar', label: t('Calendar') },
+          ]}
+        />
+      </ExamplePreview>
     </>
   );
   const groupExamples = (
@@ -227,9 +236,11 @@ export default function ButtonDemo({
     <div className="button-catalog-columns">
       <section className="example-block" data-button-depth-example="3d">
         <h4 className="variant-heading">{t('3D')}</h4>
-        <div className="control-row">
-          <AtlasButton text={t('Continue')} size={size} depth="3d" />
-        </div>
+        <ExamplePreview id="button-depth-3d-example" title={t('3D')}>
+          <div className="control-row">
+            <AtlasButton text={t('Continue')} size={size} depth="3d" />
+          </div>
+        </ExamplePreview>
         <p>
           {t(
             'At rest the face sits on a lower lip. Pressing covers the lower lip and reveals a lip at the top; text and hit area stay fixed.',
@@ -238,9 +249,11 @@ export default function ButtonDemo({
       </section>
       <section className="example-block" data-button-depth-example="flat">
         <h4 className="variant-heading">{t('Flat')}</h4>
-        <div className="control-row">
-          <AtlasButton text={t('Continue')} size={size} depth="flat" />
-        </div>
+        <ExamplePreview id="button-depth-flat-example" title={t('Flat')}>
+          <div className="control-row">
+            <AtlasButton text={t('Continue')} size={size} depth="flat" />
+          </div>
+        </ExamplePreview>
         <p>
           {t(
             'No lip, extrusion or shadow at rest or while pressed. Sizes, colors and states are the same as 3D.',
@@ -286,17 +299,19 @@ export default function ButtonDemo({
   const searchExamples = (
     <section className="example-block" data-search-button-examples>
       <ActionHeading className="variant-heading">{t('Search actions')}</ActionHeading>
-      {documentation ? (
-        <div className="example-block">
-          <div className="control-row">{primarySearch}</div>
-          <div className="control-row">{secondarySearch}</div>
-        </div>
-      ) : (
-        <div className="control-row">
-          {primarySearch}
-          {secondarySearch}
-        </div>
-      )}
+      <ExamplePreview id="button-search-example" title={t('Search actions')}>
+        {documentation ? (
+          <div className="example-block">
+            <div className="control-row">{primarySearch}</div>
+            <div className="control-row">{secondarySearch}</div>
+          </div>
+        ) : (
+          <div className="control-row">
+            {primarySearch}
+            {secondarySearch}
+          </div>
+        )}
+      </ExamplePreview>
       <p role="status">
         {searchActivated
           ? t('Search preview activated. No request was sent.')
@@ -306,28 +321,30 @@ export default function ButtonDemo({
   );
   const playground = (
     <div className="button-playground">
-      <div className="playground-preview">
-        <AtlasButton
-          {...{
-            text,
-            radius,
-            size,
-            width,
-            colorPreset,
-            tone,
-            border,
-            shadow,
-            depth,
-            state,
-            library,
-            icon,
-            position,
-            motion,
-            fill,
-            duration,
-          }}
-        />
-      </div>
+      <ExamplePreview id="button-playground-example" title={t('Playground')}>
+        <div className="playground-preview">
+          <AtlasButton
+            {...{
+              text,
+              radius,
+              size,
+              width,
+              colorPreset,
+              tone,
+              border,
+              shadow,
+              depth,
+              state,
+              library,
+              icon,
+              position,
+              motion,
+              fill,
+              duration,
+            }}
+          />
+        </div>
+      </ExamplePreview>
       <TweakerSettings title={t('Button')}>
         <div className="playground-controls">
           {appearanceControls &&

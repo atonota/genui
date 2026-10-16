@@ -3,6 +3,7 @@ import { Select } from 'antd';
 import AtlasProvider from './AtlasProvider';
 import AtlasCascader, { resolveCascadePath, type AtlasCascadeOption } from './AtlasCascader';
 import { TweakerSettings } from './AtlasTweaker';
+import ExamplePreview from './ExamplePreview';
 import { useI18n } from './useI18n';
 
 function CascaderExamples() {
@@ -163,27 +164,29 @@ function CascaderExamples() {
             )}
           </p>
         </header>
-        <AtlasCascader
-          label={t('Workspace destination')}
-          value={destination}
-          onChange={setDestination}
-          options={options}
-          help={t(
-            'Try “engineering review”, “library” or a team name. Choose a result to confirm.',
-          )}
-        />
-        <div
-          className="cascader-summary"
-          data-cascader-selection={destination.join('/')}
-          aria-live="polite"
-        >
-          <p className="eyebrow">{t('Selected destination')}</p>
-          <p>
-            {destination.length
-              ? describe(destination)
-              : t('No destination selected. Browsing and searching do not commit a choice.')}
-          </p>
-        </div>
+        <ExamplePreview id="cascader-browse-or-search" title={t('Browse or search')}>
+          <AtlasCascader
+            label={t('Workspace destination')}
+            value={destination}
+            onChange={setDestination}
+            options={options}
+            help={t(
+              'Try “engineering review”, “library” or a team name. Choose a result to confirm.',
+            )}
+          />
+          <div
+            className="cascader-summary"
+            data-cascader-selection={destination.join('/')}
+            aria-live="polite"
+          >
+            <p className="eyebrow">{t('Selected destination')}</p>
+            <p>
+              {destination.length
+                ? describe(destination)
+                : t('No destination selected. Browsing and searching do not commit a choice.')}
+            </p>
+          </div>
+        </ExamplePreview>
       </section>
       <section
         id="cascader-multiple"
@@ -199,31 +202,33 @@ function CascaderExamples() {
             )}
           </p>
         </header>
-        <AtlasCascader
-          label={t('Assigned areas')}
-          multiple
-          value={assignments}
-          onChange={setAssignments}
-          options={options}
-          checkedStrategy={strategy}
-          help={t('Change the branch summary in Tweaker. Clearing removes the selection.')}
-        />
-        <div
-          className="cascader-summary"
-          data-cascader-assignments={JSON.stringify(assignments)}
-          aria-live="polite"
-        >
-          <p className="eyebrow">{t('Selected paths')}</p>
-          {assignments.length ? (
-            <ul>
-              {assignments.map(path => (
-                <li key={JSON.stringify(path)}>{describe(path)}</li>
-              ))}
-            </ul>
-          ) : (
-            <p>{t('No areas selected.')}</p>
-          )}
-        </div>
+        <ExamplePreview id="cascader-several-paths" title={t('Select several paths')}>
+          <AtlasCascader
+            label={t('Assigned areas')}
+            multiple
+            value={assignments}
+            onChange={setAssignments}
+            options={options}
+            checkedStrategy={strategy}
+            help={t('Change the branch summary in Tweaker. Clearing removes the selection.')}
+          />
+          <div
+            className="cascader-summary"
+            data-cascader-assignments={JSON.stringify(assignments)}
+            aria-live="polite"
+          >
+            <p className="eyebrow">{t('Selected paths')}</p>
+            {assignments.length ? (
+              <ul>
+                {assignments.map(path => (
+                  <li key={JSON.stringify(path)}>{describe(path)}</li>
+                ))}
+              </ul>
+            ) : (
+              <p>{t('No areas selected.')}</p>
+            )}
+          </div>
+        </ExamplePreview>
       </section>
       <section
         id="cascader-display"
@@ -239,34 +244,36 @@ function CascaderExamples() {
             )}
           </p>
         </header>
-        <div className="cascader-example-grid">
-          <div className="cascader-example">
-            <AtlasCascader
-              label={t('Selected path')}
-              options={options}
-              value={compact}
-              onChange={setCompact}
-              selectionLabel={selectionLabel}
-              help={t('Switch complete path or final item in Tweaker.')}
-            />
-            <p className="cascader-path" data-cascader-full-path>
-              {compact.length ? describe(compact) : t('No destination selected.')}
-            </p>
+        <ExamplePreview id="cascader-path-presentation" title={t('Path presentation')}>
+          <div className="cascader-example-grid">
+            <div className="cascader-example">
+              <AtlasCascader
+                label={t('Selected path')}
+                options={options}
+                value={compact}
+                onChange={setCompact}
+                selectionLabel={selectionLabel}
+                help={t('Switch complete path or final item in Tweaker.')}
+              />
+              <p className="cascader-path" data-cascader-full-path>
+                {compact.length ? describe(compact) : t('No destination selected.')}
+              </p>
+            </div>
+            <div className="cascader-example">
+              <AtlasCascader
+                label={t('Team or specific area')}
+                options={options}
+                value={branch}
+                onChange={setBranch}
+                changeOnSelect
+                help={t('A team can be selected without choosing its final item.')}
+              />
+              <p className="cascader-path">
+                {branch.length ? describe(branch) : t('No team selected.')}
+              </p>
+            </div>
           </div>
-          <div className="cascader-example">
-            <AtlasCascader
-              label={t('Team or specific area')}
-              options={options}
-              value={branch}
-              onChange={setBranch}
-              changeOnSelect
-              help={t('A team can be selected without choosing its final item.')}
-            />
-            <p className="cascader-path">
-              {branch.length ? describe(branch) : t('No team selected.')}
-            </p>
-          </div>
-        </div>
+        </ExamplePreview>
       </section>
       <section
         id="cascader-states"
@@ -282,29 +289,31 @@ function CascaderExamples() {
             )}
           </p>
         </header>
-        <div className="cascader-example-grid">
-          <div data-cascader-example="error">
-            <AtlasCascader
-              label={t('Required destination')}
-              value={branch}
-              onChange={setBranch}
-              options={options}
-              error={!branch.length ? t('Choose a team or area before continuing.') : undefined}
-              help={t('This local example clears the error after a choice.')}
-              changeOnSelect
-            />
+        <ExamplePreview id="cascader-availability-guidance" title={t('Availability and guidance')}>
+          <div className="cascader-example-grid">
+            <div data-cascader-example="error">
+              <AtlasCascader
+                label={t('Required destination')}
+                value={branch}
+                onChange={setBranch}
+                options={options}
+                error={!branch.length ? t('Choose a team or area before continuing.') : undefined}
+                help={t('This local example clears the error after a choice.')}
+                changeOnSelect
+              />
+            </div>
+            <div data-cascader-example="disabled">
+              <AtlasCascader
+                label={t('Locked destination')}
+                value={['studio', 'design', 'library']}
+                onChange={() => {}}
+                options={options}
+                disabled
+                help={t('This assignment is locked. Its current path remains visible.')}
+              />
+            </div>
           </div>
-          <div data-cascader-example="disabled">
-            <AtlasCascader
-              label={t('Locked destination')}
-              value={['studio', 'design', 'library']}
-              onChange={() => {}}
-              options={options}
-              disabled
-              help={t('This assignment is locked. Its current path remains visible.')}
-            />
-          </div>
-        </div>
+        </ExamplePreview>
       </section>
       <section
         id="cascader-lazy"
@@ -320,26 +329,28 @@ function CascaderExamples() {
             )}
           </p>
         </header>
-        <AtlasCascader
-          label={t('Browse a collection')}
-          options={lazyOptions}
-          value={lazyValue}
-          onChange={setLazyValue}
-          searchable={false}
-          loadData={() => setLoaded(true)}
-          help={
-            loaded
-              ? t('Local children are available. Continue to a record group.')
-              : t('Children have not been revealed yet.')
-          }
-        />
-        <p className="cascader-path" data-cascader-lazy-value={lazyValue.join('/')}>
-          {lazyValue.length
-            ? resolveCascadePath(lazyOptions, lazyValue)
-                .map(option => option.label)
-                .join(' / ')
-            : t('No record group selected.')}
-        </p>
+        <ExamplePreview id="cascader-reveal-on-demand" title={t('Reveal on demand')}>
+          <AtlasCascader
+            label={t('Browse a collection')}
+            options={lazyOptions}
+            value={lazyValue}
+            onChange={setLazyValue}
+            searchable={false}
+            loadData={() => setLoaded(true)}
+            help={
+              loaded
+                ? t('Local children are available. Continue to a record group.')
+                : t('Children have not been revealed yet.')
+            }
+          />
+          <p className="cascader-path" data-cascader-lazy-value={lazyValue.join('/')}>
+            {lazyValue.length
+              ? resolveCascadePath(lazyOptions, lazyValue)
+                  .map(option => option.label)
+                  .join(' / ')
+              : t('No record group selected.')}
+          </p>
+        </ExamplePreview>
       </section>
     </div>
   );

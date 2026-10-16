@@ -2,6 +2,7 @@ import { useId, useState } from 'react';
 import { Select, Switch } from 'antd';
 import AtlasProvider from './AtlasProvider';
 import AtlasCarousel from './AtlasCarousel';
+import ExamplePreview from './ExamplePreview';
 import { TweakerSettings } from './AtlasTweaker';
 import { useI18n } from './useI18n';
 
@@ -37,7 +38,7 @@ function CarouselExample() {
     },
   ];
   return (
-    <>
+    <ExamplePreview id="carousel-illustration-gallery" title={t('Illustration gallery')}>
       <TweakerSettings title="Carousel settings">
         <div className="atlas-tweaker-option">
           <label htmlFor={countId}>{t('Slides shown')}</label>
@@ -54,7 +55,7 @@ function CarouselExample() {
         </div>
       </TweakerSettings>
       <AtlasCarousel label={t('Illustration gallery')} slides={slides.slice(0, count)} />
-    </>
+    </ExamplePreview>
   );
 }
 

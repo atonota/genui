@@ -6,6 +6,7 @@ import Input from './AtlasInput';
 import AtlasButton from './AtlasButton';
 import { TweakerSettings } from './AtlasTweaker';
 import DataEntryCatalog from './DataEntryCatalog';
+import ExamplePreview from './ExamplePreview';
 
 type FormLayout = NonNullable<FormProps['layout']>;
 type ProfileValues = {
@@ -186,7 +187,11 @@ export function FormExamples({ documentation = false }: { documentation?: boolea
               description: t(
                 'Enter the related fields, validate them together and reset the local draft when needed.',
               ),
-              content: <div className="example-block">{flow}</div>,
+              content: (
+                <ExamplePreview id="form-flow" title={t('Form flow')}>
+                  <div className="example-block">{flow}</div>
+                </ExamplePreview>
+              ),
             },
             {
               id: 'states',
@@ -195,7 +200,11 @@ export function FormExamples({ documentation = false }: { documentation?: boolea
               description: t(
                 'This option previews loading only. It starts no network request or save operation.',
               ),
-              content: pendingControls,
+              content: (
+                <ExamplePreview id="form-action-states" title={t('Action states')}>
+                  {pendingControls}
+                </ExamplePreview>
+              ),
             },
           ]}
         />

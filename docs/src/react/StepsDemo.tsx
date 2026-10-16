@@ -3,6 +3,7 @@ import { Select, Switch, type InputRef } from 'antd';
 import Input from './AtlasInput';
 import AtlasProvider from './AtlasProvider';
 import AtlasSteps from './AtlasSteps';
+import ExamplePreview from './ExamplePreview';
 import AtlasButton from './AtlasButton';
 import AtlasIcon from './AtlasIcon';
 import { TweakerSettings } from './AtlasTweaker';
@@ -144,102 +145,104 @@ function StepsExamples() {
           <h3 id="steps-setup-title">{t('Guided setup')}</h3>
           <p>{t('Name a workspace, review it and finish. Going back keeps your draft.')}</p>
         </header>
-        <div className="steps-stage" data-steps-primary>
-          <AtlasSteps
-            items={setupItems}
-            current={setupStep}
-            status={complete ? 'finish' : nameError ? 'error' : 'process'}
-            orientation={orientation}
-            variant={variant}
-            titlePlacement={titlePlacement}
-            label={t('Workspace setup progress')}
-          />
-          <p className="steps-progress" data-steps-setup-status role="status">
-            {complete
-              ? t('Your local setup is complete')
-              : t('Step {step} of {total}: {title}', {
-                  step: setupStep + 1,
-                  total: setupItems.length,
-                  title: setupTitles[setupStep]!,
-                })}
-          </p>
-          <form className="steps-setup-form" data-steps-setup-form noValidate onSubmit={advance}>
-            <div className="steps-field" hidden={setupStep !== 0 || complete}>
-              <label htmlFor={`${id}-workspace-name`}>{t('Workspace name')}</label>
-              <Input
-                id={`${id}-workspace-name`}
-                ref={nameInput}
-                data-steps-workspace-name
-                value={name}
-                maxLength={60}
-                required
-                status={nameError ? 'error' : undefined}
-                aria-invalid={nameError || undefined}
-                aria-describedby={`${id}-name-help${nameError ? ` ${id}-name-error` : ''}`}
-                placeholder={t('For example, Design studio')}
-                onChange={event => {
-                  setName(event.target.value);
-                  if (event.target.value.trim().length >= 2) setNameError(false);
-                }}
-              />
-              <p id={`${id}-name-help`} className="steps-guidance">
-                {t('Use 2–60 characters. This example stays on this page.')}
-              </p>
-              {nameError && (
-                <p id={`${id}-name-error`} className="steps-error" role="alert">
-                  {t('Enter a workspace name with at least 2 characters.')}
-                </p>
-              )}
-            </div>
-            <div className="steps-setup-content" hidden={setupStep === 0 && !complete}>
-              <h4>{complete ? t('Your local setup is complete') : setupTitles[setupStep]}</h4>
-              <dl className="steps-summary">
-                <div>
-                  <dt>{t('Workspace name')}</dt>
-                  <dd data-steps-name-summary>{name.trim()}</dd>
-                </div>
-                <div>
-                  <dt>{t('Scope')}</dt>
-                  <dd>{t('Local example')}</dd>
-                </div>
-              </dl>
-              <p className="steps-guidance">
-                {complete
-                  ? t('Nothing was sent or saved to a server. You can start again.')
-                  : setupStep === 1
-                    ? t('Check the name before continuing. Back lets you edit it.')
-                    : t('Finish confirms this local example. You can still go back.')}
-              </p>
-            </div>
-            <div className="steps-actions" ref={actions}>
-              {complete ? (
-                <AtlasButton
-                  text={t('Start again')}
-                  fill="outline"
-                  htmlType="button"
-                  onClick={resetSetup}
+        <ExamplePreview id="steps-guided-setup" title={t('Guided setup')}>
+          <div className="steps-stage" data-steps-primary>
+            <AtlasSteps
+              items={setupItems}
+              current={setupStep}
+              status={complete ? 'finish' : nameError ? 'error' : 'process'}
+              orientation={orientation}
+              variant={variant}
+              titlePlacement={titlePlacement}
+              label={t('Workspace setup progress')}
+            />
+            <p className="steps-progress" data-steps-setup-status role="status">
+              {complete
+                ? t('Your local setup is complete')
+                : t('Step {step} of {total}: {title}', {
+                    step: setupStep + 1,
+                    total: setupItems.length,
+                    title: setupTitles[setupStep]!,
+                  })}
+            </p>
+            <form className="steps-setup-form" data-steps-setup-form noValidate onSubmit={advance}>
+              <div className="steps-field" hidden={setupStep !== 0 || complete}>
+                <label htmlFor={`${id}-workspace-name`}>{t('Workspace name')}</label>
+                <Input
+                  id={`${id}-workspace-name`}
+                  ref={nameInput}
+                  data-steps-workspace-name
+                  value={name}
+                  maxLength={60}
+                  required
+                  status={nameError ? 'error' : undefined}
+                  aria-invalid={nameError || undefined}
+                  aria-describedby={`${id}-name-help${nameError ? ` ${id}-name-error` : ''}`}
+                  placeholder={t('For example, Design studio')}
+                  onChange={event => {
+                    setName(event.target.value);
+                    if (event.target.value.trim().length >= 2) setNameError(false);
+                  }}
                 />
-              ) : (
-                <>
+                <p id={`${id}-name-help`} className="steps-guidance">
+                  {t('Use 2–60 characters. This example stays on this page.')}
+                </p>
+                {nameError && (
+                  <p id={`${id}-name-error`} className="steps-error" role="alert">
+                    {t('Enter a workspace name with at least 2 characters.')}
+                  </p>
+                )}
+              </div>
+              <div className="steps-setup-content" hidden={setupStep === 0 && !complete}>
+                <h4>{complete ? t('Your local setup is complete') : setupTitles[setupStep]}</h4>
+                <dl className="steps-summary">
+                  <div>
+                    <dt>{t('Workspace name')}</dt>
+                    <dd data-steps-name-summary>{name.trim()}</dd>
+                  </div>
+                  <div>
+                    <dt>{t('Scope')}</dt>
+                    <dd>{t('Local example')}</dd>
+                  </div>
+                </dl>
+                <p className="steps-guidance">
+                  {complete
+                    ? t('Nothing was sent or saved to a server. You can start again.')
+                    : setupStep === 1
+                      ? t('Check the name before continuing. Back lets you edit it.')
+                      : t('Finish confirms this local example. You can still go back.')}
+                </p>
+              </div>
+              <div className="steps-actions" ref={actions}>
+                {complete ? (
                   <AtlasButton
-                    text={t('Back')}
-                    fill="text"
+                    text={t('Start again')}
+                    fill="outline"
                     htmlType="button"
-                    disabled={setupStep === 0}
-                    onClick={() => {
-                      if (setupStep === 1) pendingFocus.current = 'name';
-                      setSetupStep(step => Math.max(0, step - 1));
-                    }}
+                    onClick={resetSetup}
                   />
-                  <AtlasButton
-                    text={setupStep === 2 ? t('Finish setup') : t('Continue')}
-                    htmlType="submit"
-                  />
-                </>
-              )}
-            </div>
-          </form>
-        </div>
+                ) : (
+                  <>
+                    <AtlasButton
+                      text={t('Back')}
+                      fill="text"
+                      htmlType="button"
+                      disabled={setupStep === 0}
+                      onClick={() => {
+                        if (setupStep === 1) pendingFocus.current = 'name';
+                        setSetupStep(step => Math.max(0, step - 1));
+                      }}
+                    />
+                    <AtlasButton
+                      text={setupStep === 2 ? t('Finish setup') : t('Continue')}
+                      htmlType="submit"
+                    />
+                  </>
+                )}
+              </div>
+            </form>
+          </div>
+        </ExamplePreview>
       </section>
       <section id="steps-layouts" className="steps-section" aria-labelledby="steps-layouts-title">
         <header>
@@ -251,40 +254,42 @@ function StepsExamples() {
             )}
           </p>
         </header>
-        <div className="steps-comparison-grid">
-          <div className="steps-example" data-steps-example="numbered">
-            <h4>{t('Numbered · filled')}</h4>
-            <AtlasSteps items={comparisonItems} current={1} label={t('Numbered setup steps')} />
+        <ExamplePreview id="steps-layouts-markers" title={t('Layouts and markers')}>
+          <div className="steps-comparison-grid">
+            <div className="steps-example" data-steps-example="numbered">
+              <h4>{t('Numbered · filled')}</h4>
+              <AtlasSteps items={comparisonItems} current={1} label={t('Numbered setup steps')} />
+            </div>
+            <div className="steps-example" data-steps-example="icons">
+              <h4>{t('Phosphor icons · outlined')}</h4>
+              <AtlasSteps
+                items={iconItems}
+                current={1}
+                variant="outlined"
+                label={t('Icon setup steps')}
+              />
+            </div>
+            <div className="steps-example" data-steps-example="centered">
+              <h4>{t('Centered labels')}</h4>
+              <AtlasSteps
+                items={comparisonItems}
+                current={1}
+                titlePlacement="vertical"
+                variant="outlined"
+                label={t('Centered setup steps')}
+              />
+            </div>
+            <div className="steps-example" data-steps-example="vertical">
+              <h4>{t('Vertical checklist')}</h4>
+              <AtlasSteps
+                items={comparisonItems}
+                current={1}
+                orientation="vertical"
+                label={t('Vertical setup steps')}
+              />
+            </div>
           </div>
-          <div className="steps-example" data-steps-example="icons">
-            <h4>{t('Phosphor icons · outlined')}</h4>
-            <AtlasSteps
-              items={iconItems}
-              current={1}
-              variant="outlined"
-              label={t('Icon setup steps')}
-            />
-          </div>
-          <div className="steps-example" data-steps-example="centered">
-            <h4>{t('Centered labels')}</h4>
-            <AtlasSteps
-              items={comparisonItems}
-              current={1}
-              titlePlacement="vertical"
-              variant="outlined"
-              label={t('Centered setup steps')}
-            />
-          </div>
-          <div className="steps-example" data-steps-example="vertical">
-            <h4>{t('Vertical checklist')}</h4>
-            <AtlasSteps
-              items={comparisonItems}
-              current={1}
-              orientation="vertical"
-              label={t('Vertical setup steps')}
-            />
-          </div>
-        </div>
+        </ExamplePreview>
       </section>
       <section id="steps-recovery" className="steps-section" aria-labelledby="steps-recovery-title">
         <header>
@@ -296,71 +301,73 @@ function StepsExamples() {
             )}
           </p>
         </header>
-        <div className="steps-example" data-steps-recovery data-recovery-state={recovery}>
-          <AtlasSteps
-            current={1}
-            status={recovery}
-            items={[
-              { key: 'details', title: t('Details confirmed'), content: t('Name is available') },
-              {
-                key: 'review',
-                title: t('Ownership review'),
-                content:
-                  recovery === 'error'
-                    ? t('Confirmation is missing')
-                    : recovery === 'process'
-                      ? t('Review reopened')
-                      : t('Review confirmed'),
-              },
-              { key: 'ready', title: t('Ready'), content: t('Waiting for the next action') },
-            ]}
-            label={t('Ownership review progress')}
-          />
-          <div className="steps-recovery-content">
-            <h4>
-              {recovery === 'error'
-                ? t('Review needs attention')
-                : recovery === 'process'
-                  ? t('Review is ready to continue')
-                  : t('Review is complete')}
-            </h4>
-            <p
-              className={recovery === 'error' ? 'steps-error' : 'steps-guidance'}
-              role={recovery === 'error' ? 'alert' : 'status'}
-            >
-              {recovery === 'error'
-                ? t('Ownership confirmation is missing. Retry reopens this local review.')
-                : recovery === 'process'
-                  ? t(
-                      'The review is open. Confirm it when you are ready; no background process is running.',
-                    )
-                  : t(
-                      'The local review is confirmed. The final step still waits for its own action.',
-                    )}
-            </p>
-            <div className="steps-actions">
-              {recovery === 'error' ? (
-                <AtlasButton
-                  text={t('Retry review')}
-                  icon="reload"
-                  onClick={() => setRecovery('process')}
-                />
-              ) : recovery === 'process' ? (
-                <AtlasButton
-                  text={t('Confirm review')}
-                  icon="check"
-                  onClick={() => setRecovery('finish')}
-                />
-              ) : (
-                <AtlasButton
-                  text={t('Show the issue again')}
-                  fill="text"
-                  onClick={() => setRecovery('error')}
-                />
-              )}
+        <ExamplePreview id="steps-states-recovery" title={t('States and recovery')}>
+          <div className="steps-example" data-steps-recovery data-recovery-state={recovery}>
+            <AtlasSteps
+              current={1}
+              status={recovery}
+              items={[
+                { key: 'details', title: t('Details confirmed'), content: t('Name is available') },
+                {
+                  key: 'review',
+                  title: t('Ownership review'),
+                  content:
+                    recovery === 'error'
+                      ? t('Confirmation is missing')
+                      : recovery === 'process'
+                        ? t('Review reopened')
+                        : t('Review confirmed'),
+                },
+                { key: 'ready', title: t('Ready'), content: t('Waiting for the next action') },
+              ]}
+              label={t('Ownership review progress')}
+            />
+            <div className="steps-recovery-content">
+              <h4>
+                {recovery === 'error'
+                  ? t('Review needs attention')
+                  : recovery === 'process'
+                    ? t('Review is ready to continue')
+                    : t('Review is complete')}
+              </h4>
+              <p
+                className={recovery === 'error' ? 'steps-error' : 'steps-guidance'}
+                role={recovery === 'error' ? 'alert' : 'status'}
+              >
+                {recovery === 'error'
+                  ? t('Ownership confirmation is missing. Retry reopens this local review.')
+                  : recovery === 'process'
+                    ? t(
+                        'The review is open. Confirm it when you are ready; no background process is running.',
+                      )
+                    : t(
+                        'The local review is confirmed. The final step still waits for its own action.',
+                      )}
+              </p>
+              <div className="steps-actions">
+                {recovery === 'error' ? (
+                  <AtlasButton
+                    text={t('Retry review')}
+                    icon="reload"
+                    onClick={() => setRecovery('process')}
+                  />
+                ) : recovery === 'process' ? (
+                  <AtlasButton
+                    text={t('Confirm review')}
+                    icon="check"
+                    onClick={() => setRecovery('finish')}
+                  />
+                ) : (
+                  <AtlasButton
+                    text={t('Show the issue again')}
+                    fill="text"
+                    onClick={() => setRecovery('error')}
+                  />
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        </ExamplePreview>
       </section>
       <section
         id="steps-navigation"
@@ -376,41 +383,43 @@ function StepsExamples() {
             )}
           </p>
         </header>
-        <div className="steps-example" data-steps-navigation-preview>
-          <AtlasSteps
-            type="navigation"
-            current={navigationStep}
-            onChange={setNavigationStep}
-            items={[
-              { key: 'overview', title: t('Overview'), content: t('Workspace context') },
-              { key: 'activity', title: t('Activity'), content: t('Recent local actions') },
-              {
-                key: 'access',
-                title: t('Access'),
-                content: t('Unavailable in this example'),
-                disabled: true,
-              },
-            ]}
-            label={t('Workspace information steps')}
-          />
-          <div
-            className="steps-navigation-content"
-            data-steps-navigation-content
-            aria-live="polite"
-          >
-            <h4>{navigationStep === 0 ? t('Workspace overview') : t('Recent activity')}</h4>
-            <p>
-              {navigationStep === 0
-                ? t('Design studio brings together the team, its plans and review queue.')
-                : t(
-                    'The local example includes a named workspace, a review checkpoint and a ready state.',
-                  )}
+        <ExamplePreview id="steps-step-navigation" title={t('Step navigation')}>
+          <div className="steps-example" data-steps-navigation-preview>
+            <AtlasSteps
+              type="navigation"
+              current={navigationStep}
+              onChange={setNavigationStep}
+              items={[
+                { key: 'overview', title: t('Overview'), content: t('Workspace context') },
+                { key: 'activity', title: t('Activity'), content: t('Recent local actions') },
+                {
+                  key: 'access',
+                  title: t('Access'),
+                  content: t('Unavailable in this example'),
+                  disabled: true,
+                },
+              ]}
+              label={t('Workspace information steps')}
+            />
+            <div
+              className="steps-navigation-content"
+              data-steps-navigation-content
+              aria-live="polite"
+            >
+              <h4>{navigationStep === 0 ? t('Workspace overview') : t('Recent activity')}</h4>
+              <p>
+                {navigationStep === 0
+                  ? t('Design studio brings together the team, its plans and review queue.')
+                  : t(
+                      'The local example includes a named workspace, a review checkpoint and a ready state.',
+                    )}
+              </p>
+            </div>
+            <p className="steps-guidance">
+              {t('Access settings are unavailable in this local example.')}
             </p>
           </div>
-          <p className="steps-guidance">
-            {t('Access settings are unavailable in this local example.')}
-          </p>
-        </div>
+        </ExamplePreview>
       </section>
     </div>
   );

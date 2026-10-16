@@ -1,6 +1,7 @@
 import { useI18n } from './useI18n';
 import AtlasProvider from './AtlasProvider';
 import AtlasButton from './AtlasButton';
+import ExamplePreview from './ExamplePreview';
 import atlas from '../data/atlas.json';
 
 export function ButtonStates({ headingLevel = 3 }: { headingLevel?: 3 | 4 } = {}) {
@@ -17,14 +18,16 @@ export function ButtonStates({ headingLevel = 3 }: { headingLevel?: 3 | 4 } = {}
           'One Processing state covers work in progress. This preview starts no save or network request.',
         )}
       </p>
-      <ul className="atlas-button-states" aria-label={t('Approved button states')}>
-        {atlas.decisions.buttons.state_variants.map(status => (
-          <li key={status.value} data-approved-state={status.value}>
-            <AtlasButton state={status.value} />
-            <p>{t(status.label)}</p>
-          </li>
-        ))}
-      </ul>
+      <ExamplePreview id="button-states-example" title={t('Approved states')}>
+        <ul className="atlas-button-states" aria-label={t('Approved button states')}>
+          {atlas.decisions.buttons.state_variants.map(status => (
+            <li key={status.value} data-approved-state={status.value}>
+              <AtlasButton state={status.value} />
+              <p>{t(status.label)}</p>
+            </li>
+          ))}
+        </ul>
+      </ExamplePreview>
     </section>
   );
 }

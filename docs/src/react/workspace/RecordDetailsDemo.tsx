@@ -18,6 +18,7 @@ import AtlasSplitter from '../AtlasSplitter';
 import AtlasIcon from '../AtlasIcon';
 import AtlasClearIcon from '../AtlasClearIcon';
 import AtlasProvider, { useAtlasAppearance } from '../AtlasProvider';
+import ExamplePreview from '../ExamplePreview';
 import { selectedLabel } from '../selectedLabel';
 import { useI18n } from '../useI18n';
 import { TweakerSettings } from '../AtlasTweaker';
@@ -824,7 +825,9 @@ export default function RecordDetailsDemo({
 }: { documentation?: boolean } = {}) {
   return (
     <AtlasProvider appearance={documentation ? 'docs' : undefined}>
-      <RecordDetailsExamples />
+      <ExamplePreview id="record-details-workspace" title="Record detail presentations">
+        <RecordDetailsExamples />
+      </ExamplePreview>
     </AtlasProvider>
   );
 }

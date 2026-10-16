@@ -3,6 +3,7 @@ import { Select, Switch } from 'antd';
 import AtlasProvider from './AtlasProvider';
 import { TweakerSettings } from './AtlasTweaker';
 import AtlasUpload from './AtlasUpload';
+import ExamplePreview from './ExamplePreview';
 import { useI18n } from './useI18n';
 
 // Chooser hints only; AtlasUpload still checks every chosen or dropped file locally.
@@ -48,23 +49,25 @@ export default function UploadDemo({ documentation = false }: { documentation?: 
   ) : null;
   return (
     <AtlasProvider appearance={documentation ? 'docs' : undefined}>
-      {settings}
-      <div className="atlas-upload-demo">
-        <AtlasUpload
-          label={t('Choose local files')}
-          accept={acceptedFiles[accepted]}
-          maxBytes={1024}
-          multiple={multiple}
-          onFilesChange={setFiles}
-        />
-        <p className="atlas-upload-count" role="status">
-          {count === 0
-            ? t('No files selected')
-            : count === 1
-              ? t('1 file selected')
-              : t('{count} files selected', { count: String(count) })}
-        </p>
-      </div>
+      <ExamplePreview id="upload-local-files" title={t('Choose local files')}>
+        {settings}
+        <div className="atlas-upload-demo">
+          <AtlasUpload
+            label={t('Choose local files')}
+            accept={acceptedFiles[accepted]}
+            maxBytes={1024}
+            multiple={multiple}
+            onFilesChange={setFiles}
+          />
+          <p className="atlas-upload-count" role="status">
+            {count === 0
+              ? t('No files selected')
+              : count === 1
+                ? t('1 file selected')
+                : t('{count} files selected', { count: String(count) })}
+          </p>
+        </div>
+      </ExamplePreview>
     </AtlasProvider>
   );
 }

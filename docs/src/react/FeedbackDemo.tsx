@@ -6,6 +6,7 @@ import AtlasButton from './AtlasButton';
 import { TweakerSettings } from './AtlasTweaker';
 import { AtlasCard } from './cards/AtlasCard';
 import { useI18n } from './useI18n';
+import ExamplePreview from './ExamplePreview';
 import {
   AtlasAlert,
   AtlasFeedbackScope,
@@ -103,35 +104,37 @@ function ToastExample() {
   return (
     <>
       {toastHolder}
-      <AtlasCard
-        title={t('Toast')}
-        description={t('Short confirmation that appears briefly and does not take focus.')}
-        actions={toastTriggers.map(({ placement, label }) => (
-          <AtlasButton
-            key={placement}
-            text={t(label)}
-            onClick={() => {
-              setShown(status);
-              toast.open({ placement, status, content: t(toastMessages[status]) });
-            }}
-          />
-        ))}
-      >
-        <p
-          className="atlas-feedback-result"
-          data-feedback-result={shown === 'success' ? 'saved' : shown ? 'shown' : 'idle'}
+      <ExamplePreview id="toast-placements" title={t('Toast')}>
+        <AtlasCard
+          title={t('Toast')}
+          description={t('Short confirmation that appears briefly and does not take focus.')}
+          actions={toastTriggers.map(({ placement, label }) => (
+            <AtlasButton
+              key={placement}
+              text={t(label)}
+              onClick={() => {
+                setShown(status);
+                toast.open({ placement, status, content: t(toastMessages[status]) });
+              }}
+            />
+          ))}
         >
-          {shown ? t(toastMessages[shown]) : t('Nothing saved yet.')}
-        </p>
-        <TweakerSettings title="Toast settings">
-          <SettingSelect
-            label="Toast status"
-            value={status}
-            options={statusLabels}
-            onChange={setStatus}
-          />
-        </TweakerSettings>
-      </AtlasCard>
+          <p
+            className="atlas-feedback-result"
+            data-feedback-result={shown === 'success' ? 'saved' : shown ? 'shown' : 'idle'}
+          >
+            {shown ? t(toastMessages[shown]) : t('Nothing saved yet.')}
+          </p>
+          <TweakerSettings title="Toast settings">
+            <SettingSelect
+              label="Toast status"
+              value={status}
+              options={statusLabels}
+              onChange={setStatus}
+            />
+          </TweakerSettings>
+        </AtlasCard>
+      </ExamplePreview>
     </>
   );
 }
@@ -163,29 +166,31 @@ function AlertExample() {
   const { t } = useI18n();
   const [descriptions, setDescriptions] = useState(true);
   return (
-    <AtlasCard
-      title={t('Alert')}
-      description={t('Persistent message that stays in the page until the situation changes.')}
-    >
-      <div className="atlas-feedback-stack">
-        {alerts.map(alert => (
-          <AtlasAlert
-            key={alert.status}
-            status={alert.status}
-            title={t(alert.title)}
-            description={descriptions ? t(alert.description) : undefined}
-            dismissible={alert.status === 'warning'}
+    <ExamplePreview id="alert-statuses" title={t('Alert')}>
+      <AtlasCard
+        title={t('Alert')}
+        description={t('Persistent message that stays in the page until the situation changes.')}
+      >
+        <div className="atlas-feedback-stack">
+          {alerts.map(alert => (
+            <AtlasAlert
+              key={alert.status}
+              status={alert.status}
+              title={t(alert.title)}
+              description={descriptions ? t(alert.description) : undefined}
+              dismissible={alert.status === 'warning'}
+            />
+          ))}
+        </div>
+        <TweakerSettings title="Alert settings">
+          <SettingSwitch
+            label="Show descriptions"
+            checked={descriptions}
+            onChange={setDescriptions}
           />
-        ))}
-      </div>
-      <TweakerSettings title="Alert settings">
-        <SettingSwitch
-          label="Show descriptions"
-          checked={descriptions}
-          onChange={setDescriptions}
-        />
-      </TweakerSettings>
-    </AtlasCard>
+        </TweakerSettings>
+      </AtlasCard>
+    </ExamplePreview>
   );
 }
 
@@ -198,39 +203,41 @@ function NotificationExample() {
   return (
     <>
       {notificationHolder}
-      <AtlasCard
-        title={t('Notification')}
-        description={t('Richer message with a title, description and actions.')}
-        actions={
-          <AtlasButton
-            text={t('Show notification')}
-            onClick={() =>
-              notify.open({
-                key: draftNotification,
-                status,
-                title: t('Draft kept in this browser'),
-                description: t('Nothing was sent. Keep editing or close this message.'),
-                actions: (
-                  <AtlasButton
-                    fill="text"
-                    text={t('Keep editing')}
-                    onClick={() => notify.destroy(draftNotification)}
-                  />
-                ),
-              })
-            }
-          />
-        }
-      >
-        <TweakerSettings title="Notification settings">
-          <SettingSelect
-            label="Notification status"
-            value={status}
-            options={statusLabels}
-            onChange={setStatus}
-          />
-        </TweakerSettings>
-      </AtlasCard>
+      <ExamplePreview id="notification-draft" title={t('Notification')}>
+        <AtlasCard
+          title={t('Notification')}
+          description={t('Richer message with a title, description and actions.')}
+          actions={
+            <AtlasButton
+              text={t('Show notification')}
+              onClick={() =>
+                notify.open({
+                  key: draftNotification,
+                  status,
+                  title: t('Draft kept in this browser'),
+                  description: t('Nothing was sent. Keep editing or close this message.'),
+                  actions: (
+                    <AtlasButton
+                      fill="text"
+                      text={t('Keep editing')}
+                      onClick={() => notify.destroy(draftNotification)}
+                    />
+                  ),
+                })
+              }
+            />
+          }
+        >
+          <TweakerSettings title="Notification settings">
+            <SettingSelect
+              label="Notification status"
+              value={status}
+              options={statusLabels}
+              onChange={setStatus}
+            />
+          </TweakerSettings>
+        </AtlasCard>
+      </ExamplePreview>
     </>
   );
 }
@@ -244,18 +251,20 @@ function ModalExample() {
   const [centered, setCentered] = useState(false);
   return (
     <>
-      <AtlasCard
-        title={t('Modal')}
-        description={t('Focused review step that keeps the page behind it unchanged.')}
-        actions={<AtlasButton text={t('Review changes')} onClick={() => setOpen(true)} />}
-      >
-        <p className="atlas-feedback-result" data-feedback-result={applied ? 'applied' : 'idle'}>
-          {applied ? t('Changes applied locally.') : t('2 changes waiting for review.')}
-        </p>
-        <TweakerSettings title="Modal settings">
-          <SettingSwitch label="Center dialog" checked={centered} onChange={setCentered} />
-        </TweakerSettings>
-      </AtlasCard>
+      <ExamplePreview id="modal-review-changes" title={t('Modal')}>
+        <AtlasCard
+          title={t('Modal')}
+          description={t('Focused review step that keeps the page behind it unchanged.')}
+          actions={<AtlasButton text={t('Review changes')} onClick={() => setOpen(true)} />}
+        >
+          <p className="atlas-feedback-result" data-feedback-result={applied ? 'applied' : 'idle'}>
+            {applied ? t('Changes applied locally.') : t('2 changes waiting for review.')}
+          </p>
+          <TweakerSettings title="Modal settings">
+            <SettingSwitch label="Center dialog" checked={centered} onChange={setCentered} />
+          </TweakerSettings>
+        </AtlasCard>
+      </ExamplePreview>
       <AtlasModal
         open={open}
         title={t('Review local changes')}
@@ -292,38 +301,43 @@ function PopconfirmExample() {
   const [archived, setArchived] = useState(false);
   const [showDescription, setShowDescription] = useState(true);
   return (
-    <AtlasCard
-      title={t('Popconfirm')}
-      description={t('Small confirmation next to the action it protects.')}
-      actions={
-        <AtlasPopconfirm
-          title={t('Archive this sample?')}
-          description={
-            showDescription ? t('It moves to the local archive in this browser.') : undefined
-          }
-          okText={t('Archive')}
-          cancelText={t('Cancel')}
-          disabled={archived}
-          onConfirm={() => setArchived(true)}
+    <ExamplePreview id="popconfirm-archive-sample" title={t('Popconfirm')}>
+      <AtlasCard
+        title={t('Popconfirm')}
+        description={t('Small confirmation next to the action it protects.')}
+        actions={
+          <AtlasPopconfirm
+            title={t('Archive this sample?')}
+            description={
+              showDescription ? t('It moves to the local archive in this browser.') : undefined
+            }
+            okText={t('Archive')}
+            cancelText={t('Cancel')}
+            disabled={archived}
+            onConfirm={() => setArchived(true)}
+          >
+            <AtlasButton text={t('Archive sample')} disabled={archived} />
+          </AtlasPopconfirm>
+        }
+      >
+        <p
+          className="atlas-feedback-result"
+          data-feedback-result={archived ? 'archived' : 'active'}
         >
-          <AtlasButton text={t('Archive sample')} disabled={archived} />
-        </AtlasPopconfirm>
-      }
-    >
-      <p className="atlas-feedback-result" data-feedback-result={archived ? 'archived' : 'active'}>
-        {t('Status')}:{' '}
-        <span role="status" aria-live="polite">
-          {archived ? t('Archived locally') : t('Active')}
-        </span>
-      </p>
-      <TweakerSettings title="Popconfirm settings">
-        <SettingSwitch
-          label="Show description"
-          checked={showDescription}
-          onChange={setShowDescription}
-        />
-      </TweakerSettings>
-    </AtlasCard>
+          {t('Status')}:{' '}
+          <span role="status" aria-live="polite">
+            {archived ? t('Archived locally') : t('Active')}
+          </span>
+        </p>
+        <TweakerSettings title="Popconfirm settings">
+          <SettingSwitch
+            label="Show description"
+            checked={showDescription}
+            onChange={setShowDescription}
+          />
+        </TweakerSettings>
+      </AtlasCard>
+    </ExamplePreview>
   );
 }
 

@@ -7,6 +7,7 @@ import AtlasPill, { AtlasPillColorScope } from './AtlasPill';
 import { normalizeSearch } from '../i18n';
 import { selectedLabel } from './selectedLabel';
 import DataEntryCatalog, { DataEntryGrid } from './DataEntryCatalog';
+import ExamplePreview from './ExamplePreview';
 import DepartmentSelectExample from './DepartmentSelectExample';
 
 const classNames = { popup: { root: 'atlas-select-popup' } };
@@ -253,9 +254,14 @@ export default function SelectDemo({
                 'Search existing departments or create one for this example. Clearing stays available at all times.',
               ),
               content: (
-                <DataEntryGrid>
-                  <DepartmentSelectExample />
-                </DataEntryGrid>
+                <ExamplePreview
+                  id="select-department-choice"
+                  title={t('Select or create a department')}
+                >
+                  <DataEntryGrid>
+                    <DepartmentSelectExample />
+                  </DataEntryGrid>
+                </ExamplePreview>
               ),
             },
             {
@@ -265,10 +271,12 @@ export default function SelectDemo({
                 'Compare the filled field with searchable, clearable single selection.',
               ),
               content: (
-                <DataEntryGrid>
-                  {filled}
-                  {single}
-                </DataEntryGrid>
+                <ExamplePreview id="select-single-selection" title={t('Single selection')}>
+                  <DataEntryGrid>
+                    {filled}
+                    {single}
+                  </DataEntryGrid>
+                </ExamplePreview>
               ),
             },
             {
@@ -278,28 +286,39 @@ export default function SelectDemo({
                 'Choose several existing values or create new tags. Each value keeps its own color.',
               ),
               content: (
-                <DataEntryGrid>
-                  {multipleField}
-                  {tagsField}
-                </DataEntryGrid>
+                <ExamplePreview
+                  id="select-multiple-and-tags"
+                  title={t('Multiple selection and tags')}
+                >
+                  <DataEntryGrid>
+                    {multipleField}
+                    {tagsField}
+                  </DataEntryGrid>
+                </ExamplePreview>
               ),
             },
             {
               id: 'validation',
               title: t('Validation'),
               description: t('Errors and warnings describe the selection that needs attention.'),
-              content: <DataEntryGrid>{validation}</DataEntryGrid>,
+              content: (
+                <ExamplePreview id="select-validation-states" title={t('Validation')}>
+                  <DataEntryGrid>{validation}</DataEntryGrid>
+                </ExamplePreview>
+              ),
             },
             {
               id: 'availability',
               title: t('Availability'),
               description: t('Compare empty results, a loading preview and a disabled selection.'),
               content: (
-                <DataEntryGrid>
-                  {empty}
-                  {loading}
-                  {disabled}
-                </DataEntryGrid>
+                <ExamplePreview id="select-availability-states" title={t('Availability')}>
+                  <DataEntryGrid>
+                    {empty}
+                    {loading}
+                    {disabled}
+                  </DataEntryGrid>
+                </ExamplePreview>
               ),
             },
           ]}

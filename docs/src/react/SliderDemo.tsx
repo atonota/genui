@@ -5,6 +5,7 @@ import AtlasProvider from './AtlasProvider';
 import { TweakerSettings } from './AtlasTweaker';
 import AtlasSlider from './AtlasSlider';
 import DataEntryCatalog, { DataEntryGrid } from './DataEntryCatalog';
+import ExamplePreview from './ExamplePreview';
 import { useI18n } from './useI18n';
 
 export default function SliderDemo({ documentation = false }: { documentation?: boolean } = {}) {
@@ -328,8 +329,12 @@ export default function SliderDemo({ documentation = false }: { documentation?: 
                 ),
                 content: (
                   <DataEntryGrid>
-                    {linearExample}
-                    {rangeExample}
+                    <ExamplePreview id="slider-linear" title={t('Linear slider')}>
+                      {linearExample}
+                    </ExamplePreview>
+                    <ExamplePreview id="slider-range" title={t('Range slider')}>
+                      {rangeExample}
+                    </ExamplePreview>
                   </DataEntryGrid>
                 ),
               },
@@ -337,7 +342,11 @@ export default function SliderDemo({ documentation = false }: { documentation?: 
                 id: 'numeric',
                 title: t('Number entry'),
                 description: t('Use the number fields when an exact integer or decimal matters.'),
-                content: numberExample,
+                content: (
+                  <ExamplePreview id="slider-number-input" title={t('Slider with number input')}>
+                    {numberExample}
+                  </ExamplePreview>
+                ),
               },
               {
                 id: 'direction',
@@ -347,8 +356,12 @@ export default function SliderDemo({ documentation = false }: { documentation?: 
                 ),
                 content: (
                   <div className="pattern-stack">
-                    {verticalExample}
-                    {reverseExample}
+                    <ExamplePreview id="slider-vertical" title={t('Vertical sliders')}>
+                      {verticalExample}
+                    </ExamplePreview>
+                    <ExamplePreview id="slider-reverse" title={t('Linear reverse')}>
+                      {reverseExample}
+                    </ExamplePreview>
                   </div>
                 ),
               },
@@ -358,7 +371,11 @@ export default function SliderDemo({ documentation = false }: { documentation?: 
                 description: t(
                   'Review unavailable single-value and range controls. Their current values remain visible.',
                 ),
-                content: statesExample,
+                content: (
+                  <ExamplePreview id="slider-states" title={t('Slider states')}>
+                    {statesExample}
+                  </ExamplePreview>
+                ),
               },
             ]}
           />

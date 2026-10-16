@@ -22,6 +22,7 @@ export default defineConfig({
     'refactoring-ui.spec.ts',
     'ux-completion.spec.ts',
     'ux-collection.spec.ts',
+    'component-preview.spec.ts',
   ],
   outputDir: fileURLToPath(new URL('../../evidence/browser/candidates', import.meta.url)),
   fullyParallel: true,

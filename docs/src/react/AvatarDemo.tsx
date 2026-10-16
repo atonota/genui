@@ -3,6 +3,7 @@ import { Select } from 'antd';
 import AtlasProvider from './AtlasProvider';
 import AtlasAvatar, { type AtlasAvatarProps } from './AtlasAvatar';
 import { TweakerSettings } from './AtlasTweaker';
+import ExamplePreview from './ExamplePreview';
 import { useI18n } from './useI18n';
 
 // Fictional local illustration; no remote asset or user-supplied markup.
@@ -51,27 +52,29 @@ function AvatarExamples() {
           />
         </div>
       </TweakerSettings>
-      <ul className="atlas-avatar-people">
-        {people.map(person => (
-          <li key={person.context} className="atlas-avatar-person">
-            {/* A visible name already identifies the person, so the paired avatar is decorative. */}
-            <AtlasAvatar
-              name={person.name}
-              src={person.src}
-              shape={shape}
-              decorative={!person.standalone}
-            />
-            <div className="atlas-avatar-person-text">
-              {!person.standalone && (
-                <span className="atlas-avatar-person-name">
-                  {person.name.trim() || t('Unknown person')}
-                </span>
-              )}
-              <p className="atlas-avatar-person-context">{t(person.context)}</p>
-            </div>
-          </li>
-        ))}
-      </ul>
+      <ExamplePreview id="avatar-people" title={t('Avatar examples')}>
+        <ul className="atlas-avatar-people">
+          {people.map(person => (
+            <li key={person.context} className="atlas-avatar-person">
+              {/* A visible name already identifies the person, so the paired avatar is decorative. */}
+              <AtlasAvatar
+                name={person.name}
+                src={person.src}
+                shape={shape}
+                decorative={!person.standalone}
+              />
+              <div className="atlas-avatar-person-text">
+                {!person.standalone && (
+                  <span className="atlas-avatar-person-name">
+                    {person.name.trim() || t('Unknown person')}
+                  </span>
+                )}
+                <p className="atlas-avatar-person-context">{t(person.context)}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </ExamplePreview>
     </section>
   );
 }

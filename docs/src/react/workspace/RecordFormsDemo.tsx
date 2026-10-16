@@ -5,6 +5,7 @@ import Input from '../AtlasInput';
 import InputNumber from '../AtlasInputNumber';
 import { DateField } from './kit/Fields';
 import AtlasProvider from '../AtlasProvider';
+import ExamplePreview from '../ExamplePreview';
 import AtlasButton from '../AtlasButton';
 import AtlasSplitter from '../AtlasSplitter';
 import NumberStepper from '../NumberStepper';
@@ -998,7 +999,9 @@ export default function RecordFormsDemo({
 }: { documentation?: boolean } = {}) {
   return (
     <AtlasProvider appearance={documentation ? 'docs' : undefined}>
-      <RecordFormsExamples />
+      <ExamplePreview id="record-forms-workspace" title="Record form organizations">
+        <RecordFormsExamples />
+      </ExamplePreview>
     </AtlasProvider>
   );
 }

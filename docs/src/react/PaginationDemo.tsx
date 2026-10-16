@@ -3,6 +3,7 @@ import { Select, Switch } from 'antd';
 import Input from './AtlasInput';
 import AtlasProvider from './AtlasProvider';
 import AtlasPagination, { type AtlasPaginationProps } from './AtlasPagination';
+import ExamplePreview from './ExamplePreview';
 import NumberStepper from './NumberStepper';
 import { TweakerSettings } from './AtlasTweaker';
 import { useI18n } from './useI18n';
@@ -135,36 +136,38 @@ function PaginationExamples() {
             )}
           </p>
         </header>
-        <div className="pagination-stage" data-pagination-primary>
-          <h4>{t('Order review queue')}</h4>
-          <AtlasPagination
-            current={page}
-            total={effectiveTotal}
-            pageSize={pageSize}
-            onChange={changePage}
-            showSizeChanger={showSizeChanger}
-            showQuickJumper={showQuickJumper}
-            disabled={state === 'disabled'}
-            buttonType={buttonType}
-            activeButtonType={activeButtonType}
-            label={t('Order review pages')}
-          />
-        </div>
-        <div className="pagination-note">
-          <label htmlFor={`${id}-note`}>{t('Review note')}</label>
-          <Input.TextArea
-            id={`${id}-note`}
-            data-pagination-note
-            value={note}
-            onChange={event => setNote(event.target.value)}
-            rows={2}
-            placeholder={t('Keep a note while browsing')}
-            aria-describedby={`${id}-note-help`}
-          />
-          <p id={`${id}-note-help`} className="pagination-guidance">
-            {t('Your local note stays in place as pages, size, theme and language change.')}
-          </p>
-        </div>
+        <ExamplePreview id="pagination-explore-pages" title={t('Explore pages')}>
+          <div className="pagination-stage" data-pagination-primary>
+            <h4>{t('Order review queue')}</h4>
+            <AtlasPagination
+              current={page}
+              total={effectiveTotal}
+              pageSize={pageSize}
+              onChange={changePage}
+              showSizeChanger={showSizeChanger}
+              showQuickJumper={showQuickJumper}
+              disabled={state === 'disabled'}
+              buttonType={buttonType}
+              activeButtonType={activeButtonType}
+              label={t('Order review pages')}
+            />
+          </div>
+          <div className="pagination-note">
+            <label htmlFor={`${id}-note`}>{t('Review note')}</label>
+            <Input.TextArea
+              id={`${id}-note`}
+              data-pagination-note
+              value={note}
+              onChange={event => setNote(event.target.value)}
+              rows={2}
+              placeholder={t('Keep a note while browsing')}
+              aria-describedby={`${id}-note-help`}
+            />
+            <p id={`${id}-note-help`} className="pagination-guidance">
+              {t('Your local note stays in place as pages, size, theme and language change.')}
+            </p>
+          </div>
+        </ExamplePreview>
       </section>
       <section
         id="pagination-boundaries"
@@ -180,23 +183,25 @@ function PaginationExamples() {
             )}
           </p>
         </header>
-        <div className="pagination-stage" data-pagination-single>
-          <h4>{t('One page of matching records')}</h4>
-          <AtlasPagination
-            current={1}
-            total={8}
-            pageSize={10}
-            onChange={() => {}}
-            showSizeChanger={false}
-            showQuickJumper={false}
-            label={t('Single page results')}
-          />
-          <p className="pagination-guidance">
-            {t(
-              'All eight records fit on one page. Navigation remains visible and cannot leave it.',
-            )}
-          </p>
-        </div>
+        <ExamplePreview id="pagination-page-boundaries" title={t('Page boundaries')}>
+          <div className="pagination-stage" data-pagination-single>
+            <h4>{t('One page of matching records')}</h4>
+            <AtlasPagination
+              current={1}
+              total={8}
+              pageSize={10}
+              onChange={() => {}}
+              showSizeChanger={false}
+              showQuickJumper={false}
+              label={t('Single page results')}
+            />
+            <p className="pagination-guidance">
+              {t(
+                'All eight records fit on one page. Navigation remains visible and cannot leave it.',
+              )}
+            </p>
+          </div>
+        </ExamplePreview>
       </section>
       <section
         id="pagination-surfaces"
@@ -212,31 +217,33 @@ function PaginationExamples() {
             )}
           </p>
         </header>
-        <div className="pagination-surfaces-grid">
-          {buttonSurfaces.map(surface => (
-            <div
-              key={surface.value}
-              className="pagination-surface-example"
-              data-pagination-surface={surface.value}
-            >
-              <h4>{t(surface.label)}</h4>
-              <AtlasPagination
-                current={surfacePages[surface.value]}
-                total={80}
-                pageSize={10}
-                onChange={nextPage =>
-                  setSurfacePages(current => ({ ...current, [surface.value]: nextPage }))
-                }
-                buttonType={surface.value}
-                activeButtonType={surface.value}
-                showTotal={false}
-                showSizeChanger={false}
-                showQuickJumper={false}
-                label={t('{surface} pagination', { surface: t(surface.label) })}
-              />
-            </div>
-          ))}
-        </div>
+        <ExamplePreview id="pagination-button-surfaces" title={t('Button surfaces')}>
+          <div className="pagination-surfaces-grid">
+            {buttonSurfaces.map(surface => (
+              <div
+                key={surface.value}
+                className="pagination-surface-example"
+                data-pagination-surface={surface.value}
+              >
+                <h4>{t(surface.label)}</h4>
+                <AtlasPagination
+                  current={surfacePages[surface.value]}
+                  total={80}
+                  pageSize={10}
+                  onChange={nextPage =>
+                    setSurfacePages(current => ({ ...current, [surface.value]: nextPage }))
+                  }
+                  buttonType={surface.value}
+                  activeButtonType={surface.value}
+                  showTotal={false}
+                  showSizeChanger={false}
+                  showQuickJumper={false}
+                  label={t('{surface} pagination', { surface: t(surface.label) })}
+                />
+              </div>
+            ))}
+          </div>
+        </ExamplePreview>
       </section>
       <section
         id="pagination-availability"
@@ -252,39 +259,41 @@ function PaginationExamples() {
             )}
           </p>
         </header>
-        <div className="pagination-availability-grid">
-          <div className="pagination-state-example" data-pagination-empty>
-            <h4>{t('No matching records')}</h4>
-            <p className="pagination-guidance">
-              {t('The result is empty. The total stays at zero and navigation is unavailable.')}
-            </p>
-            <AtlasPagination
-              current={1}
-              total={0}
-              pageSize={10}
-              onChange={() => {}}
-              showSizeChanger={false}
-              showQuickJumper={false}
-              label={t('Empty result pages')}
-            />
+        <ExamplePreview id="pagination-availability" title={t('Availability')}>
+          <div className="pagination-availability-grid">
+            <div className="pagination-state-example" data-pagination-empty>
+              <h4>{t('No matching records')}</h4>
+              <p className="pagination-guidance">
+                {t('The result is empty. The total stays at zero and navigation is unavailable.')}
+              </p>
+              <AtlasPagination
+                current={1}
+                total={0}
+                pageSize={10}
+                onChange={() => {}}
+                showSizeChanger={false}
+                showQuickJumper={false}
+                label={t('Empty result pages')}
+              />
+            </div>
+            <div className="pagination-state-example" data-pagination-disabled>
+              <h4>{t('Queue temporarily unavailable')}</h4>
+              <p className="pagination-guidance">
+                {t('The current range remains readable while every page action is disabled.')}
+              </p>
+              <AtlasPagination
+                current={2}
+                total={30}
+                pageSize={10}
+                onChange={() => {}}
+                showSizeChanger={false}
+                showQuickJumper={false}
+                disabled
+                label={t('Unavailable queue pages')}
+              />
+            </div>
           </div>
-          <div className="pagination-state-example" data-pagination-disabled>
-            <h4>{t('Queue temporarily unavailable')}</h4>
-            <p className="pagination-guidance">
-              {t('The current range remains readable while every page action is disabled.')}
-            </p>
-            <AtlasPagination
-              current={2}
-              total={30}
-              pageSize={10}
-              onChange={() => {}}
-              showSizeChanger={false}
-              showQuickJumper={false}
-              disabled
-              label={t('Unavailable queue pages')}
-            />
-          </div>
-        </div>
+        </ExamplePreview>
       </section>
     </div>
   );

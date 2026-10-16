@@ -1,0 +1,20 @@
+{
+  "Device preview": "Cihaz önizlemesi",
+  "iPhone": "iPhone",
+  "iPad": "iPad",
+  "MacBook": "MacBook",
+  "Preview theme": "Önizleme teması",
+  "Light": "Açık",
+  "Dark": "Koyu",
+  "Example view": "Örnek görünümü",
+  "Preview": "Önizleme",
+  "Code": "Kod",
+  "Source excerpt": "Kaynak alıntısı",
+  "Source code": "Kaynak kod",
+  "Copy code": "Kodu kopyala",
+  "Code copied.": "Kod kopyalandı.",
+  "Code could not be copied.": "Kod kopyalanamadı.",
+  "Loading source…": "Kaynak yükleniyor…",
+  "Source could not be loaded.": "Kaynak yüklenemedi.",
+  "Retry": "Yeniden dene"
+}

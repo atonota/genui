@@ -2,6 +2,7 @@ import { useId, useState } from 'react';
 import { Switch } from 'antd';
 import AtlasProvider from './AtlasProvider';
 import AtlasBreadcrumb, { type AtlasBreadcrumbItem } from './AtlasBreadcrumb';
+import ExamplePreview from './ExamplePreview';
 import { TweakerSettings } from './AtlasTweaker';
 import { useI18n } from './useI18n';
 
@@ -71,9 +72,11 @@ function BreadcrumbExamples() {
             )}
           </p>
         </header>
-        <div className="breadcrumb-stage">
-          <AtlasBreadcrumb label={t('Quick navigation path')} items={quickItems} />
-        </div>
+        <ExamplePreview id="breadcrumb-quick-navigation" title={t('Quick navigation')}>
+          <div className="breadcrumb-stage">
+            <AtlasBreadcrumb label={t('Quick navigation path')} items={quickItems} />
+          </div>
+        </ExamplePreview>
         <p className="breadcrumb-guidance">
           {t(
             'The page name marks your current location. The separate menu button opens all five workspace pages with click, Enter, Space or ArrowDown; Escape returns focus.',
@@ -94,9 +97,11 @@ function BreadcrumbExamples() {
             )}
           </p>
         </header>
-        <div className="breadcrumb-stage">
-          <AtlasBreadcrumb label={t('Icon navigation path')} items={iconItems} />
-        </div>
+        <ExamplePreview id="breadcrumb-icon-style" title={t('Icon style')}>
+          <div className="breadcrumb-stage">
+            <AtlasBreadcrumb label={t('Icon navigation path')} items={iconItems} />
+          </div>
+        </ExamplePreview>
         <p className="breadcrumb-guidance">
           {t(
             'Paths wrap naturally on narrow screens. Icons are decorative; the home link keeps its accessible name and every ancestor leads to a real documentation page.',

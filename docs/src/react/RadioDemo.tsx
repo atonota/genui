@@ -1,5 +1,6 @@
 import { useI18n } from './useI18n';
 import DataEntryCatalog, { DataEntryGrid } from './DataEntryCatalog';
+import ExamplePreview from './ExamplePreview';
 import { useId, useState } from 'react';
 import { Radio, Switch } from 'antd';
 import AtlasProvider from './AtlasProvider';
@@ -132,7 +133,11 @@ export default function RadioDemo({
                 description: t(
                   'Choose one team with classic radio controls. Selecting another option replaces the previous choice.',
                 ),
-                content: <div className="example-block">{single}</div>,
+                content: (
+                  <ExamplePreview id="radio-single-selection" title={t('Single selection')}>
+                    <div className="example-block">{single}</div>
+                  </ExamplePreview>
+                ),
               },
               {
                 id: 'grouped',
@@ -144,15 +149,19 @@ export default function RadioDemo({
                 ),
                 content: (
                   <DataEntryGrid>
-                    <section className="example-block">
-                      <h4 className="variant-heading">{t('Segmented selection')}</h4>
-                      {grouped}
-                    </section>
-                    {clusteredSegments && (
+                    <ExamplePreview id="radio-segmented-selection" title={t('Segmented selection')}>
                       <section className="example-block">
-                        <h4 className="variant-heading">{t('Two choices')}</h4>
-                        {two}
+                        <h4 className="variant-heading">{t('Segmented selection')}</h4>
+                        {grouped}
                       </section>
+                    </ExamplePreview>
+                    {clusteredSegments && (
+                      <ExamplePreview id="radio-two-choices" title={t('Two choices')}>
+                        <section className="example-block">
+                          <h4 className="variant-heading">{t('Two choices')}</h4>
+                          {two}
+                        </section>
+                      </ExamplePreview>
                     )}
                   </DataEntryGrid>
                 ),
@@ -163,12 +172,17 @@ export default function RadioDemo({
                 description: t(
                   'A disabled group preserves its selected value while blocking changes.',
                 ),
-                content: <div className="example-block">{states}</div>,
+                content: (
+                  <ExamplePreview id="radio-states" title={t('States')}>
+                    <div className="example-block">{states}</div>
+                  </ExamplePreview>
+                ),
               },
               {
                 id: 'selection-variants',
                 title: t('Selection layouts and cards'),
                 description: t('Choose one workspace.'),
+                // Each layout owns its workbench inside AtlasSelectionVariants.
                 content: <AtlasSelectionVariants kind="radio" />,
               },
             ]}

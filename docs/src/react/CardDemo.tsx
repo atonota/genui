@@ -10,6 +10,7 @@ import {
 } from 'react';
 import { Select, Switch } from 'antd';
 import AtlasProvider from './AtlasProvider';
+import ExamplePreview from './ExamplePreview';
 import AtlasButton from './AtlasButton';
 import { Modal } from './AtlasOverlay';
 import { TweakerSettings } from './AtlasTweaker';
@@ -288,12 +289,12 @@ function CardExamples({ documentation }: { documentation: boolean }) {
       description:
         'Start with a record people can recognize or a number they can interpret. Entity and Metric establish the baseline. Task workspaces can combine a table, form, chart and several related actions.',
       content: (
-        <>
+        <ExamplePreview id="card-entity-metric" title={t('Entity and Metric')}>
           {playground}
           <p className="card-feedback" role="status" aria-live="polite">
             {feedback}
           </p>
-        </>
+        </ExamplePreview>
       ),
     },
     {
@@ -302,7 +303,7 @@ function CardExamples({ documentation }: { documentation: boolean }) {
       description:
         'Choose a purpose or a domain, then inspect one recipe. All recipes share the same serializable model and trusted Atlas renderer.',
       content: (
-        <>
+        <ExamplePreview id="card-purpose-catalog" title={t('Purpose and domain catalog')}>
           <div className="card-recipe-pickers">
             <label htmlFor={`${id}-category`}>
               {t('Recipe category')}
@@ -367,7 +368,7 @@ function CardExamples({ documentation }: { documentation: boolean }) {
               />
             </div>
           )}
-        </>
+        </ExamplePreview>
       ),
     },
     {
@@ -377,92 +378,98 @@ function CardExamples({ documentation }: { documentation: boolean }) {
         'The host owns selection, task lanes and field values. Every action has a visible local result; changing appearance preserves those values.',
       content: (
         <div className="card-interaction-stack">
-          <div className="card-interaction-example">
-            <h4>{t('Build a workset')}</h4>
-            <PurposeCard
-              model={{ ...selection, selection: { ...selection.selection!, selected } }}
-              onSelectionChange={setSelected}
-            />
-            <p role="status" data-selection-result>
-              {t('{count} selected in the local workset.', { count: selected ? 1 : 0 })}
-            </p>
-          </div>
-          <div className="card-interaction-example">
-            <h4>{t('Move work between lanes')}</h4>
-            <p id={`${id}-move-help`}>
-              {t('Drag the task handle to a lane, or use the named move buttons on the task.')}
-            </p>
-            <div className="card-task-board" ref={board} data-dragging={dragging}>
-              {lanes.map(lane => (
-                <section key={lane} data-task-lane={lane} aria-label={t(laneLabels[lane])}>
-                  <h5>{t(laneLabels[lane])}</h5>
-                  {taskLane === lane ? (
-                    <div className="card-task-item">
-                      <AtlasButton
-                        text={t('Drag task')}
-                        fill="text"
-                        aria-label={t('Drag review task')}
-                        aria-describedby={`${id}-move-help`}
-                        data-task-grip
-                        onClick={() =>
-                          setFeedback(t('Use the move buttons to choose a task lane.'))
-                        }
-                        onPointerDown={event => {
-                          if (event.button !== 0 || pointer.current !== null) return;
-                          pointer.current = event.pointerId;
-                          event.currentTarget.setPointerCapture(event.pointerId);
-                          setDragging(true);
-                        }}
-                        onPointerUp={event => {
-                          if (pointer.current !== event.pointerId) return;
-                          const target = document
-                            .elementFromPoint(event.clientX, event.clientY)
-                            ?.closest<HTMLElement>('[data-task-lane]');
-                          if (
-                            target &&
-                            board.current?.contains(target) &&
-                            lanes.includes(target.dataset.taskLane as (typeof lanes)[number])
-                          )
-                            moveTask(target.dataset.taskLane as (typeof lanes)[number]);
-                          if (event.currentTarget.hasPointerCapture(event.pointerId))
-                            event.currentTarget.releasePointerCapture(event.pointerId);
-                          stopDrag(event.pointerId);
-                        }}
-                        onPointerCancel={event => stopDrag(event.pointerId)}
-                        onLostPointerCapture={event => stopDrag(event.pointerId)}
-                      />
-                      <PurposeCard model={currentTask} onMove={moveTask} onAction={inspect} />
-                    </div>
-                  ) : (
-                    <p className="card-caption">{t('No task in this lane.')}</p>
-                  )}
-                </section>
-              ))}
+          <ExamplePreview id="card-selection" title={t('Build a workset')}>
+            <div className="card-interaction-example">
+              <h4>{t('Build a workset')}</h4>
+              <PurposeCard
+                model={{ ...selection, selection: { ...selection.selection!, selected } }}
+                onSelectionChange={setSelected}
+              />
+              <p role="status" data-selection-result>
+                {t('{count} selected in the local workset.', { count: selected ? 1 : 0 })}
+              </p>
             </div>
-          </div>
-          <div className="card-interaction-example">
-            <h4>{t('Edit before committing')}</h4>
-            <PurposeCard
-              model={currentForm}
-              onFieldChange={(_key, value) => {
-                setDraft(value);
-                setDraftError(false);
-              }}
-              onAction={() => {
-                if (!draft.trim()) {
-                  setDraftError(true);
-                  return;
-                }
-                setSavedDraft(draft);
-                setDraftError(false);
-              }}
-            />
-            <p role="status" data-form-result>
-              {savedDraft === null
-                ? t('The draft stays in this preview until you save it locally.')
-                : t('Saved draft: {draft}', { draft: savedDraft })}
-            </p>
-          </div>
+          </ExamplePreview>
+          <ExamplePreview id="card-movement" title={t('Move work between lanes')}>
+            <div className="card-interaction-example">
+              <h4>{t('Move work between lanes')}</h4>
+              <p id={`${id}-move-help`}>
+                {t('Drag the task handle to a lane, or use the named move buttons on the task.')}
+              </p>
+              <div className="card-task-board" ref={board} data-dragging={dragging}>
+                {lanes.map(lane => (
+                  <section key={lane} data-task-lane={lane} aria-label={t(laneLabels[lane])}>
+                    <h5>{t(laneLabels[lane])}</h5>
+                    {taskLane === lane ? (
+                      <div className="card-task-item">
+                        <AtlasButton
+                          text={t('Drag task')}
+                          fill="text"
+                          aria-label={t('Drag review task')}
+                          aria-describedby={`${id}-move-help`}
+                          data-task-grip
+                          onClick={() =>
+                            setFeedback(t('Use the move buttons to choose a task lane.'))
+                          }
+                          onPointerDown={event => {
+                            if (event.button !== 0 || pointer.current !== null) return;
+                            pointer.current = event.pointerId;
+                            event.currentTarget.setPointerCapture(event.pointerId);
+                            setDragging(true);
+                          }}
+                          onPointerUp={event => {
+                            if (pointer.current !== event.pointerId) return;
+                            const target = document
+                              .elementFromPoint(event.clientX, event.clientY)
+                              ?.closest<HTMLElement>('[data-task-lane]');
+                            if (
+                              target &&
+                              board.current?.contains(target) &&
+                              lanes.includes(target.dataset.taskLane as (typeof lanes)[number])
+                            )
+                              moveTask(target.dataset.taskLane as (typeof lanes)[number]);
+                            if (event.currentTarget.hasPointerCapture(event.pointerId))
+                              event.currentTarget.releasePointerCapture(event.pointerId);
+                            stopDrag(event.pointerId);
+                          }}
+                          onPointerCancel={event => stopDrag(event.pointerId)}
+                          onLostPointerCapture={event => stopDrag(event.pointerId)}
+                        />
+                        <PurposeCard model={currentTask} onMove={moveTask} onAction={inspect} />
+                      </div>
+                    ) : (
+                      <p className="card-caption">{t('No task in this lane.')}</p>
+                    )}
+                  </section>
+                ))}
+              </div>
+            </div>
+          </ExamplePreview>
+          <ExamplePreview id="card-drafts" title={t('Edit before committing')}>
+            <div className="card-interaction-example">
+              <h4>{t('Edit before committing')}</h4>
+              <PurposeCard
+                model={currentForm}
+                onFieldChange={(_key, value) => {
+                  setDraft(value);
+                  setDraftError(false);
+                }}
+                onAction={() => {
+                  if (!draft.trim()) {
+                    setDraftError(true);
+                    return;
+                  }
+                  setSavedDraft(draft);
+                  setDraftError(false);
+                }}
+              />
+              <p role="status" data-form-result>
+                {savedDraft === null
+                  ? t('The draft stays in this preview until you save it locally.')
+                  : t('Saved draft: {draft}', { draft: savedDraft })}
+              </p>
+            </div>
+          </ExamplePreview>
         </div>
       ),
     },
@@ -472,23 +479,25 @@ function CardExamples({ documentation }: { documentation: boolean }) {
       description:
         'Ready, loading, empty, partial, error and disabled are explicit model states. Compare one state at a time from Tweaker.',
       content: (
-        <div className="card-state-preview">
-          <PurposeCard
-            model={{
-              ...entity,
-              id: 'state-preview',
-              state: previewState,
-              stateMessage: t(stateMessages[previewState]),
-              primaryAction:
-                previewState === 'error'
-                  ? { id: 'retry', label: 'Retry local preview', intent: 'retry' }
-                  : entity.primaryAction,
-            }}
-            onAction={(action, model) =>
-              action.intent === 'retry' ? setPreviewState('ready') : inspect(action, model)
-            }
-          />
-        </div>
+        <ExamplePreview id="card-data-states" title={t('Data states')}>
+          <div className="card-state-preview">
+            <PurposeCard
+              model={{
+                ...entity,
+                id: 'state-preview',
+                state: previewState,
+                stateMessage: t(stateMessages[previewState]),
+                primaryAction:
+                  previewState === 'error'
+                    ? { id: 'retry', label: 'Retry local preview', intent: 'retry' }
+                    : entity.primaryAction,
+              }}
+              onAction={(action, model) =>
+                action.intent === 'retry' ? setPreviewState('ready') : inspect(action, model)
+              }
+            />
+          </div>
+        </ExamplePreview>
       ),
     },
     {
@@ -497,7 +506,7 @@ function CardExamples({ documentation }: { documentation: boolean }) {
       description:
         'Validated intents can generate any card purpose or a task workspace; generation mode is independent from purpose. Open the lab to load the optional Ant Design X Hybrid UI, X Cards and X SDK examples.',
       content: (
-        <>
+        <ExamplePreview id="card-genui-lab" title={t('GenUI lab')}>
           <div className="card-genui-intro">
             <p>
               {t(
@@ -539,7 +548,7 @@ function CardExamples({ documentation }: { documentation: boolean }) {
               )}
             </div>
           </div>
-        </>
+        </ExamplePreview>
       ),
     },
   ];

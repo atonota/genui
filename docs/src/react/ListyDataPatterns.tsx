@@ -6,6 +6,7 @@ import AtlasButton from './AtlasButton';
 import AtlasEmptyState from './AtlasEmptyState';
 import AtlasIcon from './AtlasIcon';
 import AtlasListy, { type AtlasListyEntry } from './AtlasListy';
+import ExamplePreview from './ExamplePreview';
 import { useI18n } from './useI18n';
 
 // Bounded native scrollers are measured in rows of the central control height role.
@@ -70,21 +71,23 @@ export function ListyStepsPattern() {
       title={t('Steps')}
       description={t('Each step completes in order; the current step stays selected.')}
     >
-      <AtlasListy label={t('Workspace setup steps')} items={items} />
-      <p role="status">
-        {finished ? t('All steps complete') : `${t('Current step')}: ${t(steps[current]!)}`}
-      </p>
-      <AtlasButton
-        text={t('Next step')}
-        disabled={finished}
-        onClick={() => setCurrent(step => Math.min(step + 1, steps.length))}
-      />
-      <AtlasButton
-        text={t('Restart')}
-        fill="outline"
-        disabled={current === 0}
-        onClick={() => setCurrent(0)}
-      />
+      <ExamplePreview id="listy-steps" title={t('Steps')}>
+        <AtlasListy label={t('Workspace setup steps')} items={items} />
+        <p role="status">
+          {finished ? t('All steps complete') : `${t('Current step')}: ${t(steps[current]!)}`}
+        </p>
+        <AtlasButton
+          text={t('Next step')}
+          disabled={finished}
+          onClick={() => setCurrent(step => Math.min(step + 1, steps.length))}
+        />
+        <AtlasButton
+          text={t('Restart')}
+          fill="outline"
+          disabled={current === 0}
+          onClick={() => setCurrent(0)}
+        />
+      </ExamplePreview>
     </Pattern>
   );
 }
@@ -112,39 +115,41 @@ export function ListyStatusPattern() {
       title={t('Status')}
       description={t('Sample service data; switch the list state to preview loading and empty.')}
     >
-      <Segmented<FeedState>
-        aria-label={t('List state')}
-        value={feed}
-        onChange={setFeed}
-        options={[
-          { value: 'ready', label: t('Loaded') },
-          { value: 'loading', label: t('Loading') },
-          { value: 'empty', label: t('Empty') },
-        ]}
-      />
-      <div data-listy-state={feed} aria-busy={feed === 'loading'}>
-        {feed === 'empty' ? (
-          <AtlasEmptyState
-            kind="empty"
-            title={t('No services to show')}
-            description={t('Switch the list state to show the sample services again.')}
-            actionLabel={t('Show services')}
-            onAction={() => setFeed('ready')}
-          />
-        ) : (
-          <Spin spinning={feed === 'loading'}>
-            <AtlasListy label={t('Service status')} items={items} />
-          </Spin>
-        )}
-        {/* One persistent live region; the empty state announces itself. */}
-        <p role="status">
-          {feed === 'loading'
-            ? t('Loading services')
-            : feed === 'ready'
-              ? `${items.length} ${t('services listed')}`
-              : ''}
-        </p>
-      </div>
+      <ExamplePreview id="listy-status" title={t('Status')}>
+        <Segmented<FeedState>
+          aria-label={t('List state')}
+          value={feed}
+          onChange={setFeed}
+          options={[
+            { value: 'ready', label: t('Loaded') },
+            { value: 'loading', label: t('Loading') },
+            { value: 'empty', label: t('Empty') },
+          ]}
+        />
+        <div data-listy-state={feed} aria-busy={feed === 'loading'}>
+          {feed === 'empty' ? (
+            <AtlasEmptyState
+              kind="empty"
+              title={t('No services to show')}
+              description={t('Switch the list state to show the sample services again.')}
+              actionLabel={t('Show services')}
+              onAction={() => setFeed('ready')}
+            />
+          ) : (
+            <Spin spinning={feed === 'loading'}>
+              <AtlasListy label={t('Service status')} items={items} />
+            </Spin>
+          )}
+          {/* One persistent live region; the empty state announces itself. */}
+          <p role="status">
+            {feed === 'loading'
+              ? t('Loading services')
+              : feed === 'ready'
+                ? `${items.length} ${t('services listed')}`
+                : ''}
+          </p>
+        </div>
+      </ExamplePreview>
     </Pattern>
   );
 }
@@ -171,7 +176,9 @@ export function ListyRichPattern() {
       title={t('Rich content')}
       description={t('Rows with an avatar and a description grow instead of clipping.')}
     >
-      <AtlasListy label={t('Team members')} items={items} />
+      <ExamplePreview id="listy-rich" title={t('Rich content')}>
+        <AtlasListy label={t('Team members')} items={items} />
+      </ExamplePreview>
     </Pattern>
   );
 }
@@ -227,7 +234,9 @@ export function ListyMarketPattern() {
       title={t('Market')}
       description={t('Sample catalog with prices; nothing is purchased.')}
     >
-      <AtlasListy label={t('Products')} items={items} />
+      <ExamplePreview id="listy-market" title={t('Market')}>
+        <AtlasListy label={t('Products')} items={items} />
+      </ExamplePreview>
     </Pattern>
   );
 }
@@ -273,15 +282,17 @@ export function ListyGroupedPattern() {
       title={t('Grouped')}
       description={t('Team headers stay pinned while their channels scroll.')}
     >
-      <AtlasListy
-        label={t('Channels by team')}
-        items={items}
-        group={group}
-        sticky
-        virtual={false}
-        height={height}
-        classNames={() => ({ groupHeader: 'atlas-listy-group-header atlas-listy-team-header' })}
-      />
+      <ExamplePreview id="listy-grouped" title={t('Grouped')}>
+        <AtlasListy
+          label={t('Channels by team')}
+          items={items}
+          group={group}
+          sticky
+          virtual={false}
+          height={height}
+          classNames={() => ({ groupHeader: 'atlas-listy-group-header atlas-listy-team-header' })}
+        />
+      </ExamplePreview>
     </Pattern>
   );
 }
@@ -309,23 +320,25 @@ export function ListyVirtualPattern() {
       title={t('Virtual')}
       description={t('Ten thousand rows; only the visible rows are rendered.')}
     >
-      <AtlasButton
-        text={t('Jump to last item')}
-        fill="outline"
-        onClick={() => {
-          listRef.current?.scrollTo({ key: `record-${recordCount}`, align: 'bottom' });
-          setJumped(true);
-        }}
-      />
-      <AtlasListy
-        ref={listRef}
-        label={t('Records')}
-        items={records}
-        virtual
-        height={height}
-        onScroll={() => setJumped(false)}
-      />
-      <p role="status">{jumped ? `${word} ${recordCount}` : ''}</p>
+      <ExamplePreview id="listy-virtual" title={t('Virtual')}>
+        <AtlasButton
+          text={t('Jump to last item')}
+          fill="outline"
+          onClick={() => {
+            listRef.current?.scrollTo({ key: `record-${recordCount}`, align: 'bottom' });
+            setJumped(true);
+          }}
+        />
+        <AtlasListy
+          ref={listRef}
+          label={t('Records')}
+          items={records}
+          virtual
+          height={height}
+          onScroll={() => setJumped(false)}
+        />
+        <p role="status">{jumped ? `${word} ${recordCount}` : ''}</p>
+      </ExamplePreview>
     </Pattern>
   );
 }

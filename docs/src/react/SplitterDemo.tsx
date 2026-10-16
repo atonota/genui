@@ -5,6 +5,7 @@ import AtlasProvider from './AtlasProvider';
 import AtlasButton from './AtlasButton';
 import AtlasPill from './AtlasPill';
 import AtlasSplitter from './AtlasSplitter';
+import ExamplePreview from './ExamplePreview';
 import { TweakerSettings } from './AtlasTweaker';
 import { useI18n } from './useI18n';
 import { initialRecords, moneyText, STATUS_LABELS } from '../data/workspace';
@@ -64,73 +65,75 @@ function SplitterExamples() {
             )}
           </p>
         </header>
-        <AtlasSplitter
-          id="splitter-records"
-          label={t('Browse and inspect')}
-          orientation={orientation}
-          initialSizes={[45, 55]}
-          panels={[
-            {
-              id: 'splitter-record-list',
-              label: t('Records'),
-              children: (
-                <div className="splitter-record-list">
-                  <p className="splitter-helper">{t('Choose a record to review its details.')}</p>
-                  {records.map(item => (
-                    <AtlasButton
-                      key={item.id}
-                      fill={item.id === activeId ? 'tint' : 'text'}
-                      width="full"
-                      text={`${item.id} · ${item.customer}`}
-                      aria-pressed={item.id === activeId}
-                      onClick={() => setActiveId(item.id)}
-                    />
-                  ))}
-                </div>
-              ),
-            },
-            {
-              id: 'splitter-record-detail',
-              label: t('Record review'),
-              children: (
-                <div className="splitter-review">
-                  <div>
-                    <p className="splitter-helper">{record.id}</p>
-                    <h4>{record.customer}</h4>
+        <ExamplePreview id="splitter-browse-inspect" title={t('Browse and inspect')}>
+          <AtlasSplitter
+            id="splitter-records"
+            label={t('Browse and inspect')}
+            orientation={orientation}
+            initialSizes={[45, 55]}
+            panels={[
+              {
+                id: 'splitter-record-list',
+                label: t('Records'),
+                children: (
+                  <div className="splitter-record-list">
+                    <p className="splitter-helper">{t('Choose a record to review its details.')}</p>
+                    {records.map(item => (
+                      <AtlasButton
+                        key={item.id}
+                        fill={item.id === activeId ? 'tint' : 'text'}
+                        width="full"
+                        text={`${item.id} · ${item.customer}`}
+                        aria-pressed={item.id === activeId}
+                        onClick={() => setActiveId(item.id)}
+                      />
+                    ))}
                   </div>
-                  <AtlasPill colorIndex={workspacePillColorIndex.status[record.status]}>
-                    {t(STATUS_LABELS[record.status])}
-                  </AtlasPill>
-                  <dl className="splitter-facts">
+                ),
+              },
+              {
+                id: 'splitter-record-detail',
+                label: t('Record review'),
+                children: (
+                  <div className="splitter-review">
                     <div>
-                      <dt>{t('Owner')}</dt>
-                      <dd>{record.owner}</dd>
+                      <p className="splitter-helper">{record.id}</p>
+                      <h4>{record.customer}</h4>
                     </div>
-                    <div>
-                      <dt>{t('Amount')}</dt>
-                      <dd>
-                        {record.amount === null
-                          ? t('Not set')
-                          : moneyText(record.amount, record.currency, locale)}
-                      </dd>
-                    </div>
-                  </dl>
-                  <label htmlFor="splitter-review-note">{t('Review note')}</label>
-                  <Input.TextArea
-                    id="splitter-review-note"
-                    value={note}
-                    onChange={event => setNote(event.target.value)}
-                    rows={3}
-                    placeholder={t('Add context for your review')}
-                  />
-                  <p className="splitter-helper">
-                    {t('This local note stays with the example while panels resize.')}
-                  </p>
-                </div>
-              ),
-            },
-          ]}
-        />
+                    <AtlasPill colorIndex={workspacePillColorIndex.status[record.status]}>
+                      {t(STATUS_LABELS[record.status])}
+                    </AtlasPill>
+                    <dl className="splitter-facts">
+                      <div>
+                        <dt>{t('Owner')}</dt>
+                        <dd>{record.owner}</dd>
+                      </div>
+                      <div>
+                        <dt>{t('Amount')}</dt>
+                        <dd>
+                          {record.amount === null
+                            ? t('Not set')
+                            : moneyText(record.amount, record.currency, locale)}
+                        </dd>
+                      </div>
+                    </dl>
+                    <label htmlFor="splitter-review-note">{t('Review note')}</label>
+                    <Input.TextArea
+                      id="splitter-review-note"
+                      value={note}
+                      onChange={event => setNote(event.target.value)}
+                      rows={3}
+                      placeholder={t('Add context for your review')}
+                    />
+                    <p className="splitter-helper">
+                      {t('This local note stays with the example while panels resize.')}
+                    </p>
+                  </div>
+                ),
+              },
+            ]}
+          />
+        </ExamplePreview>
         <p className="splitter-keyboard-guide">
           {t(
             'Drag the grip, use the panel buttons, or focus the separator and press arrow keys. Home and End move to the allowed limits.',
@@ -151,48 +154,50 @@ function SplitterExamples() {
             )}
           </p>
         </header>
-        <AtlasSplitter
-          id="splitter-editor"
-          label={t('Edit and review')}
-          orientation="vertical"
-          panels={[
-            {
-              id: 'splitter-editor-fields',
-              label: t('Editor'),
-              children: (
-                <div className="splitter-review">
-                  <label htmlFor="splitter-project-name">{t('Workspace name')}</label>
-                  <Input
-                    id="splitter-project-name"
-                    value={project}
-                    onChange={event => setProject(event.target.value)}
-                  />
-                  <label htmlFor="splitter-project-description">{t('Description')}</label>
-                  <Input.TextArea
-                    id="splitter-project-description"
-                    value={description}
-                    onChange={event => setDescription(event.target.value)}
-                    rows={3}
-                  />
-                </div>
-              ),
-            },
-            {
-              id: 'splitter-editor-review',
-              label: t('Live review'),
-              children: (
-                <div className="splitter-review" aria-live="polite">
-                  <AtlasPill>{t('Draft')}</AtlasPill>
-                  <h4>{project || t('Untitled workspace')}</h4>
-                  <p className="splitter-draft-copy">{description || t('No description yet.')}</p>
-                  <p className="splitter-helper">
-                    {t('Preview only. No record is saved or sent.')}
-                  </p>
-                </div>
-              ),
-            },
-          ]}
-        />
+        <ExamplePreview id="splitter-edit-review" title={t('Edit and review')}>
+          <AtlasSplitter
+            id="splitter-editor"
+            label={t('Edit and review')}
+            orientation="vertical"
+            panels={[
+              {
+                id: 'splitter-editor-fields',
+                label: t('Editor'),
+                children: (
+                  <div className="splitter-review">
+                    <label htmlFor="splitter-project-name">{t('Workspace name')}</label>
+                    <Input
+                      id="splitter-project-name"
+                      value={project}
+                      onChange={event => setProject(event.target.value)}
+                    />
+                    <label htmlFor="splitter-project-description">{t('Description')}</label>
+                    <Input.TextArea
+                      id="splitter-project-description"
+                      value={description}
+                      onChange={event => setDescription(event.target.value)}
+                      rows={3}
+                    />
+                  </div>
+                ),
+              },
+              {
+                id: 'splitter-editor-review',
+                label: t('Live review'),
+                children: (
+                  <div className="splitter-review" aria-live="polite">
+                    <AtlasPill>{t('Draft')}</AtlasPill>
+                    <h4>{project || t('Untitled workspace')}</h4>
+                    <p className="splitter-draft-copy">{description || t('No description yet.')}</p>
+                    <p className="splitter-helper">
+                      {t('Preview only. No record is saved or sent.')}
+                    </p>
+                  </div>
+                ),
+              },
+            ]}
+          />
+        </ExamplePreview>
       </section>
       <section
         id="splitter-workspaces"

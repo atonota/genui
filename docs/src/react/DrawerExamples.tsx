@@ -5,6 +5,7 @@ import { Form, Input, Select, type DrawerProps, type FormInstance } from 'antd';
 import { Drawer } from './AtlasOverlay';
 import { TweakerSettings } from './AtlasTweaker';
 import AtlasButton from './AtlasButton';
+import ExamplePreview from './ExamplePreview';
 
 type WorkspaceId = 'atlas-studio' | 'harbor-retail';
 type SectionId = 'overview' | 'orders' | 'team';
@@ -93,24 +94,26 @@ function PlacementFormExample() {
           'Closing and reopening the panel preserves the draft. Escape or the close button closes it and returns focus to the trigger.',
         )}
       </p>
-      <div className="control-row">
-        <TweakerSettings title="Drawer placement">
-          <div className="form-layout-control">
-            <label htmlFor={placementId}>{t('Placement')}</label>
-            <Select<DrawerPlacement>
-              id={placementId}
-              value={placement}
-              onChange={setPlacement}
-              options={placementOptions}
-              labelRender={selectedLabel(placementOptions)}
-            />
-          </div>
-        </TweakerSettings>
-        <AtlasButton text={t('Open panel')} onClick={() => setOpen(true)} />
-      </div>
-      <div className="form-result" role="status" aria-live="polite">
-        {result === null ? null : t('Draft “{title}” validated locally.', { title: result })}
-      </div>
+      <ExamplePreview id="drawer-placements" title={t('Four panel placements')}>
+        <div className="control-row">
+          <TweakerSettings title="Drawer placement">
+            <div className="form-layout-control">
+              <label htmlFor={placementId}>{t('Placement')}</label>
+              <Select<DrawerPlacement>
+                id={placementId}
+                value={placement}
+                onChange={setPlacement}
+                options={placementOptions}
+                labelRender={selectedLabel(placementOptions)}
+              />
+            </div>
+          </TweakerSettings>
+          <AtlasButton text={t('Open panel')} onClick={() => setOpen(true)} />
+        </div>
+        <div className="form-result" role="status" aria-live="polite">
+          {result === null ? null : t('Draft “{title}” validated locally.', { title: result })}
+        </div>
+      </ExamplePreview>
       <Drawer
         rootClassName="atlas-demo atlas-drawer-demo atlas-drawer-placement"
         title={t('Local draft')}
@@ -200,9 +203,11 @@ function WorkspaceNavigationExample() {
         {t('Left navigation panel')}
       </h3>
       <p>{t('Switch workspaces and move between sections without leaving the current page.')}</p>
-      <div className="control-row">
-        <AtlasButton text={t('Open workspace navigation')} onClick={() => setOpen(true)} />
-      </div>
+      <ExamplePreview id="drawer-workspace-navigation" title={t('Left navigation panel')}>
+        <div className="control-row">
+          <AtlasButton text={t('Open workspace navigation')} onClick={() => setOpen(true)} />
+        </div>
+      </ExamplePreview>
       <Drawer
         rootClassName="atlas-demo atlas-drawer-demo atlas-drawer-navigation"
         title={t('Workspace navigation')}
@@ -309,9 +314,11 @@ function OrderDetailsExample() {
         {t('Right detail panel')}
       </h3>
       <p>{t('Review an order, its activity and internal notes beside the list it came from.')}</p>
-      <div className="control-row">
-        <AtlasButton text={t('Open order details')} onClick={() => setOpen(true)} />
-      </div>
+      <ExamplePreview id="drawer-order-details" title={t('Right detail panel')}>
+        <div className="control-row">
+          <AtlasButton text={t('Open order details')} onClick={() => setOpen(true)} />
+        </div>
+      </ExamplePreview>
       <Drawer
         rootClassName="atlas-demo atlas-drawer-demo atlas-drawer-details"
         title={t('Order details')}

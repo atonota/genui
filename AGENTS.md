@@ -1,5 +1,27 @@
 # GenUI maintenance contract
 
+## Component preview workbench and detail layout — human task 2026-10-16
+
+Newest human task; it supersedes the dated Badge/radius scope counts and status
+text below as current scope, which stay history. See `docs/AGENTS.md` for the
+full entry. This entry claims no executed check.
+
+- All 40 component pages wrap every logical leaf example cluster once in the
+  shared `docs/src/react/ExamplePreview.tsx` workbench with a literal unique
+  route-prefixed id: Device preview iPhone/iPad/MacBook (default MacBook,
+  container widths 390/820/1280 fitted without scaling), Preview theme
+  Light/Dark (shared shell theme) and Example view Preview/Code. The preview
+  stays mounted; Code is fetched lazily from build-time `/preview-code/<id>.json`
+  produced by `tools/docs-preview-code.mjs` with privacy redaction.
+- Component detail: showcase column (usage, examples, code, astro,
+  accessibility, notes), reference column (api, resources) and the contents rail
+  outside the article. `docs/src/data/documentation-rules.json` and the existing
+  presentation test follow that order without new cases; the split starts at
+  100rem (1600px) and narrower layouts stack. `preview-workbench.css` is linked by
+  every component route.
+- Test accounting (authorized scope, not results): browser specs 27 -> 28 with
+  two cases; source test files 80 unchanged. No DONE/GREEN claim.
+
 ## Current authoritative project decision — 16 October 2026
 
 This entry is the current project decision. It supersedes older current-policy

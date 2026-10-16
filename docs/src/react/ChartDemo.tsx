@@ -2,6 +2,7 @@ import { useId, useState } from 'react';
 import { Select } from 'antd';
 import AtlasProvider from './AtlasProvider';
 import AtlasChart from './AtlasChart';
+import ExamplePreview from './ExamplePreview';
 import { TweakerSettings } from './AtlasTweaker';
 import { useI18n } from './useI18n';
 
@@ -17,36 +18,38 @@ function WeeklyActivity() {
     { id: 'completed', label: t('Completed'), values: [8, 12, 11] },
   ].filter(item => visible === 'both' || item.id === visible);
   return (
-    <section className="atlas-chart-demo">
-      <h3>{t('Planned and completed work')}</h3>
-      <TweakerSettings title="Chart settings">
-        <div className="atlas-tweaker-option">
-          <label htmlFor={seriesId}>{t('Series shown')}</label>
-          <Select
-            id={seriesId}
-            value={visible}
-            options={[
-              { value: 'both', label: t('Both series') },
-              { value: 'planned', label: t('Planned') },
-              { value: 'completed', label: t('Completed') },
-            ]}
-            onChange={(next: SeriesChoice) => setVisible(next)}
-          />
-        </div>
-      </TweakerSettings>
-      <AtlasChart
-        title={t('Weekly activity')}
-        description={
-          visible === 'both'
-            ? t(
-                'Tasks planned and completed each day. Both series share one scale that starts at zero.',
-              )
-            : t('Tasks each day on one scale that starts at zero.')
-        }
-        categories={[t('Mon'), t('Tue'), t('Wed')]}
-        series={series}
-      />
-    </section>
+    <ExamplePreview id="chart-weekly-activity" title={t('Planned and completed work')}>
+      <section className="atlas-chart-demo">
+        <h3>{t('Planned and completed work')}</h3>
+        <TweakerSettings title="Chart settings">
+          <div className="atlas-tweaker-option">
+            <label htmlFor={seriesId}>{t('Series shown')}</label>
+            <Select
+              id={seriesId}
+              value={visible}
+              options={[
+                { value: 'both', label: t('Both series') },
+                { value: 'planned', label: t('Planned') },
+                { value: 'completed', label: t('Completed') },
+              ]}
+              onChange={(next: SeriesChoice) => setVisible(next)}
+            />
+          </div>
+        </TweakerSettings>
+        <AtlasChart
+          title={t('Weekly activity')}
+          description={
+            visible === 'both'
+              ? t(
+                  'Tasks planned and completed each day. Both series share one scale that starts at zero.',
+                )
+              : t('Tasks each day on one scale that starts at zero.')
+          }
+          categories={[t('Mon'), t('Tue'), t('Wed')]}
+          series={series}
+        />
+      </section>
+    </ExamplePreview>
   );
 }
 

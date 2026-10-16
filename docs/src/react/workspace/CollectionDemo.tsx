@@ -1,9 +1,17 @@
-import { useLayoutEffect, useMemo, useRef, useState, type FormEvent } from 'react';
+import {
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ComponentProps,
+  type FormEvent,
+} from 'react';
 import { Checkbox, Select } from 'antd';
 import Input from '../AtlasInput';
 import { Drawer } from '../AtlasOverlay';
 import { DateField } from './kit/Fields';
 import AtlasProvider from '../AtlasProvider';
+import ExamplePreview from '../ExamplePreview';
 import AtlasButton from '../AtlasButton';
 import AtlasPill from '../AtlasPill';
 import AtlasSplitter from '../AtlasSplitter';
@@ -46,6 +54,23 @@ type Feedback = {
 type Preview = { signature: string; result: ReturnType<typeof bulkUpdate> };
 const tableViews = new Set<CollectionView>(['table', 'grouped', 'tree', 'editable']);
 const initialColumns = COLLECTION_COLUMNS.map(column => column.key);
+
+// Both routes share this demo; each keeps its own literal workbench ID.
+function CollectionWorkbench({
+  tableOnly,
+  ...frame
+}: ComponentProps<typeof WorkspaceFrame> & { tableOnly: boolean }) {
+  const workspace = <WorkspaceFrame {...frame} />;
+  return tableOnly ? (
+    <ExamplePreview id="data-table-workspace" title="Data table examples">
+      {workspace}
+    </ExamplePreview>
+  ) : (
+    <ExamplePreview id="collection-views-workspace" title="Collection view examples">
+      {workspace}
+    </ExamplePreview>
+  );
+}
 
 export function DataTableDemo({ documentation = false }: { documentation?: boolean } = {}) {
   return <CollectionDemo tableOnly initialProfile="desktop" documentation={documentation} />;
@@ -460,7 +485,8 @@ export default function CollectionDemo({
     );
   return (
     <AtlasProvider appearance={documentation ? 'docs' : undefined}>
-      <WorkspaceFrame
+      <CollectionWorkbench
+        tableOnly={tableOnly}
         profile={profile}
         onProfileChange={setProfile}
         title={tableOnly ? 'Data table examples' : 'Collection view examples'}
@@ -870,7 +896,7 @@ export default function CollectionDemo({
             </div>
           )}
         </Drawer>
-      </WorkspaceFrame>
+      </CollectionWorkbench>
     </AtlasProvider>
   );
 }

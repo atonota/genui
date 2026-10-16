@@ -1,5 +1,44 @@
 # Astro documentation maintenance contract
 
+## Component preview workbench and detail layout — human task 2026-10-16
+
+Newest human task; it supersedes the dated Badge/radius counts and status text
+below as current scope, which stay history. This entry claims no executed check.
+
+- Every logical leaf example cluster on all 40 component pages is wrapped once by
+  the default export of `src/react/ExamplePreview.tsx` (`{id,title,children}`)
+  with a literal, globally unique kebab-case id prefixed by its route. No dynamic
+  or loop ids, nested workbenches or route-level wrapper over several clusters;
+  navigation/category wrappers are excluded. Listy's 16 patterns and Badge's 10
+  groups are wrapped individually. Storybook/approved consumers pass through.
+- Controls: Device preview iPhone/iPad/MacBook (default MacBook; container widths
+  390/820/1280 fitted to the available width, never scaled, text never shrunk),
+  Preview theme Light/Dark (the shared shell theme for every group) and Example
+  view Preview/Code. Children never remount or re-key; Code hides the preview
+  without unmounting it. APG radio keyboard and Tab-only ringless focus.
+- Code lazily requests `/preview-code/<id>.json` only when chosen, generated at
+  build time by `../tools/docs-preview-code.mjs` and
+  `src/pages/preview-code/[id].json.ts` from authored JSX (Source excerpt with
+  source path/link, privacy and home-prefix redaction). Duplicate/dynamic ids fail
+  the build; a fetch failure shows an error with retry.
+- Detail layout: `article[data-component-detail]` holds the header and section
+  links, a `[data-component-showcase]` column (usage, examples, code, astro,
+  accessibility, notes) and a `[data-component-reference]` column (api, resources
+  as one continuous non-sticky stack). The contents rail stays outside the
+  article. `componentSections` in `src/data/documentation-rules.json` is now
+  usage → examples → code → astro → accessibility → notes → api → resources; the
+  structural gate and `tests/documentation-presentation.test.mjs` follow it with
+  no new cases. `src/components/shell/layout.css` splits the article from 100rem
+  (1600px) viewports and stacks below; 320px keeps the Contents disclosure. The
+  rail stays 15rem/16rem with the 16px container inset.
+- `preview-workbench.css` is in every component route's `routeSheets`, so SSR
+  links and copied Astro examples agree. Resources name the workbench adapter,
+  stylesheet, code endpoint and extractor; no GenUI capability is implied.
+- Test accounting (authorized scope, not results): browser specs 27 -> 28 with
+  `browser/component-preview.spec.ts`, 2 cases; source test files 80 unchanged,
+  the presentation test only updates its expected order. One final read-only
+  independent review of the actual diff and screenshots. No DONE/GREEN claim.
+
 ## Current authoritative project decision — 16 October 2026
 
 Current project decision; it supersedes older current prose, including the
@@ -81,8 +120,8 @@ component sections and frozen59. Badge is not a new registry entry.
   project typography and Outfit, with no font shrinking.
 - Existing layout standard governs the source owner's TOC repair: reported
   192px rail/padding zero becomes token gutters >=16px and readable rail
-  >=240px, natural labels, sticky overflow and mobile Details without page
-  overflow. Do not duplicate layout CSS here.
+  > =240px, natural labels, sticky overflow and mobile Details without page
+  > overflow. Do not duplicate layout CSS here.
 - Supplied local receipts report `/components` GET 404 -> 200, canonical slash
   and declared redirect source, plus a 51-page root build PASS. No checks were
   run in this proposal. Explicit Pages authorization is
@@ -1259,7 +1298,8 @@ docs/tests/card.test.mjs`, source motion and production route/style ownership.
 - `docs/src/data/documentation-rules.json` is the single machine-readable ECA
   source: page kinds (overview, guide, tokens, color-lab, decisions, legal,
   standard, component), the shared component section order usage → examples →
-  code → astro → api → accessibility → notes → resources, and stable ruleIds with
+  code → astro → accessibility → notes → api → resources (showcase, then the API
+  and resources reference column), and stable ruleIds with
   event/condition/action/severity. `/documentation/` publishes every declared rule,
   page type, section order, source map, admission workflow and verification limits.
   Foundation routes are listed per kind; component routes are classified from their

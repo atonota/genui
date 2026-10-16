@@ -94,6 +94,7 @@ import richMenuStyles from '../../styles/atlas-rich-menu.css?url';
 import chartStyles from '../../styles/atlas-chart.css?url';
 import listyStyles from '../../styles/atlas-listy.css?url';
 import badgeStyles from '../../styles/atlas-badge.css?url';
+import previewWorkbenchStyles from '../../styles/preview-workbench.css?url';
 export function getStaticPaths() {
   return components.map(component => ({ params: { slug: component.slug }, props: { component } }));
 }
@@ -156,6 +157,8 @@ const feedbackRoutes = ['toast', 'alert', 'notification', 'modal', 'popconfirm']
 const identityRoutes = ['data-table', 'collection-views', 'record-workspace'];
 const kitRoute = Boolean(featureSheet) || slug === 'record-workspace';
 const routeSheetRules: RouteSheetRule[] = [
+  // Every component route frames its examples with the shared preview workbench.
+  [true, 'preview-workbench.css', previewWorkbenchStyles],
   [['slider', 'record-workspace'].includes(slug), 'slider.css', sliderStyles],
   [slug === 'button', 'button-catalog.css', buttonCatalogStyles],
   [slug === 'pill', 'pill-catalog.css', pillCatalogStyles],
@@ -572,13 +575,15 @@ const resourceGroups = [
       'docs/src/pages/components/[slug].astro',
       'docs/src/layouts/DocsLayout.astro',
       'docs/src/components/DocumentationNav.astro',
+      'docs/src/pages/preview-code/[id].json.ts',
+      'tools/docs-preview-code.mjs',
     ],
   },
   {
     kind: 'adapter',
     label: 'React adapters',
     paths: sources
-      ? [sources.island.module + '.tsx', ...(sources.adapters ?? [])].map(
+      ? [sources.island.module + '.tsx', ...(sources.adapters ?? []), 'ExamplePreview.tsx'].map(
           file => 'docs/src/react/' + file,
         )
       : [],
@@ -588,6 +593,8 @@ const resourceGroups = [
     label: 'Styles and tokens',
     paths: [
       ...(sources?.styles ?? []).map(file => 'docs/src/styles/' + file),
+      'docs/src/styles/preview-workbench.css',
+      'docs/src/components/shell/layout.css',
       'docs/src/styles/docs.css',
       'docs/src/styles/documentation.css',
       'docs/src/theme.ts',
@@ -633,7 +640,7 @@ const nextComponent = catalogPosition >= 0 ? components.at(catalogPosition + 1) 
     ))}
   </Fragment>
   <div class="page-grid">
-    <article>
+    <article class="component-detail" data-component-detail>
       <PageBreadcrumb
         items={[{ label: 'Components', href: '/' }, { label: component.category }]}
         current={component.title}
@@ -649,228 +656,235 @@ const nextComponent = catalogPosition >= 0 ? components.at(catalogPosition + 1) 
         </a>
       </div>
       <DocumentationNav items={sectionItems} />
-      <section
-        id="usage"
-        class="doc-section"
-        data-doc-section="usage"
-        aria-labelledby="usage-title"
-      >
-        <h2 id="usage-title">
-          <span data-i18n="When to use">When to use</span>
-        </h2>
-        <ul>
-          {component.whenToUse.map(item => (
-            <li data-i18n={item}>{item}</li>
-          ))}
-        </ul>
-      </section>
-      <section
-        id="examples"
-        class="doc-section"
-        data-doc-section="examples"
-        aria-labelledby="examples-title"
-      >
-        <h2 id="examples-title">
-          <span data-i18n="Live examples">Live examples</span>
-        </h2>
-        <p class="section-intro">
-          <span data-i18n="Open Tweaker from the middle of the right edge to explore component settings and sizes.">
-            Open Tweaker from the middle of the right edge to explore component settings and sizes.
-          </span>
-        </p>
-        <div class="live-preview" data-doc-demo>
-          {component.slug === 'button' && <ButtonDemo documentation client:load />}
-          {component.slug === 'input' && <InputDemo documentation client:load />}
-          {component.slug === 'select' && <SelectDemo documentation client:load />}
-          {component.slug === 'pill' && <PillDemo documentation client:load />}
-          {component.slug === 'card' && <CardDemo documentation client:load />}
-          {component.slug === 'splitter' && <SplitterDemo documentation client:load />}
-          {component.slug === 'breadcrumb' && <BreadcrumbDemo documentation client:load />}
-          {component.slug === 'pagination' && <PaginationDemo documentation client:load />}
-          {component.slug === 'steps' && <StepsDemo documentation client:load />}
-          {component.slug === 'autocomplete' && <AutoCompleteDemo documentation client:load />}
-          {component.slug === 'cascader' && <CascaderDemo documentation client:load />}
-          {component.slug === 'dropdown' && <DropdownDemo documentation client:load />}
-          {component.slug === 'checkbox' && <CheckboxDemo documentation client:load />}
-          {component.slug === 'radio' && <RadioDemo documentation client:load />}
-          {component.slug === 'switch' && <SwitchDemo documentation client:load />}
-          {component.slug === 'slider' && <SliderDemo documentation client:load />}
-          {component.slug === 'accordion' && <AccordionDemo documentation client:load />}
-          {component.slug === 'form' && <FormDemo documentation client:load />}
-          {component.slug === 'drawer' && <DrawerDemo documentation client:load />}
-          {component.slug === 'empty-state' && <EmptyStateDemo documentation client:load />}
-          {component.slug === 'avatar' && <AvatarDemo documentation client:load />}
-          {component.slug === 'toast' && <ToastDemo documentation client:load />}
-          {component.slug === 'alert' && <AlertDemo documentation client:load />}
-          {component.slug === 'notification' && <NotificationDemo documentation client:load />}
-          {component.slug === 'modal' && <ModalDemo documentation client:load />}
-          {component.slug === 'popconfirm' && <PopconfirmDemo documentation client:load />}
-          {component.slug === 'date-time' && <DateTimeDemo documentation client:load />}
-          {component.slug === 'data-table' && <DataTableDemo documentation client:load />}
-          {component.slug === 'collection-views' && <CollectionDemo documentation client:load />}
-          {component.slug === 'record-details' && <RecordDetailsDemo documentation client:load />}
-          {component.slug === 'record-forms' && <RecordFormsDemo documentation client:load />}
-          {component.slug === 'record-workspace' && (
-            <ConnectedWorkspace documentation client:load />
-          )}
-          {component.slug === 'media' && <MediaDemo documentation client:load />}
-          {component.slug === 'content-patterns' && (
-            <ContentPatternsDemo documentation client:load />
-          )}
-          {component.slug === 'carousel' && <CarouselDemo documentation client:load />}
-          {component.slug === 'upload' && <UploadDemo documentation client:load />}
-          {component.slug === 'rich-menu' && <RichMenuDemo documentation client:load />}
-          {component.slug === 'chart' && <ChartDemo documentation client:load />}
-          {component.slug === 'listy' && <ListyDemo documentation client:load />}
-          {component.slug === 'badge' && <BadgeDemo documentation client:load />}
-        </div>
-        <noscript>
-          <p>
-            <span data-i18n="Example interactions require JavaScript. API documentation and usage code remain readable below.">
-              Example interactions require JavaScript. API documentation and usage code remain
-              readable below.
-            </span>
-          </p>
-        </noscript>
-      </section>
-      <section id="code" class="doc-section" data-doc-section="code" aria-labelledby="code-title">
-        <h2 id="code-title">
-          <span data-i18n="Usage code">Usage code</span>
-        </h2>
-        {component.examples.map(example => (
-          <div class="example-code">
-            <h3 data-i18n={example.title}>{example.title}</h3>
-            <p data-i18n={example.description}>{example.description}</p>
-            <CodeExample code={example.code} title={example.title} />
-          </div>
-        ))}
-      </section>
-      <section
-        id="astro"
-        class="doc-section"
-        data-doc-section="astro"
-        aria-labelledby="astro-title"
-      >
-        <h2 id="astro-title">
-          <span data-i18n="Astro integration">Astro integration</span>
-        </h2>
-        <p class="section-intro">
-          <span data-i18n="Astro renders this page as static HTML. The live example is one trusted React island: Astro passes serializable props, while React owns state, events and focus inside the island.">
-            Astro renders this page as static HTML. The live example is one trusted React island:
-            Astro passes serializable props, while React owns state, events and focus inside the
-            island.
-          </span>
-        </p>
-        {astroExample && <CodeExample code={astroExample} title="Astro page with a React island" />}
-        <p class="documentation-link">
-          <a href="/getting-started/#astro-integration">
-            <span data-i18n="Read the Astro integration guide">
-              Read the Astro integration guide
-            </span>
-          </a>
-        </p>
-      </section>
-      <section id="api" class="doc-section" data-doc-section="api" aria-labelledby="api-title">
-        <h2 id="api-title">API</h2>
-        <p class="section-intro">
-          <span data-i18n="Commonly used properties. See the official component reference for the full contract.">
-            Commonly used properties. See the official component reference for the full contract.
-          </span>
-        </p>
-        {component.apiDescription && (
-          <p data-i18n={component.apiDescription}>{component.apiDescription}</p>
-        )}
-        <ApiReference rows={component.api} label={component.title + ' API table'} />
-        {component.nativeApi && (
-          <>
-            <h3 data-i18n="Underlying Ant Design API">Underlying Ant Design API</h3>
-            <p data-i18n="These library settings are used inside the example. They are separate from the Atlas component props above.">
-              These library settings are used inside the example. They are separate from the Atlas
-              component props above.
-            </p>
-            <ApiReference rows={component.nativeApi} label="Ant Design API reference" />
-          </>
-        )}
-        <p class="documentation-link">
-          <a data-doc-official-reference href={component.sourceUrl}>
-            <span data-i18n="Official API reference">Official API reference</span>
-          </a>
-        </p>
-      </section>
-      <section
-        id="accessibility"
-        class="doc-section"
-        data-doc-section="accessibility"
-        aria-labelledby="accessibility-title"
-      >
-        <h2 id="accessibility-title">
-          <span data-i18n="Accessibility">Accessibility</span>
-        </h2>
-        <ul>
-          {component.accessibility.map(item => (
-            <li data-i18n={item}>{item}</li>
-          ))}
-        </ul>
-      </section>
-      <section
-        id="notes"
-        class="doc-section"
-        data-doc-section="notes"
-        aria-labelledby="notes-title"
-      >
-        <h2 id="notes-title">
-          <span data-i18n="Implementation notes">Implementation notes</span>
-        </h2>
-        <ul>
-          {component.notes.map(item => (
-            <li data-i18n={item}>{item}</li>
-          ))}
-        </ul>
-      </section>
-      <section
-        id="resources"
-        class="doc-section"
-        data-doc-section="resources"
-        aria-labelledby="resources-title"
-      >
-        <h2 id="resources-title">
-          <span data-i18n="Source and resources">Source and resources</span>
-        </h2>
-        <ul class="documentation-resources">
-          {resourceGroups.map(group => (
-            <li data-doc-resource={group.kind}>
-              <span data-i18n={group.label}>{group.label}</span>
-              {group.paths.map(path => {
-                const href = sourceHref(path);
-                return href ? (
-                  <a href={href} data-doc-source-link>
-                    <code data-doc-source>{path}</code>
-                  </a>
-                ) : (
-                  <code data-doc-source>{path}</code>
-                );
-              })}
-            </li>
-          ))}
-        </ul>
-        {sources?.capabilities?.length ? (
-          <p data-doc-capability-status>
-            <span data-i18n="Registered GenUI capabilities from this component family:">
-              Registered GenUI capabilities from this component family:
-            </span>{' '}
-            {sources.capabilities.map(name => (
-              <code>{name}</code>
+      <div class="component-showcase" data-component-showcase>
+        <section
+          id="usage"
+          class="doc-section"
+          data-doc-section="usage"
+          aria-labelledby="usage-title"
+        >
+          <h2 id="usage-title">
+            <span data-i18n="When to use">When to use</span>
+          </h2>
+          <ul>
+            {component.whenToUse.map(item => (
+              <li data-i18n={item}>{item}</li>
             ))}
-          </p>
-        ) : (
-          <p data-doc-capability-status>
-            <span data-i18n="No GenUI capability is registered for this component yet. A catalog entry or React export alone is not a GenUI capability.">
-              No GenUI capability is registered for this component yet. A catalog entry or React
-              export alone is not a GenUI capability.
+          </ul>
+        </section>
+        <section
+          id="examples"
+          class="doc-section"
+          data-doc-section="examples"
+          aria-labelledby="examples-title"
+        >
+          <h2 id="examples-title">
+            <span data-i18n="Live examples">Live examples</span>
+          </h2>
+          <p class="section-intro">
+            <span data-i18n="Open Tweaker from the middle of the right edge to explore component settings and sizes.">
+              Open Tweaker from the middle of the right edge to explore component settings and
+              sizes.
             </span>
           </p>
-        )}
-      </section>
+          <div class="live-preview" data-doc-demo>
+            {component.slug === 'button' && <ButtonDemo documentation client:load />}
+            {component.slug === 'input' && <InputDemo documentation client:load />}
+            {component.slug === 'select' && <SelectDemo documentation client:load />}
+            {component.slug === 'pill' && <PillDemo documentation client:load />}
+            {component.slug === 'card' && <CardDemo documentation client:load />}
+            {component.slug === 'splitter' && <SplitterDemo documentation client:load />}
+            {component.slug === 'breadcrumb' && <BreadcrumbDemo documentation client:load />}
+            {component.slug === 'pagination' && <PaginationDemo documentation client:load />}
+            {component.slug === 'steps' && <StepsDemo documentation client:load />}
+            {component.slug === 'autocomplete' && <AutoCompleteDemo documentation client:load />}
+            {component.slug === 'cascader' && <CascaderDemo documentation client:load />}
+            {component.slug === 'dropdown' && <DropdownDemo documentation client:load />}
+            {component.slug === 'checkbox' && <CheckboxDemo documentation client:load />}
+            {component.slug === 'radio' && <RadioDemo documentation client:load />}
+            {component.slug === 'switch' && <SwitchDemo documentation client:load />}
+            {component.slug === 'slider' && <SliderDemo documentation client:load />}
+            {component.slug === 'accordion' && <AccordionDemo documentation client:load />}
+            {component.slug === 'form' && <FormDemo documentation client:load />}
+            {component.slug === 'drawer' && <DrawerDemo documentation client:load />}
+            {component.slug === 'empty-state' && <EmptyStateDemo documentation client:load />}
+            {component.slug === 'avatar' && <AvatarDemo documentation client:load />}
+            {component.slug === 'toast' && <ToastDemo documentation client:load />}
+            {component.slug === 'alert' && <AlertDemo documentation client:load />}
+            {component.slug === 'notification' && <NotificationDemo documentation client:load />}
+            {component.slug === 'modal' && <ModalDemo documentation client:load />}
+            {component.slug === 'popconfirm' && <PopconfirmDemo documentation client:load />}
+            {component.slug === 'date-time' && <DateTimeDemo documentation client:load />}
+            {component.slug === 'data-table' && <DataTableDemo documentation client:load />}
+            {component.slug === 'collection-views' && <CollectionDemo documentation client:load />}
+            {component.slug === 'record-details' && <RecordDetailsDemo documentation client:load />}
+            {component.slug === 'record-forms' && <RecordFormsDemo documentation client:load />}
+            {component.slug === 'record-workspace' && (
+              <ConnectedWorkspace documentation client:load />
+            )}
+            {component.slug === 'media' && <MediaDemo documentation client:load />}
+            {component.slug === 'content-patterns' && (
+              <ContentPatternsDemo documentation client:load />
+            )}
+            {component.slug === 'carousel' && <CarouselDemo documentation client:load />}
+            {component.slug === 'upload' && <UploadDemo documentation client:load />}
+            {component.slug === 'rich-menu' && <RichMenuDemo documentation client:load />}
+            {component.slug === 'chart' && <ChartDemo documentation client:load />}
+            {component.slug === 'listy' && <ListyDemo documentation client:load />}
+            {component.slug === 'badge' && <BadgeDemo documentation client:load />}
+          </div>
+          <noscript>
+            <p>
+              <span data-i18n="Example interactions require JavaScript. API documentation and usage code remain readable below.">
+                Example interactions require JavaScript. API documentation and usage code remain
+                readable below.
+              </span>
+            </p>
+          </noscript>
+        </section>
+        <section id="code" class="doc-section" data-doc-section="code" aria-labelledby="code-title">
+          <h2 id="code-title">
+            <span data-i18n="Usage code">Usage code</span>
+          </h2>
+          {component.examples.map(example => (
+            <div class="example-code">
+              <h3 data-i18n={example.title}>{example.title}</h3>
+              <p data-i18n={example.description}>{example.description}</p>
+              <CodeExample code={example.code} title={example.title} />
+            </div>
+          ))}
+        </section>
+        <section
+          id="astro"
+          class="doc-section"
+          data-doc-section="astro"
+          aria-labelledby="astro-title"
+        >
+          <h2 id="astro-title">
+            <span data-i18n="Astro integration">Astro integration</span>
+          </h2>
+          <p class="section-intro">
+            <span data-i18n="Astro renders this page as static HTML. The live example is one trusted React island: Astro passes serializable props, while React owns state, events and focus inside the island.">
+              Astro renders this page as static HTML. The live example is one trusted React island:
+              Astro passes serializable props, while React owns state, events and focus inside the
+              island.
+            </span>
+          </p>
+          {astroExample && (
+            <CodeExample code={astroExample} title="Astro page with a React island" />
+          )}
+          <p class="documentation-link">
+            <a href="/getting-started/#astro-integration">
+              <span data-i18n="Read the Astro integration guide">
+                Read the Astro integration guide
+              </span>
+            </a>
+          </p>
+        </section>
+        <section
+          id="accessibility"
+          class="doc-section"
+          data-doc-section="accessibility"
+          aria-labelledby="accessibility-title"
+        >
+          <h2 id="accessibility-title">
+            <span data-i18n="Accessibility">Accessibility</span>
+          </h2>
+          <ul>
+            {component.accessibility.map(item => (
+              <li data-i18n={item}>{item}</li>
+            ))}
+          </ul>
+        </section>
+        <section
+          id="notes"
+          class="doc-section"
+          data-doc-section="notes"
+          aria-labelledby="notes-title"
+        >
+          <h2 id="notes-title">
+            <span data-i18n="Implementation notes">Implementation notes</span>
+          </h2>
+          <ul>
+            {component.notes.map(item => (
+              <li data-i18n={item}>{item}</li>
+            ))}
+          </ul>
+        </section>
+      </div>
+      <div class="component-reference" data-component-reference>
+        <section id="api" class="doc-section" data-doc-section="api" aria-labelledby="api-title">
+          <h2 id="api-title">API</h2>
+          <p class="section-intro">
+            <span data-i18n="Commonly used properties. See the official component reference for the full contract.">
+              Commonly used properties. See the official component reference for the full contract.
+            </span>
+          </p>
+          {component.apiDescription && (
+            <p data-i18n={component.apiDescription}>{component.apiDescription}</p>
+          )}
+          <ApiReference rows={component.api} label={component.title + ' API table'} />
+          {component.nativeApi && (
+            <>
+              <h3 data-i18n="Underlying Ant Design API">Underlying Ant Design API</h3>
+              <p data-i18n="These library settings are used inside the example. They are separate from the Atlas component props above.">
+                These library settings are used inside the example. They are separate from the Atlas
+                component props above.
+              </p>
+              <ApiReference rows={component.nativeApi} label="Ant Design API reference" />
+            </>
+          )}
+          <p class="documentation-link">
+            <a data-doc-official-reference href={component.sourceUrl}>
+              <span data-i18n="Official API reference">Official API reference</span>
+            </a>
+          </p>
+        </section>
+        <section
+          id="resources"
+          class="doc-section"
+          data-doc-section="resources"
+          aria-labelledby="resources-title"
+        >
+          <h2 id="resources-title">
+            <span data-i18n="Source and resources">Source and resources</span>
+          </h2>
+          <ul class="documentation-resources">
+            {resourceGroups.map(group => (
+              <li data-doc-resource={group.kind}>
+                <span data-i18n={group.label}>{group.label}</span>
+                {group.paths.map(path => {
+                  const href = sourceHref(path);
+                  return href ? (
+                    <a href={href} data-doc-source-link>
+                      <code data-doc-source>{path}</code>
+                    </a>
+                  ) : (
+                    <code data-doc-source>{path}</code>
+                  );
+                })}
+              </li>
+            ))}
+          </ul>
+          {sources?.capabilities?.length ? (
+            <p data-doc-capability-status>
+              <span data-i18n="Registered GenUI capabilities from this component family:">
+                Registered GenUI capabilities from this component family:
+              </span>{' '}
+              {sources.capabilities.map(name => (
+                <code>{name}</code>
+              ))}
+            </p>
+          ) : (
+            <p data-doc-capability-status>
+              <span data-i18n="No GenUI capability is registered for this component yet. A catalog entry or React export alone is not a GenUI capability.">
+                No GenUI capability is registered for this component yet. A catalog entry or React
+                export alone is not a GenUI capability.
+              </span>
+            </p>
+          )}
+        </section>
+      </div>
       <nav
         class="page-neighbors"
         aria-label="Other components"

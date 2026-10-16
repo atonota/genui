@@ -5,6 +5,7 @@ import AtlasBadge from './AtlasBadge';
 import AtlasButton from './AtlasButton';
 import AtlasAvatar from './AtlasAvatar';
 import AtlasIcon from './AtlasIcon';
+import ExamplePreview from './ExamplePreview';
 import Segmented from './AtlasSegmented';
 import { TweakerSettings } from './AtlasTweaker';
 import { useI18n } from './useI18n';
@@ -39,15 +40,20 @@ const placementLabels: Record<BadgePlacement, string> = {
   'bottom-start': 'Bottom start',
 };
 
-/** A named example group; layout comes from the shared AtlasBadge stylesheet. */
+/** A named example group; each call site wraps its row in its own literal ExamplePreview. */
 function Group({ title, children }: { title: string; children: ReactNode }) {
   const id = useId();
   return (
     <section className="atlas-badge-demo-group" aria-labelledby={id}>
       <h3 id={id}>{title}</h3>
-      <div className="atlas-badge-demo-row">{children}</div>
+      {children}
     </section>
   );
+}
+
+/** One row of example cases; layout comes from the shared AtlasBadge stylesheet. */
+function Row({ children }: { children: ReactNode }) {
+  return <div className="atlas-badge-demo-row">{children}</div>;
 }
 
 /** Stable browser-test hook around one example case. */
@@ -145,215 +151,283 @@ function BadgeExamples() {
         </div>
       </TweakerSettings>
       <Group title={t('Badge playground')}>
-        <Case id="playground">
-          <AtlasBadge kind="label" size={size} variant={variant} tone={tone} label={t('Preview')} />
-          <AtlasBadge
-            kind="count"
-            label={t('Notifications')}
-            size={size}
-            variant={variant}
-            tone={tone}
-            count={previewCount}
-            showZero={showZero}
-            placement={placement}
-          >
-            <AtlasAvatar name="Deniz Kaya" />
-          </AtlasBadge>
-        </Case>
-      </Group>
-      <Group title={t('Badge sizes')}>
-        {sizes.map(value => (
-          <Case key={value} id={'size-' + value}>
-            <AtlasBadge kind="label" size={value} tone="brand" label={t('Live')} />
-            <span>{heights[value]} px</span>
-          </Case>
-        ))}
-      </Group>
-      <Group title={t('Variants')}>
-        {variants.map(value => (
-          <Case key={value} id={'variant-' + value}>
-            <AtlasBadge kind="label" variant={value} tone="brand" label={t(variantLabels[value])} />
-          </Case>
-        ))}
-        <Case id="icons">
-          <AtlasBadge
-            kind="label"
-            tone="brand"
-            leading={<AtlasIcon name="check" />}
-            label={t('Live')}
-          />
-          <AtlasBadge
-            kind="label"
-            variant="soft"
-            tone="info"
-            trailing={<AtlasIcon name="settings" />}
-            label={t('Export request')}
-          />
-        </Case>
-      </Group>
-      <Group title={t('Statuses')}>
-        <Case id="status-success">
-          <AtlasBadge
-            kind="label"
-            variant="soft"
-            tone="success"
-            leading={<AtlasIcon name="check" />}
-            label={t('Paid')}
-          />
-        </Case>
-        <Case id="status-warning">
-          <AtlasBadge
-            kind="label"
-            variant="soft"
-            tone="warning"
-            leading={<AtlasIcon name="minus" />}
-            label={t('Refunded')}
-          />
-        </Case>
-        <Case id="status-danger">
-          <AtlasBadge
-            kind="label"
-            variant="soft"
-            tone="danger"
-            leading={<AtlasIcon name="x" />}
-            label={t('Failed')}
-          />
-        </Case>
-      </Group>
-      <Group title={t('Counts and dots')}>
-        <Case id="count">
-          <AtlasBadge kind="count" tone="danger" count={8} label={t('Notifications')} />
-          <AtlasBadge kind="count" tone="danger" count={99} label={t('Notifications')} />
-        </Case>
-        <Case id="count-overflow">
-          <AtlasBadge
-            kind="count"
-            tone="danger"
-            count={41}
-            overflowCount={20}
-            label={t('Notifications')}
-          />
-        </Case>
-        <Case id="count-zero">
-          <AtlasBadge kind="count" tone="neutral" count={0} showZero label={t('Notifications')} />
-        </Case>
-        <Case id="dot">
-          {sizes.map(value => (
-            <AtlasBadge key={value} kind="dot" size={value} tone="success" label={t('Online')} />
-          ))}
-          <span>{t('Online')}</span>
-        </Case>
-        <Case id="icon-only">
-          <AtlasBadge kind="label" tone="info" label={t('Euro')} hideLabel leading="€" />
-        </Case>
-      </Group>
-      <Group title={t('Dismissible label')}>
-        <Case id="dismissible">
-          {euroVisible ? (
-            <span ref={euroHost}>
+        <ExamplePreview id="badge-playground" title={t('Badge playground')}>
+          <Row>
+            <Case id="playground">
               <AtlasBadge
                 kind="label"
+                size={size}
+                variant={variant}
+                tone={tone}
+                label={t('Preview')}
+              />
+              <AtlasBadge
+                kind="count"
+                label={t('Notifications')}
+                size={size}
+                variant={variant}
+                tone={tone}
+                count={previewCount}
+                showZero={showZero}
+                placement={placement}
+              >
+                <AtlasAvatar name="Deniz Kaya" />
+              </AtlasBadge>
+            </Case>
+          </Row>
+        </ExamplePreview>
+      </Group>
+      <Group title={t('Badge sizes')}>
+        <ExamplePreview id="badge-sizes" title={t('Badge sizes')}>
+          <Row>
+            {sizes.map(value => (
+              <Case key={value} id={'size-' + value}>
+                <AtlasBadge kind="label" size={value} tone="brand" label={t('Live')} />
+                <span>{heights[value]} px</span>
+              </Case>
+            ))}
+          </Row>
+        </ExamplePreview>
+      </Group>
+      <Group title={t('Variants')}>
+        <ExamplePreview id="badge-variants" title={t('Variants')}>
+          <Row>
+            {variants.map(value => (
+              <Case key={value} id={'variant-' + value}>
+                <AtlasBadge
+                  kind="label"
+                  variant={value}
+                  tone="brand"
+                  label={t(variantLabels[value])}
+                />
+              </Case>
+            ))}
+            <Case id="icons">
+              <AtlasBadge
+                kind="label"
+                tone="brand"
+                leading={<AtlasIcon name="check" />}
+                label={t('Live')}
+              />
+              <AtlasBadge
+                kind="label"
+                variant="soft"
+                tone="info"
+                trailing={<AtlasIcon name="settings" />}
+                label={t('Export request')}
+              />
+            </Case>
+          </Row>
+        </ExamplePreview>
+      </Group>
+      <Group title={t('Statuses')}>
+        <ExamplePreview id="badge-statuses" title={t('Statuses')}>
+          <Row>
+            <Case id="status-success">
+              <AtlasBadge
+                kind="label"
+                variant="soft"
+                tone="success"
+                leading={<AtlasIcon name="check" />}
+                label={t('Paid')}
+              />
+            </Case>
+            <Case id="status-warning">
+              <AtlasBadge
+                kind="label"
+                variant="soft"
+                tone="warning"
+                leading={<AtlasIcon name="minus" />}
+                label={t('Refunded')}
+              />
+            </Case>
+            <Case id="status-danger">
+              <AtlasBadge
+                kind="label"
+                variant="soft"
+                tone="danger"
+                leading={<AtlasIcon name="x" />}
+                label={t('Failed')}
+              />
+            </Case>
+          </Row>
+        </ExamplePreview>
+      </Group>
+      <Group title={t('Counts and dots')}>
+        <ExamplePreview id="badge-counts" title={t('Counts and dots')}>
+          <Row>
+            <Case id="count">
+              <AtlasBadge kind="count" tone="danger" count={8} label={t('Notifications')} />
+              <AtlasBadge kind="count" tone="danger" count={99} label={t('Notifications')} />
+            </Case>
+            <Case id="count-overflow">
+              <AtlasBadge
+                kind="count"
+                tone="danger"
+                count={41}
+                overflowCount={20}
+                label={t('Notifications')}
+              />
+            </Case>
+            <Case id="count-zero">
+              <AtlasBadge
+                kind="count"
                 tone="neutral"
-                label={t('Euro')}
-                closeLabel={t('Remove Euro')}
-                onClose={() => {
-                  focusTarget.current = 'restore';
-                  setEuroVisible(false);
-                }}
+                count={0}
+                showZero
+                label={t('Notifications')}
               />
-            </span>
-          ) : (
-            <span ref={restoreHost}>
-              <AtlasButton
-                text={t('Restore badge')}
-                fill="outline"
-                onClick={() => {
-                  focusTarget.current = 'remove';
-                  setEuroVisible(true);
-                }}
-              />
-            </span>
-          )}
-        </Case>
+            </Case>
+            <Case id="dot">
+              {sizes.map(value => (
+                <AtlasBadge
+                  key={value}
+                  kind="dot"
+                  size={value}
+                  tone="success"
+                  label={t('Online')}
+                />
+              ))}
+              <span>{t('Online')}</span>
+            </Case>
+            <Case id="icon-only">
+              <AtlasBadge kind="label" tone="info" label={t('Euro')} hideLabel leading="€" />
+            </Case>
+          </Row>
+        </ExamplePreview>
+      </Group>
+      <Group title={t('Dismissible label')}>
+        <ExamplePreview id="badge-dismissible" title={t('Dismissible label')}>
+          <Row>
+            <Case id="dismissible">
+              {euroVisible ? (
+                <span ref={euroHost}>
+                  <AtlasBadge
+                    kind="label"
+                    tone="neutral"
+                    label={t('Euro')}
+                    closeLabel={t('Remove Euro')}
+                    onClose={() => {
+                      focusTarget.current = 'restore';
+                      setEuroVisible(false);
+                    }}
+                  />
+                </span>
+              ) : (
+                <span ref={restoreHost}>
+                  <AtlasButton
+                    text={t('Restore badge')}
+                    fill="outline"
+                    onClick={() => {
+                      focusTarget.current = 'remove';
+                      setEuroVisible(true);
+                    }}
+                  />
+                </span>
+              )}
+            </Case>
+          </Row>
+        </ExamplePreview>
       </Group>
       <Group title={t('Notification counter')}>
-        <Case id="dynamic-count">
-          <AtlasBadge kind="count" tone="danger" count={notifications} label={t('Notifications')}>
-            <AtlasButton text={t('Inbox')} fill="outline" />
-          </AtlasBadge>
-        </Case>
-        <AtlasButton
-          text={t('Add notification')}
-          fill="tint"
-          onClick={() => setNotifications(value => value + 1)}
-        />
-        <AtlasButton
-          text={t('Remove notification')}
-          fill="outline"
-          disabled={notifications === 0}
-          onClick={() => setNotifications(value => Math.max(0, value - 1))}
-        />
-        <AtlasButton
-          text={t('Clear notifications')}
-          fill="text"
-          disabled={notifications === 0}
-          onClick={() => setNotifications(0)}
-        />
-        <p role="status" aria-live="polite">
-          {t('Unread notifications')}: {notifications}
-        </p>
+        <ExamplePreview id="badge-notification-counter" title={t('Notification counter')}>
+          <Row>
+            <Case id="dynamic-count">
+              <AtlasBadge
+                kind="count"
+                tone="danger"
+                count={notifications}
+                label={t('Notifications')}
+              >
+                <AtlasButton text={t('Inbox')} fill="outline" />
+              </AtlasBadge>
+            </Case>
+            <AtlasButton
+              text={t('Add notification')}
+              fill="tint"
+              onClick={() => setNotifications(value => value + 1)}
+            />
+            <AtlasButton
+              text={t('Remove notification')}
+              fill="outline"
+              disabled={notifications === 0}
+              onClick={() => setNotifications(value => Math.max(0, value - 1))}
+            />
+            <AtlasButton
+              text={t('Clear notifications')}
+              fill="text"
+              disabled={notifications === 0}
+              onClick={() => setNotifications(0)}
+            />
+            <p role="status" aria-live="polite">
+              {t('Unread notifications')}: {notifications}
+            </p>
+          </Row>
+        </ExamplePreview>
       </Group>
       <Group title={t('Attached badges')}>
-        <Case id="attached-button">
-          <AtlasBadge kind="count" tone="danger" count={3} label={t('Notifications')}>
-            <AtlasButton text={t('Messages')} />
-          </AtlasBadge>
-        </Case>
-        <Case id="attached-avatar">
-          <AtlasBadge kind="count" tone="danger" count={2} label={t('Notifications')}>
-            <AtlasAvatar name="Deniz Kaya" />
-          </AtlasBadge>
-        </Case>
-        <Case id="attached-verified">
-          <AtlasBadge
-            kind="count"
-            tone="success"
-            count={<AtlasIcon name="check" />}
-            label={t('Verified')}
-          >
-            <AtlasAvatar name="Deniz Kaya" />
-          </AtlasBadge>
-        </Case>
-        <Case id="attached-hot">
-          <AtlasBadge kind="count" tone="danger" count="HOT" label={t('Offer')}>
-            <AtlasButton text={t('Offers')} />
-          </AtlasBadge>
-        </Case>
+        <ExamplePreview id="badge-attached" title={t('Attached badges')}>
+          <Row>
+            <Case id="attached-button">
+              <AtlasBadge kind="count" tone="danger" count={3} label={t('Notifications')}>
+                <AtlasButton text={t('Messages')} />
+              </AtlasBadge>
+            </Case>
+            <Case id="attached-avatar">
+              <AtlasBadge kind="count" tone="danger" count={2} label={t('Notifications')}>
+                <AtlasAvatar name="Deniz Kaya" />
+              </AtlasBadge>
+            </Case>
+            <Case id="attached-verified">
+              <AtlasBadge
+                kind="count"
+                tone="success"
+                count={<AtlasIcon name="check" />}
+                label={t('Verified')}
+              >
+                <AtlasAvatar name="Deniz Kaya" />
+              </AtlasBadge>
+            </Case>
+            <Case id="attached-hot">
+              <AtlasBadge kind="count" tone="danger" count="HOT" label={t('Offer')}>
+                <AtlasButton text={t('Offers')} />
+              </AtlasBadge>
+            </Case>
+          </Row>
+        </ExamplePreview>
       </Group>
       <Group title={t('Count positions')}>
-        {placements.map(value => (
-          <Case key={value} id={'placement-' + value}>
-            <AtlasBadge
-              kind="count"
-              tone="danger"
-              count={3}
-              placement={value}
-              label={t('Notifications')}
-            >
-              <AtlasButton text={t(placementLabels[value])} depth="flat" fill="outline" />
-            </AtlasBadge>
-          </Case>
-        ))}
+        <ExamplePreview id="badge-count-positions" title={t('Count positions')}>
+          <Row>
+            {placements.map(value => (
+              <Case key={value} id={'placement-' + value}>
+                <AtlasBadge
+                  kind="count"
+                  tone="danger"
+                  count={3}
+                  placement={value}
+                  label={t('Notifications')}
+                >
+                  <AtlasButton text={t(placementLabels[value])} depth="flat" fill="outline" />
+                </AtlasBadge>
+              </Case>
+            ))}
+          </Row>
+        </ExamplePreview>
       </Group>
       <Group title={t('Ribbon')}>
-        <Case id="ribbon">
-          <AtlasBadge kind="ribbon" tone="brand" label={t('Live')}>
-            <section className="atlas-badge-demo-ribbon-host" aria-labelledby={ribbonId}>
-              <h4 id={ribbonId}>{t('Release notes')}</h4>
-              <p>{t('Ready for review in this local example.')}</p>
-            </section>
-          </AtlasBadge>
-        </Case>
+        <ExamplePreview id="badge-ribbon" title={t('Ribbon')}>
+          <Row>
+            <Case id="ribbon">
+              <AtlasBadge kind="ribbon" tone="brand" label={t('Live')}>
+                <section className="atlas-badge-demo-ribbon-host" aria-labelledby={ribbonId}>
+                  <h4 id={ribbonId}>{t('Release notes')}</h4>
+                  <p>{t('Ready for review in this local example.')}</p>
+                </section>
+              </AtlasBadge>
+            </Case>
+          </Row>
+        </ExamplePreview>
       </Group>
     </div>
   );

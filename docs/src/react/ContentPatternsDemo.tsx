@@ -4,6 +4,7 @@ import AtlasProvider from './AtlasProvider';
 import AtlasAvatarGroup from './AtlasAvatarGroup';
 import AtlasIconList from './AtlasIconList';
 import AtlasQuote from './AtlasQuote';
+import ExamplePreview from './ExamplePreview';
 import { TweakerSettings } from './AtlasTweaker';
 import { useI18n } from './useI18n';
 
@@ -42,41 +43,47 @@ function ContentPatterns() {
           <Switch id={descriptionsId} checked={descriptions} onChange={setDescriptions} />
         </div>
       </TweakerSettings>
-      <section className="atlas-content-pattern" aria-labelledby={peopleId}>
-        <h3 id={peopleId}>{t('People on this project')}</h3>
-        <AtlasAvatarGroup people={people.slice(0, shown)} />
-      </section>
-      <section className="atlas-content-pattern" aria-labelledby={checklistId}>
-        <h3 id={checklistId}>{t('Project checklist')}</h3>
-        <AtlasIconList
-          items={[
-            {
-              id: 'define',
-              title: t('Define the task'),
-              description: descriptions
-                ? t('Name who it serves and what a good outcome looks like.')
-                : undefined,
-              icon: 'arrowRight',
-            },
-            {
-              id: 'review',
-              title: t('Review the result'),
-              description: descriptions
-                ? t('Compare the outcome with the task before adding more interface.')
-                : undefined,
-              icon: 'arrowRight',
-            },
-          ]}
-        />
-      </section>
-      <section className="atlas-content-pattern" aria-labelledby={quoteId}>
-        <h3 id={quoteId}>{t('Team quotation')}</h3>
-        <AtlasQuote
-          quote={t('We start with the task, then choose the simplest useful interface.')}
-          attribution={t('Atlas demo team')}
-          context={t('Fictional example')}
-        />
-      </section>
+      <ExamplePreview id="content-patterns-people" title={t('People on this project')}>
+        <section className="atlas-content-pattern" aria-labelledby={peopleId}>
+          <h3 id={peopleId}>{t('People on this project')}</h3>
+          <AtlasAvatarGroup people={people.slice(0, shown)} />
+        </section>
+      </ExamplePreview>
+      <ExamplePreview id="content-patterns-checklist" title={t('Project checklist')}>
+        <section className="atlas-content-pattern" aria-labelledby={checklistId}>
+          <h3 id={checklistId}>{t('Project checklist')}</h3>
+          <AtlasIconList
+            items={[
+              {
+                id: 'define',
+                title: t('Define the task'),
+                description: descriptions
+                  ? t('Name who it serves and what a good outcome looks like.')
+                  : undefined,
+                icon: 'arrowRight',
+              },
+              {
+                id: 'review',
+                title: t('Review the result'),
+                description: descriptions
+                  ? t('Compare the outcome with the task before adding more interface.')
+                  : undefined,
+                icon: 'arrowRight',
+              },
+            ]}
+          />
+        </section>
+      </ExamplePreview>
+      <ExamplePreview id="content-patterns-quotation" title={t('Team quotation')}>
+        <section className="atlas-content-pattern" aria-labelledby={quoteId}>
+          <h3 id={quoteId}>{t('Team quotation')}</h3>
+          <AtlasQuote
+            quote={t('We start with the task, then choose the simplest useful interface.')}
+            attribution={t('Atlas demo team')}
+            context={t('Fictional example')}
+          />
+        </section>
+      </ExamplePreview>
     </div>
   );
 }

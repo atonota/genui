@@ -4,6 +4,7 @@ import AtlasProvider from './AtlasProvider';
 import AtlasEmptyState from './AtlasEmptyState';
 import { TweakerSettings } from './AtlasTweaker';
 import AtlasInput from './AtlasInput';
+import ExamplePreview from './ExamplePreview';
 import { useI18n } from './useI18n';
 import RecordCollection from './workspace/kit/RecordCollection';
 import type { FieldDefinition, ProjectionState, QueryState } from './workspace/kit/contracts';
@@ -46,35 +47,37 @@ function FirstUseExample() {
       <h3 id={headingId} className="variant-heading">
         {t('First-use collection')}
       </h3>
-      {created && (
-        <p ref={resultRef} className="atlas-empty-state-result" tabIndex={-1}>
-          {t('First local record created')}
-        </p>
-      )}
-      <RecordCollection
-        title="First-use records"
-        records={records}
-        fields={exampleFields}
-        query={query}
-        onQueryChange={setQuery}
-        activeId={activeId}
-        onActiveIdChange={setActiveId}
-        checkedIds={checkedIds}
-        onCheckedIdsChange={setCheckedIds}
-        projection={projection}
-        onProjectionChange={setProjection}
-        view="list"
-        state={
-          created
-            ? undefined
-            : {
-                kind: 'empty',
-                message: 'Create your first record to start organizing this collection.',
-                recoveryLabel: 'Create first record',
-                onRecover: () => setCreated(true),
-              }
-        }
-      />
+      <ExamplePreview id="empty-state-first-use" title={t('First-use collection')}>
+        {created && (
+          <p ref={resultRef} className="atlas-empty-state-result" tabIndex={-1}>
+            {t('First local record created')}
+          </p>
+        )}
+        <RecordCollection
+          title="First-use records"
+          records={records}
+          fields={exampleFields}
+          query={query}
+          onQueryChange={setQuery}
+          activeId={activeId}
+          onActiveIdChange={setActiveId}
+          checkedIds={checkedIds}
+          onCheckedIdsChange={setCheckedIds}
+          projection={projection}
+          onProjectionChange={setProjection}
+          view="list"
+          state={
+            created
+              ? undefined
+              : {
+                  kind: 'empty',
+                  message: 'Create your first record to start organizing this collection.',
+                  recoveryLabel: 'Create first record',
+                  onRecover: () => setCreated(true),
+                }
+          }
+        />
+      </ExamplePreview>
     </section>
   );
 }
@@ -98,29 +101,31 @@ function FilteredExample({ showDescription }: { showDescription: boolean }) {
       <h3 id={headingId} className="variant-heading">
         {t('Filtered collection')}
       </h3>
-      <div className="form-layout-control">
-        <label htmlFor={inputId}>{t('Search example records')}</label>
-        <AtlasInput id={inputId} value={query} onChange={event => setQuery(event.target.value)} />
-      </div>
-      {matches.length > 0 ? (
-        <ul>
-          {matches.map(record => (
-            <li key={record}>{record}</li>
-          ))}
-        </ul>
-      ) : (
-        <AtlasEmptyState
-          kind="no-match"
-          title={t('No matching records')}
-          description={
-            showDescription
-              ? t('Change your search or clear it to see the available records.')
-              : undefined
-          }
-          actionLabel={t('Clear search')}
-          onAction={clear}
-        />
-      )}
+      <ExamplePreview id="empty-state-filtered" title={t('Filtered collection')}>
+        <div className="form-layout-control">
+          <label htmlFor={inputId}>{t('Search example records')}</label>
+          <AtlasInput id={inputId} value={query} onChange={event => setQuery(event.target.value)} />
+        </div>
+        {matches.length > 0 ? (
+          <ul>
+            {matches.map(record => (
+              <li key={record}>{record}</li>
+            ))}
+          </ul>
+        ) : (
+          <AtlasEmptyState
+            kind="no-match"
+            title={t('No matching records')}
+            description={
+              showDescription
+                ? t('Change your search or clear it to see the available records.')
+                : undefined
+            }
+            actionLabel={t('Clear search')}
+            onAction={clear}
+          />
+        )}
+      </ExamplePreview>
     </section>
   );
 }
@@ -135,26 +140,30 @@ function UnavailableExample({ showDescription }: { showDescription: boolean }) {
       <h3 id={headingId} className="variant-heading">
         {t('Unavailable collection')}
       </h3>
-      {restored ? (
-        <>
-          <p ref={resultRef} className="atlas-empty-state-result" tabIndex={-1}>
-            {t('Local records restored')}
-          </p>
-          <ul>
-            <li>{t(exampleRecord)}</li>
-          </ul>
-        </>
-      ) : (
-        <AtlasEmptyState
-          kind="error"
-          title={t('The supplied records could not be shown')}
-          description={
-            showDescription ? t('This local example can restore its supplied records.') : undefined
-          }
-          actionLabel={t('Try again')}
-          onAction={() => setRestored(true)}
-        />
-      )}
+      <ExamplePreview id="empty-state-unavailable" title={t('Unavailable collection')}>
+        {restored ? (
+          <>
+            <p ref={resultRef} className="atlas-empty-state-result" tabIndex={-1}>
+              {t('Local records restored')}
+            </p>
+            <ul>
+              <li>{t(exampleRecord)}</li>
+            </ul>
+          </>
+        ) : (
+          <AtlasEmptyState
+            kind="error"
+            title={t('The supplied records could not be shown')}
+            description={
+              showDescription
+                ? t('This local example can restore its supplied records.')
+                : undefined
+            }
+            actionLabel={t('Try again')}
+            onAction={() => setRestored(true)}
+          />
+        )}
+      </ExamplePreview>
     </section>
   );
 }

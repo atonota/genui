@@ -1,5 +1,34 @@
 # Atlas UX standards and complete reference crosswalk
 
+## Component preview workbench and detail layout — 16 October 2026
+
+Newest human task; it supersedes the dated Badge/radius scope counts below as
+current scope. This read-only source proposal is not evidence of executed checks.
+
+- Every logical example cluster on all 40 component pages has one shared
+  [ExamplePreview](src/react/ExamplePreview.tsx) workbench with a literal unique
+  id: Device preview (iPhone/iPad/MacBook, default MacBook, container widths
+  390/820/1280 fitted without scaling or smaller text), Preview theme (Light/Dark,
+  the shared shell theme) and Example view (Preview/Code). The preview stays
+  mounted; Code is fetched lazily as an authored source excerpt. It is a container
+  illustration, not physical device or browser emulation.
+- Component detail pages place usage, examples, code, Astro, accessibility and
+  notes in a showcase column and API plus resources in a reference column, with
+  the contents rail outside the article. The column split starts at 100rem
+  (1600px) viewports; narrower layouts stack and 320px keeps the Contents
+  disclosure. Section IDs, the eight sections and their sources are unchanged;
+  only their order follows the new reading intent.
+- Tests (authorized scope, not results): browser specs 27 -> 28 with two cases;
+  source test files unchanged. No DONE/GREEN claim.
+
+Türkçe: Bu bölüm en yeni insan görevidir. 40 bileşen sayfasındaki her mantıksal
+örnek kümesi, benzersiz sabit kimlikli tek bir ExamplePreview çalışma alanı alır:
+cihaz (iPhone/iPad/MacBook, varsayılan MacBook), önizleme teması (Açık/Koyu) ve
+örnek görünümü (Önizleme/Kod). Önizleme bağlı kalır; kod yalnız seçildiğinde
+yüklenir. Ayrıntı sayfası geniş ekranda vitrin, API/kaynak referansı ve dış
+içindekiler rayı olarak ayrılır; dar ekranda doğal sırayla yığılır. Bölüm
+kimlikleri korunur; çalıştırılmış kontrol veya DONE/GREEN iddiası yoktur.
+
 ## Current authoritative project decision — 16 October 2026
 
 This is the current project decision. It supersedes older current statements,
@@ -28,8 +57,8 @@ source proposal is not evidence of executed checks.
 - Surfaces: canonical `inputSurfaces.innerShadow` reused, duplicate blue shadow
   removed; neutral fields, white/`#2c2c2c` panels, warm shell unchanged; one
   functional outer boundary; Listy host padding/divider cleared; section gap
-  >= 16 px; TOC 256 px rail with 16 px padding. Reference HTML and 31 images
-  stay local; no navy colors.
+  > = 16 px; TOC 256 px rail with 16 px padding. Reference HTML and 31 images
+  > stay local; no navy colors.
 - Tests (frozen scope, not results): source 80 -> 80 with
   `neutral-field-surfaces` 1 -> 2; browser files 26 -> 27 with exactly 5 added
   cases (Badge/radius 2, docs-spacing +1, Listy +1, Tweaker +1); one old Tweaker

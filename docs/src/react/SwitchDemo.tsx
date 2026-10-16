@@ -5,6 +5,7 @@ import AtlasProvider from './AtlasProvider';
 import AtlasSelectionVariants from './AtlasSelectionVariants';
 import AtlasIcon from './AtlasIcon';
 import DataEntryCatalog from './DataEntryCatalog';
+import ExamplePreview from './ExamplePreview';
 import { TweakerSettings } from './AtlasTweaker';
 import { selectionSizeProfiles } from '../data/selection-sizes';
 
@@ -206,7 +207,11 @@ export default function SwitchDemo({
                 description: t(
                   'Toggle the preference and read its current state next to the control.',
                 ),
-                content: <div className="example-block">{basic}</div>,
+                content: (
+                  <ExamplePreview id="switch-instant-preference" title={t('Instant preference')}>
+                    <div className="example-block">{basic}</div>
+                  </ExamplePreview>
+                ),
               },
               ...(appearanceControls
                 ? [
@@ -216,7 +221,11 @@ export default function SwitchDemo({
                       description: t(
                         'Each pair starts on and off. Toggle either switch to compare its states.',
                       ),
-                      content: <SwitchContentExamples documentation />,
+                      content: (
+                        <ExamplePreview id="switch-text-and-icon" title={t('Text and icon')}>
+                          <SwitchContentExamples documentation />
+                        </ExamplePreview>
+                      ),
                     },
                   ]
                 : []),
@@ -228,7 +237,11 @@ export default function SwitchDemo({
                     ? 'Compare the shared small, medium and large selection sizes.'
                     : 'Compare compact and normal switch sizes.',
                 ),
-                content: <div className="data-entry-state-grid">{sizes}</div>,
+                content: (
+                  <ExamplePreview id="switch-sizes" title={t('Sizes')}>
+                    <div className="data-entry-state-grid">{sizes}</div>
+                  </ExamplePreview>
+                ),
               },
               {
                 id: 'states',
@@ -236,12 +249,17 @@ export default function SwitchDemo({
                 description: t(
                   'Unavailable, Processing and required-on controls keep their distinct meanings.',
                 ),
-                content: <div className="data-entry-state-grid">{states}</div>,
+                content: (
+                  <ExamplePreview id="switch-states" title={t('States')}>
+                    <div className="data-entry-state-grid">{states}</div>
+                  </ExamplePreview>
+                ),
               },
               {
                 id: 'selection-variants',
                 title: t('Selection layouts and cards'),
                 description: t('Turn each workspace on or off.'),
+                // Each layout owns its workbench inside AtlasSelectionVariants.
                 content: <AtlasSelectionVariants kind="switch" />,
               },
             ]}

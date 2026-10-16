@@ -2,6 +2,7 @@ import { useId, useState } from 'react';
 import { Switch, type DropdownProps, type MenuProps } from 'antd';
 import AtlasProvider from './AtlasProvider';
 import { TweakerSettings } from './AtlasTweaker';
+import ExamplePreview from './ExamplePreview';
 import AtlasDropdown from './AtlasDropdown';
 import AtlasIcon from './AtlasIcon';
 import AtlasPill from './AtlasPill';
@@ -202,20 +203,26 @@ function DropdownExamples({ documentation = false }: { documentation?: boolean }
             )}
           </p>
         </header>
-        <div className="dropdown-stage">
-          <AtlasDropdown label={t('Workspace actions')} items={menu(actions)} onAction={onAction} />
-          <div className="dropdown-notes" aria-label={t('Local review notes')}>
-            {notes.length ? (
-              <ul>
-                {notes.map(note => (
-                  <li key={note}>{t('Review note {number}', { number: note })}</li>
-                ))}
-              </ul>
-            ) : (
-              <p>{t('No local notes yet.')}</p>
-            )}
+        <ExamplePreview id="dropdown-basic-actions" title={t('Basic actions')}>
+          <div className="dropdown-stage">
+            <AtlasDropdown
+              label={t('Workspace actions')}
+              items={menu(actions)}
+              onAction={onAction}
+            />
+            <div className="dropdown-notes" aria-label={t('Local review notes')}>
+              {notes.length ? (
+                <ul>
+                  {notes.map(note => (
+                    <li key={note}>{t('Review note {number}', { number: note })}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p>{t('No local notes yet.')}</p>
+              )}
+            </div>
           </div>
-        </div>
+        </ExamplePreview>
       </section>
       <section
         id="dropdown-surfaces"
@@ -231,30 +238,32 @@ function DropdownExamples({ documentation = false }: { documentation?: boolean }
             )}
           </p>
         </header>
-        <div className="dropdown-surface-grid">
-          <div className="dropdown-stage">
-            <h4>{t('Quiet tools')}</h4>
-            <p>{t('A neutral menu for everyday work.')}</p>
-            <AtlasDropdown
-              label={t('Review tools')}
-              items={menu(reviewActions)}
-              onAction={onAction}
-              classNames={quietClassNames}
-              styles={quietStyles}
-            />
+        <ExamplePreview id="dropdown-surface-treatments" title={t('Surfaces')}>
+          <div className="dropdown-surface-grid">
+            <div className="dropdown-stage">
+              <h4>{t('Quiet tools')}</h4>
+              <p>{t('A neutral menu for everyday work.')}</p>
+              <AtlasDropdown
+                label={t('Review tools')}
+                items={menu(reviewActions)}
+                onAction={onAction}
+                classNames={quietClassNames}
+                styles={quietStyles}
+              />
+            </div>
+            <div className="dropdown-stage">
+              <h4>{t('Contextual actions')}</h4>
+              <p>{t('A soft accent keeps this review menu connected to its workspace.')}</p>
+              <AtlasDropdown
+                label={t('Review options')}
+                items={menu(reviewActions)}
+                onAction={onAction}
+                classNames={contextClassNames}
+                styles={contextStyles}
+              />
+            </div>
           </div>
-          <div className="dropdown-stage">
-            <h4>{t('Contextual actions')}</h4>
-            <p>{t('A soft accent keeps this review menu connected to its workspace.')}</p>
-            <AtlasDropdown
-              label={t('Review options')}
-              items={menu(reviewActions)}
-              onAction={onAction}
-              classNames={contextClassNames}
-              styles={contextStyles}
-            />
-          </div>
-        </div>
+        </ExamplePreview>
       </section>
       <section
         id="dropdown-cascading"
@@ -270,18 +279,20 @@ function DropdownExamples({ documentation = false }: { documentation?: boolean }
             )}
           </p>
         </header>
-        <div className="dropdown-stage">
-          <AtlasDropdown
-            label={t('Organize workspace')}
-            items={menu(organization)}
-            onAction={onAction}
-          />
-          <p className="dropdown-guidance">
-            {t(
-              'Open by click, Enter, Space or ArrowDown. Use arrow keys between choices and submenu levels. Escape closes the menu and returns focus.',
-            )}
-          </p>
-        </div>
+        <ExamplePreview id="dropdown-cascading-menu" title={t('Cascading menu')}>
+          <div className="dropdown-stage">
+            <AtlasDropdown
+              label={t('Organize workspace')}
+              items={menu(organization)}
+              onAction={onAction}
+            />
+            <p className="dropdown-guidance">
+              {t(
+                'Open by click, Enter, Space or ArrowDown. Use arrow keys between choices and submenu levels. Escape closes the menu and returns focus.',
+              )}
+            </p>
+          </div>
+        </ExamplePreview>
       </section>
     </div>
   );

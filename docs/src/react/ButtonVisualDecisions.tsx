@@ -2,6 +2,7 @@ import { useI18n } from './useI18n';
 import AtlasProvider from './AtlasProvider';
 import AtlasButton, { type Tone } from './AtlasButton';
 import AtlasLayeredButton from './AtlasLayeredButton';
+import ExamplePreview from './ExamplePreview';
 import atlas from '../data/atlas.json';
 import { buttonColorPresets } from '../data/button-palette';
 
@@ -22,7 +23,7 @@ const groups = [
 export function ButtonVisualGroup({ axis }: { axis: (typeof groups)[number]['key'] }) {
   const { t } = useI18n();
   const group = groups.find(item => item.key === axis)!;
-  return (
+  const visualSection = (
     <section className="example-block" aria-label={t(group.title)}>
       <h4 className="variant-heading">{t(group.title)}</h4>
       <ul className="atlas-button-visuals">
@@ -53,6 +54,39 @@ export function ButtonVisualGroup({ axis }: { axis: (typeof groups)[number]['key
       </ul>
     </section>
   );
+  // Each axis keeps its own literal preview id for the build-time source extractor.
+  switch (axis) {
+    case 'fill':
+      return (
+        <ExamplePreview id="button-surfaces-example" title={t('Surfaces')}>
+          {visualSection}
+        </ExamplePreview>
+      );
+    case 'palette':
+      return (
+        <ExamplePreview id="button-palette-example" title={t('Color families')}>
+          {visualSection}
+        </ExamplePreview>
+      );
+    case 'radius':
+      return (
+        <ExamplePreview id="button-corners-example" title={t('Corners')}>
+          {visualSection}
+        </ExamplePreview>
+      );
+    case 'tone':
+      return (
+        <ExamplePreview id="button-tones-example" title={t('Tones')}>
+          {visualSection}
+        </ExamplePreview>
+      );
+    case 'shadow':
+      return (
+        <ExamplePreview id="button-shadows-example" title={t('Shadows')}>
+          {visualSection}
+        </ExamplePreview>
+      );
+  }
 }
 
 export function ButtonVisualDecisions({ feedbackDuration }: { feedbackDuration?: number } = {}) {
