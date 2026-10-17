@@ -3,6 +3,7 @@ import { readdir, readFile } from 'node:fs/promises';
 import { posix, relative, resolve, sep } from 'node:path';
 import { isDeepStrictEqual } from 'node:util';
 import postcss from 'postcss';
+import selectorParser from 'postcss-selector-parser';
 import ts from 'typescript';
 
 // Read-only admission guard for the direct human decision record. Only the root records human
@@ -370,6 +371,42 @@ async function checkPreviewScreenSurface({ facts, files, read }) {
         if (declaration.value.toLowerCase() !== want[mode])
           violations.push(`${role}.${mode} ${declaration.value} differs from human ${want[mode]}`);
       }
+    });
+    // The button playground is layout only. Resolve conditional nesting without
+    // taking paint ownership away from actual descendant components.
+    const nearestRule = node => {
+      while (node && node.type !== 'rule') node = node.parent;
+      return node;
+    };
+    const stageSubject = candidate => {
+      if (!candidate) return false;
+      const targetsStage = selector => {
+        const nodes = selector.nodes ?? [];
+        const lastCombinator = nodes.findLastIndex(node => node.type === 'combinator');
+        return nodes
+          .slice(lastCombinator + 1)
+          .some(
+            node =>
+              (node.type === 'class' && node.value === 'playground-preview') ||
+              (node.type === 'nesting' && stageSubject(nearestRule(candidate.parent))) ||
+              (node.type === 'pseudo' &&
+                [':is', ':where'].includes(node.value) &&
+                node.nodes.some(targetsStage)),
+          );
+      };
+      return selectorParser().astSync(candidate.selector).nodes.some(targetsStage);
+    };
+    sheet.walkDecls(declaration => {
+      const owner = nearestRule(declaration.parent);
+      if (!stageSubject(owner)) return;
+      const { prop, value: stageValue, important } = declaration;
+      const decorative = /^(?:background(?:-color|-image)?|border(?:-[a-z-]+)?|box-shadow)$/.test(
+        prop,
+      );
+      if (decorative && (important || !['transparent', 'none', '0', '0px'].includes(stageValue)))
+        violations.push(
+          `${file} ${owner.selector}: playground-preview must reveal the locked screen without decorative paint`,
+        );
     });
     sheet.walkRules(rule => {
       if (!protectedSubject(rule)) return;

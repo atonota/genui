@@ -1,8 +1,25 @@
 # Astro documentation maintenance contract
 
+## Transparent playground preview — human decision 2026-10-17
+
+Newest entry; it changes only the playground preview wrapper.
+`decisions/current.json` and every other entry below are unchanged.
+
+- `.genux-demo .playground-preview` ([components.css](src/styles/components.css))
+  is presentation-only: transparent background with no decorative border,
+  shadow or radius, so no gray frame sits behind the actual button inside a
+  device preview. Its min-height, flex layout, gap and padding stay.
+- The actual device screen stays locked to `#ffffff` light and `#222222` dark
+  through `--preview-screen-surface`, independently of the shell and Theme
+  Builder recipes. Buttons, inputs, field fills, cards and component panels
+  keep their own surfaces; no blanket descendant transparency.
+- Proposal, integration, guard, local checks, CI and live are PENDING until
+  each actually runs.
+
 ## Locked preview screen surface — human decision 2026-10-17
 
-Newest entry; it changes only the device screen surface.
+It changes only the device screen surface; the transparent playground preview
+entry above extends it.
 `decisions/current.json` revision `human-2026-10-17-locked-preview-surface`
 (`previewScreenSurface`) is authoritative; every other entry below is
 unchanged.

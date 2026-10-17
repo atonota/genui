@@ -829,9 +829,10 @@ body .ant-modal-root .ant-modal-mask.ant-fade-leave-active {
   justify-content: center;
   flex-wrap: wrap;
   gap: var(--space-lg);
-  background: var(--surface);
+  /* Presentation-only: no decorative fill, edge, shadow or radius, so the locked device screen
+     surface shows through behind the actual component. */
+  background: transparent;
   padding: var(--space-lg);
-  border-radius: var(--radius);
 }
 .genux-demo .playground-controls {
   /* Intrinsic columns follow the available panel width, not the viewport. */

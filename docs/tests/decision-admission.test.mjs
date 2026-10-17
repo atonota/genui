@@ -72,6 +72,42 @@ test('decision admission keeps the current human facts and never writes', async 
     ]),
     { code: 'decision-conflict', message: /preview-screen-surface/ },
   );
+  // Presentation-only demo wrappers must reveal the locked screen, never paint another frame.
+  await assert.rejects(
+    checkCurrentDecisions(root, [
+      {
+        path: 'docs/src/styles/foreign-preview-stage.css',
+        content: '.genux-demo .playground-preview { background: var(--surface); }',
+      },
+    ]),
+    { code: 'decision-conflict', message: /playground-preview/ },
+  );
+  await assert.rejects(
+    checkCurrentDecisions(root, [
+      {
+        path: 'docs/src/styles/foreign-preview-stage.css',
+        content: '.genux-demo .playground-preview { &:hover { background: var(--surface); } }',
+      },
+    ]),
+    { code: 'decision-conflict', message: /playground-preview/ },
+  );
+  await assert.rejects(
+    checkCurrentDecisions(root, [
+      {
+        path: 'docs/src/styles/foreign-preview-stage.css',
+        content:
+          '.genux-demo .playground-preview { @media (hover: hover) { &:hover { background: var(--surface); } } }',
+      },
+    ]),
+    { code: 'decision-conflict', message: /playground-preview/ },
+  );
+  await checkCurrentDecisions(root, [
+    {
+      path: 'docs/src/styles/foreign-preview-stage.css',
+      content:
+        '.genux-demo .playground-preview .ant-btn:not(.playground-preview) { background: var(--button-face); } .playground-preview-card { background: var(--surface); }',
+    },
+  ]);
   const providerPath = 'docs/src/react/GenUXProvider.tsx';
   const providerText = await read(providerPath);
   const styleHead = 'const sizeStyle: CSSProperties & Record<`--${string}`, string> = {';
