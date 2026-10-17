@@ -42,10 +42,11 @@ export default defineConfig({
     navigationTimeout: 15_000,
     colorScheme: 'light',
     reducedMotion: 'no-preference',
-    screenshot: 'off',
-    // Traces record during every run and are dropped on pass, so the per-action screencast costs passing cases too.
-    // Failure traces keep DOM snapshots and sources; the specs' explicit evidence photos are unaffected.
-    trace: { mode: 'retain-on-failure', screenshots: false, snapshots: true, sources: true },
+    // One page photo at the failure keeps the failing visual; the specs' explicit evidence photos are unaffected.
+    screenshot: 'only-on-failure',
+    // Traces record during every run and are dropped on pass, so per-action capture costs passing cases too.
+    // Before and after DOM snapshots ran about 500 times per case; failure traces keep actions, network and sources.
+    trace: { mode: 'retain-on-failure', screenshots: false, snapshots: false, sources: true },
   },
   // Per-engine outputDir keeps testInfo.outputPath screenshots from overwriting across engines.
   // Desktop default for the docs and action journeys; narrow journeys set 320 CSS px themselves.
