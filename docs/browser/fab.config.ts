@@ -26,8 +26,9 @@ export default defineConfig({
   fullyParallel: false,
   forbidOnly: Boolean(process.env.CI),
   retries: 0,
-  // Two workers, as originally configured; fullyParallel false keeps each engine's cases serial.
-  workers: 2,
+  // Use one worker to avoid concurrent engine contention while investigating Chromium timeouts.
+  // Engines now run one after another; fullyParallel false keeps each engine's cases serial.
+  workers: 1,
   timeout: 60_000,
   // Finite operational run cap; queued engines also consume it. Exact CI must prove all nine cases fit.
   globalTimeout: 420_000,

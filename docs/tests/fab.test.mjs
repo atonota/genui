@@ -601,7 +601,7 @@ test('options expose every approved axis, keep Cubic/5px defaults and reject inv
   const ciTmp = await mkdtemp(join(tmpdir(), 'genux-fab-ci-'));
   try {
     const fabConfig = await loadFabConfig(ciTmp);
-    assert.equal(fabConfig.workers, 2, 'the FAB browser engines run on two workers');
+    assert.equal(fabConfig.workers, 1, 'the FAB browser engines run serially on one worker');
     assert.equal(fabConfig.timeout, 60_000, 'the browser config default remains 60 s');
     assert.equal(
       fabConfig.globalTimeout,
