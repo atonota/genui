@@ -7,7 +7,7 @@ import { sync, atomicWrite } from '../tools/sync.mjs';
 import { sha256 } from '../tools/build.mjs';
 
 async function fixture(t) {
-  const dir = await mkdtemp(join(tmpdir(), 'atlas-sync-'));
+  const dir = await mkdtemp(join(tmpdir(), 'genux-sync-'));
   t.after(() => rm(dir, { recursive: true, force: true }));
   const path = join(dir, 'existing.html'),
     statePath = join(dir, 'sync-state.json');

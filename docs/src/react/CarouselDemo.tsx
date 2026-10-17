@@ -1,16 +1,16 @@
 import { useId, useState } from 'react';
 import { Select, Switch } from 'antd';
-import AtlasProvider from './AtlasProvider';
-import AtlasCarousel from './AtlasCarousel';
+import GenUXProvider from './GenUXProvider';
+import GenUXCarousel from './GenUXCarousel';
 import ExamplePreview from './ExamplePreview';
-import { TweakerSettings } from './AtlasTweaker';
+import { TweakerSettings } from './GenUXTweaker';
 import { useI18n } from './useI18n';
 
 function CarouselExample() {
   const { t } = useI18n();
   const countId = useId();
   const captionsId = useId();
-  // AtlasCarousel keeps its own position and clamps it when fewer slides are supplied.
+  // GenUXCarousel keeps its own position and clamps it when fewer slides are supplied.
   const [count, setCount] = useState(3);
   const [captions, setCaptions] = useState(true);
   // Local illustrations only; captions are caller text translated here.
@@ -40,7 +40,7 @@ function CarouselExample() {
   return (
     <ExamplePreview id="carousel-illustration-gallery" title={t('Illustration gallery')}>
       <TweakerSettings title="Carousel settings">
-        <div className="atlas-tweaker-option">
+        <div className="genux-tweaker-option">
           <label htmlFor={countId}>{t('Slides shown')}</label>
           <Select
             id={countId}
@@ -49,20 +49,20 @@ function CarouselExample() {
             onChange={(next: number) => setCount(next)}
           />
         </div>
-        <div className="atlas-tweaker-option">
+        <div className="genux-tweaker-option">
           <label htmlFor={captionsId}>{t('Show captions')}</label>
           <Switch id={captionsId} checked={captions} onChange={setCaptions} />
         </div>
       </TweakerSettings>
-      <AtlasCarousel label={t('Illustration gallery')} slides={slides.slice(0, count)} />
+      <GenUXCarousel label={t('Illustration gallery')} slides={slides.slice(0, count)} />
     </ExamplePreview>
   );
 }
 
 export default function CarouselDemo({ documentation = false }: { documentation?: boolean }) {
   return (
-    <AtlasProvider appearance={documentation ? 'docs' : undefined}>
+    <GenUXProvider appearance={documentation ? 'docs' : undefined}>
       <CarouselExample />
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }

@@ -1,5 +1,5 @@
 /* Table identity: a decorative avatar paired with the visible value; wraps naturally from 320px. */
-.atlas-demo .kit-identity-value {
+.genux-demo .kit-identity-value {
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
@@ -7,11 +7,11 @@
   min-width: 0;
   max-width: 100%;
 }
-.atlas-demo .kit-identity-avatar {
+.genux-demo .kit-identity-avatar {
   display: inline-flex;
   flex: none;
 }
-.atlas-demo .kit-identity-value > .kit-field-value {
+.genux-demo .kit-identity-value > .kit-field-value {
   min-width: 0;
   overflow-wrap: break-word;
 }

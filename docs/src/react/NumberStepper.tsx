@@ -1,14 +1,14 @@
 import { useI18n } from './useI18n';
 import { useId, useRef, useState, type ComponentRef, type CSSProperties } from 'react';
 import type { InputNumberProps } from 'antd';
-import InputNumber from './AtlasInputNumber';
+import InputNumber from './GenUXInputNumber';
 import * as decimalPackage from '@rc-component/mini-decimal';
 import type { DecimalClass, ValueType } from '@rc-component/mini-decimal';
-import AtlasSlotButton from './AtlasSlotButton';
-import { useAtlasInputState } from './AtlasInputFrame';
-import AtlasIcon from './AtlasIcon';
-import { atlasSizeProfiles } from './AtlasSizeProfile';
-import { atlasLength, useAtlasAppearance } from './AtlasAppearance';
+import GenUXSlotButton from './GenUXSlotButton';
+import { useGenUXInputState } from './GenUXInputFrame';
+import GenUXIcon from './GenUXIcon';
+import { genuxSizeProfiles } from './GenUXSizeProfile';
+import { genuxLength, useGenUXAppearance } from './GenUXAppearance';
 
 // The installed package publishes ESM for bundlers and CommonJS for Node SSR.
 const decimals =
@@ -27,7 +27,7 @@ function decimal(value: ValueType | null | undefined) {
   return result.isInvalidate() ? null : result;
 }
 
-/** Native numeric editing with shared Atlas actions; removal is a separate intent. */
+/** Native numeric editing with shared GenUX actions; removal is a separate intent. */
 export default function NumberStepper({
   value,
   defaultValue,
@@ -45,11 +45,11 @@ export default function NumberStepper({
   ...inputProps
 }: NumberStepperProps) {
   const { t } = useI18n();
-  const appearance = useAtlasAppearance();
+  const appearance = useGenUXAppearance();
   const helpId = useId();
   const input = useRef<ComponentRef<typeof InputNumber>>(null);
-  // Explicit props win; otherwise the shared Atlas size context, then AntD config.
-  const state = useAtlasInputState({ size, disabled, readOnly });
+  // Explicit props win; otherwise the shared GenUX size context, then AntD config.
+  const state = useGenUXInputState({ size, disabled, readOnly });
   const [localValue, setLocalValue] = useState<ValueType | null>(defaultValue ?? null);
   const currentValue = value === undefined ? localValue : value;
   const current = decimal(currentValue);
@@ -63,13 +63,13 @@ export default function NumberStepper({
   const blocked = Boolean(state.disabled || readOnly || invalidBounds);
   // Read-only stays selectable and must not paint as disabled.
   const frameDisabled = Boolean(state.disabled || invalidBounds);
-  const profile = atlasSizeProfiles.find(item => item.value === state.size)!;
-  const height = atlasLength(profile.height_px, appearance);
+  const profile = genuxSizeProfiles.find(item => item.value === state.size)!;
+  const height = genuxLength(profile.height_px, appearance);
   // Resolve the field aliases on the same owner as the explicit native size.
   // Aliases inherited from the provider otherwise retain its resolved height.
   const sizeStyle = {
-    '--atlas-input-height': height,
-    '--atlas-component-height': height,
+    '--genux-input-height': height,
+    '--genux-component-height': height,
     '--field-height': height,
     '--control-height': height,
   } as CSSProperties;
@@ -117,16 +117,16 @@ export default function NumberStepper({
   }
 
   return (
-    <div className="atlas-number-stepper-state">
+    <div className="genux-number-stepper-state">
       <div
-        className="atlas-number-stepper atlas-input-frame"
-        data-atlas-input="number"
+        className="genux-number-stepper genux-input-frame"
+        data-genux-input="number"
         data-size={state.size}
         data-disabled={frameDisabled || undefined}
         data-readonly={readOnly || undefined}
         style={sizeStyle}
       >
-        <AtlasSlotButton
+        <GenUXSlotButton
           icon={atMinimum ? 'trash' : 'minus'}
           aria-label={atMinimum ? t('Remove') : t('Decrease')}
           state={downDisabled ? 'disabled' : 'default'}
@@ -154,8 +154,8 @@ export default function NumberStepper({
             readOnly ? (
               <>
                 {inputProps.suffix}
-                <span className="atlas-readonly-indicator">
-                  <AtlasIcon name="lock-simple" />
+                <span className="genux-readonly-indicator">
+                  <GenUXIcon name="lock-simple" />
                 </span>
               </>
             ) : (
@@ -169,7 +169,7 @@ export default function NumberStepper({
           onChange={commit}
           onStep={onStep}
         />
-        <AtlasSlotButton
+        <GenUXSlotButton
           icon="plus"
           aria-label={t('Increase')}
           state={upDisabled ? 'disabled' : 'default'}
@@ -179,7 +179,7 @@ export default function NumberStepper({
         />
       </div>
       {readOnly && (
-        <p id={helpId} className="atlas-readonly-help">
+        <p id={helpId} className="genux-readonly-help">
           {t('Read-only. You can select and copy this value.')}
         </p>
       )}

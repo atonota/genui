@@ -3,10 +3,10 @@ import DataEntryCatalog, { DataEntryGrid } from './DataEntryCatalog';
 import ExamplePreview from './ExamplePreview';
 import { useId, useState } from 'react';
 import { Radio, Switch } from 'antd';
-import AtlasProvider from './AtlasProvider';
-import { TweakerSettings } from './AtlasTweaker';
-import AtlasButtonGroup from './AtlasButtonGroup';
-import AtlasSelectionVariants from './AtlasSelectionVariants';
+import GenUXProvider from './GenUXProvider';
+import { TweakerSettings } from './GenUXTweaker';
+import GenUXButtonGroup from './GenUXButtonGroup';
+import GenUXSelectionVariants from './GenUXSelectionVariants';
 const choices = ['Tasarım', 'Mühendislik', 'Operasyon'];
 export function WebRadioDemo({ documentation = false }: { documentation?: boolean } = {}) {
   return <RadioDemo clusteredSegments documentation={documentation} />;
@@ -56,7 +56,7 @@ export default function RadioDemo({
   const grouped = (
     <>
       {clusteredSegments ? (
-        <AtlasButtonGroup
+        <GenUXButtonGroup
           name="view"
           radius="pill"
           value={view}
@@ -81,7 +81,7 @@ export default function RadioDemo({
   );
   const two = (
     <>
-      <AtlasButtonGroup
+      <GenUXButtonGroup
         name="delivery"
         radius="pill"
         value={delivery}
@@ -107,7 +107,7 @@ export default function RadioDemo({
     </>
   );
   return (
-    <AtlasProvider
+    <GenUXProvider
       appearance={documentation ? 'docs' : undefined}
       sizeFamily={documentation ? 'selection' : 'component'}
     >
@@ -182,8 +182,8 @@ export default function RadioDemo({
                 id: 'selection-variants',
                 title: t('Selection layouts and cards'),
                 description: t('Choose one workspace.'),
-                // Each layout owns its workbench inside AtlasSelectionVariants.
-                content: <AtlasSelectionVariants kind="radio" />,
+                // Each layout owns its workbench inside GenUXSelectionVariants.
+                content: <GenUXSelectionVariants kind="radio" />,
               },
             ]}
           />
@@ -209,11 +209,11 @@ export default function RadioDemo({
             </section>
             <section className="example-block">
               <h3 className="variant-heading">{t('Selection layouts and cards')}</h3>
-              <AtlasSelectionVariants kind="radio" />
+              <GenUXSelectionVariants kind="radio" />
             </section>
           </>
         )}
       </div>
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }

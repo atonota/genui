@@ -6,15 +6,15 @@ import {
   subscribeThemeBuilder,
 } from '../theme-builder/store';
 import { listySurfaceOf, tokenDefinitions, type ListySurface } from '../theme-builder/model';
-import { useAtlasAppearance } from './AtlasAppearance';
-import { useAtlasSize } from './AtlasSizeProfile';
+import { useGenUXAppearance } from './GenUXAppearance';
+import { useGenUXSize } from './GenUXSizeProfile';
 
 const subscribeNothing = () => () => {};
 
 /** Only documentation surfaces follow the applied Theme Builder recipe; approved surfaces and the
     server render read the definition defaults, so hydration stays consistent. */
 function useAppliedRecipe() {
-  const builderActive = useAtlasAppearance() === 'docs';
+  const builderActive = useGenUXAppearance() === 'docs';
   const recipe = useSyncExternalStore(
     builderActive ? subscribeThemeBuilder : subscribeNothing,
     builderActive ? getThemeBuilderSnapshot : getServerThemeBuilderSnapshot,
@@ -24,7 +24,7 @@ function useAppliedRecipe() {
   return { recipe, mode };
 }
 
-/** Central Listy surface role shared by AtlasListy and the native Cascader popup. */
+/** Central Listy surface role shared by GenUXListy and the native Cascader popup. */
 export default function useListySurface(): ListySurface {
   const { recipe, mode } = useAppliedRecipe();
   return listySurfaceOf(recipe, mode);
@@ -33,7 +33,7 @@ export default function useListySurface(): ListySurface {
 /** Compact row height in px for the inherited size profile; bounded native scrollers derive their
     height from it instead of an arbitrary inline value. */
 export function useListyRowHeight(): number {
-  const size = useAtlasSize();
+  const size = useGenUXSize();
   const { recipe, mode } = useAppliedRecipe();
   const id = `size-compact-${size}`;
   const value =

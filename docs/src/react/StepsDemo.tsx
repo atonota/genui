@@ -1,12 +1,12 @@
 import { useId, useLayoutEffect, useRef, useState, type FormEvent } from 'react';
 import { Select, Switch, type InputRef } from 'antd';
-import Input from './AtlasInput';
-import AtlasProvider from './AtlasProvider';
-import AtlasSteps from './AtlasSteps';
+import Input from './GenUXInput';
+import GenUXProvider from './GenUXProvider';
+import GenUXSteps from './GenUXSteps';
 import ExamplePreview from './ExamplePreview';
-import AtlasButton from './AtlasButton';
-import AtlasIcon from './AtlasIcon';
-import { TweakerSettings } from './AtlasTweaker';
+import GenUXButton from './GenUXButton';
+import GenUXIcon from './GenUXIcon';
+import { TweakerSettings } from './GenUXTweaker';
 import { useI18n } from './useI18n';
 
 type Orientation = 'auto' | 'horizontal' | 'vertical';
@@ -38,7 +38,7 @@ function StepsExamples() {
     content: [t('Give your workspace a name'), t('Check your local draft'), t('Confirm the setup')][
       index
     ],
-    icon: withIcons ? <AtlasIcon name={setupIcons[index]!} /> : undefined,
+    icon: withIcons ? <GenUXIcon name={setupIcons[index]!} /> : undefined,
   }));
   const comparisonItems = [
     { key: 'details', title: t('Details'), content: t('Name and purpose') },
@@ -47,7 +47,7 @@ function StepsExamples() {
   ];
   const iconItems = comparisonItems.map((item, index) => ({
     ...item,
-    icon: <AtlasIcon name={setupIcons[index]!} />,
+    icon: <GenUXIcon name={setupIcons[index]!} />,
   }));
 
   useLayoutEffect(() => {
@@ -147,7 +147,7 @@ function StepsExamples() {
         </header>
         <ExamplePreview id="steps-guided-setup" title={t('Guided setup')}>
           <div className="steps-stage" data-steps-primary>
-            <AtlasSteps
+            <GenUXSteps
               items={setupItems}
               current={setupStep}
               status={complete ? 'finish' : nameError ? 'error' : 'process'}
@@ -215,7 +215,7 @@ function StepsExamples() {
               </div>
               <div className="steps-actions" ref={actions}>
                 {complete ? (
-                  <AtlasButton
+                  <GenUXButton
                     text={t('Start again')}
                     fill="outline"
                     htmlType="button"
@@ -223,7 +223,7 @@ function StepsExamples() {
                   />
                 ) : (
                   <>
-                    <AtlasButton
+                    <GenUXButton
                       text={t('Back')}
                       fill="text"
                       htmlType="button"
@@ -233,7 +233,7 @@ function StepsExamples() {
                         setSetupStep(step => Math.max(0, step - 1));
                       }}
                     />
-                    <AtlasButton
+                    <GenUXButton
                       text={setupStep === 2 ? t('Finish setup') : t('Continue')}
                       htmlType="submit"
                     />
@@ -258,11 +258,11 @@ function StepsExamples() {
           <div className="steps-comparison-grid">
             <div className="steps-example" data-steps-example="numbered">
               <h4>{t('Numbered · filled')}</h4>
-              <AtlasSteps items={comparisonItems} current={1} label={t('Numbered setup steps')} />
+              <GenUXSteps items={comparisonItems} current={1} label={t('Numbered setup steps')} />
             </div>
             <div className="steps-example" data-steps-example="icons">
               <h4>{t('Phosphor icons · outlined')}</h4>
-              <AtlasSteps
+              <GenUXSteps
                 items={iconItems}
                 current={1}
                 variant="outlined"
@@ -271,7 +271,7 @@ function StepsExamples() {
             </div>
             <div className="steps-example" data-steps-example="centered">
               <h4>{t('Centered labels')}</h4>
-              <AtlasSteps
+              <GenUXSteps
                 items={comparisonItems}
                 current={1}
                 titlePlacement="vertical"
@@ -281,7 +281,7 @@ function StepsExamples() {
             </div>
             <div className="steps-example" data-steps-example="vertical">
               <h4>{t('Vertical checklist')}</h4>
-              <AtlasSteps
+              <GenUXSteps
                 items={comparisonItems}
                 current={1}
                 orientation="vertical"
@@ -303,7 +303,7 @@ function StepsExamples() {
         </header>
         <ExamplePreview id="steps-states-recovery" title={t('States and recovery')}>
           <div className="steps-example" data-steps-recovery data-recovery-state={recovery}>
-            <AtlasSteps
+            <GenUXSteps
               current={1}
               status={recovery}
               items={[
@@ -346,19 +346,19 @@ function StepsExamples() {
               </p>
               <div className="steps-actions">
                 {recovery === 'error' ? (
-                  <AtlasButton
+                  <GenUXButton
                     text={t('Retry review')}
                     icon="reload"
                     onClick={() => setRecovery('process')}
                   />
                 ) : recovery === 'process' ? (
-                  <AtlasButton
+                  <GenUXButton
                     text={t('Confirm review')}
                     icon="check"
                     onClick={() => setRecovery('finish')}
                   />
                 ) : (
-                  <AtlasButton
+                  <GenUXButton
                     text={t('Show the issue again')}
                     fill="text"
                     onClick={() => setRecovery('error')}
@@ -385,7 +385,7 @@ function StepsExamples() {
         </header>
         <ExamplePreview id="steps-step-navigation" title={t('Step navigation')}>
           <div className="steps-example" data-steps-navigation-preview>
-            <AtlasSteps
+            <GenUXSteps
               type="navigation"
               current={navigationStep}
               onChange={setNavigationStep}
@@ -427,8 +427,8 @@ function StepsExamples() {
 
 export default function StepsDemo({ documentation = false }: { documentation?: boolean } = {}) {
   return (
-    <AtlasProvider appearance={documentation ? 'docs' : 'approved'}>
+    <GenUXProvider appearance={documentation ? 'docs' : 'approved'}>
       <StepsExamples />
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }

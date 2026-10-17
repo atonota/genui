@@ -5,13 +5,13 @@ import {readFileSync} from 'node:fs';
 import {JSDOM} from 'jsdom';
 import postcss from 'postcss';
 
-const path=new URL('../../dist/buton-atlasi.html', import.meta.url);
+const path=new URL('../../dist/buton-genuxi.html', import.meta.url);
 const html=readFileSync(path,'utf8');
 const before=readFileSync(new URL('./before-form-components.html',import.meta.url),'utf8');
 const script=html.match(/<script>([\s\S]*?)<\/script>/)[1];
 // Node DOM simulation only: no resource loader, server, browser or layout engine.
 function setup(t){
-  const dom=new JSDOM(html,{runScripts:'outside-only',pretendToBeVisual:true,url:'https://atlas.test/'});
+  const dom=new JSDOM(html,{runScripts:'outside-only',pretendToBeVisual:true,url:'https://genux.test/'});
   dom.window.matchMedia=()=>({matches:false,addEventListener(){},removeEventListener(){}});
   dom.window.ResizeObserver=class {observe(){} unobserve(){} disconnect(){}};
   // Geometry/scrolling are deliberately not asserted in this non-rendering harness.
@@ -108,7 +108,7 @@ test('all component families and surface variants are rendered with unique IDs a
     for(const id of node.getAttribute('aria-describedby').split(/\s+/))assert.ok(doc.getElementById(id),`missing help ${id}`);
   }
   assert.equal(read('FORM_EXPERIMENTS.dropdown_variants.length')>=8,true);
-  assert.doesNotMatch(read('standaloneButton()'),/ff-control|ff-menu|AtlasDropdowns/,'single-button export excludes unrelated form resources');
+  assert.doesNotMatch(read('standaloneButton()'),/ff-control|ff-menu|GenUXDropdowns/,'single-button export excludes unrelated form resources');
   assert.equal(doc.querySelectorAll('#formLab select:not([aria-hidden=true])').length,0,'new dropdowns never open an OS menu');
 });
 
@@ -147,7 +147,7 @@ test('a fixed sample surface remains independent of the shared appearance',t=>{
 
 test('switch thumb contrast and field/focus aliases follow their actual palette scope',t=>{
   const {read,required}=setup(t);
-  const css=postcss.parse(html.match(/<style id="atlas-styles">([\s\S]*?)<\/style>/)[1]);
+  const css=postcss.parse(html.match(/<style id="genux-styles">([\s\S]*?)<\/style>/)[1]);
   const valueFor=(selector,property)=>{let value;css.walkRules(rule=>{if(rule.parent.type==='root'&&rule.selector===selector)rule.walkDecls(property,decl=>value=decl.value);});return value;};
   const defaults=new Map();css.walkRules(rule=>{if(rule.selector===':root')rule.walkDecls(decl=>defaults.set(decl.prop,decl.value));});
   const thumb=valueFor('.ff-toggle>input:checked+.ff-switch-track::after','background')||valueFor('.ff-switch-track::after','background');

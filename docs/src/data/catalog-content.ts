@@ -22,17 +22,17 @@ export const contentComponents: ComponentDoc[] = [
         description:
           'An empty collection invites the first useful action. Creating a record changes local state only.',
         code: `import { useState } from 'react';
-import AtlasProvider from '../src/react/AtlasProvider';
-import AtlasEmptyState from '../src/react/AtlasEmptyState';
+import GenUXProvider from '../src/react/GenUXProvider';
+import GenUXEmptyState from '../src/react/GenUXEmptyState';
 
 export default function FirstUseCollection() {
   const [created, setCreated] = useState(false);
-  return <AtlasProvider appearance="docs">
-    {!created && <AtlasEmptyState kind="empty" title="No records yet"
+  return <GenUXProvider appearance="docs">
+    {!created && <GenUXEmptyState kind="empty" title="No records yet"
       description="Create your first record to start organizing this collection."
       actionLabel="Create first record" onAction={() => setCreated(true)} />}
     <p role="status">{created ? 'First local record created' : ''}</p>
-  </AtlasProvider>;
+  </GenUXProvider>;
 }`,
       },
       {
@@ -41,25 +41,25 @@ export default function FirstUseCollection() {
         description:
           'The search field keeps its value while nothing matches. Clear search restores the available record.',
         code: `import { useState } from 'react';
-import AtlasProvider from '../src/react/AtlasProvider';
-import AtlasInput from '../src/react/AtlasInput';
-import AtlasEmptyState from '../src/react/AtlasEmptyState';
+import GenUXProvider from '../src/react/GenUXProvider';
+import GenUXInput from '../src/react/GenUXInput';
+import GenUXEmptyState from '../src/react/GenUXEmptyState';
 
-const records = ['Atlas research brief'];
+const records = ['GenUX research brief'];
 
 export default function FilteredCollection() {
   const [query, setQuery] = useState('roadmap');
   const term = query.trim().toLowerCase();
   const matches = records.filter(title => title.toLowerCase().includes(term));
-  return <AtlasProvider appearance="docs">
-    <AtlasInput aria-label="Search example records" value={query}
+  return <GenUXProvider appearance="docs">
+    <GenUXInput aria-label="Search example records" value={query}
       onChange={event => setQuery(event.target.value)} allowClear />
     {matches.length > 0
       ? <ul>{matches.map(title => <li key={title}>{title}</li>)}</ul>
-      : <AtlasEmptyState kind="no-match" title="Nothing matches this search"
+      : <GenUXEmptyState kind="no-match" title="Nothing matches this search"
           description="Change your search or clear it to see the available records."
           actionLabel="Clear search" onAction={() => setQuery('')} />}
-  </AtlasProvider>;
+  </GenUXProvider>;
 }`,
       },
       {
@@ -68,24 +68,24 @@ export default function FilteredCollection() {
         description:
           'An error explains what happened and offers recovery. Try again restores the supplied local records without a request.',
         code: `import { useState } from 'react';
-import AtlasProvider from '../src/react/AtlasProvider';
-import AtlasEmptyState from '../src/react/AtlasEmptyState';
+import GenUXProvider from '../src/react/GenUXProvider';
+import GenUXEmptyState from '../src/react/GenUXEmptyState';
 
 export default function UnavailableCollection() {
   const [restored, setRestored] = useState(false);
-  return <AtlasProvider appearance="docs">
+  return <GenUXProvider appearance="docs">
     {restored
-      ? <ul><li>Atlas research brief</li></ul>
-      : <AtlasEmptyState kind="error" title="Records could not be shown"
+      ? <ul><li>GenUX research brief</li></ul>
+      : <GenUXEmptyState kind="error" title="Records could not be shown"
           description="This local example can restore its supplied records."
           actionLabel="Try again" onAction={() => setRestored(true)} />}
     <p role="status">{restored ? 'Local records restored' : ''}</p>
-  </AtlasProvider>;
+  </GenUXProvider>;
 }`,
       },
     ],
     apiDescription:
-      'AtlasEmptyState wraps native Ant Design Empty with a real heading, an explanation and one optional contextual action. The host owns the records, the action and its outcome.',
+      'GenUXEmptyState wraps native Ant Design Empty with a real heading, an explanation and one optional contextual action. The host owns the records, the action and its outcome.',
     api: [
       {
         property: 'kind',
@@ -151,7 +151,7 @@ export default function UnavailableCollection() {
       'Guidance paraphrases Refactoring UI on empty states (pages 234-236): treat the first view as an invitation to act and lead with one clear action. No book text or images are reproduced.',
       'Loading uses a progress indicator and denied access uses a permission message. Neither is an empty state.',
       'Uses existing shared component styles and tokens. No decorative card or border is added, and readable text stays at least 14 CSS px in Outfit.',
-      'Examples change local state only. They make no network request, save no data and register no GenUI capability.',
+      'Examples change local state only. They make no network request, save no data and register no GenUX capability.',
       'Browser behavior checks for these examples are in docs/browser/refactoring-ui.spec.ts.',
       'This web experiment leaves Storybook and approved component decisions unchanged.',
       'Native Ant Design 6.6.6 APIs are referenced here; browser, device and rendered accessibility acceptance remain separate from source and DOM checks.',
@@ -176,18 +176,18 @@ export default function UnavailableCollection() {
         title: 'Image and initials',
         description:
           'Each avatar receives the person name. Beside the visible name it is decorative, so the name is announced once. Without an image, initials derived from the name fill the same space.',
-        code: `import AtlasProvider from '../src/react/AtlasProvider';
-import AtlasAvatar from '../src/react/AtlasAvatar';
-import '../src/styles/atlas-avatar.css';
+        code: `import GenUXProvider from '../src/react/GenUXProvider';
+import GenUXAvatar from '../src/react/GenUXAvatar';
+import '../src/styles/genux-avatar.css';
 
 const people = ['Ada Lovelace', 'Sam Lee', 'Unknown person'];
 
 export default function PeopleList() {
-  return <AtlasProvider appearance="docs">
+  return <GenUXProvider appearance="docs">
     <ul aria-label="Avatar examples">
-      {people.map(name => <li key={name}><AtlasAvatar name={name} decorative /> {name}</li>)}
+      {people.map(name => <li key={name}><GenUXAvatar name={name} decorative /> {name}</li>)}
     </ul>
-  </AtlasProvider>;
+  </GenUXProvider>;
 }`,
       },
       {
@@ -195,15 +195,15 @@ export default function PeopleList() {
         title: 'Image unavailable',
         description:
           'This example points to a missing local image. The avatar keeps its fixed size and shape and shows initials instead. Standing alone, it keeps the person name as its accessible name.',
-        code: `import AtlasProvider from '../src/react/AtlasProvider';
-import AtlasAvatar from '../src/react/AtlasAvatar';
-import '../src/styles/atlas-avatar.css';
+        code: `import GenUXProvider from '../src/react/GenUXProvider';
+import GenUXAvatar from '../src/react/GenUXAvatar';
+import '../src/styles/genux-avatar.css';
 
 export default function MissingImage() {
-  return <AtlasProvider appearance="docs">
-    <AtlasAvatar name="Ada Lovelace" src="/atlas-avatar-missing-example.png" />
+  return <GenUXProvider appearance="docs">
+    <GenUXAvatar name="Ada Lovelace" src="/genux-avatar-missing-example.png" />
     <p>A missing image uses initials in the same reserved space.</p>
-  </AtlasProvider>;
+  </GenUXProvider>;
 }`,
       },
       {
@@ -211,21 +211,21 @@ export default function MissingImage() {
         title: 'Size and shape',
         description:
           'Size follows the shared sm, md and lg profile unless supplied. Shape stays fixed for images and initials.',
-        code: `import AtlasProvider from '../src/react/AtlasProvider';
-import AtlasAvatar from '../src/react/AtlasAvatar';
-import '../src/styles/atlas-avatar.css';
+        code: `import GenUXProvider from '../src/react/GenUXProvider';
+import GenUXAvatar from '../src/react/GenUXAvatar';
+import '../src/styles/genux-avatar.css';
 
 export default function AvatarShapes() {
-  return <AtlasProvider appearance="docs">
-    <AtlasAvatar name="Sam Lee" size="sm" />
-    <AtlasAvatar name="Sam Lee" />
-    <AtlasAvatar name="Sam Lee" size="lg" shape="square" />
-  </AtlasProvider>;
+  return <GenUXProvider appearance="docs">
+    <GenUXAvatar name="Sam Lee" size="sm" />
+    <GenUXAvatar name="Sam Lee" />
+    <GenUXAvatar name="Sam Lee" size="lg" shape="square" />
+  </GenUXProvider>;
 }`,
       },
     ],
     apiDescription:
-      'AtlasAvatar wraps native Ant Design Avatar. It derives initials from the supplied name and keeps a fixed size and shape when an image cannot load. Beside a visible name, mark it decorative so the name is announced once.',
+      'GenUXAvatar wraps native Ant Design Avatar. It derives initials from the supplied name and keeps a fixed size and shape when an image cannot load. Beside a visible name, mark it decorative so the name is announced once.',
     api: [
       {
         property: 'name',
@@ -246,7 +246,7 @@ export default function AvatarShapes() {
         type: "'sm' | 'md' | 'lg'",
         defaultValue: 'Inherited profile',
         description:
-          'Shared Atlas size. Without a value the avatar follows the surrounding size profile.',
+          'Shared GenUX size. Without a value the avatar follows the surrounding size profile.',
       },
       {
         property: 'shape',
@@ -286,7 +286,7 @@ export default function AvatarShapes() {
         property: 'shape / size',
         type: "'circle' | 'square' / number | AvatarSize",
         defaultValue: "'circle' / —",
-        description: 'Native shape and size. Atlas sizes control the rendered dimensions.',
+        description: 'Native shape and size. GenUX sizes control the rendered dimensions.',
       },
     ],
     accessibility: [
@@ -297,8 +297,8 @@ export default function AvatarShapes() {
     ],
     notes: [
       'Guidance paraphrases Refactoring UI on user-supplied images (pages 214-216): give them a fixed size and shape and a calm fallback. No book text or images are reproduced.',
-      'AtlasAvatar styles load only on this route from atlas-avatar.css. Each usage example imports that stylesheet explicitly; the component never imports it globally. Upload, cropping and profile services are outside this component.',
-      'Examples use fictional names and a deliberately missing local image path. They call no backend, save no data and register no GenUI capability.',
+      'GenUXAvatar styles load only on this route from genux-avatar.css. Each usage example imports that stylesheet explicitly; the component never imports it globally. Upload, cropping and profile services are outside this component.',
+      'Examples use fictional names and a deliberately missing local image path. They call no backend, save no data and register no GenUX capability.',
       'Browser behavior checks for these examples are in docs/browser/refactoring-ui.spec.ts.',
       'This web experiment leaves Storybook and approved component decisions unchanged.',
       'Native Ant Design 6.6.6 APIs are referenced here; browser, device and rendered accessibility acceptance remain separate from source and DOM checks.',

@@ -3,8 +3,8 @@ import ButtonDemo from '../docs/src/react/ButtonDemo';
 import ApprovedButtonStates from '../docs/src/react/ButtonStates';
 import ApprovedButtonDimensions from '../docs/src/react/ButtonDimensions';
 import ApprovedButtonVisuals from '../docs/src/react/ButtonVisualDecisions';
-import AtlasLayeredButton from '../docs/src/react/AtlasLayeredButton';
-import AtlasProvider from '../docs/src/react/AtlasProvider';
+import GenUXLayeredButton from '../docs/src/react/GenUXLayeredButton';
+import GenUXProvider from '../docs/src/react/GenUXProvider';
 
 const meta = {
   title: 'Components/Button',
@@ -35,8 +35,8 @@ export const ApprovedVisuals: Story = {
 export const LayeredFlatEight: Story = {
   name: 'Layered flat · 8 px',
   render: () => (
-    <AtlasProvider>
-      <AtlasLayeredButton />
-    </AtlasProvider>
+    <GenUXProvider>
+      <GenUXLayeredButton />
+    </GenUXProvider>
   ),
 };

@@ -87,7 +87,7 @@ function installFocusProbe(): void {
   const TEXT_BUTTON =
     '.ant-btn-link, .ant-btn-text, .ant-btn-variant-link, .ant-btn-variant-text, [data-fill=text], [data-fill=link]';
   const ICON_BUTTON =
-    '.ant-btn-icon-only, [data-icon-only], .atlas-slot-button, [data-slot-button]';
+    '.ant-btn-icon-only, [data-icon-only], .genux-slot-button, [data-slot-button]';
   const FIELD_OWNER = '.ant-input-affix-wrapper, .ant-input-number, .ant-select, .ant-picker';
   const ITEM_OWNER =
     'li, [role=option], [role=menuitem], [role=treeitem], [role=tab], .ant-menu-item, .ant-dropdown-menu-item, .ant-select-item, .ant-tabs-tab';
@@ -267,7 +267,7 @@ function installFocusProbe(): void {
     };
     add(el);
     add(el.parentElement);
-    for (const selector of ['label', '.atlas-input-frame', FIELD_OWNER, ITEM_OWNER, CHOICE_OWNER])
+    for (const selector of ['label', '.genux-input-frame', FIELD_OWNER, ITEM_OWNER, CHOICE_OWNER])
       add(el.closest(selector));
     for (const scope of [el, el.closest('label')])
       if (scope) for (const d of Array.from(scope.querySelectorAll('*')).slice(0, 40)) add(d);
@@ -303,7 +303,7 @@ function installFocusProbe(): void {
 
   /* The field paint owner: the frame or Ant wrapper that paints the well and bottom marker. */
   const fieldOwner = (el: Element): Element =>
-    el.closest('.atlas-input-frame') ?? el.closest(FIELD_OWNER) ?? el;
+    el.closest('.genux-input-frame') ?? el.closest(FIELD_OWNER) ?? el;
   /* A field wrapper shared with sibling inputs (e.g. a range picker) keeps focus while Tab moves
      between them, so its rest style is only readable once focus leaves that owner. */
   const sharedOwner = (el: Element): Element | null => {
@@ -898,7 +898,7 @@ function installFocusProbe(): void {
 const route = (path: string): string =>
   new URL(
     path,
-    test.info().project.use.baseURL ?? process.env.ATLAS_DOCS_URL ?? 'http://127.0.0.1:4324',
+    test.info().project.use.baseURL ?? process.env.GENUX_DOCS_URL ?? 'http://127.0.0.1:4324',
   ).href;
 
 const settle = async (page: Page): Promise<void> => {
@@ -1001,7 +1001,7 @@ const representatives: Representative[] = [
   {
     name: 'Select',
     path: '/components/select/',
-    target: page => page.locator('.atlas-demo .ant-select').first(),
+    target: page => page.locator('.genux-demo .ant-select').first(),
     stateful: true,
   },
   {
@@ -1027,19 +1027,19 @@ const representatives: Representative[] = [
   {
     name: 'Button',
     path: '/components/button/',
-    target: page => page.locator('.atlas-demo .atlas-button').first(),
+    target: page => page.locator('.genux-demo .genux-button').first(),
     stateful: false,
   },
   {
     name: 'Checkbox',
     path: '/components/checkbox/',
-    target: page => page.locator('.atlas-demo .ant-checkbox-wrapper').first(),
+    target: page => page.locator('.genux-demo .ant-checkbox-wrapper').first(),
     stateful: true,
   },
   {
     name: 'Switch',
     path: '/components/switch/',
-    target: page => page.locator('.atlas-demo .ant-switch').first(),
+    target: page => page.locator('.genux-demo .ant-switch').first(),
     stateful: true,
   },
 ];
@@ -1103,7 +1103,7 @@ function focusState(target?: Element | null): FocusState {
   const active = document.activeElement;
   const el = target ?? active ?? document.body;
   const frame =
-    el.closest('.atlas-input-frame') ??
+    el.closest('.genux-input-frame') ??
     el.closest('.ant-input-affix-wrapper, .ant-input-number, .ant-select, .ant-picker') ??
     el;
   const probe = document.createElement('span');
@@ -1149,7 +1149,7 @@ function focusState(target?: Element | null): FocusState {
     action &&
     linkInk !== null &&
     (el.textContent ?? '').trim() !== '' &&
-    [el, ...Array.from(el.querySelectorAll('.atlas-button-content > span'))].some(t => {
+    [el, ...Array.from(el.querySelectorAll('.genux-button-content > span'))].some(t => {
       const cs = getComputedStyle(t);
       return (
         cs.textDecorationLine.includes('underline') &&
@@ -1254,11 +1254,11 @@ test('FOCUS-01c: only Tab/Shift+Tab turns visible focus mode on; pointer turns i
   await point(workspace, 0.5);
   state = await field();
   check(state.isTarget && off(state), 'pointer focus must keep visible focus mode off', state);
-  await page.keyboard.type('Atlas');
+  await page.keyboard.type('GenUX');
   await settle(page);
   state = await field();
   check(
-    state.isTarget && off(state) && state.value === 'Atlas',
+    state.isTarget && off(state) && state.value === 'GenUX',
     'typing before Tab must not turn visible focus mode on',
     state,
   );
@@ -1292,7 +1292,7 @@ test('FOCUS-01c: only Tab/Shift+Tab turns visible focus mode on; pointer turns i
   check(
     state.isTarget &&
       off(state) &&
-      state.value === 'Atlas' &&
+      state.value === 'GenUX' &&
       state.caret[0] === 5 &&
       state.caret[1] === 5,
     'pointer must turn visible focus mode off without blur, input or caret loss',

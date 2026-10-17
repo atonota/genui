@@ -1,7 +1,7 @@
 ---
 import { components } from '../../data/catalog';
-import { foundationGroups } from '../../data/foundation-navigation';
-import atlas from '../../data/atlas.json';
+import { foundationGroups, genuxPageHref } from '../../data/foundation-navigation';
+import genux from '../../data/genux.json';
 import { inputPaddingInline, inputSurfaceAliasVariables } from '../../data/input-surfaces';
 import './nav.css';
 
@@ -11,19 +11,21 @@ interface Props {
 
 const { slug } = Astro.props;
 const groups = [...new Set(components.map(component => component.category))];
+// Base-aware so Pages publishes the product route as /genux/genux/, distinct from its base.
+const genuxHref = genuxPageHref(import.meta.env.BASE_URL);
 
-/* Static AtlasInputFrame adapter: atlas-input.css paints the search well from the shared
-   field model and the md size profile (atlasSizeProfiles reads the same atlas.json), while
+/* Static GenUXInputFrame adapter: genux-input.css paints the search well from the shared
+   field model and the md size profile (genuxSizeProfiles reads the same genux.json), while
    the native input stays the DocsLayout filter target without an island. It opts into the
    shared underlined variant, whose functional bottom edge identifies the field at rest. */
 const searchSize = 'md';
-const searchHeight = atlas.decisions.buttons.size_variants.find(
+const searchHeight = genux.decisions.buttons.size_variants.find(
   profile => profile.value === searchSize,
 )?.height_px;
 const searchFrameStyle: Record<string, string> = {
   ...inputSurfaceAliasVariables(),
-  '--atlas-input-padding-inline': `${inputPaddingInline[searchSize]}px`,
-  ...(searchHeight != null ? { '--atlas-input-height': `${searchHeight}px` } : {}),
+  '--genux-input-padding-inline': `${inputPaddingInline[searchSize]}px`,
+  ...(searchHeight != null ? { '--genux-input-height': `${searchHeight}px` } : {}),
 };
 ---
 
@@ -35,8 +37,8 @@ const searchFrameStyle: Record<string, string> = {
     <label class="nav-search">
       <span data-i18n="Find a component">Find a component</span>
       <span
-        class="atlas-input-frame"
-        data-atlas-input="text"
+        class="genux-input-frame"
+        data-genux-input="text"
         data-size={searchSize}
         data-variant="underlined"
         style={searchFrameStyle}
@@ -44,7 +46,7 @@ const searchFrameStyle: Record<string, string> = {
         <input
           type="search"
           id="component-search"
-          class="atlas-input-native"
+          class="genux-input-native"
           placeholder="Button, Input, Drawer…"
           data-i18n-placeholder="Button, Input, Drawer…"
           autocomplete="off"
@@ -58,7 +60,10 @@ const searchFrameStyle: Record<string, string> = {
           <ul class="nav-foundations">
             {group.links.map(item => (
               <li>
-                <a href={item.href} aria-current={slug === item.slug ? 'page' : undefined}>
+                <a
+                  href={item.slug === 'genux' ? genuxHref : item.href}
+                  aria-current={slug === item.slug ? 'page' : undefined}
+                >
                   <span data-i18n={item.label}>{item.label}</span>
                 </a>
               </li>

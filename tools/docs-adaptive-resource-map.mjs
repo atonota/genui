@@ -5,7 +5,7 @@
 //
 // buildAdaptiveResourceMap({ outDir, base = '/' }) resolves to
 // { outDir, base, manifestPath, profiles: Record<LayoutProfile, Group & { source, entry }>,
-//   features: { genuiLab: Group & { sources, entry, entries } },
+//   features: { genuxLab: Group & { sources, entry, entries } },
 //   baseline: Group & { html, roots }, ownership: Record<url, { sources, owners }> }
 // with Group = { js, css, assets, dynamicImports, files }.
 // Paths are base-prefixed URLs, files maps each URL to { sha256, bytes }, and dynamicImports are
@@ -20,8 +20,8 @@ import { init, parse } from 'es-module-lexer';
 export const adaptiveProfiles = ['phone', 'tablet', 'laptop', 'desktop', 'wide', 'living-room'];
 export const ADAPTIVE_MANIFEST = 'adaptive-manifest.json';
 export const ADAPTIVE_OWNERSHIP = 'adaptive-ownership.json';
-// Every owner the docs build may name: the six layout profiles and the GenUI card lab.
-export const adaptiveOwners = [...adaptiveProfiles, 'genuiLab'];
+// Every owner the docs build may name: the six layout profiles and the GenUX card lab.
+export const adaptiveOwners = [...adaptiveProfiles, 'genuxLab'];
 
 // Resolves emitted URLs without a server; other origins are external, never emitted files.
 const ORIGIN = 'http://docs.invalid';
@@ -32,11 +32,11 @@ const ENTITIES = { amp: '&', quot: '"', apos: "'", '#39': "'", lt: '<', gt: '>' 
 const CSS_REFERENCE = /url\(\s*(['"]?)([^'")]+?)\1\s*\)|@import\s+(['"])([^'"]+)\3/g;
 const MACHINE_PATH = /^(?:[/\\]|[a-z]:[/\\])/i;
 const MAX_DEPTH = 4;
-// Literal source suffixes of the GenUI card lab feature; each must match one manifest key.
-const GENUI_LAB_SOURCES = [
-  'src/react/genui/GenUICardLab.tsx',
-  'src/styles/genui-card-lab.css?url',
-  'src/styles/genui-runtime.css?url',
+// Literal source suffixes of the GenUX card lab feature; each must match one manifest key.
+const GENUX_LAB_SOURCES = [
+  'src/react/genux/GenUXCardLab.tsx',
+  'src/styles/genux-card-lab.css?url',
+  'src/styles/genux-runtime.css?url',
 ];
 
 const sha256 = data => createHash('sha256').update(data).digest('hex');
@@ -213,16 +213,16 @@ async function featureGroup(read, manifest, sources, base, ownersOf) {
   const groups = [];
   for (const source of sources) {
     const group = await profileGroup(read, manifest, source, base);
-    if (!ownersOf(group.entry, 'genuiLab entry').includes('genuiLab'))
+    if (!ownersOf(group.entry, 'genuxLab entry').includes('genuxLab'))
       throw new Error(
-        `${ADAPTIVE_OWNERSHIP} does not give ${source} entry ${group.entry} to genuiLab.`,
+        `${ADAPTIVE_OWNERSHIP} does not give ${source} entry ${group.entry} to genuxLab.`,
       );
-    // A ?url entry may be a URL proxy; the stylesheet it names must be genuiLab's own.
+    // A ?url entry may be a URL proxy; the stylesheet it names must be genuxLab's own.
     if (
       source.endsWith('.css?url') &&
-      !group.css.some(url => ownersOf(url, 'genuiLab stylesheet').includes('genuiLab'))
+      !group.css.some(url => ownersOf(url, 'genuxLab stylesheet').includes('genuxLab'))
     )
-      throw new Error(`${ADAPTIVE_OWNERSHIP} gives no stylesheet of ${source} to genuiLab.`);
+      throw new Error(`${ADAPTIVE_OWNERSHIP} gives no stylesheet of ${source} to genuxLab.`);
     groups.push(group);
   }
   const merged = name => unique(groups.flatMap(group => group[name]));
@@ -352,7 +352,7 @@ export function assertAdaptiveResourceIsolation(map, allowedOwners = ['phone']) 
     throw new Error(`Adaptive resource map has no ${ADAPTIVE_OWNERSHIP} records.`);
   const groups = [['baseline', map.baseline]];
   for (const owner of allowedOwners)
-    groups.push([owner, owner === 'genuiLab' ? map.features?.genuiLab : map.profiles?.[owner]]);
+    groups.push([owner, owner === 'genuxLab' ? map.features?.genuxLab : map.profiles?.[owner]]);
   for (const [label, group] of groups) {
     if (!group) throw new Error(`Adaptive resource map has no ${label} group.`);
     const code = unique([...group.js, ...group.css]);
@@ -439,7 +439,7 @@ export async function buildAdaptiveResourceMap({ outDir, base = '/' }) {
         .map(url => [url, files.get(url)]),
     ),
   });
-  const genuiLab = GENUI_LAB_SOURCES.map(suffix => {
+  const genuxLab = GENUX_LAB_SOURCES.map(suffix => {
     const keys = keysEnding(manifest, suffix);
     if (keys.length !== 1)
       throw new Error(`${ADAPTIVE_MANIFEST} needs one ${suffix} entry, found ${keys.length}.`);
@@ -459,13 +459,13 @@ export async function buildAdaptiveResourceMap({ outDir, base = '/' }) {
       );
     profiles[profile] = withFiles(group);
   }
-  const feature = await featureGroup(read, manifest, genuiLab, prefix, ownersOf);
+  const feature = await featureGroup(read, manifest, genuxLab, prefix, ownersOf);
   const map = {
     outDir: posix(path.relative(process.cwd(), root)) || '.',
     base: prefix,
     manifestPath: posix(path.relative(root, file)),
     profiles,
-    features: { genuiLab: withFiles(covered(feature, 'genuiLab')) },
+    features: { genuxLab: withFiles(covered(feature, 'genuxLab')) },
     baseline: withFiles(covered(await baselineGroup(read, prefix), 'baseline')),
     ownership,
   };

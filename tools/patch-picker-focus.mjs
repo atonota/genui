@@ -27,7 +27,7 @@ const targets = [
 const nl = String.fromCharCode(10);
 const guard = ['      if (index !== nextIndex) {', "        return 'abort';", '      }'];
 const focusSwitch = [
-  '      // Atlas compatibility patch (tools/patch-picker-focus.mjs): an empty field that does',
+  '      // GenUX compatibility patch (tools/patch-picker-focus.mjs): an empty field that does',
   '      // not allow empty discards its draft and follows the focused next field unsubmitted.',
   '      if (currentEmpty && !allowEmpty[currentIndex]) {',
   "        return 'resetCurrentAndSwitchNext';",

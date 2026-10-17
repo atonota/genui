@@ -4,12 +4,12 @@ import DataEntryCatalog from './DataEntryCatalog';
 import ExamplePreview from './ExamplePreview';
 import { useState, type CSSProperties } from 'react';
 import { Checkbox, Select } from 'antd';
-import AtlasProvider from './AtlasProvider';
-import AtlasSelectionVariants from './AtlasSelectionVariants';
-import { TweakerSettings } from './AtlasTweaker';
-import atlas from '../data/atlas.json';
+import GenUXProvider from './GenUXProvider';
+import GenUXSelectionVariants from './GenUXSelectionVariants';
+import { TweakerSettings } from './GenUXTweaker';
+import genux from '../data/genux.json';
 const choices = ['Tasarım', 'Mühendislik', 'Operasyon'];
-const buttonOptions = atlas.decisions.buttons;
+const buttonOptions = genux.decisions.buttons;
 
 export function WebCheckboxDemo({ documentation = false }: { documentation?: boolean } = {}) {
   return <CheckboxDemo appearanceControls documentation={documentation} />;
@@ -71,7 +71,7 @@ export default function CheckboxDemo({
     </>
   );
   return (
-    <AtlasProvider
+    <GenUXProvider
       appearance={documentation ? 'docs' : undefined}
       sizeFamily={documentation ? 'selection' : 'component'}
     >
@@ -135,8 +135,8 @@ export default function CheckboxDemo({
                 id: 'selection-variants',
                 title: t('Selection layouts and cards'),
                 description: t('Choose any workspaces.'),
-                // Each layout owns its workbench inside AtlasSelectionVariants.
-                content: <AtlasSelectionVariants kind="checkbox" />,
+                // Each layout owns its workbench inside GenUXSelectionVariants.
+                content: <GenUXSelectionVariants kind="checkbox" />,
               },
             ]}
           />
@@ -152,11 +152,11 @@ export default function CheckboxDemo({
             </section>
             <section className="example-block">
               <h3 className="variant-heading">{t('Selection layouts and cards')}</h3>
-              <AtlasSelectionVariants kind="checkbox" />
+              <GenUXSelectionVariants kind="checkbox" />
             </section>
           </>
         )}
       </div>
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }

@@ -15,7 +15,7 @@ export const getInputModalitySnapshot = (): InputModality =>
 export const getServerInputModalitySnapshot = (): InputModality => 'pointer';
 
 /** Internal visual signal between linked documents; its detail is the next modality. */
-export const inputModalityBridgeEvent = 'atlas-input-modality-bridge';
+export const inputModalityBridgeEvent = 'genux-input-modality-bridge';
 
 /** Plain Tab and Shift+Tab are the only keys the document listener reads to turn focus on. */
 export const isModalityTabKey = (event: KeyboardEvent): boolean =>
@@ -74,11 +74,11 @@ export const spatialSurfaceSelector = '[data-adaptive-surface="living-room"]';
 
 const declaredSurfaceSelector = '[data-adaptive-surface]';
 const controllerSelector = '[data-adaptive-shell]';
-/** Provider owner and its body-level portal root (AtlasProvider marks both). */
-const providerOwnerSelector = '[data-atlas-provider-owner]';
+/** Provider owner and its body-level portal root (GenUXProvider marks both). */
+const providerOwnerSelector = '[data-genux-provider-owner]';
 /** Portal owners: a provider owner, or a Shell controller that owns its own body portal. */
 const portalOwnerSelector = `${providerOwnerSelector}, ${controllerSelector}`;
-const portalSelector = '[data-atlas-portal]';
+const portalSelector = '[data-genux-portal]';
 /** Private portal -> actual owner map; only a live registration links them, never an id. */
 const portalOwners = new WeakMap<Element, Element>();
 /** Live registrations per document and their registry listeners; neither writes the modality. */

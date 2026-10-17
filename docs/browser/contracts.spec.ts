@@ -1,5 +1,5 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
-import atlas from '../src/data/atlas.json' with { type: 'json' };
+import genux from '../src/data/genux.json' with { type: 'json' };
 import motion from '../src/data/motion.json' with { type: 'json' };
 
 // These are future browser acceptance contracts for the Astro documentation.
@@ -48,7 +48,7 @@ test('documentation uses exact blue and readable foreground in both themes befor
   await visit(page, 'form');
   const button = page
     .locator(
-      '.atlas-button[data-docs-brand-default="true"][data-docs-brand-tone="middle"][data-fill="solid"]:not([disabled])',
+      '.genux-button[data-docs-brand-default="true"][data-docs-brand-tone="middle"][data-fill="solid"]:not([disabled])',
     )
     .first();
   await page.mouse.move(0, 0);
@@ -330,7 +330,7 @@ async function visit(page: Page, slug: string) {
   await page.evaluate(async () => {
     await document.fonts.ready;
   });
-  await expect(page.locator('#examples .atlas-demo').first()).toBeVisible();
+  await expect(page.locator('#examples .genux-demo').first()).toBeVisible();
 }
 
 async function choose(page: Page, field: Locator, label: string) {
@@ -597,7 +597,7 @@ test('Button catalog navigation preserves preview drafts and keyboard access in 
   await page.getByRole('textbox', { name: 'Text', exact: true }).fill('Retained button draft');
   await page.keyboard.press('Escape');
   await expect(trigger).toBeFocused();
-  const preview = catalog.locator('.playground-preview .atlas-button');
+  const preview = catalog.locator('.playground-preview .genux-button');
   for (const mode of ['light', 'dark']) {
     if ((await page.locator('html').getAttribute('data-theme')) !== mode)
       await page.getByRole('switch', { name: 'Dark theme', exact: true }).click();
@@ -615,7 +615,7 @@ test('Button catalog navigation preserves preview drafts and keyboard access in 
       await expect(decrease).toBeFocused();
       const focus = await decrease.evaluate(node => {
         const owner = getComputedStyle(node);
-        const content = node.querySelector('.atlas-button-content');
+        const content = node.querySelector('.genux-button-content');
         if (!content) throw new Error('Icon action is missing the shared content/focus layer');
         const marker = getComputedStyle(content, '::after');
         return {
@@ -684,7 +684,7 @@ test('Responsive boundaries preserve edits and usable navigation', async ({ page
   for (const width of [639, 640, 641, 991, 992, 993, 1279, 1280, 1281]) {
     await page.setViewportSize({ width, height: 900 });
     await expect(page.getByLabel('Text', { exact: true })).toHaveValue('Korunan kullanıcı girdisi');
-    await expect(page.locator('.playground-preview .atlas-button')).toHaveText(
+    await expect(page.locator('.playground-preview .genux-button')).toHaveText(
       'Korunan kullanıcı girdisi',
     );
     await expect(page.locator('#navigation nav')).toBeVisible();
@@ -823,7 +823,7 @@ test('shared click feedback uses native Button paint and the committed Slider po
     expect
       .poll(() =>
         handle.evaluate(node => {
-          const overlay = document.querySelector('[data-atlas-feedback="click"]');
+          const overlay = document.querySelector('[data-genux-feedback="click"]');
           if (!overlay) return false;
           const actual = overlay.getBoundingClientRect(),
             expected = node.getBoundingClientRect();
@@ -836,7 +836,7 @@ test('shared click feedback uses native Button paint and the committed Slider po
   await page.goto('/color-system/');
   const action = page.locator('.color-preview-button');
   await action.click();
-  const wave = page.locator('[data-atlas-feedback="click"]');
+  const wave = page.locator('[data-genux-feedback="click"]');
   await action.click();
   await expect(wave).toHaveCount(1);
   const painted = await action.evaluate(node => getComputedStyle(node, '::before').backgroundColor);
@@ -872,16 +872,16 @@ test('Quantity actions stay flat and borderless through profile changes and pres
 }) => {
   await page.setViewportSize({ width: 320, height: 800 });
   await visit(page, 'input');
-  const stepper = page.locator('.atlas-number-stepper').first();
+  const stepper = page.locator('.genux-number-stepper').first();
   const action = stepper.getByRole('button', { name: 'Increase', exact: true });
   for (const mode of ['light', 'dark']) {
     if ((await page.locator('html').getAttribute('data-theme')) !== mode)
       await page.getByRole('switch', { name: 'Dark theme', exact: true }).click();
     for (const [index, height] of [48, 56, 64].entries()) {
       await page.getByRole('button', { name: 'Open tweaker', exact: true }).click();
-      await page.locator('.atlas-size-options .ant-segmented-item').nth(index).click();
+      await page.locator('.genux-size-options .ant-segmented-item').nth(index).click();
       await page.getByRole('button', { name: 'Close tweaker', exact: true }).click();
-      for (const button of await stepper.locator('.atlas-button').all()) {
+      for (const button of await stepper.locator('.genux-button').all()) {
         const appearance = await button.evaluate(node => {
           const style = getComputedStyle(node),
             face = getComputedStyle(node, '::before');
@@ -917,9 +917,9 @@ test('Quantity actions stay flat and borderless through profile changes and pres
 
 test('All ten shadow choices paint correctly and pressing removes shadow', async ({ page }) => {
   await visit(page, 'button');
-  const button = page.locator('.playground-preview .atlas-button');
-  expect(atlas.experiments.shadow_variants).toHaveLength(10);
-  for (const shadow of atlas.experiments.shadow_variants) {
+  const button = page.locator('.playground-preview .genux-button');
+  expect(genux.experiments.shadow_variants).toHaveLength(10);
+  for (const shadow of genux.experiments.shadow_variants) {
     await choose(page, page.locator('#button-shadow'), shadow.label);
     if (shadow.value === 'none') await expect(button).toHaveCSS('box-shadow', 'none');
     else {
@@ -936,7 +936,7 @@ test('All ten shadow choices paint correctly and pressing removes shadow', async
   await choose(
     page,
     page.locator('#button-state'),
-    atlas.decisions.buttons.state_variants.find(item => item.value === 'pressed')!.label,
+    genux.decisions.buttons.state_variants.find(item => item.value === 'pressed')!.label,
   );
   await expect(button).toHaveCSS('box-shadow', 'none');
 });
@@ -948,10 +948,10 @@ test('Hover and press keep button root and label fixed while flat depth changes'
   await choose(
     page,
     page.locator('#button-palette'),
-    atlas.decisions.buttons.palette_variants.find(item => item.value === 'coral')!.label,
+    genux.decisions.buttons.palette_variants.find(item => item.value === 'coral')!.label,
   );
-  const button = page.locator('.playground-preview .atlas-button');
-  const label = button.locator('.atlas-button-content > span');
+  const button = page.locator('.playground-preview .genux-button');
+  const label = button.locator('.genux-button-content > span');
   await page.mouse.move(0, 0);
   await expect(button).toHaveCSS('opacity', '0.9');
   const rootBefore = await documentRect(button);
@@ -959,7 +959,7 @@ test('Hover and press keep button root and label fixed while flat depth changes'
   await choose(
     page,
     page.locator('#button-state'),
-    atlas.decisions.buttons.state_variants.find(item => item.value === 'hover')!.label,
+    genux.decisions.buttons.state_variants.find(item => item.value === 'hover')!.label,
   );
   await expect(button).toHaveCSS('opacity', '1');
   expectFixedRect(await documentRect(button), rootBefore);
@@ -967,7 +967,7 @@ test('Hover and press keep button root and label fixed while flat depth changes'
   await choose(
     page,
     page.locator('#button-state'),
-    atlas.decisions.buttons.state_variants.find(item => item.value === 'pressed')!.label,
+    genux.decisions.buttons.state_variants.find(item => item.value === 'pressed')!.label,
   );
   await expect(button).toHaveCSS('opacity', '1');
   await expect
@@ -1008,13 +1008,13 @@ test('Button feedback caps every press and release layer below Switch motion', a
   const expectedMs = motion.durationMs['button-feedback'];
   expect(expectedMs).toBeLessThanOrEqual(motion.durationMs.selection);
   for (const fill of ['solid', 'outline']) {
-    const button = page.locator(`.atlas-button-visuals .atlas-button[data-fill='${fill}']`).first();
+    const button = page.locator(`.genux-button-visuals .genux-button[data-fill='${fill}']`).first();
     const restOpacity =
       (await button.getAttribute('data-docs-brand-default')) === 'true' ? '1' : '0.9';
-    const label = button.locator('.atlas-button-content');
+    const label = button.locator('.genux-button-content');
     const timing = () =>
       button.evaluate(node => {
-        const lip = node.querySelector('.atlas-button-lip');
+        const lip = node.querySelector('.genux-button-lip');
         return [
           getComputedStyle(node),
           getComputedStyle(node, '::before'),
@@ -1038,7 +1038,7 @@ test('Button feedback caps every press and release layer below Switch motion', a
     };
     const depth = () =>
       button.evaluate(node => {
-        const lip = node.querySelector('.atlas-button-lip');
+        const lip = node.querySelector('.genux-button-lip');
         return lip
           ? getComputedStyle(lip, '::after').height
           : getComputedStyle(node, '::before').bottom;
@@ -1081,13 +1081,13 @@ test('Button feedback caps every press and release layer below Switch motion', a
 
 test('Icons occupy all four real positions for both icon families', async ({ page }) => {
   await visit(page, 'button');
-  const button = page.locator('.playground-preview .atlas-button');
+  const button = page.locator('.playground-preview .genux-button');
   await choose(
     page,
     page.locator('#button-icon'),
-    atlas.experiments.icon_options.name.find(item => item.value === 'arrowRight')!.label,
+    genux.experiments.icon_options.name.find(item => item.value === 'arrowRight')!.label,
   );
-  for (const library of atlas.experiments.icon_options.library.map(item => item.label)) {
+  for (const library of genux.experiments.icon_options.library.map(item => item.label)) {
     await choose(page, page.locator('#button-icon-library'), library);
     for (const [name, direction] of [
       ['Left', 'left'],
@@ -1096,8 +1096,8 @@ test('Icons occupy all four real positions for both icon families', async ({ pag
       ['Bottom', 'bottom'],
     ]) {
       await choose(page, page.locator('#button-icon-position'), name);
-      const icon = await documentRect(button.locator('.atlas-icon'));
-      const label = await documentRect(button.locator('.atlas-button-content > span'));
+      const icon = await documentRect(button.locator('.genux-icon'));
+      const label = await documentRect(button.locator('.genux-button-content > span'));
       if (direction === 'left') expect(icon.x + icon.width).toBeLessThanOrEqual(label.x + 1);
       if (direction === 'right') expect(icon.x).toBeGreaterThanOrEqual(label.x + label.width - 1);
       if (direction === 'top') expect(icon.y + icon.height).toBeLessThanOrEqual(label.y + 1);
@@ -1119,11 +1119,11 @@ test('Manual statuses remain explicit previews with correct busy and disabled se
     )
       mutations.push(request.url());
   });
-  const button = page.locator('.playground-preview .atlas-button');
+  const button = page.locator('.playground-preview .genux-button');
   await expect(page.getByText('State · approved / experimental', { exact: true })).toBeVisible();
   for (const state of [
-    ...atlas.decisions.buttons.state_variants,
-    ...atlas.experiments.state_variants,
+    ...genux.decisions.buttons.state_variants,
+    ...genux.experiments.state_variants,
   ]) {
     await choose(page, page.locator('#button-state'), state.label);
     await expect(button).toHaveAttribute('aria-busy', String(state.busy));
@@ -1257,12 +1257,12 @@ test('selection profiles keep exact visual dimensions and independent hit and fo
   const sizes = [32, 40, 50];
   const chooseSize = async (index: number) => {
     await page.getByRole('button', { name: 'Open tweaker', exact: true }).click();
-    await expect(page.locator('.atlas-size-options .ant-segmented-item-label')).toHaveText([
+    await expect(page.locator('.genux-size-options .ant-segmented-item-label')).toHaveText([
       'Small · 32 px',
       'Medium · 40 px',
       'Large · 50 px',
     ]);
-    await page.locator('.atlas-size-options .ant-segmented-item').nth(index).click();
+    await page.locator('.genux-size-options .ant-segmented-item').nth(index).click();
     await page.getByRole('button', { name: 'Close tweaker', exact: true }).click();
   };
   for (const mode of ['light', 'dark']) {
@@ -1369,10 +1369,10 @@ test('Reduced motion removes animated icon motion and component transitions', as
   await choose(
     page,
     page.locator('#button-icon-motion'),
-    atlas.experiments.icon_options.motion.find(item => item.value === 'spin')!.label,
+    genux.experiments.icon_options.motion.find(item => item.value === 'spin')!.label,
   );
-  const button = page.locator('.playground-preview .atlas-button');
-  await expect(button.locator('.atlas-icon')).toHaveCSS('animation-name', 'none');
+  const button = page.locator('.playground-preview .genux-button');
+  await expect(button.locator('.genux-icon')).toHaveCSS('animation-name', 'none');
   const durations = await button.evaluate(node =>
     getComputedStyle(node).transitionDuration.split(',').map(parseFloat),
   );
@@ -1383,7 +1383,7 @@ test('Reduced motion removes animated icon motion and component transitions', as
   expect(faceDurations.every(duration => duration === 0)).toBe(true);
 });
 
-test('Workspace table scroll is contained and tree expansion uses an Atlas target', async ({
+test('Workspace table scroll is contained and tree expansion uses an GenUX target', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 320, height: 720 });
@@ -1463,7 +1463,7 @@ test('Docked details preserve two reachable scroll regions at phone landscape he
   await expect(pane).toBeVisible();
   await expect(results).toBeVisible();
   const geometry = await page
-    .locator('#record-details-splitter .atlas-splitter-native')
+    .locator('#record-details-splitter .genux-splitter-native')
     .evaluate(node => {
       const root = node.getBoundingClientRect();
       return [...node.querySelectorAll(':scope > .ant-splitter-panel')].map(child => ({
@@ -1582,12 +1582,12 @@ test('Pill master retains distinct managed surfaces and component-owned automati
     ).toBeGreaterThanOrEqual(48);
     const group = page.locator('[data-pill-automatic]');
     const before = await group
-      .locator('.atlas-pill')
+      .locator('.genux-pill')
       .evaluateAll(nodes => nodes.map(node => node.getAttribute('data-pill-color')));
     await group.getByRole('button', { name: 'Add tag', exact: true }).click();
-    await expect(group.locator('.atlas-pill[data-pill-color]')).toHaveCount(before.length + 1);
+    await expect(group.locator('.genux-pill[data-pill-color]')).toHaveCount(before.length + 1);
     const after = await group
-      .locator('.atlas-pill')
+      .locator('.genux-pill')
       .evaluateAll(nodes => nodes.map(node => node.getAttribute('data-pill-color')));
     expect(after.slice(0, -1)).toEqual(before);
     expect(after.at(-1)).not.toBe(before.at(-1));
@@ -1595,7 +1595,7 @@ test('Pill master retains distinct managed surfaces and component-owned automati
   }
 });
 
-test('Card purpose catalog preserves task focus, form drafts and optional GenUI from 320 px upward', async ({
+test('Card purpose catalog preserves task focus, form drafts and optional GenUX from 320 px upward', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 320, height: 800 });
@@ -1604,7 +1604,7 @@ test('Card purpose catalog preserves task focus, form drafts and optional GenUI 
   await expect(catalog.locator(':scope > section')).toHaveCount(5);
   await expect(catalog.locator('#card-catalog')).toHaveAttribute('data-purpose-count', '23');
   await expect(catalog.locator('#card-catalog')).toHaveAttribute('data-recipe-count', '37');
-  await expect(catalog.locator('.atlas-genui-runtime')).toHaveCount(0);
+  await expect(catalog.locator('.genux-genux-runtime')).toHaveCount(0);
   const interactions = catalog.locator('#card-interactions');
   const draft = interactions.getByRole('textbox', { name: /Review title/ });
   await draft.fill('');
@@ -1633,29 +1633,29 @@ test('Card purpose catalog preserves task focus, form drafts and optional GenUI 
   }
   await page.getByRole('switch', { name: 'Dark theme', exact: true }).click();
   await expect(draft).toHaveValue('A retained Card review note.');
-  await catalog.getByRole('button', { name: 'Open GenUI lab', exact: true }).click();
-  await expect(catalog.locator('[data-genui-lab]')).toBeVisible();
+  await catalog.getByRole('button', { name: 'Open GenUX lab', exact: true }).click();
+  await expect(catalog.locator('[data-genux-lab]')).toBeVisible();
   await catalog.getByRole('button', { name: 'Run recorded stream', exact: true }).click();
-  await expect(catalog.locator('.genui-run-result')).toContainText('Recorded stream complete');
-  await expect(catalog.locator('.atlas-genui-runtime .atlas-card')).toHaveCount(3);
-  await catalog.getByRole('button', { name: 'Close GenUI lab', exact: true }).click();
+  await expect(catalog.locator('.genux-run-result')).toContainText('Recorded stream complete');
+  await expect(catalog.locator('.genux-genux-runtime .genux-card')).toHaveCount(3);
+  await catalog.getByRole('button', { name: 'Close GenUX lab', exact: true }).click();
   await expect(draft).toHaveValue('A retained Card review note.');
 });
 
-test('GenUI Task Card keeps grouped selections and scrolls tables inside320px', async ({
+test('GenUX Task Card keeps grouped selections and scrolls tables inside320px', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 320, height: 800 });
   await visit(page, 'card');
-  await page.getByRole('button', { name: 'Open GenUI lab', exact: true }).click();
-  const lab = page.locator('[data-genui-lab]');
+  await page.getByRole('button', { name: 'Open GenUX lab', exact: true }).click();
+  const lab = page.locator('[data-genux-lab]');
   const scenario = lab.getByRole('combobox', { name: 'Recorded scenario', exact: true });
   await scenario.click();
   for (let index = 0; index < 8; index++) await scenario.press('ArrowDown');
   await scenario.press('Enter');
   await lab.getByRole('button', { name: 'Run recorded stream', exact: true }).click();
-  await expect(lab.locator('.genui-run-result')).toContainText('5 frames received · 5 accepted');
-  const table = lab.locator('.genui-data-block .ant-table-content').first();
+  await expect(lab.locator('.genux-run-result')).toContainText('5 frames received · 5 accepted');
+  const table = lab.locator('.genux-data-block .ant-table-content').first();
   const geometry = await table.evaluate(node => ({
     width: node.clientWidth,
     scroll: node.scrollWidth,
@@ -1672,7 +1672,7 @@ test('GenUI Task Card keeps grouped selections and scrolls tables inside320px', 
   await note.fill('');
   await lab.getByRole('button', { name: 'Review local order draft', exact: true }).click();
   await expect(note).toHaveAttribute('aria-invalid', 'true');
-  await expect(lab.locator('[data-genui-local-error]')).toHaveText(
+  await expect(lab.locator('[data-genux-local-error]')).toHaveText(
     'Complete the required fields before continuing.',
   );
   await assertReadableLayout(page);
@@ -1821,7 +1821,7 @@ test('All Data workspace default flows expose the shared adaptive panels at320px
     'record-workspace',
   ]) {
     await visit(page, slug);
-    const splitter = page.locator('[data-atlas-splitter]').first();
+    const splitter = page.locator('[data-genux-splitter]').first();
     await expect(splitter).toHaveAttribute('data-splitter-orientation', 'vertical');
     await expect(splitter.getByRole('separator')).toHaveAttribute('tabindex', '0');
     await expect(splitter.locator('.ant-splitter-panel[role="region"]')).toHaveCount(2);
@@ -1861,7 +1861,7 @@ test('Breadcrumb supports keyboard sibling navigation and named current paths fr
   await page.keyboard.press('Escape');
   await expect(trigger).toBeFocused();
   await expect(trigger).toHaveAttribute('aria-expanded', 'false');
-  await expect(page.locator('.atlas-breadcrumb-current[aria-current="page"]')).toHaveCount(2);
+  await expect(page.locator('.genux-breadcrumb-current[aria-current="page"]')).toHaveCount(2);
   await expect(
     page.locator('#breadcrumb-icons').getByRole('link', { name: 'Overview', exact: true }),
   ).toHaveAttribute('href', '/');

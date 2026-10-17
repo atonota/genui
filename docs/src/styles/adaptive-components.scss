@@ -1,4 +1,4 @@
-// Capability-first adaptive layer for GenUI components. Thresholds come only from the
+// Capability-first adaptive layer for GenUX components. Thresholds come only from the
 // generated policy partial (tools/adaptive-styles.mjs reads the single policy.json); paint,
 // type, radii, motion and keyboard focus stay with the existing central stylesheets.
 @use 'sass:map';
@@ -72,18 +72,18 @@
 
 // Form groups stack when their own inline area is narrow, whatever the viewport is.
 @container adaptive-content (width < #{adaptive-width(small-tablet)}) {
-  .atlas-demo .ant-form-horizontal .ant-form-item-row {
+  .genux-demo .ant-form-horizontal .ant-form-item-row {
     display: block;
   }
-  .atlas-demo .ant-form-horizontal .ant-form-item-label {
+  .genux-demo .ant-form-horizontal .ant-form-item-label {
     padding-block-end: var(--space-xs);
     text-align: start;
   }
-  .atlas-demo .ant-form-horizontal :is(.ant-form-item-label, .ant-form-item-control) {
+  .genux-demo .ant-form-horizontal :is(.ant-form-item-label, .ant-form-item-control) {
     flex: none;
     max-inline-size: 100%;
   }
-  .atlas-demo .ant-form-inline .ant-form-item {
+  .genux-demo .ant-form-inline .ant-form-item {
     flex-basis: 100%;
   }
 }
@@ -111,13 +111,13 @@
 
 // Coarse input enlarges label hit regions and full-row list targets only. Checkbox, radio,
 // switch and badge artwork keep their graphic size; no oversized invisible pseudo hitboxes.
-.atlas-demo :is(.ant-checkbox-wrapper, .ant-radio-wrapper, .ant-list-item) {
+.genux-demo :is(.ant-checkbox-wrapper, .ant-radio-wrapper, .ant-list-item) {
   @include coarse {
     min-block-size: var(--adaptive-coarse-target);
   }
 }
 :is(.ant-dropdown-menu-item, .ant-dropdown-menu-submenu-title, .ant-cascader-menu-item),
-.atlas-select-popup .ant-select-item {
+.genux-select-popup .ant-select-item {
   @include coarse {
     min-block-size: var(--adaptive-coarse-target);
   }
@@ -137,67 +137,67 @@ body .ant-modal .ant-modal-content {
     overflow-y: auto;
   }
 }
-.atlas-demo .ant-drawer-body {
+.genux-demo .ant-drawer-body {
   @include short-height {
     padding-block: var(--space-md) max(var(--space-md), env(safe-area-inset-bottom, 0px));
   }
 }
 
-// GenUI natives: the trusted presentation's target layer (never a payload) enlarges label and
+// GenUX natives: the trusted presentation's target layer (never a payload) enlarges label and
 // row hit regions in the surface; checkbox, radio and list artwork keep their geometry.
-.atlas-genui-runtime
+.genux-genux-runtime
   [data-adaptive-target='coarse']
   :is(.ant-checkbox-wrapper, .ant-radio-wrapper, .ant-list-item) {
   min-block-size: var(--adaptive-coarse-target);
 }
 // Generic surface components carry no target layer; they follow the runtime root's resolved
 // coarse input layer, so precision-only surfaces keep their size and artwork keeps its geometry.
-.atlas-genui-runtime :is(.ant-checkbox-wrapper, .ant-radio-wrapper, .ant-list-item) {
+.genux-genux-runtime :is(.ant-checkbox-wrapper, .ant-radio-wrapper, .ant-list-item) {
   @include coarse {
     min-block-size: var(--adaptive-coarse-target);
   }
 }
 
-// Portaled GenUI layers carry trusted classes through AntD rootClassName (nativeLayerClassName),
+// Portaled GenUX layers carry trusted classes through AntD rootClassName (nativeLayerClassName),
 // so these rules never reach unrelated previews. Paint, type, radii and motion stay central.
 // Sheet: phone or short height. The Modal sits at the bottom of the safe area at full width.
-.atlas-genui-layer-sheet .ant-modal-wrap {
+.genux-genux-layer-sheet .ant-modal-wrap {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
 }
-.atlas-genui-layer-sheet .ant-modal {
+.genux-genux-layer-sheet .ant-modal {
   top: auto;
   margin: 0;
   max-inline-size: 100%;
   padding-block-end: env(safe-area-inset-bottom, 0px);
 }
-.atlas-genui-layer-sheet .ant-modal .ant-modal-content {
+.genux-genux-layer-sheet .ant-modal .ant-modal-content {
   max-block-size: calc(100dvh - var(--adaptive-safe-block));
   overflow-y: auto;
 }
 // The Drawer opens from the bottom (adapter placement) and stays inside the safe area.
-.atlas-genui-layer-sheet .ant-drawer-content-wrapper {
+.genux-genux-layer-sheet .ant-drawer-content-wrapper {
   max-block-size: calc(100dvh - env(safe-area-inset-top, 0px));
 }
-.atlas-genui-layer-sheet .ant-drawer-body {
+.genux-genux-layer-sheet .ant-drawer-body {
   padding-block-end: max(var(--space-md), env(safe-area-inset-bottom, 0px));
 }
 // Popconfirm stays anchored to its trigger for context and never reports a sheet; at every
 // width its root fits the viewport while AntD keeps the trigger-relative placement.
-.ant-popover.atlas-genui-layer-anchored {
+.ant-popover.genux-genux-layer-anchored {
   max-inline-size: calc(100vw - 2 * var(--space-md));
 }
 // Coarse layers: close controls get the coarse hit region; the icon keeps its size.
-.atlas-genui-target-coarse :is(.ant-modal-close, .ant-drawer-close) {
+.genux-genux-target-coarse :is(.ant-modal-close, .ant-drawer-close) {
   min-inline-size: var(--adaptive-coarse-target);
   min-block-size: var(--adaptive-coarse-target);
 }
 // Explicit living-room layout: layers stay inside the title-safe area; type is unchanged.
-.atlas-genui-layer-living-room .ant-modal,
-.ant-popover.atlas-genui-layer-living-room {
+.genux-genux-layer-living-room .ant-modal,
+.ant-popover.genux-genux-layer-living-room {
   max-inline-size: 90vw;
 }
-.atlas-genui-layer-living-room .ant-drawer-body {
+.genux-genux-layer-living-room .ant-drawer-body {
   padding-inline: max(var(--space-md), 5vw);
 }

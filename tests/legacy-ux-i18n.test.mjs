@@ -106,7 +106,7 @@ test('authored dictionary-phrase button labels survive locale switches and HTML 
 });
 
 test('a saved explicit locale is restored while fresh sessions default to English', t => {
-  const saved = new Map([['atlas-locale', 'tr']]);
+  const saved = new Map([['genux-locale', 'tr']]);
   const h = setup(result.html, {
     storage: {
       getItem: key => saved.get(key) ?? null,
@@ -117,5 +117,5 @@ test('a saved explicit locale is restored while fresh sessions default to Englis
   assert.equal(h.doc.documentElement.lang, 'tr');
   assert.match(h.el('comboDescription').textContent, /açık eksen/);
   h.read('setLocale("en")');
-  assert.equal(saved.get('atlas-locale'), 'en');
+  assert.equal(saved.get('genux-locale'), 'en');
 });

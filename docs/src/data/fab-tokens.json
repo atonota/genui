@@ -1,0 +1,42 @@
+{
+  "size": {
+    "sm": {
+      "trigger": 48,
+      "icon": 20,
+      "action": 40,
+      "actionTarget": 48,
+      "actionIcon": 20,
+      "gap": 8
+    },
+    "md": {
+      "trigger": 56,
+      "icon": 24,
+      "action": 48,
+      "actionTarget": 48,
+      "actionIcon": 24,
+      "gap": 10
+    },
+    "lg": {
+      "trigger": 64,
+      "icon": 28,
+      "action": 56,
+      "actionTarget": 56,
+      "actionIcon": 24,
+      "gap": 12
+    }
+  },
+  "density": { "compact": 0.75, "comfortable": 1, "spacious": 1.5 },
+  "motion": {
+    "open": { "fast": 180, "normal": 200, "slow": 220 },
+    "close": { "fast": 120, "normal": 140, "slow": 180 },
+    "stagger": 40
+  },
+  "interaction": { "longPress": 500, "gesture": 24, "dragThreshold": 8 },
+  "position": {
+    "offset": 16,
+    "collisionPadding": 8,
+    "sheetMaxHeightRatio": 0.8,
+    "maxActions": 64,
+    "labelGap": 8
+  }
+}

@@ -15,7 +15,7 @@ test('Splitter has one discoverable Layout page and documents the shared and nat
   const splitter = items[0];
   assert.equal(splitter.category, 'Layout');
   assert.equal(splitter.sourceUrl, 'https://ant.design/components/splitter/');
-  assert.ok(splitter.api.some(row => row.property === 'AtlasSplitter.panels'));
+  assert.ok(splitter.api.some(row => row.property === 'GenUXSplitter.panels'));
   assert.ok(splitter.nativeApi.some(row => row.property === 'orientation'));
   assert.ok(splitter.examples.length >= 2);
 });
@@ -36,7 +36,7 @@ test('Splitter examples group a persistent browser and editor with contextual wo
     [...catalog.querySelectorAll(':scope > nav a')].map(link => link.hash),
     sections.map(section => '#' + section.id),
   );
-  assert.equal(catalog.querySelectorAll('[data-atlas-splitter]').length, 2);
+  assert.equal(catalog.querySelectorAll('[data-genux-splitter]').length, 2);
   assert.equal(catalog.querySelectorAll('a[href^="/components/"]').length, 5);
   const note = catalog.querySelector('#splitter-review-note');
   await h.type(note, 'Persistent review note');

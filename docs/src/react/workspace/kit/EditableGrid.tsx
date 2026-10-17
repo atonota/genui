@@ -1,7 +1,7 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import { Select } from 'antd';
-import AtlasButton from '../../AtlasButton';
-import AtlasPagination from '../../AtlasPagination';
+import GenUXButton from '../../GenUXButton';
+import GenUXPagination from '../../GenUXPagination';
 import { useI18n } from '../../useI18n';
 import { fieldAvailability } from '../../../data/field-kit';
 import { FieldEditor, FieldValue } from './Fields';
@@ -278,7 +278,7 @@ export function EditableGrid<R extends RecordIdentity>(props: EditableGridProps<
                       : ''}
                     {t(message)}
                     {props.fields.some(field => field.key === key) && (
-                      <AtlasButton
+                      <GenUXButton
                         fill="text"
                         text={t('Show {field} for {id}', {
                           field: t(props.fields.find(field => field.key === key)!.label),
@@ -301,7 +301,7 @@ export function EditableGrid<R extends RecordIdentity>(props: EditableGridProps<
       )}
       <div
         ref={root}
-        className="kit-table-scroll atlas-control"
+        className="kit-table-scroll genux-control"
         role="region"
         tabIndex={0}
         aria-label={t('Editable table with horizontal scrolling')}
@@ -446,7 +446,7 @@ export function EditableGrid<R extends RecordIdentity>(props: EditableGridProps<
                               field={field}
                             />
                             {!blocked ? (
-                              <AtlasButton
+                              <GenUXButton
                                 data-edit-trigger={record.id + '::' + field.key}
                                 disabled={hasInputErrors}
                                 fill="text"
@@ -472,7 +472,7 @@ export function EditableGrid<R extends RecordIdentity>(props: EditableGridProps<
                   <td>
                     {(props.drafts[record.id] ||
                       Object.keys(inputErrors[record.id] ?? {}).length > 0) && (
-                      <AtlasButton
+                      <GenUXButton
                         fill="text"
                         text={t('Cancel draft for {id}', { id: record.id })}
                         disabled={blockedOperation}
@@ -487,7 +487,7 @@ export function EditableGrid<R extends RecordIdentity>(props: EditableGridProps<
                       />
                     )}
                     {rowId === record.id && (
-                      <AtlasButton
+                      <GenUXButton
                         fill="text"
                         text={t('Finish row editing')}
                         disabled={blockedOperation}
@@ -509,7 +509,7 @@ export function EditableGrid<R extends RecordIdentity>(props: EditableGridProps<
           'Baseline checks protect drafts begun in this mounted grid. Supply baselines for drafts created elsewhere; no server versioning is implied.',
         )}
       </p>
-      <AtlasPagination
+      <GenUXPagination
         current={page.page}
         total={props.records.length}
         pageSize={page.size}
@@ -523,7 +523,7 @@ export function EditableGrid<R extends RecordIdentity>(props: EditableGridProps<
         label={t('Editable grid pages')}
       />
       <div className="kit-actions">
-        <AtlasButton
+        <GenUXButton
           text={t('Commit all drafts')}
           disabled={!actionableCount || blockedOperation}
           onClick={() => {
@@ -548,7 +548,7 @@ export function EditableGrid<R extends RecordIdentity>(props: EditableGridProps<
             close();
           }}
         />
-        <AtlasButton
+        <GenUXButton
           fill="text"
           text={t('Cancel all drafts')}
           disabled={(!draftCount && !hasInputErrors) || blockedOperation}

@@ -22,7 +22,7 @@ const items = [
 ];
 
 test('icon-only requests without an icon retain visible ancestor and current labels', async t => {
-  const h = await mountPattern('default', 'docs/src/react/AtlasBreadcrumb.tsx', {
+  const h = await mountPattern('default', 'docs/src/react/GenUXBreadcrumb.tsx', {
     label: 'Fallback path',
     items: [
       { key: 'home', label: 'Overview', href: '/', iconOnly: true },
@@ -38,7 +38,7 @@ test('icon-only requests without an icon retain visible ancestor and current lab
 });
 
 test('native Breadcrumb has an operable sibling trigger, real links and one non-link current page', async t => {
-  const h = await mountPattern('default', 'docs/src/react/AtlasBreadcrumb.tsx', {
+  const h = await mountPattern('default', 'docs/src/react/GenUXBreadcrumb.tsx', {
     label: 'Workspace path',
     items,
   });
@@ -59,7 +59,7 @@ test('native Breadcrumb has an operable sibling trigger, real links and one non-
 });
 
 test('sibling menu opens from click or ArrowDown and Escape closes immediately with trigger focus', async t => {
-  const h = await mountPattern('default', 'docs/src/react/AtlasBreadcrumb.tsx', {
+  const h = await mountPattern('default', 'docs/src/react/GenUXBreadcrumb.tsx', {
     label: 'Workspace path',
     items,
   });
@@ -161,7 +161,7 @@ test('Breadcrumb catalog presents two linked variants and preserves its menu own
   );
   await h.act(() => {
     h.document.documentElement.dataset.theme = 'dark';
-    h.window.dispatchEvent(new h.window.Event('atlas-theme-change'));
+    h.window.dispatchEvent(new h.window.Event('genux-theme-change'));
   });
   assert.equal(catalog.querySelector('button[aria-haspopup="menu"]'), trigger);
   assert.equal(trigger.getAttribute('aria-expanded'), 'true');
@@ -183,7 +183,7 @@ test('Breadcrumb catalog presents two linked variants and preserves its menu own
 });
 
 test('pointer, Enter and Space activate exactly one real destination from the native menu', async t => {
-  const h = await mountPattern('default', 'docs/src/react/AtlasBreadcrumb.tsx', {
+  const h = await mountPattern('default', 'docs/src/react/GenUXBreadcrumb.tsx', {
     label: 'Workspace path',
     items,
   });

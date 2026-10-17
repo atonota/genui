@@ -22,8 +22,8 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
  * before the next theme switch. Computed styles are read even when a modal drawer makes the
  * background inert; an always-visible sidebar is measured as rendered.
  *
- * The "Find a component" field is the canonical GenUI input well: exactly one
- * `.atlas-input-frame[data-atlas-input]` paints the --field-bg fill, and the native search inside
+ * The "Find a component" field is the canonical GenUX input well: exactly one
+ * `.genux-input-frame[data-genux-input]` paints the --field-bg fill, and the native search inside
  * it paints no fill, border or shadow of its own. The frame uses the shared underlined variant, so
  * its strongest resting edge is the functional field border on the bottom and needs 3:1 against
  * the unfocused fill. Separately, the keyboard focus marker the shared frame paints on its bottom
@@ -36,7 +36,7 @@ type Mode = 'light' | 'dark';
 type Rgb = readonly [number, number, number];
 type Paint = Readonly<{ rgb: Rgb; alpha: number }>;
 
-const BASE_URL = process.env.ATLAS_DOCS_URL ?? 'http://127.0.0.1:4324';
+const BASE_URL = process.env.GENUX_DOCS_URL ?? 'http://127.0.0.1:4324';
 const WIDTHS = [
   { label: 'desktop', viewport: { width: 1280, height: 800 } },
   { label: '320', viewport: { width: 320, height: 640 } },
@@ -119,8 +119,8 @@ const ratio = (value: number): number => Math.round(value * 100) / 100;
 
 const MENU_TOGGLE = '[data-docs-menu-toggle]';
 const MENU_CLOSE = '[data-docs-menu-close]';
-/** The canonical GenUI input well: the single paint owner of an editable field. */
-const FIELD_OWNER = '.atlas-input-frame[data-atlas-input]';
+/** The canonical GenUX input well: the single paint owner of an editable field. */
+const FIELD_OWNER = '.genux-input-frame[data-genux-input]';
 const SIDES = ['top', 'right', 'bottom', 'left'] as const;
 type Boundary = Readonly<{ side: (typeof SIDES)[number]; rgb: Rgb; contrast: number }>;
 
@@ -315,7 +315,7 @@ test('docs shell, panel and field roles paint exact isolated surfaces in both th
   await page.emulateMedia({ colorScheme: 'light', reducedMotion: 'reduce' });
   await page.addInitScript(() => {
     try {
-      localStorage.setItem('atlas-theme', 'light');
+      localStorage.setItem('genux-theme', 'light');
     } catch {
       // The theme bootstrap then falls back to the emulated light scheme.
     }

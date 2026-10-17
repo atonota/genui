@@ -8,9 +8,9 @@ export const selectionSizeProfiles = [
 ] as const;
 
 /** Header controls outside a React provider alias the central compact height roles. */
-export const selectionSizeStyleText = `body[data-atlas-surface='docs']{${selectionSizeProfiles
+export const selectionSizeStyleText = `body[data-genux-surface='docs']{${selectionSizeProfiles
   .map(
     profile =>
-      `--atlas-selection-height-${profile.value}:var(--size-compact-${profile.value},${profile.height_px}px)`,
+      `--genux-selection-height-${profile.value}:var(--size-compact-${profile.value},${profile.height_px}px)`,
   )
   .join(';')}}`;

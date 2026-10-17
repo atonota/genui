@@ -1,5 +1,5 @@
 // Adaptive core regressions (node:test, no browser matrix). The first case reads the existing
-// documentation AntD themes from the real bundled AtlasProvider: their responsive screen tokens
+// documentation AntD themes from the real bundled GenUXProvider: their responsive screen tokens
 // must follow the shared adaptive policy instead of the AntD 576/992/1200 defaults. Only after
 // that runtime assertion does the case load the new policy module, so the first failure is the
 // theme behaviour, not a missing file. Bundles are written outside the repository; bare packages
@@ -128,7 +128,7 @@ const fixtureStyles = {
 const execFileAsync = promisify(execFile);
 
 async function bundleAndImport(label, contents) {
-  const directory = await mkdtemp(path.join(tmpdir(), `atlas-adaptive-${label}-`));
+  const directory = await mkdtemp(path.join(tmpdir(), `genux-adaptive-${label}-`));
   const outfile = path.join(directory, 'bundle.mjs');
   try {
     await build({
@@ -171,9 +171,9 @@ test('docs AntD themes follow the shared breakpoints; the policy resolves profil
   assert.equal(typeof globalThis.window, 'undefined', 'the node test must start without window');
   const provider = await bundleAndImport(
     'provider',
-    `export { atlasDocsTheme, atlasDocsDarkTheme } from './docs/src/react/AtlasProvider.tsx';`,
+    `export { genuxDocsTheme, genuxDocsDarkTheme } from './docs/src/react/GenUXProvider.tsx';`,
   );
-  for (const name of ['atlasDocsTheme', 'atlasDocsDarkTheme']) {
+  for (const name of ['genuxDocsTheme', 'genuxDocsDarkTheme']) {
     const screens = pick(provider[name]?.token, Object.keys(ANTD_SCREEN_TOKENS));
     assert.deepStrictEqual(
       screens,
@@ -186,7 +186,7 @@ test('docs AntD themes follow the shared breakpoints; the policy resolves profil
   assert.equal(
     typeof globalThis.window,
     'undefined',
-    'importing AtlasProvider and the adaptive policy must neither need nor create window',
+    'importing GenUXProvider and the adaptive policy must neither need nor create window',
   );
   assert.equal(
     typeof globalThis.document,
@@ -809,9 +809,9 @@ test('docs AntD themes follow the shared breakpoints; the policy resolves profil
     await rm(backScript, { force: true });
   }
 
-  // Inside AtlasProvider an AdaptiveShell's effective surface owns its popups: the native popup
+  // Inside GenUXProvider an AdaptiveShell's effective surface owns its popups: the native popup
   // default (ConfigProvider getPopupContainer) is that Shell's own themed body portal, registered
-  // to the Shell controller. Real AdaptiveProvider + AtlasProvider + AdaptiveShell under
+  // to the Shell controller. Real AdaptiveProvider + GenUXProvider + AdaptiveShell under
   // StrictMode in a JSDOM child: a TV Shell beside a web Shell in a web provider, and a web Shell
   // inside a TV Shell in a TV provider. One remote ArrowRight between two buttons appended to the
   // returned container moves focus and opens the central ringless mode on TV portals only.
@@ -855,7 +855,7 @@ test('docs AntD themes follow the shared breakpoints; the policy resolves profil
           `import { ConfigProvider } from 'antd';`,
           `import AdaptiveProvider from './docs/src/react/AdaptiveProvider.tsx';`,
           `import AdaptiveShell from './docs/src/react/AdaptiveShell.tsx';`,
-          `import AtlasProvider from './docs/src/react/AtlasProvider.tsx';`,
+          `import GenUXProvider from './docs/src/react/GenUXProvider.tsx';`,
           `import { getSpatialPortalsFor } from './docs/src/input-modality.ts';`,
           `const Probe = ({ probe, name }) => {`,
           `  probe.containers[name] = useContext(ConfigProvider.ConfigContext).getPopupContainer;`,
@@ -867,10 +867,10 @@ test('docs AntD themes follow the shared breakpoints; the policy resolves profil
           `  Object.assign(probe, { setTvSurface, setShells, getSpatialPortalsFor });`,
           `  const at = name => h(Probe, { probe, name });`,
           `  return h(StrictMode, null,`,
-          `    h(AdaptiveProvider, { options: { surface: 'web' } }, h(AtlasProvider, null, shells && h('div', null,`,
+          `    h(AdaptiveProvider, { options: { surface: 'web' } }, h(GenUXProvider, null, shells && h('div', null,`,
           `      h(AdaptiveShell, { options: { surface: tvSurface } }, at('tv'), h('input', { id: 'portal-tv-field', defaultValue: '' })),`,
           `      h(AdaptiveShell, null, at('web'))))),`,
-          `    h(AdaptiveProvider, { options: { surface: 'living-room' } }, h(AtlasProvider, null, shells && h(AdaptiveShell, null,`,
+          `    h(AdaptiveProvider, { options: { surface: 'living-room' } }, h(GenUXProvider, null, shells && h(AdaptiveShell, null,`,
           `      at('outer'), h(AdaptiveShell, { options: { surface: 'web' } }, at('inner'))))));`,
           `};`,
         ].join('\n'),
@@ -904,7 +904,7 @@ test('docs AntD themes follow the shared breakpoints; the policy resolves profil
         `  const shellOf = name => document.getElementById('portal-' + name + '-trigger')?.closest('[data-adaptive-shell]') ?? null;`,
         `  const surfaceOf = node => node?.closest('[data-adaptive-surface]')?.getAttribute('data-adaptive-surface') ?? null;`,
         `  const tvAttached = () => ['tv', 'outer'].every(name => shellOf(name)?.getAttribute('data-layout') === 'living-room');`,
-        `  const bodyPortals = () => Array.from(document.body.children).filter(node => node.matches('[data-atlas-portal]')).length;`,
+        `  const bodyPortals = () => Array.from(document.body.children).filter(node => node.matches('[data-genux-portal]')).length;`,
         `  const ownedBy = name => probe.getSpatialPortalsFor(shellOf(name));`,
         `  const pointer = () => document.dispatchEvent(new window.Event('pointerdown'));`,
         `  const press = async name => {`,
@@ -922,7 +922,7 @@ test('docs AntD themes follow the shared breakpoints; the policy resolves profil
         `    first.focus();`,
         `    const event = new window.KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true });`,
         `    await harness.act(async () => { first.dispatchEvent(event); });`,
-        `    const result = { surface: surfaceOf(container), portal: container.matches('[data-atlas-portal]'), moved: document.activeElement === second, prevented: event.defaultPrevented, modality: document.documentElement.dataset.inputModality };`,
+        `    const result = { surface: surfaceOf(container), portal: container.matches('[data-genux-portal]'), moved: document.activeElement === second, prevented: event.defaultPrevented, modality: document.documentElement.dataset.inputModality };`,
         `    await harness.act(async () => { first.remove(); second.remove(); });`,
         `    pointer();`,
         `    return result;`,

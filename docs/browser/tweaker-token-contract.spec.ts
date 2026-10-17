@@ -4,11 +4,11 @@ import definitions from '../src/theme-builder/definitions.json' with { type: 'js
 // Explicit user request (2026-10-15): one general radius role shared by field wells, their slot
 // actions and standalone buttons, editable from every Tweaker and kept with the existing theme
 // recipe for about 30 days.
-const origin = process.env.ATLAS_DOCS_ORIGIN ?? 'http://127.0.0.1:4324';
-const inputRoute = process.env.ATLAS_INPUT_ROUTE ?? '/components/input/';
-const buttonRoute = process.env.ATLAS_BUTTON_ROUTE ?? '/components/button/';
-const stage = (process.env.ATLAS_SOURCE_STAGE ?? 'unlabeled').replace(/[^a-z0-9-]/gi, '-');
-const RECIPE_KEY = 'atlas-theme-builder-v1';
+const origin = process.env.GENUX_DOCS_ORIGIN ?? 'http://127.0.0.1:4324';
+const inputRoute = process.env.GENUX_INPUT_ROUTE ?? '/components/input/';
+const buttonRoute = process.env.GENUX_BUTTON_ROUTE ?? '/components/button/';
+const stage = (process.env.GENUX_SOURCE_STAGE ?? 'unlabeled').replace(/[^a-z0-9-]/gi, '-');
+const RECIPE_KEY = 'genux-theme-builder-v1';
 const DAY = 24 * 60 * 60 * 1000;
 const T0 = new Date('2026-10-15T09:00:00Z').getTime();
 const radiusLabel = 'Radius MD';
@@ -29,8 +29,8 @@ function measureField(page: Page) {
       const style = getComputedStyle(el);
       return [parseFloat(style.borderStartEndRadius), parseFloat(style.borderEndEndRadius)];
     };
-    const slot = [...document.querySelectorAll('.atlas-slot-button')].find(
-      el => !el.closest('.atlas-tweaker-panel') && shown(el),
+    const slot = [...document.querySelectorAll('.genux-slot-button')].find(
+      el => !el.closest('.genux-tweaker-panel') && shown(el),
     );
     if (!slot) return null;
     let wrapper = slot.parentElement;
@@ -50,10 +50,10 @@ function measureButton(page: Page) {
   return page.evaluate(() => {
     const shown = (el: Element) =>
       el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden';
-    const button = [...document.querySelectorAll('.atlas-button')].find(
+    const button = [...document.querySelectorAll('.genux-button')].find(
       el =>
-        !el.matches('.atlas-slot-button, .atlas-icon-button') &&
-        !el.closest('.atlas-tweaker-panel, .atlas-tweaker-trigger, [data-tweaker-settings]') &&
+        !el.matches('.genux-slot-button, .genux-icon-button') &&
+        !el.closest('.genux-tweaker-panel, .genux-tweaker-trigger, [data-tweaker-settings]') &&
         shown(el),
     );
     if (!button) return null;
@@ -69,7 +69,7 @@ function measureButton(page: Page) {
 
 async function openTweaker(page: Page) {
   await page
-    .locator('.atlas-tweaker-trigger')
+    .locator('.genux-tweaker-trigger')
     .first()
     .getByRole('button', { name: 'Open tweaker' })
     .click();
@@ -261,7 +261,7 @@ test('cross-theme: editing a light token keeps the custom dark values', async ({
   };
   await page.addInitScript(
     ([key, text]) => {
-      window.localStorage.setItem('atlas-theme', 'light');
+      window.localStorage.setItem('genux-theme', 'light');
       window.localStorage.setItem(key, text);
     },
     [RECIPE_KEY, JSON.stringify(recipe)] as const,
@@ -377,7 +377,7 @@ test('every component route Tweaker offers its own settings beside every token e
     // Registrations exclude the common size control and the shared token editors; Listy's own
     // parameter is the central Listy surface role.
     const specific = dialog
-      .locator('.atlas-tweaker-registrations .atlas-tweaker-settings, .atlas-badge-settings')
+      .locator('.genux-tweaker-registrations .genux-tweaker-settings, .genux-badge-settings')
       .locator(settingControl);
     const offered =
       slug === 'listy'

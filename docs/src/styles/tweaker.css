@@ -1,30 +1,30 @@
 /* Documentation-only settings surface. Existing approved examples stay inline. */
-.atlas-tweaker-trigger {
+.genux-tweaker-trigger {
   position: fixed;
   inset-inline-end: env(safe-area-inset-right, 0px);
   inset-block-start: 50%;
-  margin-block-start: calc(var(--atlas-tweaker-trigger-size) / -2);
-  z-index: var(--atlas-tweaker-layer);
+  margin-block-start: calc(var(--genux-tweaker-trigger-size) / -2);
+  z-index: var(--genux-tweaker-layer);
 }
-.atlas-tweaker-panel .ant-drawer-header {
+.genux-tweaker-panel .ant-drawer-header {
   padding: var(--space-md);
 }
-.atlas-demo.atlas-tweaker-panel .ant-drawer-body {
+.genux-demo.genux-tweaker-panel .ant-drawer-body {
   padding: var(--space-md);
   overscroll-behavior: contain;
 }
-.atlas-tweaker-content,
-.atlas-tweaker-registrations,
-.atlas-tweaker-settings {
+.genux-tweaker-content,
+.genux-tweaker-registrations,
+.genux-tweaker-settings {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--space-lg);
   min-width: 0;
 }
-.atlas-tweaker-description {
+.genux-tweaker-description {
   color: var(--muted);
 }
-.atlas-demo.atlas-tweaker-panel
+.genux-demo.genux-tweaker-panel
   :is(
     .playground-controls,
     .record-form-settings,
@@ -32,7 +32,7 @@
     .workspace-field,
     .kit-panel-control,
     .kit-connected-controls,
-    .atlas-size-control,
+    .genux-size-control,
     .example-block,
     .control-row
   ) {
@@ -42,54 +42,54 @@
   min-width: 0;
   margin: 0;
 }
-.atlas-tweaker-settings label:not(.ant-checkbox-wrapper, .ant-radio-wrapper),
-.atlas-tweaker-settings .playground-control {
+.genux-tweaker-settings label:not(.ant-checkbox-wrapper, .ant-radio-wrapper),
+.genux-tweaker-settings .playground-control {
   display: grid;
   gap: var(--space-xs);
   min-width: 0;
 }
-.atlas-tweaker-panel :is(.ant-select, .ant-input) {
+.genux-tweaker-panel :is(.ant-select, .ant-input) {
   width: 100%;
   min-width: 0;
 }
-.atlas-tweaker-panel .atlas-size-options .ant-segmented-item {
+.genux-tweaker-panel .genux-size-options .ant-segmented-item {
   width: 100%;
 }
 /* Shared theme token editors: one row per central definition, after example settings. */
-.atlas-tweaker-tokens,
-.atlas-tweaker-token-group,
-.atlas-tweaker-token {
+.genux-tweaker-tokens,
+.genux-tweaker-token-group,
+.genux-tweaker-token {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   min-width: 0;
 }
-.atlas-tweaker-tokens {
+.genux-tweaker-tokens {
   gap: var(--space-lg);
 }
-.atlas-tweaker-token-group {
+.genux-tweaker-token-group {
   gap: var(--space-md);
 }
-.atlas-tweaker-token {
+.genux-tweaker-token {
   gap: var(--space-xs);
 }
-.atlas-tweaker-tokens :is(h3, h4, p) {
+.genux-tweaker-tokens :is(h3, h4, p) {
   margin: 0;
 }
-.atlas-tweaker-token-actions {
+.genux-tweaker-token-actions {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-sm);
 }
-.atlas-tweaker-panel .ant-input-number,
-.atlas-tweaker-tokens .theme-builder-color {
+.genux-tweaker-panel .ant-input-number,
+.genux-tweaker-tokens .theme-builder-color {
   width: 100%;
   min-width: 0;
 }
 /* Local Select popups sit in the same layer as the settings panel, above demos. */
-.atlas-tweaker-panel > .atlas-select-popup {
+.genux-tweaker-panel > .genux-select-popup {
   pointer-events: auto;
 }
-.atlas-overlay-title {
+.genux-overlay-title {
   display: flex;
   flex-wrap: wrap;
   align-items: center;

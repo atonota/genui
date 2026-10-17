@@ -7,8 +7,8 @@ import docsPixelStyles from '../tools/docs-pixel-styles.mjs';
 import docsPresentation from '../tools/docs-presentation.mjs';
 import docsPages, { PAGES_BASE, PAGES_SITE } from '../tools/docs-pages.mjs';
 
-// GENUI_DOCS_PAGES=1 builds the GitHub Pages artifact; local builds keep root base and docs/dist.
-const pages = process.env.GENUI_DOCS_PAGES === '1';
+// GENUX_DOCS_PAGES=1 builds the GitHub Pages artifact; local builds keep root base and docs/dist.
+const pages = process.env.GENUX_DOCS_PAGES === '1';
 
 // Stable manifest name; tools/docs-adaptive-resource-map.mjs maps layout chunks from it.
 const ADAPTIVE_MANIFEST = 'adaptive-manifest.json';
@@ -75,7 +75,7 @@ async function publishManifest(dir) {
 function adaptiveManifest() {
   let configured = false;
   return {
-    name: 'atlas-docs-adaptive-manifest',
+    name: 'genux-docs-adaptive-manifest',
     hooks: {
       'astro:build:setup': ({ vite, updateConfig }) => {
         if (!vite.environments?.client) return;
@@ -97,7 +97,7 @@ function adaptiveManifest() {
 // roots in src/adaptive/resource-ownership.json; the published v1 shape is frozen for tools.
 const OWNERSHIP_FILE = 'adaptive-ownership.json';
 const OWNERSHIP_CONFIG = new URL('./src/adaptive/resource-ownership.json', import.meta.url);
-const OWNERS = ['phone', 'tablet', 'laptop', 'desktop', 'wide', 'living-room', 'genuiLab'];
+const OWNERS = ['phone', 'tablet', 'laptop', 'desktop', 'wide', 'living-room', 'genuxLab'];
 const DOCS_ROOT = path.resolve(fileURLToPath(new URL('./', import.meta.url)));
 // Style modules, including Astro style blocks; ?url, ?raw and ?inline imports stay plain JS.
 const STYLE_MODULE = /(?:[.]|lang[.])(?:css|scss|sass|less|styl|stylus|pcss|postcss|sss)(?:$|[?&])/;
@@ -250,7 +250,7 @@ function moduleOwnership(context, config, environment, requireRoots) {
 function adaptiveOwnership() {
   let config;
   return {
-    name: 'atlas-docs-adaptive-ownership',
+    name: 'genux-docs-adaptive-ownership',
     apply: 'build',
     applyToEnvironment: environment => environment.name === 'client',
     async buildStart() {
@@ -349,7 +349,7 @@ const serverStyles = new Map();
 function adaptiveStyleProvenance(styles) {
   let config;
   return {
-    name: 'atlas-docs-adaptive-style-provenance',
+    name: 'genux-docs-adaptive-style-provenance',
     apply: 'build',
     applyToEnvironment: environment => environment.name !== 'client',
     async buildStart() {
@@ -529,7 +529,7 @@ async function pruneOwnership(dir, logger) {
 
 function adaptiveOwnershipPrune(styles) {
   return {
-    name: 'atlas-docs-adaptive-ownership-prune',
+    name: 'genux-docs-adaptive-ownership-prune',
     hooks: {
       'astro:build:start': () => {
         styles.clear();

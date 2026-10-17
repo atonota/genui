@@ -13,35 +13,35 @@ test('Magenta palette reaches the shared AntD Button renderer in every tone', as
     ['pastel', '#ffe6f0', '#ffa6cc'],
   ]) {
     await t.test(tone, async t => {
-      const h = await mountPattern('default', 'docs/src/react/AtlasButton.tsx', {
+      const h = await mountPattern('default', 'docs/src/react/GenUXButton.tsx', {
         palette: 'magenta',
         tone,
       });
       t.after(() => h.dispose());
-      const button = h.document.querySelector('.atlas-button');
+      const button = h.document.querySelector('.genux-button');
       assert.equal(button.style.getPropertyValue('--button-face'), face);
       assert.equal(button.style.getPropertyValue('--button-edge'), edge);
       for (const theme of ['dark', 'light']) {
         await h.act(async () => {
           h.document.documentElement.dataset.theme = theme;
-          h.window.dispatchEvent(new h.window.Event('atlas-theme-change'));
+          h.window.dispatchEvent(new h.window.Event('genux-theme-change'));
         });
-        assert.equal(h.document.querySelector('.atlas-button'), button);
+        assert.equal(h.document.querySelector('.genux-button'), button);
         assert.equal(button.style.getPropertyValue('--button-face'), face);
       }
     });
   }
 });
 
-test('AtlasButton invalid visual values fall back to the approved defaults', async t => {
-  const h = await mountPattern('default', 'docs/src/react/AtlasButton.tsx', {
+test('GenUXButton invalid visual values fall back to the approved defaults', async t => {
+  const h = await mountPattern('default', 'docs/src/react/GenUXButton.tsx', {
     size: 'middle',
     radius: '6',
     shadow: 'unknown',
     width: 'unknown',
   });
   t.after(() => h.dispose());
-  const button = h.document.querySelector('.atlas-button');
+  const button = h.document.querySelector('.genux-button');
   assert.ok(button);
   assert.equal(button.style.minHeight, '3.5rem');
   assert.equal(button.style.getPropertyValue('--button-radius'), '5px');
@@ -54,8 +54,8 @@ test('AtlasButton invalid visual values fall back to the approved defaults', asy
 test('Button approved dimensions use canonical padding and native full-width behavior', async t => {
   const h = await mountPattern('default', 'docs/src/react/ButtonDimensions.tsx');
   t.after(() => h.dispose());
-  assert.equal(h.document.querySelectorAll('.atlas-demo').length, 1);
-  const sizes = [...h.document.querySelectorAll('[data-approved-size] .atlas-button')];
+  assert.equal(h.document.querySelectorAll('.genux-demo').length, 1);
+  const sizes = [...h.document.querySelectorAll('[data-approved-size] .genux-button')];
   assert.deepEqual(
     sizes.map(button => button.dataset.size),
     ['sm', 'md', 'lg'],
@@ -68,7 +68,7 @@ test('Button approved dimensions use canonical padding and native full-width beh
     sizes.map(button => button.style.paddingInline),
     ['1.5625rem', '1.875rem', '1.5rem'],
   );
-  const widths = [...h.document.querySelectorAll('[data-approved-width] .atlas-button')];
+  const widths = [...h.document.querySelectorAll('[data-approved-width] .genux-button')];
   assert.deepEqual(
     widths.map(button => button.dataset.width),
     ['content', 'wide', 'full'],
@@ -80,11 +80,11 @@ test('Button approved dimensions use canonical padding and native full-width beh
   for (const mode of ['dark', 'light']) {
     await h.act(async () => {
       h.document.documentElement.dataset.theme = mode;
-      h.window.dispatchEvent(new h.window.Event('atlas-theme-change'));
+      h.window.dispatchEvent(new h.window.Event('genux-theme-change'));
     });
     for (const [index, button] of widths.entries())
       assert.equal(
-        h.document.querySelectorAll('[data-approved-width] .atlas-button')[index],
+        h.document.querySelectorAll('[data-approved-width] .genux-button')[index],
         button,
       );
   }
@@ -98,7 +98,7 @@ test('Button approved states share one provider and retain semantics and drafts 
     cells.map(cell => cell.dataset.approvedState),
     ['default', 'hover', 'pressed', 'disabled', 'loading'],
   );
-  assert.equal(h.document.querySelectorAll('.atlas-demo').length, 1);
+  assert.equal(h.document.querySelectorAll('.genux-demo').length, 1);
   const buttons = cells.map(cell => cell.querySelector('button'));
   const busyStates = new Set(['loading']);
   for (const button of buttons) {
@@ -109,7 +109,7 @@ test('Button approved states share one provider and retain semantics and drafts 
     assert.equal(button.disabled, state === 'disabled', state);
     assert.equal(button.dataset.pressed, String(state === 'pressed'), state);
     assert.equal(
-      Boolean(button.querySelector('.atlas-button-progress[aria-hidden="true"]')),
+      Boolean(button.querySelector('.genux-button-progress[aria-hidden="true"]')),
       busy,
       state,
     );
@@ -124,14 +124,14 @@ test('Button approved states share one provider and retain semantics and drafts 
   }
   assert.equal(buttons.at(-1).textContent.trim(), 'Processing');
   const text = h.document.querySelector('#button-label');
-  const preview = h.document.querySelector('.playground-preview .atlas-button');
+  const preview = h.document.querySelector('.playground-preview .genux-button');
   await h.type(text, 'Korunan buton metni');
   for (const mode of ['dark', 'light']) {
     await h.act(async () => {
       h.document.documentElement.dataset.theme = mode;
-      h.window.dispatchEvent(new h.window.Event('atlas-theme-change'));
+      h.window.dispatchEvent(new h.window.Event('genux-theme-change'));
     });
-    assert.equal(h.document.querySelector('.atlas-demo').dataset.themeMode, mode);
+    assert.equal(h.document.querySelector('.genux-demo').dataset.themeMode, mode);
     assert.equal(h.document.querySelector('#button-label'), text);
     assert.equal(preview.textContent.trim(), 'Korunan buton metni');
     for (const [index, button] of buttons.entries())
@@ -146,7 +146,7 @@ test('Input web number stepper composes real icon buttons and retains native edi
   t.after(() => h.dispose());
   const input = h.document.querySelector('#input-number');
   assert.equal(input.getAttribute('role'), 'spinbutton');
-  const owner = input.closest('.atlas-number-stepper');
+  const owner = input.closest('.genux-number-stepper');
   assert.ok(owner, 'number actions must compose the shared icon button');
   const down = owner.querySelector('button[aria-label="Remove"]');
   const up = owner.querySelector('button[aria-label="Increase"]');
@@ -164,7 +164,7 @@ test('Input web number stepper composes real icon buttons and retains native edi
     assert.equal(svg?.getAttribute('aria-hidden'), 'true');
     assert.equal(svg?.getAttribute('focusable'), 'false');
     assert.ok(svg?.querySelector('path[d]'));
-    assert.ok(action.classList.contains('atlas-button'));
+    assert.ok(action.classList.contains('genux-button'));
     assert.equal(action.textContent.trim(), '', 'no text-glyph icon');
   }
   const step = action => h.click(action);
@@ -188,7 +188,7 @@ test('Input web number stepper composes real icon buttons and retains native edi
   for (const mode of ['dark', 'light']) {
     await h.act(async () => {
       h.document.documentElement.dataset.theme = mode;
-      h.window.dispatchEvent(new h.window.Event('atlas-theme-change'));
+      h.window.dispatchEvent(new h.window.Event('genux-theme-change'));
     });
     assert.equal(h.document.querySelector('#input-number'), input);
     assert.equal(input.value, '7');
@@ -197,7 +197,7 @@ test('Input web number stepper composes real icon buttons and retains native edi
 
 test('only-icon Button inherits shared geometry, semantics and an accessible name', async t => {
   let calls = 0;
-  const h = await mountPattern('default', 'docs/src/react/AtlasIconButton.tsx', {
+  const h = await mountPattern('default', 'docs/src/react/GenUXIconButton.tsx', {
     icon: 'plus',
     'aria-label': 'Increase',
     size: 'compact',
@@ -206,7 +206,7 @@ test('only-icon Button inherits shared geometry, semantics and an accessible nam
   });
   t.after(() => h.dispose());
   const button = h.document.querySelector('button');
-  assert.ok(button.classList.contains('atlas-button'));
+  assert.ok(button.classList.contains('genux-button'));
   assert.equal(button.getAttribute('aria-label'), 'Increase');
   assert.equal(button.textContent.trim(), '');
   assert.equal(button.style.minHeight, '3rem');
@@ -222,7 +222,7 @@ test('only-icon Button respects the native ConfigProvider disabled context', asy
   let calls = 0;
   const h = await mountPattern(
     'default',
-    'docs/src/react/AtlasIconButton.tsx',
+    'docs/src/react/GenUXIconButton.tsx',
     {
       icon: 'trash',
       'aria-label': 'Remove',
@@ -364,7 +364,7 @@ test('Switch shared sizing preserves immediate state, identity and disabled stat
     documentation: true,
   });
   t.after(() => h.dispose());
-  const owner = h.document.querySelector('.atlas-demo[data-size-profile]');
+  const owner = h.document.querySelector('.genux-demo[data-size-profile]');
   const preview = h.document.querySelector('[data-switch-preview]');
   const switches = [...preview.querySelectorAll('button[role="switch"]')];
   assert.equal(switches.length, 15);
@@ -385,11 +385,11 @@ test('Switch shared sizing preserves immediate state, identity and disabled stat
     await h.click(options[index]);
     assert.equal(owner.dataset.sizeProfile, profile);
     assert.equal(
-      owner.style.getPropertyValue('--atlas-component-height'),
+      owner.style.getPropertyValue('--genux-component-height'),
       [48, 56, 64][index] + 'px',
     );
     assert.equal(
-      owner.style.getPropertyValue('--atlas-selection-height'),
+      owner.style.getPropertyValue('--genux-selection-height'),
       [32, 40, 50][index] + 'px',
     );
     for (const [position, control] of switches.entries())
@@ -400,7 +400,7 @@ test('Switch shared sizing preserves immediate state, identity and disabled stat
   for (const mode of ['dark', 'light']) {
     await h.act(async () => {
       h.document.documentElement.dataset.theme = mode;
-      h.window.dispatchEvent(new h.window.Event('atlas-theme-change'));
+      h.window.dispatchEvent(new h.window.Event('genux-theme-change'));
       disabled.click();
       loading.click();
       required.click();
@@ -438,13 +438,13 @@ test('Switch web content variants toggle immediately and preserve labels, nodes 
     const nameIds = control.getAttribute('aria-labelledby').split(' ');
     assert.ok(nameIds.every(id => h.document.getElementById(id)?.textContent.trim()));
     const name = nameIds.map(id => h.document.getElementById(id).textContent).join(' ');
-    const contents = [...control.querySelectorAll('.atlas-switch-state')];
+    const contents = [...control.querySelectorAll('.genux-switch-state')];
     assert.equal(contents.length, 2, 'both state contents stay mounted');
     assert.ok(contents.every(content => content.getAttribute('aria-hidden') === 'true'));
     await h.act(async () => control.click());
     assert.equal(control.getAttribute('aria-checked'), String(index % 2 !== 0));
     assert.equal(nameIds.map(id => h.document.getElementById(id).textContent).join(' '), name);
-    assert.deepEqual([...control.querySelectorAll('.atlas-switch-state')], contents);
+    assert.deepEqual([...control.querySelectorAll('.genux-switch-state')], contents);
   }
   const iconNames = [...section.querySelectorAll('svg')].map(icon => icon.dataset.iconName);
   assert.deepEqual(iconNames, [
@@ -527,7 +527,7 @@ test('web segmented selection shares one capsule and keeps native selection acro
     clusteredSegments: true,
   });
   t.after(() => h.dispose());
-  const group = h.document.querySelector('.atlas-segmented');
+  const group = h.document.querySelector('.genux-segmented');
   assert.ok(group, 'related view choices share a native Segmented wrapper');
   assert.equal(group.getAttribute('role'), 'radiogroup');
   assert.equal(group.getAttribute('aria-label'), 'View');
@@ -541,7 +541,7 @@ test('web segmented selection shares one capsule and keeps native selection acro
   let duration;
   let reducedDuration;
   css.walkRules(rule => {
-    if (rule.selector === '.atlas-demo .atlas-segmented .ant-segmented-thumb-motion-appear-active')
+    if (rule.selector === '.genux-demo .genux-segmented .ant-segmented-thumb-motion-appear-active')
       duration = rule.nodes.find(node => node.prop === 'transition-duration');
     if (rule.parent.type === 'atrule' && rule.parent.params.includes('prefers-reduced-motion'))
       reducedDuration ??= rule.nodes.find(node => node.prop === 'transition-duration');
@@ -569,9 +569,9 @@ test('web segmented selection shares one capsule and keeps native selection acro
   for (const mode of ['dark', 'light']) {
     await h.act(async () => {
       h.document.documentElement.dataset.theme = mode;
-      h.window.dispatchEvent(new h.window.Event('atlas-theme-change'));
+      h.window.dispatchEvent(new h.window.Event('genux-theme-change'));
     });
-    assert.equal(h.document.querySelector('.atlas-segmented'), group);
+    assert.equal(h.document.querySelector('.genux-segmented'), group);
     assert.equal(group.querySelectorAll('input')[2], radios[2]);
     assert.equal(radios[2].checked, true);
   }
@@ -624,7 +624,7 @@ test('Radio web selection underline follows native checked state without remount
   for (const mode of ['dark', 'light']) {
     await h.act(async () => {
       h.document.documentElement.dataset.theme = mode;
-      h.window.dispatchEvent(new h.window.Event('atlas-theme-change'));
+      h.window.dispatchEvent(new h.window.Event('genux-theme-change'));
     });
     assert.equal(h.document.querySelectorAll('input[name="team"]')[1], radios[1]);
     assert.equal(radios[1].checked, true);
@@ -660,7 +660,7 @@ test('Checkbox shared profiles and corner changes preserve native selection acro
     documentation: true,
   });
   t.after(() => h.dispose());
-  const owner = h.document.querySelector('.atlas-demo[data-size-profile]');
+  const owner = h.document.querySelector('.genux-demo[data-size-profile]');
   const tweaker = h.document.querySelector('[data-tweaker-trigger]');
   assert.equal(tweaker.getAttribute('aria-expanded'), 'false');
   await h.click(tweaker);
@@ -692,7 +692,7 @@ test('Checkbox shared profiles and corner changes preserve native selection acro
   for (const mode of ['dark', 'light']) {
     await h.act(async () => {
       h.document.documentElement.dataset.theme = mode;
-      h.window.dispatchEvent(new h.window.Event('atlas-theme-change'));
+      h.window.dispatchEvent(new h.window.Event('genux-theme-change'));
     });
     assert.equal(h.document.querySelectorAll('input[type="checkbox"]')[1], design);
     assert.equal(design.checked, false);
@@ -720,7 +720,7 @@ test('Checkbox toggles native state immediately and keeps the drawable owner mou
   for (const mode of ['dark', 'light']) {
     await h.act(async () => {
       h.document.documentElement.dataset.theme = mode;
-      h.window.dispatchEvent(new h.window.Event('atlas-theme-change'));
+      h.window.dispatchEvent(new h.window.Event('genux-theme-change'));
     });
     await h.click(design);
     assert.equal(design.checked, false);
@@ -744,7 +744,7 @@ test('Checkbox toggles native state immediately and keeps the drawable owner mou
 
 test('Pill master uses native Tag closing and a labelled Phosphor X without nested controls', async t => {
   let closes = 0;
-  const h = await mountPattern('default', 'docs/src/react/AtlasPill.tsx', {
+  const h = await mountPattern('default', 'docs/src/react/GenUXPill.tsx', {
     children: 'Istanbul workspace',
     radius: 'pill',
     closable: true,
@@ -755,10 +755,10 @@ test('Pill master uses native Tag closing and a labelled Phosphor X without nest
     },
   });
   t.after(() => h.dispose());
-  const pill = h.document.querySelector('.atlas-pill');
+  const pill = h.document.querySelector('.genux-pill');
   assert.ok(pill?.classList.contains('ant-tag'), 'master pill uses the installed native Tag');
   assert.equal(pill.style.getPropertyValue('--pill-radius'), '9999px');
-  const close = pill.querySelector('.atlas-pill-close');
+  const close = pill.querySelector('.genux-pill-close');
   assert.ok(close);
   assert.equal(close.getAttribute('role'), 'button');
   assert.equal(close.getAttribute('tabindex'), '0');
@@ -786,10 +786,10 @@ test('Pill master uses native Tag closing and a labelled Phosphor X without nest
   for (const mode of ['dark', 'light']) {
     await h.act(async () => {
       h.document.documentElement.dataset.theme = mode;
-      h.window.dispatchEvent(new h.window.Event('atlas-theme-change'));
+      h.window.dispatchEvent(new h.window.Event('genux-theme-change'));
     });
-    assert.equal(h.document.querySelector('.atlas-pill'), pill);
-    assert.equal(pill.querySelector('.atlas-pill-close'), close);
+    assert.equal(h.document.querySelector('.genux-pill'), pill);
+    assert.equal(pill.querySelector('.genux-pill-close'), close);
   }
 });
 
@@ -799,20 +799,20 @@ test('Pill demo reuses every canonical Button radius and retains native disabled
   const radius = h.document.querySelector('#pill-radius');
   assert.ok(radius);
   const data = JSON.parse(
-    await readFile(new URL('../src/data/atlas.json', import.meta.url), 'utf8'),
+    await readFile(new URL('../src/data/genux.json', import.meta.url), 'utf8'),
   );
-  const pills = [...h.document.querySelectorAll('.atlas-pill')];
+  const pills = [...h.document.querySelectorAll('.genux-pill')];
   assert.ok(pills.length >= 3, 'basic, removable and disabled examples share the master');
   for (const option of data.decisions.buttons.radius_variants) {
     await selectOption(h, radius, option.label);
     for (const [index, pill] of pills.entries()) {
-      assert.equal(h.document.querySelectorAll('.atlas-pill')[index], pill);
+      assert.equal(h.document.querySelectorAll('.genux-pill')[index], pill);
       assert.equal(pill.style.getPropertyValue('--pill-radius'), option.css);
     }
   }
-  const disabled = h.document.querySelector('.atlas-pill.ant-tag-disabled');
+  const disabled = h.document.querySelector('.genux-pill.ant-tag-disabled');
   assert.ok(disabled);
-  const disabledClose = disabled.querySelector('.atlas-pill-close');
+  const disabledClose = disabled.querySelector('.genux-pill-close');
   assert.equal(disabledClose.getAttribute('aria-disabled'), 'true');
   assert.equal(disabledClose.getAttribute('tabindex'), '-1');
   await h.click(disabledClose);
@@ -824,13 +824,13 @@ test('Select web selected tags compose the master Pill and preserve native remov
   t.after(() => h.dispose());
   const multiple = h.document.querySelector('#select-multiple');
   const owner = multiple.closest('.ant-select');
-  const pills = [...owner.querySelectorAll('.atlas-pill')];
+  const pills = [...owner.querySelectorAll('.genux-pill')];
   assert.deepEqual(
-    pills.map(pill => pill.querySelector('.atlas-pill-label').textContent),
+    pills.map(pill => pill.querySelector('.genux-pill-label').textContent),
     ['Design', 'Engineering'],
   );
   await h.act(async () => multiple.focus());
-  const close = pills[0].querySelector('.atlas-pill-close');
+  const close = pills[0].querySelector('.genux-pill-close');
   await h.act(async () => {
     const event = new h.window.MouseEvent('mousedown', { bubbles: true, cancelable: true });
     close.dispatchEvent(event);
@@ -838,7 +838,7 @@ test('Select web selected tags compose the master Pill and preserve native remov
   });
   await h.click(close);
   assert.deepEqual(
-    [...owner.querySelectorAll('.atlas-pill-label')].map(node => node.textContent),
+    [...owner.querySelectorAll('.genux-pill-label')].map(node => node.textContent),
     ['Engineering'],
   );
   assert.equal(
@@ -847,7 +847,7 @@ test('Select web selected tags compose the master Pill and preserve native remov
     'closing a pill must not open the dropdown',
   );
   assert.equal(h.document.activeElement, multiple);
-  assert.equal(owner.querySelector('.atlas-pill'), pills[1], 'other selected values stay mounted');
+  assert.equal(owner.querySelector('.genux-pill'), pills[1], 'other selected values stay mounted');
   const tags = h.document.querySelector('#select-tags');
   const tagOwner = tags.closest('.ant-select');
   await h.type(tags, 'Yeni etiket');
@@ -863,7 +863,7 @@ test('Select web selected tags compose the master Pill and preserve native remov
     );
   });
   await h.waitFor(
-    () => tagOwner.querySelector('.atlas-pill-label')?.textContent === 'Yeni etiket',
+    () => tagOwner.querySelector('.genux-pill-label')?.textContent === 'Yeni etiket',
     'native tag entry creates a master Pill',
   );
   await h.type(tags, '');
@@ -884,18 +884,18 @@ test('Select web selected tags compose the master Pill and preserve native remov
     );
   });
   await h.waitFor(
-    () => tagOwner.querySelectorAll('.atlas-pill').length === 0,
+    () => tagOwner.querySelectorAll('.genux-pill').length === 0,
     'native Backspace removes the last tag',
   );
   for (const mode of ['dark', 'light']) {
     await h.act(async () => {
       h.document.documentElement.dataset.theme = mode;
-      h.window.dispatchEvent(new h.window.Event('atlas-theme-change'));
+      h.window.dispatchEvent(new h.window.Event('genux-theme-change'));
     });
     assert.equal(h.document.querySelector('#select-multiple'), multiple);
-    assert.equal(owner.querySelector('.atlas-pill'), pills[1]);
+    assert.equal(owner.querySelector('.genux-pill'), pills[1]);
   }
-  const keyboardClose = pills[1].querySelector('.atlas-pill-close');
+  const keyboardClose = pills[1].querySelector('.genux-pill-close');
   await h.act(async () => {
     keyboardClose.focus();
     keyboardClose.dispatchEvent(
@@ -906,7 +906,7 @@ test('Select web selected tags compose the master Pill and preserve native remov
       }),
     );
   });
-  assert.equal(owner.querySelectorAll('.atlas-pill').length, 0);
+  assert.equal(owner.querySelectorAll('.genux-pill').length, 0);
   assert.equal(
     multiple.getAttribute('aria-expanded'),
     'false',
@@ -926,7 +926,7 @@ test('Select multiple and tags search visible English and Turkish labels without
   const tags = h.document.getElementById('select-tags');
   const owner = multiple.closest('.ant-select');
   const tagOwner = tags.closest('.ant-select');
-  const initial = [...owner.querySelectorAll('.atlas-pill')];
+  const initial = [...owner.querySelectorAll('.genux-pill')];
   for (const [locale, operations, engineering] of [
     ['en', 'Operations', 'Engineering'],
     ['tr', 'Operasyon', 'Mühendislik'],
@@ -935,14 +935,14 @@ test('Select multiple and tags search visible English and Turkish labels without
     assert.equal(h.document.getElementById('select-multiple'), multiple);
     assert.equal(h.document.getElementById('select-tags'), tags);
     assert.equal(
-      owner.querySelectorAll('.atlas-pill')[1],
+      owner.querySelectorAll('.genux-pill')[1],
       initial[1],
       'locale changes keep the selected value and Pill instance',
     );
-    assert.equal(initial[1].querySelector('.atlas-pill-label').textContent, engineering);
-    if (tagOwner.querySelector('.atlas-pill')) {
-      assert.equal(tagOwner.querySelector('.atlas-pill-label').textContent, engineering);
-      await h.click(tagOwner.querySelector('.atlas-pill-close'));
+    assert.equal(initial[1].querySelector('.genux-pill-label').textContent, engineering);
+    if (tagOwner.querySelector('.genux-pill')) {
+      assert.equal(tagOwner.querySelector('.genux-pill-label').textContent, engineering);
+      await h.click(tagOwner.querySelector('.genux-pill-close'));
     }
     for (const [input, label] of [
       [multiple, operations],
@@ -981,8 +981,8 @@ test('Select multiple and tags search visible English and Turkish labels without
         ),
       );
     }
-    assert.equal(tagOwner.querySelectorAll('.atlas-pill').length, 1);
-    assert.equal(tagOwner.querySelector('.atlas-pill-label').textContent, engineering);
+    assert.equal(tagOwner.querySelectorAll('.genux-pill').length, 1);
+    assert.equal(tagOwner.querySelector('.genux-pill-label').textContent, engineering);
   }
   await h.type(tags, 'My custom team');
   await h.act(async () =>
@@ -997,22 +997,22 @@ test('Select multiple and tags search visible English and Turkish labels without
     ),
   );
   await h.waitFor(
-    () => tagOwner.querySelectorAll('.atlas-pill').length === 2,
+    () => tagOwner.querySelectorAll('.genux-pill').length === 2,
     'custom user tag is added',
   );
-  const custom = [...tagOwner.querySelectorAll('.atlas-pill')].find(
-    pill => pill.querySelector('.atlas-pill-label').textContent === 'My custom team',
+  const custom = [...tagOwner.querySelectorAll('.genux-pill')].find(
+    pill => pill.querySelector('.genux-pill-label').textContent === 'My custom team',
   );
   assert.ok(custom);
   for (const locale of ['en', 'tr']) {
     await h.act(async () => h.setLocale(locale));
     assert.ok(custom.isConnected, 'locale preserves the custom tag instance and value');
     assert.equal(
-      custom.querySelector('.atlas-pill-label').textContent,
+      custom.querySelector('.genux-pill-label').textContent,
       'My custom team',
       'user text is not translated or overwritten',
     );
-    assert.equal(tagOwner.querySelectorAll('.atlas-pill').length, 2);
+    assert.equal(tagOwner.querySelectorAll('.genux-pill').length, 2);
   }
 });
 
@@ -1021,14 +1021,14 @@ test('Select native fallback retains AntD tags', async t => {
   t.after(() => h.dispose());
   const owner = h.document.querySelector('#select-multiple').closest('.ant-select');
   assert.equal(owner.querySelectorAll('.ant-select-selection-item').length, 2);
-  assert.equal(h.document.querySelectorAll('.atlas-pill').length, 0);
+  assert.equal(h.document.querySelectorAll('.genux-pill').length, 0);
   assert.equal(owner.querySelectorAll('svg[data-icon-name="x"]').length, 0);
 });
 
 test('Select input modality preserves selection across pointer and keyboard', async t => {
   const h = await mountPattern('default', 'docs/src/react/SelectDemo.tsx');
   t.after(() => h.dispose());
-  const provider = h.document.querySelector('.atlas-demo');
+  const provider = h.document.querySelector('.genux-demo');
   const input = h.document.querySelector('#select-single');
   const control = input.closest('.ant-select');
   const key = async (name, code) => {
@@ -1105,7 +1105,7 @@ test('Select input modality preserves selection across pointer and keyboard', as
 test('Input filled fields preserve typed drafts across theme changes', async t => {
   const h = await mountPattern('default', 'docs/src/react/InputDemo.tsx');
   t.after(() => h.dispose());
-  const provider = h.document.querySelector('.atlas-demo');
+  const provider = h.document.querySelector('.genux-demo');
   const search = h.document.querySelector('#input-search');
   const note = h.document.querySelector('#input-note');
   await h.type(search, 'Korunan arama');
@@ -1115,7 +1115,7 @@ test('Input filled fields preserve typed drafts across theme changes', async t =
   for (const mode of ['light', 'dark', 'light']) {
     await h.act(async () => {
       h.document.documentElement.dataset.theme = mode;
-      h.window.dispatchEvent(new h.window.Event('atlas-theme-change'));
+      h.window.dispatchEvent(new h.window.Event('genux-theme-change'));
     });
     assert.equal(provider.dataset.themeMode, mode);
     assert.equal(h.document.querySelector('#input-search'), search);
@@ -1150,7 +1150,7 @@ test('Input filled fields preserve typed drafts across theme changes', async t =
 test('Select filled fields preserve selection across theme changes', async t => {
   const h = await mountPattern('default', 'docs/src/react/SelectDemo.tsx');
   t.after(() => h.dispose());
-  const provider = h.document.querySelector('.atlas-demo');
+  const provider = h.document.querySelector('.genux-demo');
   const input = h.document.querySelector('#select-single');
   await selectOption(h, input, 'Operations');
   assert.ok(!h.document.querySelector('.field-surface-control'), 'Surface chooser is removed');
@@ -1158,7 +1158,7 @@ test('Select filled fields preserve selection across theme changes', async t => 
   for (const mode of ['light', 'dark', 'light']) {
     await h.act(async () => {
       h.document.documentElement.dataset.theme = mode;
-      h.window.dispatchEvent(new h.window.Event('atlas-theme-change'));
+      h.window.dispatchEvent(new h.window.Event('genux-theme-change'));
     });
     assert.equal(provider.dataset.themeMode, mode);
     assert.equal(h.document.querySelector('#select-single'), input);
@@ -1311,10 +1311,10 @@ test('Form: layout changes preserve edits and disabled/loading previews are expl
   await h.type(form.querySelector('input[id$="fullName"]'), 'Korunan taslak');
   const layout = h.document.querySelector('.form-layout-control [role=combobox]');
   await selectOption(h, layout, 'Horizontal');
-  assert.ok(form.classList.contains('atlas-form-horizontal'));
+  assert.ok(form.classList.contains('genux-form-horizontal'));
   assert.equal(form.querySelector('input[id$="fullName"]').value, 'Korunan taslak');
   await selectOption(h, layout, 'Inline');
-  assert.ok(form.classList.contains('atlas-form-inline'));
+  assert.ok(form.classList.contains('genux-form-inline'));
   assert.equal(form.querySelector('input[id$="fullName"]').value, 'Korunan taslak');
   const toggle = [...h.document.querySelectorAll('label')]
     .find(label => label.textContent.trim() === 'Disable form')
@@ -1416,7 +1416,7 @@ test('Screenshot retries a failed source after switching back from another sourc
   await writeFile(
     fixture,
     `import { useState } from 'react';
-import AtlasScreenshot from '../src/react/AtlasScreenshot';
+import GenUXScreenshot from '../src/react/GenUXScreenshot';
 
 export default function ScreenshotSourceFixture() {
   const [src, setSrc] = useState('/a.png');
@@ -1424,7 +1424,7 @@ export default function ScreenshotSourceFixture() {
     <>
       <button type="button" onClick={() => setSrc('/a.png')}>Show A</button>
       <button type="button" onClick={() => setSrc('/b.png')}>Show B</button>
-      <AtlasScreenshot
+      <GenUXScreenshot
         src={src}
         alt="Recorded example"
         caption="Recorded example"
@@ -1440,8 +1440,8 @@ export default function ScreenshotSourceFixture() {
   t.after(() => unlink(fixture));
   const h = await mountPattern('default', `docs/tests/${name}`);
   t.after(() => h.dispose());
-  const figure = () => h.document.querySelector('.atlas-screenshot');
-  const image = () => h.document.querySelector('.atlas-screenshot img');
+  const figure = () => h.document.querySelector('.genux-screenshot');
+  const image = () => h.document.querySelector('.genux-screenshot img');
   const first = image();
   assert.equal(first?.getAttribute('src'), '/a.png');
   await h.act(async () => {
@@ -1467,27 +1467,27 @@ test('Popconfirm honours defaultOpen, cancels once on Escape and returns focus t
   await writeFile(
     fixture,
     `import { useState } from 'react';
-import AtlasProvider from '../src/react/AtlasProvider';
-import { AtlasFeedbackScope, AtlasPopconfirm } from '../src/react/AtlasFeedback';
+import GenUXProvider from '../src/react/GenUXProvider';
+import { GenUXFeedbackScope, GenUXPopconfirm } from '../src/react/GenUXFeedback';
 
 export default function PopconfirmOpenFixture() {
   const [cancels, setCancels] = useState(0);
   const [confirms, setConfirms] = useState(0);
   return (
-    <AtlasProvider>
-      <AtlasFeedbackScope>
-        <AtlasPopconfirm
+    <GenUXProvider>
+      <GenUXFeedbackScope>
+        <GenUXPopconfirm
           defaultOpen
           title="Archive this draft?"
           onCancel={() => setCancels(count => count + 1)}
           onConfirm={() => setConfirms(count => count + 1)}
         >
           <button type="button">Archive draft</button>
-        </AtlasPopconfirm>
+        </GenUXPopconfirm>
         <output data-cancels>{cancels}</output>
         <output data-confirms>{confirms}</output>
-      </AtlasFeedbackScope>
-    </AtlasProvider>
+      </GenUXFeedbackScope>
+    </GenUXProvider>
   );
 }
 `,
@@ -1500,7 +1500,7 @@ export default function PopconfirmOpenFixture() {
   assert.ok(trigger);
   const count = key => h.document.querySelector(`[data-${key}]`).textContent;
   const shown = () => {
-    const popup = h.document.querySelector('.atlas-popconfirm');
+    const popup = h.document.querySelector('.genux-popconfirm');
     return popup && !popup.classList.contains('ant-popover-hidden') ? popup : null;
   };
   const initial = shown();

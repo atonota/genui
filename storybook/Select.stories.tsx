@@ -5,7 +5,7 @@ const meta = {
   title: 'Components/Select',
   component: SelectDemo,
   args: { pillTags: true },
-  parameters: { controls: { disable: true }, atlasSharedPreview: true },
+  parameters: { controls: { disable: true }, genuxSharedPreview: true },
 } satisfies Meta<typeof SelectDemo>;
 
 export default meta;

@@ -108,7 +108,7 @@ export const inputSurfaces: Readonly<Record<InputSurfaceMode, InputSurface>> = O
   dark: surfaceModel('dark'),
 });
 
-/** Inline padding per shared size; heights come from the Atlas size profiles. */
+/** Inline padding per shared size; heights come from the GenUX size profiles. */
 export const inputPaddingInline: Record<InputSizeKey, number> = { sm: 12, md: 14, lg: 16 };
 
 type InputPrimitive =
@@ -123,12 +123,12 @@ type InputPrimitive =
 /** Input-specific primitives a caller may override; semantic roles follow the theme. */
 export type InputSurfaceOverrides = Partial<Record<InputPrimitive, string>>;
 
-/** --atlas-input-* variables for one mode; owners spread them on their paint root.
+/** --genux-input-* variables for one mode; owners spread them on their paint root.
     Aliases resolve on that owner, so a local theme or color preview recolors fields. */
 export function inputSurfaceVariables(
   mode: InputSurfaceMode,
   overrides: InputSurfaceOverrides = {},
-): Record<`--atlas-input-${string}`, string> {
+): Record<`--genux-input-${string}`, string> {
   const model = inputSurfaces[mode];
   const roles = {
     ...model,
@@ -145,10 +145,10 @@ export function inputSurfaceVariables(
   );
   return Object.fromEntries(
     entries.map(([name, value]) => [
-      `--atlas-input-${name.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}`,
+      `--genux-input-${name.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}`,
       value,
     ]),
-  ) as Record<`--atlas-input-${string}`, string>;
+  ) as Record<`--genux-input-${string}`, string>;
 }
 
 /** Mode-independent aliases of the root field roles. theme.ts emits those roles for both
@@ -171,11 +171,11 @@ const inputRoleAliases: Readonly<Record<keyof InputSurface | 'focus', string>> =
   focus: 'var(--color-preview-primary, var(--focus-indicator-color))',
 });
 
-export function inputSurfaceAliasVariables(): Record<`--atlas-input-${string}`, string> {
+export function inputSurfaceAliasVariables(): Record<`--genux-input-${string}`, string> {
   return Object.fromEntries(
     Object.entries(inputRoleAliases).map(([name, value]) => [
-      `--atlas-input-${name.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}`,
+      `--genux-input-${name.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}`,
       value,
     ]),
-  ) as Record<`--atlas-input-${string}`, string>;
+  ) as Record<`--genux-input-${string}`, string>;
 }

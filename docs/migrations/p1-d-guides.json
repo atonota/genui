@@ -8,31 +8,51 @@
       "old": "/#shared-foundation",
       "new": "/#shared-foundation",
       "status": "rewritten",
-      "note": "Stable anchor kept; repeated values replaced by one-sentence links to /tokens/, /standards/, /color-system/, /theme-builder/ and /genui/."
+      "note": "Stable anchor kept; repeated values replaced by one-sentence links to /tokens/, /standards/, /color-system/, /theme-builder/ and /genux/."
     },
-    { "old": "/getting-started/#local-development", "new": "/getting-started/#local-development", "status": "kept" },
-    { "old": "/getting-started/#using-components", "new": "/getting-started/#using-components", "status": "kept" },
+    {
+      "old": "/getting-started/#local-development",
+      "new": "/getting-started/#local-development",
+      "status": "kept"
+    },
+    {
+      "old": "/getting-started/#using-components",
+      "new": "/getting-started/#using-components",
+      "status": "kept"
+    },
     {
       "old": "/getting-started/#astro-integration",
       "new": "/getting-started/#astro-integration",
       "status": "kept",
       "note": "Single shared guide target linked by every component page; must not move."
     },
-    { "old": "/getting-started/#production-verification", "new": "/getting-started/#production-verification", "status": "kept" },
+    {
+      "old": "/getting-started/#production-verification",
+      "new": "/getting-started/#production-verification",
+      "status": "kept"
+    },
     {
       "old": "/getting-started/#acceptance-standard",
       "new": "/documentation/#admission",
       "status": "merged",
       "note": "Acceptance requirements merged into the Admission workflow; motion rules move to /standards/#motion. The old id remains on a pointer paragraph inside Production and verification so former links still land on the links."
     },
-    { "old": "/getting-started/#project-boundaries", "new": "/getting-started/#project-boundaries", "status": "kept" },
+    {
+      "old": "/getting-started/#project-boundaries",
+      "new": "/getting-started/#project-boundaries",
+      "status": "kept"
+    },
     {
       "old": "/documentation/#page-types",
       "new": "/documentation/#page-types",
       "status": "kept",
       "note": "Kind purposes now come from pageKinds descriptions in docs/src/data/documentation-rules.json, owned by the build gate."
     },
-    { "old": "/documentation/#section-order", "new": "/documentation/#section-order", "status": "kept" },
+    {
+      "old": "/documentation/#section-order",
+      "new": "/documentation/#section-order",
+      "status": "kept"
+    },
     { "old": "/documentation/#rules", "new": "/documentation/#rules", "status": "kept" },
     { "old": "/documentation/#source-map", "new": "/documentation/#source-map", "status": "kept" },
     {
@@ -41,7 +61,11 @@
       "status": "extended",
       "note": "Receives the merged new component acceptance requirements and links to /standards/#motion and /tokens/."
     },
-    { "old": "/documentation/#verification-limits", "new": "/documentation/#verification-limits", "status": "kept" }
+    {
+      "old": "/documentation/#verification-limits",
+      "new": "/documentation/#verification-limits",
+      "status": "kept"
+    }
   ],
   "removedDuplicates": [
     {
@@ -70,7 +94,7 @@
     },
     {
       "from": "/getting-started/#acceptance-standard",
-      "content": "Shared motion contract, AtlasProvider, atlas-control and docs:verify motion guard requirements",
+      "content": "Shared motion contract, GenUXProvider, genux-control and docs:verify motion guard requirements",
       "owner": "/documentation/#admission",
       "reason": "New component acceptance is one workflow; it now lives in the Admission workflow steps."
     },
@@ -90,7 +114,7 @@
     "FOUNDATIONS / GETTING STARTED",
     "FOUNDATIONS / DOCUMENTATION STANDARD",
     "New component acceptance standard",
-    "Human and AI contributions follow the same motion contract. Use AtlasProvider and shared motion tokens. New custom controls inherit smooth entry and exit through atlas-control; define moving decorative layers separately.",
+    "Human and AI contributions follow the same motion contract. Use GenUXProvider and shared motion tokens. New custom controls inherit smooth entry and exit through genux-control; define moving decorative layers separately.",
     "Normal states reject linear or one-way easing, zero duration, disabled transitions and inline motion overrides. Do not delay input or selection. Preserve reduced motion and keep dimensions and hit areas stable on hover.",
     "npm run docs:verify includes the source motion guard. Source checks do not replace live browser review. See the design tokens and project CONTRIBUTING.md contract.",
     "Run the focused test and the production build; any error finding fails the build.",

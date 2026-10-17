@@ -1,11 +1,11 @@
 import { useI18n } from './useI18n';
 import { Select } from 'antd';
 import { useId, useRef, useState, type ComponentRef } from 'react';
-import AtlasButton from './AtlasButton';
+import GenUXButton from './GenUXButton';
 import { normalizeSearch } from '../i18n';
 import { selectedLabel } from './selectedLabel';
 
-const classNames = { popup: { root: 'atlas-select-popup' } };
+const classNames = { popup: { root: 'genux-select-popup' } };
 // Created IDs use the `custom-department-` prefix, so this key never collides.
 const CREATE_VALUE = 'create-department';
 
@@ -89,7 +89,7 @@ export default function DepartmentSelectExample() {
           ? t('Selected department: {name}', { name: selected.label })
           : t('No department selected')}
       </output>
-      <AtlasButton
+      <GenUXButton
         fill="outline"
         text={t('Clear department')}
         disabled={value === undefined && query === ''}

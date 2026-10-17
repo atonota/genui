@@ -1,13 +1,15 @@
+import { readMigratedItem } from '../../storage-migration';
+
 // Remembers the DocsNav categories list scroll position for the browser session, so ordinary
 // links and back/forward navigation keep the list where the reader left it. Only the
 // [data-docs-nav-scroll] container scrolls; the document and focus are never moved.
-const storageKey = 'atlas-docs-nav-scroll';
+const storageKey = 'genux-docs-nav-scroll';
 // Dispatched on the document by docs-shell once the menu Drawer has opened and has layout.
-const shownEvent = 'atlas-docs-nav-shown';
+const shownEvent = 'genux-docs-nav-shown';
 
 const readStored = (view: Window): number | null => {
   try {
-    const raw = view.sessionStorage.getItem(storageKey);
+    const raw = readMigratedItem(view.sessionStorage, storageKey);
     const value = raw == null || raw === '' ? Number.NaN : Number(raw);
     return Number.isFinite(value) && value >= 0 ? value : null;
   } catch {

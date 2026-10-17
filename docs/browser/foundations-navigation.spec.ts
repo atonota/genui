@@ -1,8 +1,8 @@
 import { expect, test, type Locator, type Page, type TestInfo } from '@playwright/test';
 
 // Uses the existing docs service. Screenshot names carry the source stage so RED and GREEN never overwrite.
-const BASE_URL = process.env.ATLAS_DOCS_URL ?? 'http://127.0.0.1:4324';
-const STAGE = (process.env.ATLAS_SOURCE_STAGE ?? 'unstaged').replace(/[^a-z0-9-]+/gi, '-');
+const BASE_URL = process.env.GENUX_DOCS_URL ?? 'http://127.0.0.1:4324';
+const STAGE = (process.env.GENUX_SOURCE_STAGE ?? 'unstaged').replace(/[^a-z0-9-]+/gi, '-');
 const DESKTOP = { width: 1280, height: 800 };
 const NARROW = { width: 320, height: 720 };
 const THEMES = ['light', 'dark'] as const;
@@ -25,7 +25,7 @@ const FOUNDATION_GROUPS: NavGroup[] = [
       { label: 'UX standards', path: '/standards/' },
       { label: 'Color system', path: '/color-system/' },
       { label: 'Theme Builder', path: '/theme-builder/' },
-      { label: 'GenUI', path: '/genui/' },
+      { label: 'GenUX', path: '/genux/' },
     ],
   },
   {

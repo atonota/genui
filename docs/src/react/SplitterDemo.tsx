@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { Select } from 'antd';
-import Input from './AtlasInput';
-import AtlasProvider from './AtlasProvider';
-import AtlasButton from './AtlasButton';
-import AtlasPill from './AtlasPill';
-import AtlasSplitter from './AtlasSplitter';
+import Input from './GenUXInput';
+import GenUXProvider from './GenUXProvider';
+import GenUXButton from './GenUXButton';
+import GenUXPill from './GenUXPill';
+import GenUXSplitter from './GenUXSplitter';
 import ExamplePreview from './ExamplePreview';
-import { TweakerSettings } from './AtlasTweaker';
+import { TweakerSettings } from './GenUXTweaker';
 import { useI18n } from './useI18n';
 import { initialRecords, moneyText, STATUS_LABELS } from '../data/workspace';
 import { workspacePillColorIndex } from '../data/workspace-pill-colors';
@@ -28,7 +28,7 @@ function SplitterExamples() {
   const [records] = useState(() => initialRecords().slice(0, 4));
   const [activeId, setActiveId] = useState(records[0]!.id);
   const [note, setNote] = useState('');
-  const [project, setProject] = useState('Atlas Studio');
+  const [project, setProject] = useState('GenUX Studio');
   const [description, setDescription] = useState('Prepare the next workspace review.');
   const [orientation, setOrientation] = useState<'auto' | 'vertical'>('auto');
   const record = records.find(item => item.id === activeId)!;
@@ -66,7 +66,7 @@ function SplitterExamples() {
           </p>
         </header>
         <ExamplePreview id="splitter-browse-inspect" title={t('Browse and inspect')}>
-          <AtlasSplitter
+          <GenUXSplitter
             id="splitter-records"
             label={t('Browse and inspect')}
             orientation={orientation}
@@ -79,7 +79,7 @@ function SplitterExamples() {
                   <div className="splitter-record-list">
                     <p className="splitter-helper">{t('Choose a record to review its details.')}</p>
                     {records.map(item => (
-                      <AtlasButton
+                      <GenUXButton
                         key={item.id}
                         fill={item.id === activeId ? 'tint' : 'text'}
                         width="full"
@@ -100,9 +100,9 @@ function SplitterExamples() {
                       <p className="splitter-helper">{record.id}</p>
                       <h4>{record.customer}</h4>
                     </div>
-                    <AtlasPill colorIndex={workspacePillColorIndex.status[record.status]}>
+                    <GenUXPill colorIndex={workspacePillColorIndex.status[record.status]}>
                       {t(STATUS_LABELS[record.status])}
-                    </AtlasPill>
+                    </GenUXPill>
                     <dl className="splitter-facts">
                       <div>
                         <dt>{t('Owner')}</dt>
@@ -155,7 +155,7 @@ function SplitterExamples() {
           </p>
         </header>
         <ExamplePreview id="splitter-edit-review" title={t('Edit and review')}>
-          <AtlasSplitter
+          <GenUXSplitter
             id="splitter-editor"
             label={t('Edit and review')}
             orientation="vertical"
@@ -186,7 +186,7 @@ function SplitterExamples() {
                 label: t('Live review'),
                 children: (
                   <div className="splitter-review" aria-live="polite">
-                    <AtlasPill>{t('Draft')}</AtlasPill>
+                    <GenUXPill>{t('Draft')}</GenUXPill>
                     <h4>{project || t('Untitled workspace')}</h4>
                     <p className="splitter-draft-copy">{description || t('No description yet.')}</p>
                     <p className="splitter-helper">
@@ -230,8 +230,8 @@ function SplitterExamples() {
 
 export default function SplitterDemo({ documentation = false }: { documentation?: boolean } = {}) {
   return (
-    <AtlasProvider appearance={documentation ? 'docs' : 'approved'}>
+    <GenUXProvider appearance={documentation ? 'docs' : 'approved'}>
       <SplitterExamples />
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }

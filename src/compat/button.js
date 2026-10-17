@@ -2,7 +2,7 @@ function sharedMotionRequirement() {
   return {
     scope: ':root',
     tokens: {
-      '--motion-easing': $('atlas-styles').textContent.match(/--motion-easing:([^;]+)/)[1],
+      '--motion-easing': $('genux-styles').textContent.match(/--motion-easing:([^;]+)/)[1],
     },
     animated_descendants:
       'Apply var(--motion-easing) to each transition and animation, including the child loading icon: animation-timing-function does not inherit.',
@@ -97,7 +97,7 @@ function buildAntdRecipe(raw, state = 'default') {
     shared_styles_required: BUTTON_DECISIONS.implementation.shared_styles,
     font_loading_required: {
       family: 'Outfit',
-      stylesheet_id: 'atlas-styles',
+      stylesheet_id: 'genux-styles',
       source_url:
         'https://fonts.google.com/specimen/Outfit?preview.script=Latn&preview.lang=tr_Latn',
       instruction:

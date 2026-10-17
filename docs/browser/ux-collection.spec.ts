@@ -15,7 +15,7 @@ test('record workspace pairs the Orders customer with a decorative avatar and en
 
   const customer = table.locator('tbody [data-leaf-field=customer]').first();
   await expect(customer.locator('dt')).toHaveText('Customer');
-  const avatar = customer.locator('.atlas-avatar');
+  const avatar = customer.locator('.genux-avatar');
   await expect(avatar).toHaveCount(1);
   await expect(avatar).toBeVisible();
   // The adjacent name carries meaning; the avatar is decoration only.
@@ -24,7 +24,7 @@ test('record workspace pairs the Orders customer with a decorative avatar and en
   const recordId = await customer.locator('xpath=ancestor::tr[1]').getAttribute('data-record-id');
   const name = await customer.locator('dd').evaluate(dd => {
     const copy = dd.cloneNode(true) as HTMLElement;
-    copy.querySelectorAll('.atlas-avatar').forEach(node => node.remove());
+    copy.querySelectorAll('.genux-avatar').forEach(node => node.remove());
     return (copy.textContent ?? '').trim();
   });
   expect(name).not.toBe('');

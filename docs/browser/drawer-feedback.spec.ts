@@ -507,7 +507,7 @@ const overlayBackdropRows: OverlayBackdropRow[] = [
     kind: 'negative',
     role: 'button',
     name: 'Toast · top center',
-    popup: '.atlas-toast',
+    popup: '.genux-toast',
   },
   {
     key: 'notification',
@@ -515,7 +515,7 @@ const overlayBackdropRows: OverlayBackdropRow[] = [
     kind: 'negative',
     role: 'button',
     name: 'Show notification',
-    popup: '.atlas-notification',
+    popup: '.genux-notification',
   },
   {
     // Docs shell menu Drawer: native modal <dialog>, only below the 875px sidebar breakpoint.
@@ -795,7 +795,7 @@ async function overlayBackdropMeasure(
         };
 
         const paint = triggerEl.matches('input, textarea')
-          ? (triggerEl.closest('.ant-select, .ant-picker, .atlas-input-frame, button') ?? triggerEl)
+          ? (triggerEl.closest('.ant-select, .ant-picker, .genux-input-frame, button') ?? triggerEl)
           : triggerEl;
         const pr = rect(popupEl);
         const tr = rect(paint);
@@ -1564,8 +1564,8 @@ test('overlay backdrop: shared one-pixel blur and neutral scrim across user-open
   browser,
 }, testInfo) => {
   test.setTimeout(300000);
-  const overlayBackdropPhase = process.env.ATLAS_OVERLAY_PHASE ?? 'before';
-  const overlayBackdropRowFilter = (process.env.ATLAS_OVERLAY_ROWS ?? '')
+  const overlayBackdropPhase = process.env.GENUX_OVERLAY_PHASE ?? 'before';
+  const overlayBackdropRowFilter = (process.env.GENUX_OVERLAY_ROWS ?? '')
     .split(',')
     .map(value => value.trim())
     .filter(value => value !== '');
@@ -1574,7 +1574,7 @@ test('overlay backdrop: shared one-pixel blur and neutral scrim across user-open
   );
   if (overlayBackdropUnknownKeys.length > 0) {
     throw new Error(
-      `ATLAS_OVERLAY_ROWS names unknown row key(s): ${overlayBackdropUnknownKeys.join(', ')}. Known keys: ${overlayBackdropRows.map(row => row.key).join(', ')}`,
+      `GENUX_OVERLAY_ROWS names unknown row key(s): ${overlayBackdropUnknownKeys.join(', ')}. Known keys: ${overlayBackdropRows.map(row => row.key).join(', ')}`,
     );
   }
   const overlayBackdropSelectedRows =
@@ -1582,7 +1582,7 @@ test('overlay backdrop: shared one-pixel blur and neutral scrim across user-open
       ? overlayBackdropRows
       : overlayBackdropRows.filter(row => overlayBackdropRowFilter.includes(row.key));
   if (overlayBackdropSelectedRows.length === 0)
-    throw new Error('ATLAS_OVERLAY_ROWS selected no rows');
+    throw new Error('GENUX_OVERLAY_ROWS selected no rows');
   const overlayBackdropBrowser = browser.version();
   const overlayBackdropFailures: string[] = [];
   const overlayBackdropAggregate: Record<string, unknown>[] = [];
@@ -1726,9 +1726,9 @@ test('overlay backdrop: shared one-pixel blur and neutral scrim across user-open
         try {
           await context.addInitScript(
             ({ theme, legacy, recipe }) => {
-              localStorage.setItem('atlas-theme', theme);
-              localStorage.setItem('atlas-locale', 'en');
-              if (legacy) localStorage.setItem('atlas-theme-builder-v1', JSON.stringify(recipe));
+              localStorage.setItem('genux-theme', theme);
+              localStorage.setItem('genux-locale', 'en');
+              if (legacy) localStorage.setItem('genux-theme-builder-v1', JSON.stringify(recipe));
             },
             { theme: mode, legacy: row.legacy === true, recipe: overlayBackdropLegacyRecipe },
           );
@@ -1736,12 +1736,12 @@ test('overlay backdrop: shared one-pixel blur and neutral scrim across user-open
           await page.goto(row.route);
           if (row.legacy) {
             try {
-              await expect(page.locator('body')).toHaveAttribute('data-atlas-builder', 'active', {
+              await expect(page.locator('body')).toHaveAttribute('data-genux-builder', 'active', {
                 timeout: 5000,
               });
             } catch {
               overlayBackdropFailures.push(
-                `${key}: body[data-atlas-builder] is not active after hydrate`,
+                `${key}: body[data-genux-builder] is not active after hydrate`,
               );
             }
           }
@@ -2002,7 +2002,7 @@ test('overlay backdrop: shared one-pixel blur and neutral scrim across user-open
           if (row.legacy) {
             const stored =
               JSON.parse(
-                await page.evaluate(() => localStorage.getItem('atlas-theme-builder-v1') ?? 'null'),
+                await page.evaluate(() => localStorage.getItem('genux-theme-builder-v1') ?? 'null'),
               ) ?? {};
             if (stored.version !== overlayBackdropLegacyRecipe.version)
               overlayBackdropFailures.push(

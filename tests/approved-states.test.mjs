@@ -38,7 +38,7 @@ test('only the five explicitly approved button states are decisions', () => {
     );
 });
 
-test('Atlas decisions render the approved states and retain busy/blocked semantics', async t => {
+test('GenUX decisions render the approved states and retain busy/blocked semantics', async t => {
   const h = setup((await render()).html);
   t.after(h.close);
   const grid = h.el('decisionStateGrid');

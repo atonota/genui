@@ -34,7 +34,7 @@
   color: var(--muted);
   vertical-align: middle;
 }
-.kit-readonly-lock .atlas-icon {
+.kit-readonly-lock .genux-icon {
   inline-size: var(--text);
   block-size: var(--text);
 }

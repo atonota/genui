@@ -1,9 +1,9 @@
 import { useId, useState } from 'react';
 import { Select } from 'antd';
-import AtlasProvider from './AtlasProvider';
-import AtlasMediaFrame, { type AtlasMediaFrameProps } from './AtlasMediaFrame';
-import { TweakerSettings } from './AtlasTweaker';
-import AtlasScreenshot from './AtlasScreenshot';
+import GenUXProvider from './GenUXProvider';
+import GenUXMediaFrame, { type GenUXMediaFrameProps } from './GenUXMediaFrame';
+import { TweakerSettings } from './GenUXTweaker';
+import GenUXScreenshot from './GenUXScreenshot';
 import ExamplePreview from './ExamplePreview';
 import { useI18n } from './useI18n';
 
@@ -11,10 +11,10 @@ import { useI18n } from './useI18n';
 const missingPhoto = '/selection/missing-photo.svg';
 const availablePhoto = '/selection/forest.svg';
 // A recorded 1440 by 1000 CSS pixel capture of the Avatar documentation page.
-const avatarScreenshot = '/examples/atlas-avatar-desktop.png';
+const avatarScreenshot = '/examples/genux-avatar-desktop.png';
 
 type PhotoSource = 'missing' | 'available';
-type MediaFit = NonNullable<AtlasMediaFrameProps['fit']>;
+type MediaFit = NonNullable<GenUXMediaFrameProps['fit']>;
 
 function MediaExamples() {
   const { t } = useI18n();
@@ -28,18 +28,18 @@ function MediaExamples() {
   const [fit, setFit] = useState<MediaFit>('cover');
   const restored = src === availablePhoto;
   return (
-    <div className="atlas-media-demo">
+    <div className="genux-media-demo">
       <ExamplePreview id="media-photograph-with-caption" title={t('Photograph with caption')}>
-        <section className="atlas-media-section" aria-labelledby={captionTitle}>
+        <section className="genux-media-section" aria-labelledby={captionTitle}>
           <h3 id={captionTitle}>{t('Photograph with caption')}</h3>
-          <div className="atlas-media-gallery">
-            <AtlasMediaFrame
+          <div className="genux-media-gallery">
+            <GenUXMediaFrame
               src="/selection/coast.svg"
               alt={t('Coast illustration')}
               caption={t('Cover fills the frame and may crop the edges.')}
               overlay={t('Coast')}
             />
-            <AtlasMediaFrame
+            <GenUXMediaFrame
               src="/selection/city.svg"
               fit="contain"
               ratio="square"
@@ -50,24 +50,24 @@ function MediaExamples() {
         </section>
       </ExamplePreview>
       <ExamplePreview id="media-recorded-screenshot" title={t('Recorded screenshot')}>
-        <section className="atlas-media-section" aria-labelledby={screenshotTitle}>
+        <section className="genux-media-section" aria-labelledby={screenshotTitle}>
           <h3 id={screenshotTitle}>{t('Recorded screenshot')}</h3>
-          <AtlasScreenshot
+          <GenUXScreenshot
             src={avatarScreenshot}
             width={1440}
             height={1000}
             alt={t(
-              'Recorded static image of the Atlas Avatar documentation page at 1440 by 1000 CSS pixels. It is not interactive.',
+              'Recorded static image of the GenUX Avatar documentation page at 1440 by 1000 CSS pixels. It is not interactive.',
             )}
-            caption={t('Recorded Atlas Avatar example')}
+            caption={t('Recorded GenUX Avatar example')}
           />
         </section>
       </ExamplePreview>
       <ExamplePreview id="media-unavailable-photograph" title={t('Unavailable photograph')}>
-        <section className="atlas-media-section" aria-labelledby={unavailableTitle}>
+        <section className="genux-media-section" aria-labelledby={unavailableTitle}>
           <h3 id={unavailableTitle}>{t('Unavailable photograph')}</h3>
-          <div className="atlas-media-gallery">
-            <AtlasMediaFrame
+          <div className="genux-media-gallery">
+            <GenUXMediaFrame
               src={src}
               fit={fit}
               alt={t('Forest illustration')}
@@ -75,14 +75,14 @@ function MediaExamples() {
             />
           </div>
           {!restored && (
-            <p className="atlas-media-note">
+            <p className="genux-media-note">
               {t(
                 'Retry image requests the same address again. This example path is missing, so the retry fails again.',
               )}
             </p>
           )}
           <TweakerSettings title="Media">
-            <div className="atlas-tweaker-token">
+            <div className="genux-tweaker-token">
               <label htmlFor={sourceId}>{t('Photograph source')}</label>
               <Select<PhotoSource>
                 id={sourceId}
@@ -94,7 +94,7 @@ function MediaExamples() {
                 onChange={next => setSrc(next === 'available' ? availablePhoto : missingPhoto)}
               />
             </div>
-            <div className="atlas-tweaker-token">
+            <div className="genux-tweaker-token">
               <label htmlFor={fitId}>{t('Photograph fit')}</label>
               <Select<MediaFit>
                 id={fitId}
@@ -107,7 +107,7 @@ function MediaExamples() {
               />
             </div>
           </TweakerSettings>
-          <p className="atlas-media-status" role="status">
+          <p className="genux-media-status" role="status">
             {restored ? t('Available photograph requested') : t('Missing photograph requested')}
           </p>
         </section>
@@ -118,8 +118,8 @@ function MediaExamples() {
 
 export default function MediaDemo({ documentation = false }: { documentation?: boolean }) {
   return (
-    <AtlasProvider appearance={documentation ? 'docs' : undefined}>
+    <GenUXProvider appearance={documentation ? 'docs' : undefined}>
       <MediaExamples />
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }

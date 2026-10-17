@@ -6,7 +6,7 @@ export const listyComponents: ComponentDoc[] = [
     slug: 'listy',
     title: 'Listy',
     summary:
-      'Show related records as readable lists on shared Atlas rows. Sixteen live patterns cover plain, selectable, reorderable, grouped and virtual lists on one central surface with the shared compact sizes.',
+      'Show related records as readable lists on shared GenUX rows. Sixteen live patterns cover plain, selectable, reorderable, grouped and virtual lists on one central surface with the shared compact sizes.',
     antdComponent: 'Listy',
     category: 'Data display',
     sourceUrl: 'https://ant.design/components/listy/',
@@ -21,10 +21,10 @@ export const listyComponents: ComponentDoc[] = [
         id: 'basic',
         title: 'Basic list',
         description:
-          'AtlasListy renders native Listy with stable keys. Every row composes the shared AtlasListyItem.',
-        code: `import AtlasProvider from '../src/react/AtlasProvider';
-import AtlasListy from '../src/react/AtlasListy';
-import '../src/styles/atlas-listy.css';
+          'GenUXListy renders native Listy with stable keys. Every row composes the shared GenUXListyItem.',
+        code: `import GenUXProvider from '../src/react/GenUXProvider';
+import GenUXListy from '../src/react/GenUXListy';
+import '../src/styles/genux-listy.css';
 
 const items = [
   { key: 'button', label: 'Button', description: 'Choose an action and its emphasis.' },
@@ -32,9 +32,9 @@ const items = [
 ];
 
 export default function BasicListy() {
-  return <AtlasProvider appearance="docs">
-    <AtlasListy label="Documentation pages" items={items} />
-  </AtlasProvider>;
+  return <GenUXProvider appearance="docs">
+    <GenUXListy label="Documentation pages" items={items} />
+  </GenUXProvider>;
 }`,
       },
       {
@@ -44,17 +44,17 @@ export default function BasicListy() {
           'A native radio in each row owns the name, keyboard and checked state. The row mirrors it with selected, and a polite status region announces the result.',
         code: `import { useState } from 'react';
 import { Radio } from 'antd';
-import AtlasProvider from '../src/react/AtlasProvider';
-import AtlasListy from '../src/react/AtlasListy';
-import '../src/styles/atlas-listy.css';
+import GenUXProvider from '../src/react/GenUXProvider';
+import GenUXListy from '../src/react/GenUXListy';
+import '../src/styles/genux-listy.css';
 
 const teams = ['Product design', 'Engineering', 'Research'];
 
 export default function SelectListy() {
   const [value, setValue] = useState(teams[0]);
-  return <AtlasProvider appearance="docs">
+  return <GenUXProvider appearance="docs">
     <Radio.Group value={value} onChange={event => setValue(event.target.value)}>
-      <AtlasListy label="Team" items={teams.map(team => ({
+      <GenUXListy label="Team" items={teams.map(team => ({
         key: team,
         label: team,
         leading: <Radio value={team} aria-label={team} />,
@@ -64,17 +64,17 @@ export default function SelectListy() {
       }))} />
     </Radio.Group>
     <p role="status">Selected: {value}</p>
-  </AtlasProvider>;
+  </GenUXProvider>;
 }`,
       },
       {
         id: 'grouped',
         title: 'Grouped sticky headers',
         description:
-          'AtlasListy forwards native group and sticky. The bounded height comes from a named number of compact rows, so the current group header stays visible while the list scrolls.',
-        code: `import AtlasProvider from '../src/react/AtlasProvider';
-import AtlasListy from '../src/react/AtlasListy';
-import '../src/styles/atlas-listy.css';
+          'GenUXListy forwards native group and sticky. The bounded height comes from a named number of compact rows, so the current group header stays visible while the list scrolls.',
+        code: `import GenUXProvider from '../src/react/GenUXProvider';
+import GenUXListy from '../src/react/GenUXListy';
+import '../src/styles/genux-listy.css';
 
 // Bounded viewport: six compact md rows of 40 px.
 const COMPACT_ROW = 40;
@@ -94,11 +94,11 @@ const people = [
 ];
 
 export default function GroupedListy() {
-  return <AtlasProvider appearance="docs">
-    <AtlasListy label="People by team" items={people} sticky
+  return <GenUXProvider appearance="docs">
+    <GenUXListy label="People by team" items={people} sticky
       height={COMPACT_ROW * VISIBLE_ROWS}
       group={{ key: item => teamOf[item.key] ?? 'Other', title: team => team }} />
-  </AtlasProvider>;
+  </GenUXProvider>;
 }`,
       },
       {
@@ -108,10 +108,10 @@ export default function GroupedListy() {
           'Ten thousand local records render in a bounded virtual list. The native ref scrolls to a key from a visible button; no backend is involved.',
         code: `import { useRef } from 'react';
 import type { ListyRef } from 'antd/lib/listy';
-import AtlasProvider from '../src/react/AtlasProvider';
-import AtlasListy from '../src/react/AtlasListy';
-import AtlasButton from '../src/react/AtlasButton';
-import '../src/styles/atlas-listy.css';
+import GenUXProvider from '../src/react/GenUXProvider';
+import GenUXListy from '../src/react/GenUXListy';
+import GenUXButton from '../src/react/GenUXButton';
+import '../src/styles/genux-listy.css';
 
 // Bounded viewport: ten compact md rows of 40 px.
 const COMPACT_ROW = 40;
@@ -123,17 +123,17 @@ const records = Array.from({ length: 10000 }, (_, index) => ({
 
 export default function VirtualListy() {
   const listy = useRef<ListyRef>(null);
-  return <AtlasProvider appearance="docs">
-    <AtlasButton text="Jump to last item" onClick={() =>
+  return <GenUXProvider appearance="docs">
+    <GenUXButton text="Jump to last item" onClick={() =>
       listy.current?.scrollTo({ key: 'record-10000', align: 'bottom' })} />
-    <AtlasListy ref={listy} label="Records" items={records} virtual
+    <GenUXListy ref={listy} label="Records" items={records} virtual
       height={COMPACT_ROW * VISIBLE_ROWS} />
-  </AtlasProvider>;
+  </GenUXProvider>;
 }`,
       },
     ],
     apiDescription:
-      'AtlasListy wraps the installed native Ant Design 6.6.6 Listy and forwards its height, virtual, sticky, group, ref and onScroll contracts. Atlas supplies the shared row, the central Listy surface role and the accessible group name; the caller owns the items and state.',
+      'GenUXListy wraps the installed native Ant Design 6.6.6 Listy and forwards its height, virtual, sticky, group, ref and onScroll contracts. GenUX supplies the shared row, the central Listy surface role and the accessible group name; the caller owns the items and state.',
     api: [
       {
         property: 'label',
@@ -143,7 +143,7 @@ export default function VirtualListy() {
       },
       {
         property: 'items',
-        type: 'readonly AtlasListyEntry[]',
+        type: 'readonly GenUXListyEntry[]',
         defaultValue: 'Required',
         description:
           'Rows in display order with unique stable keys. Replace the array when data changes.',
@@ -191,7 +191,7 @@ export default function VirtualListy() {
       },
       {
         property: 'sticky / group',
-        type: 'boolean / Group<AtlasListyEntry, string>',
+        type: 'boolean / Group<GenUXListyEntry, string>',
         defaultValue: 'false / undefined',
         description:
           'Forwarded native grouped segments; sticky keeps the current group header visible while scrolling.',
@@ -216,21 +216,21 @@ export default function VirtualListy() {
         type: 'T[] / keyof T | function / function',
         defaultValue: 'Required',
         description:
-          'Native data, stable identity and row rendering. AtlasListy sets rowKey to key and always renders AtlasListyItem.',
+          'Native data, stable identity and row rendering. GenUXListy sets rowKey to key and always renders GenUXListyItem.',
       },
       {
         property: 'height / virtual',
         type: 'number / boolean',
         defaultValue: 'undefined / native',
         description:
-          'Native bounded and virtual rendering. AtlasListy forwards both; the virtual pattern keeps 10,000 local records in a bounded viewport.',
+          'Native bounded and virtual rendering. GenUXListy forwards both; the virtual pattern keeps 10,000 local records in a bounded viewport.',
       },
       {
         property: 'group / sticky',
         type: 'Group<T> / boolean',
         defaultValue: 'undefined / false',
         description:
-          'Native grouped segments with optional sticky headers. AtlasListy forwards both.',
+          'Native grouped segments with optional sticky headers. GenUXListy forwards both.',
       },
       {
         property: 'classNames / styles',
@@ -254,11 +254,11 @@ export default function VirtualListy() {
     ],
     notes: [
       'Uses the installed Ant Design 6.6.6 Listy; no package was added and vendor files are unchanged.',
-      'AtlasListyItem is the shared row primitive. The Cascader popup composes the same row while keeping its native tree semantics.',
+      'GenUXListyItem is the shared row primitive. The Cascader popup composes the same row while keeping its native tree semantics.',
       'Compact rows follow the shared sm/md/lg profile at 32/40/48 px with the shared radius role; rows with descriptions or 48/56/64 px avatars grow instead of clipping.',
       'The Listy surface role in the Tweaker theme tokens switches every list between inset and outlined. The Cascader popup reads the same role.',
       'Sixteen live patterns: plain with key-value, unordered, ordered, icon, single select, multiple select, settings, row actions, reorder, steps, loading and empty status, rich content, nested, market, grouped and virtual.',
-      'Examples use local data and local state only; there is no backend. Storybook, approved decisions and GenUI registries are unchanged.',
+      'Examples use local data and local state only; there is no backend. Storybook, approved decisions and GenUX registries are unchanged.',
     ],
   },
 ];

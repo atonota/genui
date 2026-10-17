@@ -5,7 +5,7 @@ const meta = {
   title: 'Components/Input',
   component: InputDemo,
   args: { numberMode: 'spinner' },
-  parameters: { controls: { disable: true }, atlasSharedPreview: true },
+  parameters: { controls: { disable: true }, genuxSharedPreview: true },
 } satisfies Meta<typeof InputDemo>;
 
 export default meta;

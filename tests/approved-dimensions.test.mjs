@@ -45,7 +45,7 @@ test('approved dimensions retain three size/padding tuples and exactly three wid
   assert.equal(data.decisions.width_variants.find(item => item.value === 'wide').min_width_px, 175);
 });
 
-test('Atlas renders approved widths and AntD exports apply the same width decision', async t => {
+test('GenUX renders approved widths and AntD exports apply the same width decision', async t => {
   const h = setup((await render()).html);
   t.after(h.close);
   const buttons = [...h.el('decisionWidthGrid').querySelectorAll('.btx')];

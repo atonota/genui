@@ -1,10 +1,10 @@
-import AtlasProvider from './AtlasProvider';
+import GenUXProvider from './GenUXProvider';
 import { DrawerExamples } from './DrawerExamples';
-import '../styles/atlas-drawer-extensions.css';
+import '../styles/genux-drawer-extensions.css';
 export default function DrawerDemo({ documentation = false }: { documentation?: boolean } = {}) {
   return (
-    <AtlasProvider appearance={documentation ? 'docs' : undefined}>
+    <GenUXProvider appearance={documentation ? 'docs' : undefined}>
       <DrawerExamples />
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }

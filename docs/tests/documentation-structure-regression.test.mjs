@@ -27,10 +27,10 @@ const hashes = list => list.map(id => `#${id}`);
 
 const shell = main => `<!doctype html>
 <html lang="en">
-  <head><meta charset="utf-8" /><title>Fixture · Atlas Components</title></head>
-  <body data-atlas-surface="docs">
+  <head><meta charset="utf-8" /><title>Fixture · GenUX Components</title></head>
+  <body data-genux-surface="docs">
     <a class="skip-link" href="#content">Skip to content</a>
-    <header><a href="/">Atlas Components</a></header>
+    <header><a href="/">GenUX Components</a></header>
     <aside>
       <h2 id="library-title">Component library</h2>
       <nav aria-label="Documentation"><a href="/documentation/">Documentation standard</a></nav>
@@ -115,7 +115,7 @@ async function rejects(html, pattern, why, path = route) {
 }
 
 async function tempSite(t, files) {
-  const directory = await mkdtemp(join(tmpdir(), 'atlas-docs-structure-'));
+  const directory = await mkdtemp(join(tmpdir(), 'genux-docs-structure-'));
   t.after(() => rm(directory, { recursive: true, force: true }));
   for (const [file, html] of Object.entries(files)) {
     await mkdir(dirname(join(directory, file)), { recursive: true });

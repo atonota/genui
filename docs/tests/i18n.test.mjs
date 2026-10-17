@@ -26,7 +26,7 @@ async function environment(t) {
     <input data-i18n-placeholder="Search" placeholder="Search" aria-label="Language" data-i18n-aria-label="Language">
     <p data-i18n="Unknown message">Unknown message</p>
   </body></html>`,
-    { url: 'https://atlas.test/' },
+    { url: 'https://genux.test/' },
   );
   const saved = new Map();
   for (const [name, value] of Object.entries({

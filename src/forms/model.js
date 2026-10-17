@@ -1,4 +1,4 @@
-/* FormAtlas maintenance contract (this file only):
+/* FormGenUX maintenance contract (this file only):
  * Standalone HTML preview, not the Ant Design runtime.
  * Do not promote experiments to COMPONENT_DECISIONS without explicit user approval.
  * Outfit, minimum 1rem, natural tracking, central tokens and shared easing.

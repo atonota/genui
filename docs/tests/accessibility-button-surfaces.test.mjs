@@ -10,10 +10,10 @@ test('all documentation preset text/link inks remain readable on actual transpar
   const fixture = `docs/tests/.button-a11y-${randomUUID()}.tsx`;
   await writeFile(
     fixture,
-    `import AtlasProvider from '../src/react/AtlasProvider';
-    import AtlasButton from '../src/react/AtlasButton';
+    `import GenUXProvider from '../src/react/GenUXProvider';
+    import GenUXButton from '../src/react/GenUXButton';
     import {buttonColorPresets} from '../src/data/button-palette';
-    export default function Probe(){return <AtlasProvider appearance="docs"><div className="playground-preview">{buttonColorPresets.flatMap(p=>['middle','dark','light','pastel'].flatMap(tone=>['text','link'].map(fill=><AtlasButton key={p.value+tone+fill} colorPreset={p.value} tone={tone as 'middle'} fill={fill} text={p.value+tone+fill}/>)))}</div></AtlasProvider>}`,
+    export default function Probe(){return <GenUXProvider appearance="docs"><div className="playground-preview">{buttonColorPresets.flatMap(p=>['middle','dark','light','pastel'].flatMap(tone=>['text','link'].map(fill=><GenUXButton key={p.value+tone+fill} colorPreset={p.value} tone={tone as 'middle'} fill={fill} text={p.value+tone+fill}/>)))}</div></GenUXProvider>}`,
   );
   const h = await mountPattern('default', fixture);
   t.after(async () => {
@@ -42,7 +42,7 @@ test('all documentation preset text/link inks remain readable on actual transpar
   css.walkRules(rule => {
     if (
       rule.selector.replace(/\s+/g, ' ') ===
-      '.atlas-demo :is(.ant-btn-variant-text, .ant-btn-variant-link).atlas-button'
+      '.genux-demo :is(.ant-btn-variant-text, .ant-btn-variant-link).genux-button'
     )
       consumer = rule;
   });
@@ -52,7 +52,7 @@ test('all documentation preset text/link inks remain readable on actual transpar
       node => node.prop === 'color' && node.value === 'var(--button-transparent-ink)',
     ),
   );
-  const buttons = [...h.document.querySelectorAll('.atlas-button[data-color-preset]')];
+  const buttons = [...h.document.querySelectorAll('.genux-button[data-color-preset]')];
   assert.equal(buttons.length, buttonColorPresets.length * 4 * 2);
   assert.deepEqual(
     [...new Set(buttons.map(button => button.dataset.colorPreset))],

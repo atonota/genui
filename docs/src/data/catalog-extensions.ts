@@ -6,7 +6,7 @@ export const extensionComponents: ComponentDoc[] = [
     slug: 'toast',
     title: 'Toast',
     summary:
-      'Brief, non-blocking confirmation of a completed local action. Toast is the Atlas name for the native Ant Design message.',
+      'Brief, non-blocking confirmation of a completed local action. Toast is the GenUX name for the native Ant Design message.',
     antdComponent: 'message',
     category: 'Feedback',
     sourceUrl: 'https://ant.design/components/message/',
@@ -19,7 +19,7 @@ export const extensionComponents: ComponentDoc[] = [
         id: 'profiles',
         title: 'Entry profiles',
         description:
-          'Compare the three Atlas entry profiles: top center from the top, top right from the top and top right from the right. Each preview reports a local result only.',
+          'Compare the three GenUX entry profiles: top center from the top, top right from the top and top right from the right. Each preview reports a local result only.',
         code: `import { ToastDemo } from '../src/react/FeedbackDemo';
 
 export default function ToastExample() {
@@ -28,7 +28,7 @@ export default function ToastExample() {
       },
     ],
     apiDescription:
-      'The demo island and its Atlas adapter are listed first. Native Ant Design settings follow separately; adapter props are defined in AtlasFeedback.tsx.',
+      'The demo island and its GenUX adapter are listed first. Native Ant Design settings follow separately; adapter props are defined in GenUXFeedback.tsx.',
     api: [
       {
         property: 'documentation',
@@ -38,11 +38,11 @@ export default function ToastExample() {
           'Documentation mode for this local demonstration island. The demo owns its sample state.',
       },
       {
-        property: 'useAtlasToast',
-        type: 'Atlas adapter hook · AtlasFeedback.tsx',
+        property: 'useGenUXToast',
+        type: 'GenUX adapter hook · GenUXFeedback.tsx',
         defaultValue: '—',
         description:
-          'Atlas adapter export over the native API listed below. Its props follow the adapter source; this page does not restate an unpublished signature.',
+          'GenUX adapter export over the native API listed below. Its props follow the adapter source; this page does not restate an unpublished signature.',
       },
     ],
     nativeApi: [
@@ -79,9 +79,9 @@ export default function ToastExample() {
       'Reduced motion removes decorative movement; content and status update immediately.',
     ],
     notes: [
-      'Native message places entries at top center. The right-aligned profiles are Atlas presentation on the same native API.',
-      'Examples change local state only. They make no network request, save no data and register no GenUI capability.',
-      'Readable text stays at least 14 CSS px. Radii, colors and motion come from shared Atlas tokens.',
+      'Native message places entries at top center. The right-aligned profiles are GenUX presentation on the same native API.',
+      'Examples change local state only. They make no network request, save no data and register no GenUX capability.',
+      'Readable text stays at least 14 CSS px. Radii, colors and motion come from shared GenUX tokens.',
       'Browser contracts for these feedback examples live in docs/browser/drawer-feedback.spec.ts.',
       'Native Ant Design 6.6.6 APIs are referenced here; browser, device and rendered accessibility acceptance remain separate from source and DOM checks.',
     ],
@@ -112,7 +112,7 @@ export default function AlertExample() {
       },
     ],
     apiDescription:
-      'The demo island and its Atlas adapter are listed first. Native Ant Design settings follow separately; adapter props are defined in AtlasFeedback.tsx.',
+      'The demo island and its GenUX adapter are listed first. Native Ant Design settings follow separately; adapter props are defined in GenUXFeedback.tsx.',
     api: [
       {
         property: 'documentation',
@@ -122,11 +122,11 @@ export default function AlertExample() {
           'Documentation mode for this local demonstration island. The demo owns its sample state.',
       },
       {
-        property: 'AtlasAlert',
-        type: 'Atlas adapter component · AtlasFeedback.tsx',
+        property: 'GenUXAlert',
+        type: 'GenUX adapter component · GenUXFeedback.tsx',
         defaultValue: '—',
         description:
-          'Atlas adapter export over the native API listed below. Its props follow the adapter source; this page does not restate an unpublished signature.',
+          'GenUX adapter export over the native API listed below. Its props follow the adapter source; this page does not restate an unpublished signature.',
       },
     ],
     nativeApi: [
@@ -170,8 +170,8 @@ export default function AlertExample() {
     ],
     notes: [
       'Alert is persistent and inline; it is not a floating message.',
-      'Examples change local state only. They make no network request, save no data and register no GenUI capability.',
-      'Readable text stays at least 14 CSS px. Radii, colors and motion come from shared Atlas tokens.',
+      'Examples change local state only. They make no network request, save no data and register no GenUX capability.',
+      'Readable text stays at least 14 CSS px. Radii, colors and motion come from shared GenUX tokens.',
       'Browser contracts for these feedback examples live in docs/browser/drawer-feedback.spec.ts.',
       'Native Ant Design 6.6.6 APIs are referenced here; browser, device and rendered accessibility acceptance remain separate from source and DOM checks.',
     ],
@@ -202,7 +202,7 @@ export default function NotificationExample() {
       },
     ],
     apiDescription:
-      'The demo island and its Atlas adapter are listed first. Native Ant Design settings follow separately; adapter props are defined in AtlasFeedback.tsx.',
+      'The demo island and its GenUX adapter are listed first. Native Ant Design settings follow separately; adapter props are defined in GenUXFeedback.tsx.',
     api: [
       {
         property: 'documentation',
@@ -212,11 +212,11 @@ export default function NotificationExample() {
           'Documentation mode for this local demonstration island. The demo owns its sample state.',
       },
       {
-        property: 'useAtlasNotification',
-        type: 'Atlas adapter hook · AtlasFeedback.tsx',
+        property: 'useGenUXNotification',
+        type: 'GenUX adapter hook · GenUXFeedback.tsx',
         defaultValue: '—',
         description:
-          'Atlas adapter export over the native API listed below. Its props follow the adapter source; this page does not restate an unpublished signature.',
+          'GenUX adapter export over the native API listed below. Its props follow the adapter source; this page does not restate an unpublished signature.',
       },
     ],
     nativeApi: [
@@ -262,8 +262,8 @@ export default function NotificationExample() {
     ],
     notes: [
       'Notification is rich and transient; use it for useful context that is not required to continue.',
-      'Examples change local state only. They make no network request, save no data and register no GenUI capability.',
-      'Readable text stays at least 14 CSS px. Radii, colors and motion come from shared Atlas tokens.',
+      'Examples change local state only. They make no network request, save no data and register no GenUX capability.',
+      'Readable text stays at least 14 CSS px. Radii, colors and motion come from shared GenUX tokens.',
       'Browser contracts for these feedback examples live in docs/browser/drawer-feedback.spec.ts.',
       'Native Ant Design 6.6.6 APIs are referenced here; browser, device and rendered accessibility acceptance remain separate from source and DOM checks.',
     ],
@@ -294,7 +294,7 @@ export default function ModalExample() {
       },
     ],
     apiDescription:
-      'The demo island and its Atlas adapter are listed first. Native Ant Design settings follow separately; adapter props are defined in AtlasFeedback.tsx.',
+      'The demo island and its GenUX adapter are listed first. Native Ant Design settings follow separately; adapter props are defined in GenUXFeedback.tsx.',
     api: [
       {
         property: 'documentation',
@@ -304,11 +304,11 @@ export default function ModalExample() {
           'Documentation mode for this local demonstration island. The demo owns its sample state.',
       },
       {
-        property: 'AtlasModal',
-        type: 'Atlas adapter component · AtlasFeedback.tsx',
+        property: 'GenUXModal',
+        type: 'GenUX adapter component · GenUXFeedback.tsx',
         defaultValue: '—',
         description:
-          'Atlas adapter export over the native API listed below. Its props follow the adapter source; this page does not restate an unpublished signature.',
+          'GenUX adapter export over the native API listed below. Its props follow the adapter source; this page does not restate an unpublished signature.',
       },
     ],
     nativeApi: [
@@ -351,8 +351,8 @@ export default function ModalExample() {
     ],
     notes: [
       'Modal blocks the page; reserve it for decisions that cannot wait.',
-      'Examples change local state only. They make no network request, save no data and register no GenUI capability.',
-      'Readable text stays at least 14 CSS px. Radii, colors and motion come from shared Atlas tokens.',
+      'Examples change local state only. They make no network request, save no data and register no GenUX capability.',
+      'Readable text stays at least 14 CSS px. Radii, colors and motion come from shared GenUX tokens.',
       'Browser contracts for these feedback examples live in docs/browser/drawer-feedback.spec.ts.',
       'Native Ant Design 6.6.6 APIs are referenced here; browser, device and rendered accessibility acceptance remain separate from source and DOM checks.',
     ],
@@ -383,7 +383,7 @@ export default function PopconfirmExample() {
       },
     ],
     apiDescription:
-      'The demo island and its Atlas adapter are listed first. Native Ant Design settings follow separately; adapter props are defined in AtlasFeedback.tsx.',
+      'The demo island and its GenUX adapter are listed first. Native Ant Design settings follow separately; adapter props are defined in GenUXFeedback.tsx.',
     api: [
       {
         property: 'documentation',
@@ -393,11 +393,11 @@ export default function PopconfirmExample() {
           'Documentation mode for this local demonstration island. The demo owns its sample state.',
       },
       {
-        property: 'AtlasPopconfirm',
-        type: 'Atlas adapter component · AtlasFeedback.tsx',
+        property: 'GenUXPopconfirm',
+        type: 'GenUX adapter component · GenUXFeedback.tsx',
         defaultValue: '—',
         description:
-          'Atlas adapter export over the native API listed below. Its props follow the adapter source; this page does not restate an unpublished signature.',
+          'GenUX adapter export over the native API listed below. Its props follow the adapter source; this page does not restate an unpublished signature.',
       },
     ],
     nativeApi: [
@@ -442,8 +442,8 @@ export default function PopconfirmExample() {
     ],
     notes: [
       'Popconfirm is contextual and lightweight; it does not replace server-side confirmation or authorization.',
-      'Examples change local state only. They make no network request, save no data and register no GenUI capability.',
-      'Readable text stays at least 14 CSS px. Radii, colors and motion come from shared Atlas tokens.',
+      'Examples change local state only. They make no network request, save no data and register no GenUX capability.',
+      'Readable text stays at least 14 CSS px. Radii, colors and motion come from shared GenUX tokens.',
       'Browser contracts for these feedback examples live in docs/browser/drawer-feedback.spec.ts.',
       'Native Ant Design 6.6.6 APIs are referenced here; browser, device and rendered accessibility acceptance remain separate from source and DOM checks.',
     ],
@@ -474,7 +474,7 @@ export default function DateTimeExample() {
       },
     ],
     apiDescription:
-      'DateTimeDemo is a local documentation island built on AtlasDateTime.tsx. Native Ant Design DatePicker settings follow separately; adapter props are defined in its source.',
+      'DateTimeDemo is a local documentation island built on GenUXDateTime.tsx. Native Ant Design DatePicker settings follow separately; adapter props are defined in its source.',
     api: [
       {
         property: 'documentation',
@@ -484,11 +484,11 @@ export default function DateTimeExample() {
           'Documentation mode for this local demonstration island. The demo owns its sample state.',
       },
       {
-        property: 'AtlasDateTime.tsx',
-        type: 'Atlas adapter module',
+        property: 'GenUXDateTime.tsx',
+        type: 'GenUX adapter module',
         defaultValue: '—',
         description:
-          'Atlas adapter export over the native API listed below. Its props follow the adapter source; this page does not restate an unpublished signature.',
+          'GenUX adapter export over the native API listed below. Its props follow the adapter source; this page does not restate an unpublished signature.',
       },
     ],
     nativeApi: [
@@ -537,8 +537,8 @@ export default function DateTimeExample() {
     ],
     notes: [
       'Values are Dayjs objects owned by the example. Time zones and server formats belong to the consuming application.',
-      'Examples change local state only. They make no network request, save no data and register no GenUI capability.',
-      'Readable text stays at least 14 CSS px. Radii, colors and motion come from shared Atlas tokens.',
+      'Examples change local state only. They make no network request, save no data and register no GenUX capability.',
+      'Readable text stays at least 14 CSS px. Radii, colors and motion come from shared GenUX tokens.',
       'Browser acceptance for date and time examples belongs to the docs/browser suites.',
       'Native Ant Design 6.6.6 APIs are referenced here; browser, device and rendered accessibility acceptance remain separate from source and DOM checks.',
     ],

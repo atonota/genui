@@ -1,8 +1,8 @@
 import { useId, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { ConfigProvider, Select } from 'antd';
-import AtlasInput from './AtlasInput';
-import AtlasInputNumber from './AtlasInputNumber';
-import AtlasButton from './AtlasButton';
+import GenUXInput from './GenUXInput';
+import GenUXInputNumber from './GenUXInputNumber';
+import GenUXButton from './GenUXButton';
 import { useI18n } from './useI18n';
 import {
   isRadiusTokenId,
@@ -135,7 +135,7 @@ function TokenEditor({
   let control: ReactNode;
   if (definition.kind === 'number') {
     control = (
-      <AtlasInputNumber
+      <GenUXInputNumber
         id={id}
         data-theme-token={definition.id}
         value={typeof value === 'number' ? value : null}
@@ -158,7 +158,7 @@ function TokenEditor({
           aria-hidden="true"
           style={{ background: invalid ? 'transparent' : text }}
         />
-        <AtlasInput
+        <GenUXInput
           id={id}
           data-theme-token={definition.id}
           aria-invalid={invalid || undefined}
@@ -186,7 +186,7 @@ function TokenEditor({
     );
   }
   return (
-    <div className="atlas-tweaker-token">
+    <div className="genux-tweaker-token">
       <label htmlFor={id}>{t(definition.label)}</label>
       {control}
     </div>
@@ -269,21 +269,21 @@ export default function ThemeTokenEditors() {
   return (
     <ConfigProvider
       getPopupContainer={trigger =>
-        (trigger?.closest('.atlas-tweaker-panel') as HTMLElement | null) ?? document.body
+        (trigger?.closest('.genux-tweaker-panel') as HTMLElement | null) ?? document.body
       }
     >
       <section
-        className="atlas-tweaker-tokens"
+        className="genux-tweaker-tokens"
         data-theme-token-editors
         aria-labelledby={`${prefix}title`}
       >
         <h3 id={`${prefix}title`}>{t('Theme tokens')}</h3>
-        <p className="atlas-tweaker-description">
+        <p className="genux-tweaker-description">
           {mode === 'dark' ? t('Editing dark mode') : t('Editing light mode')}
         </p>
-        {preview ? <p className="atlas-tweaker-description">{t(PREVIEW_NOTE)}</p> : null}
-        <div className="atlas-tweaker-token-actions">
-          <AtlasButton htmlType="button" onClick={reset} text={t('Reset theme')} />
+        {preview ? <p className="genux-tweaker-description">{t(PREVIEW_NOTE)}</p> : null}
+        <div className="genux-tweaker-token-actions">
+          <GenUXButton htmlType="button" onClick={reset} text={t('Reset theme')} />
         </div>
         {active?.error ? (
           <p role="alert" className="theme-builder-error">
@@ -294,7 +294,7 @@ export default function ThemeTokenEditors() {
           {status ? t(status) : null}
         </p>
         {groupedDefinitions.map(([group, definitions]) => (
-          <div className="atlas-tweaker-token-group" key={group}>
+          <div className="genux-tweaker-token-group" key={group}>
             <h4>{t(groupCaption(group))}</h4>
             {definitions.map(definition => (
               <TokenEditor

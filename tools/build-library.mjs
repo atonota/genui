@@ -1,8 +1,8 @@
-// Library build for packages/genui. esbuild bundles the public entries as ES modules with code
+// Library build for packages/genux. esbuild bundles the public entries as ES modules with code
 // splitting (literal dynamic profiles stay separate chunks), turns Vite-style ?inline/?raw and Sass
 // imports into code-owned CSS strings, builds the static styles.css entry and records
-// dist/consumer.json; the pinned tsc emits declarations. Writes only packages/genui/dist and the
-// copied packages/genui/LICENSE; canonical sources and the root legacy build stay untouched.
+// dist/consumer.json; the pinned tsc emits declarations. Writes only packages/genux/dist and the
+// copied packages/genux/LICENSE; canonical sources and the root legacy build stay untouched.
 import { execFile } from 'node:child_process';
 import { existsSync, lstatSync } from 'node:fs';
 import { copyFile, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
@@ -16,7 +16,7 @@ import * as sass from 'sass';
 
 const run = promisify(execFile);
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const packageDir = path.join(repoRoot, 'packages', 'genui');
+const packageDir = path.join(repoRoot, 'packages', 'genux');
 const srcDir = path.join(packageDir, 'src');
 const distDir = path.join(packageDir, 'dist');
 const typesDir = path.join(distDir, 'types');
@@ -30,7 +30,7 @@ const adaptiveDir = path.join(repoRoot, 'docs', 'src', 'adaptive');
 const ENTRIES = {
   index: path.join(srcDir, 'index'),
   adaptive: path.join(srcDir, 'adaptive'),
-  genui: path.join(srcDir, 'genui'),
+  genux: path.join(srcDir, 'genux'),
   frappe: path.join(srcDir, 'frappe'),
   'input/spatial': path.join(adaptiveDir, 'spatial'),
   'input/pointer': path.join(adaptiveDir, 'pointer'),
@@ -110,7 +110,7 @@ function compileSass(file) {
 
 function sassPlugin() {
   return {
-    name: 'genui-sass',
+    name: 'genux-sass',
     setup(build) {
       build.onLoad({ filter: SASS, namespace: 'file' }, args => ({
         contents: compileSass(args.path),
@@ -149,13 +149,13 @@ async function inlineCss(file) {
 
 function libraryPlugin(foundation) {
   return {
-    name: 'genui-library',
+    name: 'genux-library',
     setup(build) {
-      build.onResolve({ filter: /^genui:foundation$/ }, () => ({
+      build.onResolve({ filter: /^genux:foundation$/ }, () => ({
         path: 'foundation.css',
-        namespace: 'genui-foundation',
+        namespace: 'genux-foundation',
       }));
-      build.onLoad({ filter: /.*/, namespace: 'genui-foundation' }, () => ({
+      build.onLoad({ filter: /.*/, namespace: 'genux-foundation' }, () => ({
         contents: foundation,
         loader: 'css',
         resolveDir: srcDir,
@@ -170,13 +170,13 @@ function libraryPlugin(foundation) {
             errors: [{ text: `cannot resolve relative ${args.path} from ${rel(args.importer)}` }],
           };
         }
-        return { path: rel(file), namespace: `genui-${kind}` };
+        return { path: rel(file), namespace: `genux-${kind}` };
       });
-      build.onLoad({ filter: /.*/, namespace: 'genui-inline' }, async args => ({
+      build.onLoad({ filter: /.*/, namespace: 'genux-inline' }, async args => ({
         contents: `export default ${JSON.stringify(await inlineCss(path.join(repoRoot, args.path)))};`,
         loader: 'js',
       }));
-      build.onLoad({ filter: /.*/, namespace: 'genui-raw' }, async args => ({
+      build.onLoad({ filter: /.*/, namespace: 'genux-raw' }, async args => ({
         contents: `export default ${JSON.stringify(await readFile(path.join(repoRoot, args.path), 'utf8'))};`,
         loader: 'js',
       }));
@@ -219,9 +219,9 @@ async function foundationCss() {
 
 // Cleanup is limited to this package's generated dist directory.
 async function cleanDist() {
-  if (rel(distDir) !== 'packages/genui/dist') fail(`refusing to clean ${rel(distDir)}`);
+  if (rel(distDir) !== 'packages/genux/dist') fail(`refusing to clean ${rel(distDir)}`);
   if (existsSync(distDir) && lstatSync(distDir).isSymbolicLink()) {
-    fail('packages/genui/dist must not be a symlink');
+    fail('packages/genux/dist must not be a symlink');
   }
   await rm(distDir, { recursive: true, force: true });
 }
@@ -230,10 +230,10 @@ async function cleanDist() {
 // style sheets, shared assets and the generated foundation.
 function checkStyleInputs(metafile, staticEntry) {
   for (const input of Object.keys(metafile.inputs)) {
-    const file = input.replace(/^genui-[a-z]+:/, '');
+    const file = input.replace(/^genux-[a-z]+:/, '');
     if (DOCS_ONLY_STYLE.test(file)) fail(`docs-only style ${file} reached the library`);
     const canonical =
-      input === 'genui-foundation:foundation.css' ||
+      input === 'genux-foundation:foundation.css' ||
       file === rel(path.join(srcDir, 'styles.css')) ||
       ['docs/src/styles/', 'src/assets/', 'node_modules/'].some(prefix => file.startsWith(prefix));
     if (staticEntry && !canonical) fail(`styles.css pulled unexpected input ${input}`);
@@ -255,7 +255,7 @@ function checkBaseInputs(metafile, entry) {
     if (seen.has(file)) continue;
     seen.add(file);
     for (const input of Object.keys(outputs[file].inputs)) {
-      const source = input.replace(/^genui-[a-z]+:/, '');
+      const source = input.replace(/^genux-[a-z]+:/, '');
       if (DOCS_ONLY_MODULE.test(source)) fail(`base entry pulls docs-only module ${source}`);
     }
     for (const item of outputs[file].imports) {
@@ -276,7 +276,7 @@ function rebaseBundleUrls(node, from) {
       if (/^([a-z][a-z0-9+.-]*:|[/#])/i.test(ref)) return match;
       const asset = path.resolve(path.dirname(from), ref);
       if (!asset.startsWith(distDir + path.sep) || !existsSync(asset)) {
-        fail(`${rel(from)} url ${ref} must point at an emitted file in packages/genui/dist`);
+        fail(`${rel(from)} url ${ref} must point at an emitted file in packages/genux/dist`);
       }
       const rebased = `./${toPosix(path.relative(distDir, asset))}`;
       if (path.posix.normalize(ref) === path.posix.normalize(rebased)) return match;
@@ -355,7 +355,7 @@ function checkSideEffects(manifest) {
     marked.length === 0 ||
     marked.some(pattern => !/[.](css|woff2?)$|assets/.test(pattern))
   ) {
-    fail('packages/genui/package.json sideEffects must list only CSS and font patterns');
+    fail('packages/genux/package.json sideEffects must list only CSS and font patterns');
   }
 }
 
@@ -442,7 +442,7 @@ async function copyLicense() {
   if (!license.includes('MIT')) fail('root LICENSE is not the MIT license');
   const target = path.join(packageDir, 'LICENSE');
   if (existsSync(target) && (await readFile(target, 'utf8')) !== license) {
-    fail('packages/genui/LICENSE differs from the root LICENSE; refusing to overwrite it');
+    fail('packages/genux/LICENSE differs from the root LICENSE; refusing to overwrite it');
   }
   await writeFile(target, license);
 }
@@ -456,8 +456,8 @@ async function consumerManifest({ js, css, entries, manifest, toolchain, bundleS
   };
   const inlineStyles = file =>
     Object.keys(outputs[file].inputs)
-      .filter(input => input.startsWith('genui-inline:'))
-      .map(input => input.slice('genui-inline:'.length));
+      .filter(input => input.startsWith('genux-inline:'))
+      .map(input => input.slice('genux-inline:'.length));
   const staticClosure = start => {
     const seen = new Set();
     const pending = [start];
@@ -515,7 +515,7 @@ async function consumerManifest({ js, css, entries, manifest, toolchain, bundleS
       if (!item.external) continue;
       const name = packageName(item.path);
       if (!Object.hasOwn(declared, name)) {
-        fail(`bundle imports ${item.path}; declare ${name} in packages/genui/package.json`);
+        fail(`bundle imports ${item.path}; declare ${name} in packages/genux/package.json`);
       }
       externals[name] ??= { declared: declared[name] };
     }
@@ -531,7 +531,7 @@ async function consumerManifest({ js, css, entries, manifest, toolchain, bundleS
   }
   for (const entry of ['dist', 'LICENSE']) {
     if (!manifest.files?.includes(entry))
-      fail(`packages/genui/package.json files must list ${entry}`);
+      fail(`packages/genux/package.json files must list ${entry}`);
   }
   const allOutputs = [...Object.keys(outputs), ...Object.keys(css.metafile.outputs)];
   return {
@@ -585,7 +585,7 @@ async function main() {
   assertNode();
   const rootManifest = await readJson(path.join(repoRoot, 'package.json'));
   const manifestFile = path.join(packageDir, 'package.json');
-  if (!existsSync(manifestFile)) fail('packages/genui/package.json is missing');
+  if (!existsSync(manifestFile)) fail('packages/genux/package.json is missing');
   const manifest = await readJson(manifestFile);
   const toolchain = await assertToolchain(rootManifest);
   const entries = resolveEntries();
@@ -616,7 +616,7 @@ async function main() {
     packages: 'external',
     jsx: 'automatic',
     tsconfig: path.join(packageDir, 'tsconfig.json'),
-    // Optional GenUI asset refs read only BASE_URL, the logical package asset base; scanDist still
+    // Optional GenUX asset refs read only BASE_URL, the logical package asset base; scanDist still
     // rejects every other import.meta.env read.
     define: { 'import.meta.env.BASE_URL': JSON.stringify('/') },
   });
@@ -641,7 +641,7 @@ async function main() {
   await writeFile(path.join(distDir, 'consumer.json'), `${JSON.stringify(consumer, null, 2)}\n`);
   await scanDist();
   console.log(
-    `genui library: ${Object.keys(consumer.exports).length} entries, ${consumer.chunks.length} chunks, externals ${Object.keys(consumer.externals).join(', ')}`,
+    `genux library: ${Object.keys(consumer.exports).length} entries, ${consumer.chunks.length} chunks, externals ${Object.keys(consumer.externals).join(', ')}`,
   );
 }
 

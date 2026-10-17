@@ -432,11 +432,11 @@ test('SpatialNavigationAdapter moves only on an explicit living-room surface and
 <div id=tvinner data-adaptive-shell data-adaptive-surface=living-room><button id=v1>V1</button><button id=v2>V2</button></div>
 <div id=wrap><button id=late>Late</button></div>
 </div>
-<div id=owner data-atlas-provider-owner data-adaptive-surface=living-room><div id=genui data-adaptive-surface=living-room></div></div>
-<div id=portal data-atlas-portal data-adaptive-surface=living-room><button id=p1>P1</button><div data-adaptive-surface=web><button id=pw>PW</button></div></div>
-<div id=webportal data-atlas-portal data-adaptive-surface=web><button id=w>W</button></div>
-<div id=foreign data-atlas-provider-owner data-adaptive-surface=living-room><div id=fgen data-adaptive-surface=living-room></div></div>
-<div id=stray data-atlas-portal data-adaptive-surface=living-room><button id=s1>S1</button></div>
+<div id=owner data-genux-provider-owner data-adaptive-surface=living-room><div id=genux data-adaptive-surface=living-room></div></div>
+<div id=portal data-genux-portal data-adaptive-surface=living-room><button id=p1>P1</button><div data-adaptive-surface=web><button id=pw>PW</button></div></div>
+<div id=webportal data-genux-portal data-adaptive-surface=web><button id=w>W</button></div>
+<div id=foreign data-genux-provider-owner data-adaptive-surface=living-room><div id=fgen data-adaptive-surface=living-room></div></div>
+<div id=stray data-genux-portal data-adaptive-surface=living-room><button id=s1>S1</button></div>
 </body>`);
     const nestedDoc = nested.window.document;
     const part = Object.fromEntries(
@@ -518,18 +518,18 @@ test('SpatialNavigationAdapter moves only on an explicit living-room surface and
         modality.requestSpatialInputModality(boundary);
         return mode();
       };
-      assert.equal(requestFrom(part.p1, part.genui), 'keyboard');
+      assert.equal(requestFrom(part.p1, part.genux), 'keyboard');
       pointerOff();
       assert.equal(mode(), 'pointer');
-      assert.equal(requestFrom(part.pw, part.genui), 'pointer');
-      assert.equal(requestFrom(part.w, part.genui), 'pointer');
+      assert.equal(requestFrom(part.pw, part.genux), 'pointer');
+      assert.equal(requestFrom(part.w, part.genux), 'pointer');
       assert.equal(requestFrom(part.p1, part.fgen), 'pointer');
-      assert.equal(requestFrom(part.s1, part.genui), 'pointer');
+      assert.equal(requestFrom(part.s1, part.genux), 'pointer');
       unregisterPortal();
       unregisterPortal();
-      assert.equal(requestFrom(part.p1, part.genui), 'pointer');
+      assert.equal(requestFrom(part.p1, part.genux), 'pointer');
       unregisterWebPortal();
-      assert.equal(requestFrom(part.p1, part.genui), 'pointer');
+      assert.equal(requestFrom(part.p1, part.genux), 'pointer');
 
       // Ownership changes re-check markers; inserted nested web Shell content stays unmarked.
       part.wrap.setAttribute('data-adaptive-surface', 'web');
@@ -579,16 +579,16 @@ test('SpatialNavigationAdapter moves only on an explicit living-room surface and
     // the open dialog. Synthetic unit keys and stubbed DOM rects, not physical geometry; no
     // browser portal, physical remote or TV is claimed here.
     const hosted = new JSDOM(`<!doctype html><body>
-<div id=howner data-atlas-provider-owner data-adaptive-surface=living-room>
+<div id=howner data-genux-provider-owner data-adaptive-surface=living-room>
 <div id=shellA data-adaptive-shell data-adaptive-surface=living-room><button id=m1>M1</button></div>
 <div id=shellB data-adaptive-shell data-adaptive-surface=living-room><button id=m2>M2</button></div>
 </div>
-<div id=hportal data-atlas-portal data-adaptive-surface=living-room><button id=behind>Behind</button><div id=hdialog role=dialog aria-modal=true><button id=o1>OK</button><button id=o2>Cancel</button></div></div>
-<div id=hweb data-atlas-portal data-adaptive-surface=web><button id=x1>X1</button><button id=x2>X2</button></div>
-<div id=fowner data-atlas-provider-owner data-adaptive-surface=living-room></div>
-<div id=fportal data-atlas-portal data-adaptive-surface=living-room><button id=f1>F1</button><button id=f2>F2</button></div>
-<div id=stray data-atlas-portal data-adaptive-surface=living-room><button id=s1>S1</button><button id=s2>S2</button></div>
-<div id=pportal data-atlas-portal data-adaptive-surface=living-room><button id=q1>Q1</button><button id=q2>Q2</button></div>
+<div id=hportal data-genux-portal data-adaptive-surface=living-room><button id=behind>Behind</button><div id=hdialog role=dialog aria-modal=true><button id=o1>OK</button><button id=o2>Cancel</button></div></div>
+<div id=hweb data-genux-portal data-adaptive-surface=web><button id=x1>X1</button><button id=x2>X2</button></div>
+<div id=fowner data-genux-provider-owner data-adaptive-surface=living-room></div>
+<div id=fportal data-genux-portal data-adaptive-surface=living-room><button id=f1>F1</button><button id=f2>F2</button></div>
+<div id=stray data-genux-portal data-adaptive-surface=living-room><button id=s1>S1</button><button id=s2>S2</button></div>
+<div id=pportal data-genux-portal data-adaptive-surface=living-room><button id=q1>Q1</button><button id=q2>Q2</button></div>
 </body>`);
     const hostedDoc = hosted.window.document;
     const host = Object.fromEntries(

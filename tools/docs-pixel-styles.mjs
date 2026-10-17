@@ -10,7 +10,7 @@ const pixels = value =>
 export default function docsPixelStyles() {
   const owns = node => node.source?.input.file?.startsWith(sharedStyles);
   return {
-    postcssPlugin: 'atlas-docs-native-pixels',
+    postcssPlugin: 'genux-docs-native-pixels',
     Declaration(node) {
       if (owns(node)) node.value = pixels(node.value);
     },

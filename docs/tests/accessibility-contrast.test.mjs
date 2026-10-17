@@ -58,8 +58,8 @@ test('readable placeholders keep4.5 contrast at rest and focus on both field sur
   const values = {};
   sheet.walkDecls(decl => {
     if (!['--placeholder-opacity', '--placeholder-active-opacity'].includes(decl.prop)) return;
-    assert.match(decl.parent.selector, /body\[data-atlas-surface='docs'\]/);
-    assert.match(decl.parent.selector, /\[data-atlas-appearance='docs'\]/);
+    assert.match(decl.parent.selector, /body\[data-genux-surface='docs'\]/);
+    assert.match(decl.parent.selector, /\[data-genux-appearance='docs'\]/);
     const variable = decl.value.match(/^var\((--docs-placeholder(?:-active)?-opacity)\)$/)?.[1];
     assert.ok(variable, 'documentation alpha comes from its central accessibility roles');
     values[decl.prop] = Number(docsAccessibilityVariables('light')[variable]);
@@ -81,7 +81,7 @@ test('native documentation control boundaries identify controls at3to1 on every 
   const file = `docs/tests/.a11y-tokens-${randomUUID()}.tsx`;
   await writeFile(
     file,
-    `import {theme} from 'antd';import {atlasDocsTheme,atlasDocsDarkTheme} from '../src/react/AtlasProvider';export default function Probe(){return <output>{JSON.stringify({light:theme.getDesignToken(atlasDocsTheme),dark:theme.getDesignToken(atlasDocsDarkTheme)})}</output>;}`,
+    `import {theme} from 'antd';import {genuxDocsTheme,genuxDocsDarkTheme} from '../src/react/GenUXProvider';export default function Probe(){return <output>{JSON.stringify({light:theme.getDesignToken(genuxDocsTheme),dark:theme.getDesignToken(genuxDocsDarkTheme)})}</output>;}`,
   );
   let h;
   try {
@@ -121,10 +121,10 @@ test(
       `import {ConfigProvider,Form,Input,Tag,Typography,theme} from 'antd';
 import {useState} from 'react';
 import {createPortal} from 'react-dom';
-import AtlasProvider,{atlasDocsTheme,atlasDocsDarkTheme} from '../src/react/AtlasProvider';
+import GenUXProvider,{genuxDocsTheme,genuxDocsDarkTheme} from '../src/react/GenUXProvider';
 const roles=${JSON.stringify(roles)};
 function StatusSurface({id,mode}:{id:string;mode?:'light'|'dark'}){const{token}=theme.useToken();return <div data-native-status-scope={id} data-native-status-mode={mode}><output>{JSON.stringify(Object.fromEntries(roles.map(key=>[key,(token as unknown as Record<string,unknown>)[key]])))}</output><Form layout="vertical"><Form.Item name="error" label="Error" validateStatus="error" help="Native error message"><Input/></Form.Item><Form.Item name="warning" label="Warning" validateStatus="warning" help="Native warning message"><Input/></Form.Item></Form><Typography.Text type="success" data-native-status="success">Success message</Typography.Text><Typography.Text type="danger" data-native-status="error-text">Error text</Typography.Text><Typography.Text type="warning" data-native-status="warning-text">Warning text</Typography.Text><Tag color="processing" data-native-status="info">Information</Tag></div>}
-export default function Probe(){const[mode,setMode]=useState<'light'|'dark'>('light');return <div className="live-preview"><AtlasProvider appearance="docs"><StatusSurface id="live"/>{createPortal(<div className="atlas-demo"><StatusSurface id="portal"/></div>,document.body)}<button onClick={()=>setMode('light')}>Native local light</button><button onClick={()=>setMode('dark')}>Native local dark</button><ConfigProvider theme={{...(mode==='dark'?atlasDocsDarkTheme:atlasDocsTheme),inherit:false,cssVar:{key:'css-var-atlas-status-preview'}}}><StatusSurface id="local" mode={mode}/></ConfigProvider></AtlasProvider></div>}`,
+export default function Probe(){const[mode,setMode]=useState<'light'|'dark'>('light');return <div className="live-preview"><GenUXProvider appearance="docs"><StatusSurface id="live"/>{createPortal(<div className="genux-demo"><StatusSurface id="portal"/></div>,document.body)}<button onClick={()=>setMode('light')}>Native local light</button><button onClick={()=>setMode('dark')}>Native local dark</button><ConfigProvider theme={{...(mode==='dark'?genuxDocsDarkTheme:genuxDocsTheme),inherit:false,cssVar:{key:'css-var-genux-status-preview'}}}><StatusSurface id="local" mode={mode}/></ConfigProvider></GenUXProvider></div>}`,
     );
     let h;
     try {
@@ -137,7 +137,7 @@ export default function Probe(){const[mode,setMode]=useState<'light'|'dark'>('li
       await h.dispose();
       await unlink(file);
     });
-    h.document.body.dataset.atlasSurface = 'docs';
+    h.document.body.dataset.genuxSurface = 'docs';
     const variableName = name =>
       '--ant-' + name.replace(/[A-Z]/g, letter => '-' + letter.toLowerCase());
     const nativeConsumers = [
@@ -152,7 +152,7 @@ export default function Probe(){const[mode,setMode]=useState<'light'|'dark'>('li
     for (const mode of ['dark', 'light']) {
       await h.act(async () => {
         h.document.documentElement.dataset.theme = mode;
-        h.window.dispatchEvent(new h.window.Event('atlas-theme-change'));
+        h.window.dispatchEvent(new h.window.Event('genux-theme-change'));
       });
       const local = mode === 'dark' ? 'light' : 'dark';
       await h.click(
@@ -231,10 +231,10 @@ test('native mixed Checkbox marks contrast with their actual container in live, 
     `import {Checkbox,ConfigProvider,theme} from 'antd';
 import {useState} from 'react';
 import {createPortal} from 'react-dom';
-import AtlasProvider,{atlasDocsTheme,atlasDocsDarkTheme} from '../src/react/AtlasProvider';
+import GenUXProvider,{genuxDocsTheme,genuxDocsDarkTheme} from '../src/react/GenUXProvider';
 import {docsAccessibleThemeColors,docsAccessibilityVariables} from '../src/data/accessibility';
 function Surface({id,mode}:{id:string;mode?:'light'|'dark'}){const{token}=theme.useToken();return <div data-mixed-scope={id} data-mixed-mode={mode}><output>{JSON.stringify({container:token.colorBgContainer,ink:token.colorText})}</output><Checkbox indeterminate>Mixed</Checkbox><Checkbox indeterminate disabled>Disabled mixed</Checkbox></div>}
-export default function Probe(){const[mode,setMode]=useState<'light'|'dark'>('light');return <div className="live-preview"><AtlasProvider appearance="docs"><Surface id="live"/>{createPortal(<div className="atlas-demo"><Surface id="portal"/></div>,document.body)}<button onClick={()=>setMode('light')}>Local light</button><button onClick={()=>setMode('dark')}>Local dark</button><ConfigProvider theme={{...(mode==='dark'?atlasDocsDarkTheme:atlasDocsTheme),inherit:false,cssVar:{key:'css-var-atlas-color-preview'}}}><div style={{...docsAccessibilityVariables(mode),'--ink':docsAccessibleThemeColors[mode].ink,'--selection-mark-ink':mode==='dark'?'#000000':'#FFFFFF'}}><Surface id="local" mode={mode}/></div></ConfigProvider></AtlasProvider></div>}`,
+export default function Probe(){const[mode,setMode]=useState<'light'|'dark'>('light');return <div className="live-preview"><GenUXProvider appearance="docs"><Surface id="live"/>{createPortal(<div className="genux-demo"><Surface id="portal"/></div>,document.body)}<button onClick={()=>setMode('light')}>Local light</button><button onClick={()=>setMode('dark')}>Local dark</button><ConfigProvider theme={{...(mode==='dark'?genuxDocsDarkTheme:genuxDocsTheme),inherit:false,cssVar:{key:'css-var-genux-color-preview'}}}><div style={{...docsAccessibilityVariables(mode),'--ink':docsAccessibleThemeColors[mode].ink,'--selection-mark-ink':mode==='dark'?'#000000':'#FFFFFF'}}><Surface id="local" mode={mode}/></div></ConfigProvider></GenUXProvider></div>}`,
   );
   let h;
   try {
@@ -247,7 +247,7 @@ export default function Probe(){const[mode,setMode]=useState<'light'|'dark'>('li
     await h.dispose();
     await unlink(file);
   });
-  h.document.body.dataset.atlasSurface = 'docs';
+  h.document.body.dataset.genuxSurface = 'docs';
   const native = await readFile('node_modules/antd/es/checkbox/style/index.js', 'utf8');
   assert.match(native, /'&-indeterminate':\s*\{\s*backgroundColor: token\.colorBgContainer/);
   // Follow the authored sheet order on the real native elements, including the
@@ -272,7 +272,7 @@ export default function Probe(){const[mode,setMode]=useState<'light'|'dark'>('li
   for (const mode of ['dark', 'light']) {
     await h.act(async () => {
       h.document.documentElement.dataset.theme = mode;
-      h.window.dispatchEvent(new h.window.Event('atlas-theme-change'));
+      h.window.dispatchEvent(new h.window.Event('genux-theme-change'));
     });
     for (const local of ['light', 'dark']) {
       const button = [...h.document.querySelectorAll('button')].find(
@@ -285,7 +285,7 @@ export default function Probe(){const[mode,setMode]=useState<'light'|'dark'>('li
       const emitted = {};
       for (const style of h.document.querySelectorAll('style'))
         postcss.parse(style.textContent).walkRules(rule => {
-          if (rule.selector !== '.css-var-atlas-color-preview') return;
+          if (rule.selector !== '.css-var-genux-color-preview') return;
           rule.walkDecls(decl => {
             emitted[decl.prop] = decl.value;
           });
@@ -325,14 +325,14 @@ export default function Probe(){const[mode,setMode]=useState<'light'|'dark'>('li
 
 test('enabled native clear actions and Select/Picker suffixes consume the local accessible icon role', async t => {
   const { JSDOM } = await import('jsdom');
-  const dom = new JSDOM(`<body data-atlas-surface="docs"><div class="atlas-demo">
-    <span class="ant-input-affix-wrapper css-var-atlas-docs"><button id="clear" class="ant-input-clear-icon"></button></span>
-    <div class="ant-select css-var-atlas-docs"><button id="select-clear" class="ant-select-clear"></button><span id="suffix" class="ant-select-suffix"></span></div>
-    <div class="ant-select css-var-atlas-color-preview"><span id="preview-suffix" class="ant-select-suffix"></span></div>
-    <div class="ant-picker css-var-atlas-docs"><button id="picker-clear" class="ant-picker-clear"></button><span id="picker-suffix" class="ant-picker-suffix"></span></div>
-    <div class="ant-picker ant-picker-disabled css-var-atlas-docs"><span id="picker-disabled" class="ant-picker-suffix"></span></div>
-    <div class="ant-select ant-select-disabled css-var-atlas-docs"><span id="disabled" class="ant-select-suffix"></span></div>
-    <div class="ant-select css-var-atlas"><span id="approved" class="ant-select-suffix"></span></div>
+  const dom = new JSDOM(`<body data-genux-surface="docs"><div class="genux-demo">
+    <span class="ant-input-affix-wrapper css-var-genux-docs"><button id="clear" class="ant-input-clear-icon"></button></span>
+    <div class="ant-select css-var-genux-docs"><button id="select-clear" class="ant-select-clear"></button><span id="suffix" class="ant-select-suffix"></span></div>
+    <div class="ant-select css-var-genux-color-preview"><span id="preview-suffix" class="ant-select-suffix"></span></div>
+    <div class="ant-picker css-var-genux-docs"><button id="picker-clear" class="ant-picker-clear"></button><span id="picker-suffix" class="ant-picker-suffix"></span></div>
+    <div class="ant-picker ant-picker-disabled css-var-genux-docs"><span id="picker-disabled" class="ant-picker-suffix"></span></div>
+    <div class="ant-select ant-select-disabled css-var-genux-docs"><span id="disabled" class="ant-select-suffix"></span></div>
+    <div class="ant-select css-var-genux"><span id="approved" class="ant-select-suffix"></span></div>
   </div></body>`);
   t.after(() => dom.window.close());
   // Installed AntD6 uses quaternary text here rather than its colorIcon alias.
@@ -378,7 +378,7 @@ test('enabled native clear actions and Select/Picker suffixes consume the local 
 test('documentation accessibility styles identify selection and portal controls without surrounding focus rings', async t => {
   const { JSDOM } = await import('jsdom');
   const dom = new JSDOM(
-    `<body data-atlas-surface="docs"><div class="atlas-demo"><label class="ant-checkbox-wrapper css-var-atlas-docs"><span id="portal" class="ant-checkbox ant-checkbox-checked"></span></label><label class="ant-checkbox-wrapper css-var-atlas"><span id="approved" class="ant-checkbox ant-checkbox-checked"></span></label><div class="atlas-segmented css-var-atlas-docs"><label class="ant-segmented-item-selected"><span id="selected" class="ant-segmented-item-label"></span></label></div></div></body>`,
+    `<body data-genux-surface="docs"><div class="genux-demo"><label class="ant-checkbox-wrapper css-var-genux-docs"><span id="portal" class="ant-checkbox ant-checkbox-checked"></span></label><label class="ant-checkbox-wrapper css-var-genux"><span id="approved" class="ant-checkbox ant-checkbox-checked"></span></label><div class="genux-segmented css-var-genux-docs"><label class="ant-segmented-item-selected"><span id="selected" class="ant-segmented-item-label"></span></label></div></div></body>`,
   );
   t.after(() => dom.window.close());
   const css = postcss.parse(await readFile('docs/src/styles/docs-accessibility.css', 'utf8'));
@@ -488,7 +488,7 @@ test('preview native icon roles follow the preview theme when the documentation 
   for (const outer of ['light', 'dark']) {
     await h.act(async () => {
       h.document.documentElement.dataset.theme = outer;
-      h.window.dispatchEvent(new h.window.Event('atlas-theme-change'));
+      h.window.dispatchEvent(new h.window.Event('genux-theme-change'));
     });
     const mode = outer === 'light' ? 'dark' : 'light';
     const radio = [...h.document.querySelectorAll('[aria-label="Preview theme"] label')]
@@ -497,13 +497,13 @@ test('preview native icon roles follow the preview theme when the documentation 
     await h.click(radio);
     const preview = h.document.querySelector('.color-seed-preview');
     assert.equal(preview.dataset.previewTheme, mode);
-    assert.equal(h.document.querySelector('.atlas-demo').dataset.themeMode, outer);
-    const nativeSelect = preview.querySelector('.ant-select.css-var-atlas-color-preview');
+    assert.equal(h.document.querySelector('.genux-demo').dataset.themeMode, outer);
+    const nativeSelect = preview.querySelector('.ant-select.css-var-genux-color-preview');
     assert.ok(nativeSelect, 'native Select consumes the local preview token key');
     const roles = {};
     for (const style of h.document.querySelectorAll('style')) {
       postcss.parse(style.textContent).walkRules(rule => {
-        if (!rule.selector.includes('.css-var-atlas-color-preview')) return;
+        if (!rule.selector.includes('.css-var-genux-color-preview')) return;
         rule.walkDecls(decl => {
           if (['--ant-color-icon', '--ant-color-icon-hover'].includes(decl.prop))
             roles[decl.prop] = decl.value;
@@ -547,7 +547,7 @@ test(
       const emitted = {};
       for (const style of h.document.querySelectorAll('style'))
         postcss.parse(style.textContent).walkRules(rule => {
-          if (rule.selector !== '.css-var-atlas-color-preview') return;
+          if (rule.selector !== '.css-var-genux-color-preview') return;
           rule.walkDecls(decl => {
             emitted[decl.prop] = decl.value;
           });

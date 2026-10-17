@@ -5,18 +5,18 @@ The two media lifecycle defects from review03 have genuine RED and same GREEN
 records; scoped TDD is 6 existing files / 13 planned scenarios, with only two
 new regression cases for observed defects and no persistent new test file.
 
-# Atlas Components documentation
+# GenUX Components documentation
 
 Static Astro documentation, React islands and real Ant Design 6.6.6 examples.
-The single-file atlas remains maintained in its original CSS/DOM sources and
+The single-file genux remains maintained in its original CSS/DOM sources and
 Downloads output; the documentation is a separate application. Pixel equality
 with the existing HTML is not claimed.
 
 ## UX standards and reference coverage
 
-[UX-STANDARDS.md](UX-STANDARDS.md) is the complete recommendation-to-Atlas
+[UX-STANDARDS.md](UX-STANDARDS.md) is the complete recommendation-to-GenUX
 crosswalk for the supplied Refactoring UI reference: all 49 main topics plus its
-concluding practice section. It defines the Atlas adaptations, current source
+concluding practice section. It defines the GenUX adaptations, current source
 counterparts and remaining work. The 15 October 2026 UX completion delivery added
 six component pages registered through `src/data/catalog-ux-patterns.ts`: media
 (MediaFrame and an original-size recorded Screenshot), content patterns
@@ -53,9 +53,9 @@ existing 16px/rem behavior; historical reports and global policies are unchanged
 | Source                                | Responsibility                                                                       |
 | ------------------------------------- | ------------------------------------------------------------------------------------ |
 | `src/data/catalog.ts`                 | English technical guidance, API reference and typechecked TSX examples               |
-| `src/data/atlas.json`                 | Data generated from the existing model by `docs:data`; do not edit manually          |
-| `src/styles/atlas-shadows.css`        | Tokens generated from the existing shadow recipes                                    |
-| `src/react/AtlasProvider.tsx`         | Scoped native-pixel documentation theme, locale, stable CSS variable key and portals |
+| `src/data/genux.json`                 | Data generated from the existing model by `docs:data`; do not edit manually          |
+| `src/styles/genux-shadows.css`        | Tokens generated from the existing shadow recipes                                    |
+| `src/react/GenUXProvider.tsx`         | Scoped native-pixel documentation theme, locale, stable CSS variable key and portals |
 | `src/react/*Demo.tsx`                 | React islands loaded only by their component page                                    |
 | `src/react/*Examples.tsx`             | Accordion, Form and Drawer application examples                                      |
 | `src/react/keyboard.ts`               | Scoped Space support for AntD 6.6.6 Collapse headings                                |
@@ -76,7 +76,7 @@ persistence or AI operations.
 The **Data workspace** navigation group contains four experimental component
 pages: `/components/data-table/`, `/components/collection-views/`,
 `/components/record-details/` and `/components/record-forms/`. They adapt reference
-data arrangements to the existing Atlas identity. Mobile and desktop examples
+data arrangements to the existing GenUX identity. Mobile and desktop examples
 share fictional records and persistent draft ownership. These examples do not
 approve a component decision, add Storybook stories or implement a production
 ERP/backend/AI service. The legacy standalone HTML remains a separate application.
@@ -84,7 +84,7 @@ ERP/backend/AI service. The legacy standalone HTML remains a separate applicatio
 English is the canonical source, default UI and initial HTML language. The EN/TR
 controls switch documentation and live components together. Turkish is secondary;
 its dictionaries and Ant Design locale are loaded only after selection or restoration
-of an explicit saved preference. The `atlas-locale` preference survives document
+of an explicit saved preference. The `genux-locale` preference survives document
 navigation. Storage failure leaves language changes usable.
 
 Static text uses English phrase keys on leaf `data-i18n` markers. Attributes use
@@ -116,7 +116,7 @@ npm run verify
 
 `docs:verify` runs docs gates in order. Site tests run after build and do not
 create or approve visual references. `npm run verify` is the independent legacy
-atlas regression gate.
+genux regression gate.
 
 `docs:browser:check` checks Playwright types and test discovery without launching
 a browser. `docs:browser` is the separate Chromium/Firefox/WebKit desktop and
@@ -132,7 +132,7 @@ access.
 
 Smooth entry and exit are mandatory for normal visual changes. The shared source is
 `src/data/motion.json`; `docs:data` generates CSS tokens and the AntD provider
-consumes the same source. New components use `.atlas-control` and semantic duration
+consumes the same source. New components use `.genux-control` and semantic duration
 tokens. Linear/steps/one-way easing, transition-free or zero-duration normal changes
 and inline motion overrides fail the source acceptance guard in `docs:verify`.
 It applies equally to human and AI contributions. Reduced motion, input, ARIA and
@@ -175,7 +175,7 @@ not select a project license, change repository visibility or publish the applic
 ## Shared Storybook sources
 
 Nine existing React demo exports are imported directly by Storybook 10.2.19 /
-React-Vite. AtlasProvider, Outfit fonts, token sources and stylesheet order are shared.
+React-Vite. GenUXProvider, Outfit fonts, token sources and stylesheet order are shared.
 Documentation's native-pixel typography is an explicit appearance scope; approved
 Storybook typography retains its existing 16px/rem profile.
 Do not duplicate demo render code or decision lists. Astro SSR extraction stays
@@ -191,7 +191,7 @@ See [the Storybook guide](../storybook/README.md).
 
 The header Dark theme switch updates documentation and Ant Design examples together.
 Storybook has a switch for the same preference. `src/theme.ts` owns appearance
-tokens and the `atlas-theme` preference. Initial appearance uses a saved preference
+tokens and the `genux-theme` preference. Initial appearance uses a saved preference
 or the system setting. Theme changes preserve the React island and entered values
 without adding a decision variant. The provider uses the official Ant Design
 [darkAlgorithm contract](https://ant.design/docs/react/customize-theme/).

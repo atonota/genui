@@ -12,12 +12,12 @@ test('documentation portal buttons own full-opacity blue paint without an appear
   const css = postcss.parse(
     await readFile(new URL('../src/styles/docs-brand.css', import.meta.url), 'utf8'),
   );
-  const dom = new JSDOM(`<body data-atlas-surface="docs"><div class="atlas-demo live-preview">
-    <button id="portal-shared" class="ant-btn ant-btn-primary atlas-button" data-docs-brand-default="true" data-docs-brand-tone="middle" data-fill="solid" data-state="hover" data-pressed="true"></button>
-    <button id="portal-native" class="ant-btn ant-btn-primary css-var-atlas-docs" data-state="hover" data-pressed="true"></button>
-    <button id="portal-approved" class="ant-btn ant-btn-primary atlas-button"></button>
-    <button id="portal-approved-native" class="ant-btn ant-btn-primary css-var-atlas"></button>
-    <button id="seed-preview" class="ant-btn ant-btn-primary atlas-button color-preview-button"></button>
+  const dom = new JSDOM(`<body data-genux-surface="docs"><div class="genux-demo live-preview">
+    <button id="portal-shared" class="ant-btn ant-btn-primary genux-button" data-docs-brand-default="true" data-docs-brand-tone="middle" data-fill="solid" data-state="hover" data-pressed="true"></button>
+    <button id="portal-native" class="ant-btn ant-btn-primary css-var-genux-docs" data-state="hover" data-pressed="true"></button>
+    <button id="portal-approved" class="ant-btn ant-btn-primary genux-button"></button>
+    <button id="portal-approved-native" class="ant-btn ant-btn-primary css-var-genux"></button>
+    <button id="seed-preview" class="ant-btn ant-btn-primary genux-button color-preview-button"></button>
   </div></body>`);
   t.after(() => dom.window.close());
   const document = dom.window.document;
@@ -100,12 +100,12 @@ test('documentation Switch content keeps its exact blue text readable at rest wi
   const css = postcss.parse(
     await readFile(new URL('../src/styles/web.css', import.meta.url), 'utf8'),
   );
-  const dom = new JSDOM(`<html data-theme="dark"><body data-atlas-surface="docs">
-    <div class="live-preview"><div class="atlas-demo" data-atlas-appearance="docs">
-      <button id="content" class="ant-switch ant-switch-checked atlas-switch-with-content"></button>
+  const dom = new JSDOM(`<html data-theme="dark"><body data-genux-surface="docs">
+    <div class="live-preview"><div class="genux-demo" data-genux-appearance="docs">
+      <button id="content" class="ant-switch ant-switch-checked genux-switch-with-content"></button>
       <button id="plain" class="ant-switch ant-switch-checked"></button>
     </div></div>
-    <div class="atlas-demo"><button id="story" class="ant-switch ant-switch-checked atlas-switch-with-content"></button></div>
+    <div class="genux-demo"><button id="story" class="ant-switch ant-switch-checked genux-switch-with-content"></button></div>
   </body></html>`);
   t.after(() => dom.window.close());
   const rules = [];
@@ -162,11 +162,11 @@ async function probe(t, appearance) {
     path,
     `import {Button,theme} from 'antd';
 import {createPortal} from 'react-dom';
-import AtlasProvider,{atlasTheme} from '../src/react/AtlasProvider';
-import AtlasButton from '../src/react/AtlasButton';
-function PortalActions(){return createPortal(<div className="atlas-demo live-preview" data-brand-portal><Button id="actual-native-portal" type="primary">Native portal action</Button><AtlasButton id="actual-shared-portal"/></div>,document.body);}
-function Tokens(){const{token}=theme.useToken();return <><output data-primary>{token.colorPrimary}</output><output data-hover>{token.colorPrimaryHover}</output><output data-active>{token.colorPrimaryActive}</output><output data-link>{token.colorLink}</output><output data-legacy-primary>{atlasTheme.token?.colorPrimary}</output><Button id="native-primary" type="primary">Native action</Button><AtlasButton id="brand-default"/><AtlasButton id="explicit-coral" palette="coral"/><AtlasButton id="brand-dark" tone="dark"/><AtlasButton id="brand-light" tone="light"/><AtlasButton id="brand-pastel" tone="pastel"/><AtlasProvider><AtlasButton id="inherited-default"/></AtlasProvider><AtlasProvider appearance="approved"><AtlasButton id="approved-default"/><Button id="approved-native" type="primary">Approved native action</Button></AtlasProvider><PortalActions/></>;}
-export default function Probe({appearance}:{appearance?:'approved'|'docs'}){return <AtlasProvider appearance={appearance}><Tokens/></AtlasProvider>;}`,
+import GenUXProvider,{genuxTheme} from '../src/react/GenUXProvider';
+import GenUXButton from '../src/react/GenUXButton';
+function PortalActions(){return createPortal(<div className="genux-demo live-preview" data-brand-portal><Button id="actual-native-portal" type="primary">Native portal action</Button><GenUXButton id="actual-shared-portal"/></div>,document.body);}
+function Tokens(){const{token}=theme.useToken();return <><output data-primary>{token.colorPrimary}</output><output data-hover>{token.colorPrimaryHover}</output><output data-active>{token.colorPrimaryActive}</output><output data-link>{token.colorLink}</output><output data-legacy-primary>{genuxTheme.token?.colorPrimary}</output><Button id="native-primary" type="primary">Native action</Button><GenUXButton id="brand-default"/><GenUXButton id="explicit-coral" palette="coral"/><GenUXButton id="brand-dark" tone="dark"/><GenUXButton id="brand-light" tone="light"/><GenUXButton id="brand-pastel" tone="pastel"/><GenUXProvider><GenUXButton id="inherited-default"/></GenUXProvider><GenUXProvider appearance="approved"><GenUXButton id="approved-default"/><Button id="approved-native" type="primary">Approved native action</Button></GenUXProvider><PortalActions/></>;}
+export default function Probe({appearance}:{appearance?:'approved'|'docs'}){return <GenUXProvider appearance={appearance}><Tokens/></GenUXProvider>;}`,
     'utf8',
   );
   let h;
@@ -186,7 +186,7 @@ export default function Probe({appearance}:{appearance?:'approved'|'docs'}){retu
 test('explicit documentation context changes native and omitted-palette defaults while approved calls stay canonical', async t => {
   const h = await probe(t, 'docs');
   const doc = h.document;
-  assert.ok(doc.querySelector('.atlas-demo[data-atlas-appearance="docs"]'));
+  assert.ok(doc.querySelector('.genux-demo[data-genux-appearance="docs"]'));
   assert.equal(doc.querySelector('[data-primary]').textContent, '#0099ff');
   assert.equal(doc.querySelector('[data-legacy-primary]').textContent, '#cf1322');
   for (const id of ['brand-default', 'inherited-default']) {
@@ -211,7 +211,7 @@ test('explicit documentation context changes native and omitted-palette defaults
   }
   await h.act(async () => {
     doc.documentElement.dataset.theme = 'dark';
-    h.window.dispatchEvent(new h.window.Event('atlas-theme-change'));
+    h.window.dispatchEvent(new h.window.Event('genux-theme-change'));
   });
   assert.equal(
     doc.querySelector('[data-primary]').textContent,
@@ -230,7 +230,7 @@ test('explicit documentation context changes native and omitted-palette defaults
 
 test('unopted provider and Button defaults retain the approved red identity', async t => {
   const h = await probe(t, undefined);
-  assert.equal(h.document.querySelector('.atlas-demo').dataset.atlasAppearance, undefined);
+  assert.equal(h.document.querySelector('.genux-demo').dataset.genuxAppearance, undefined);
   assert.equal(h.document.querySelector('[data-primary]').textContent.toLowerCase(), '#cf1322');
   assert.equal(h.document.getElementById('brand-default').dataset.docsBrandDefault, undefined);
   assert.equal(
@@ -241,16 +241,16 @@ test('unopted provider and Button defaults retain the approved red identity', as
 
 test('React portal context owns documentation paint and nested approved native buttons escape blue inheritance', async t => {
   const h = await probe(t, 'docs');
-  h.document.body.dataset.atlasSurface = 'docs';
+  h.document.body.dataset.genuxSurface = 'docs';
   const portal = h.document.querySelector('[data-brand-portal]');
-  assert.equal(portal.closest('[data-atlas-appearance="docs"]'), null);
+  assert.equal(portal.closest('[data-genux-appearance="docs"]'), null);
   const shared = h.document.getElementById('actual-shared-portal');
   const native = h.document.getElementById('actual-native-portal');
   const approved = h.document.getElementById('approved-native');
   assert.equal(shared.dataset.docsBrandDefault, 'true');
   assert.equal(shared.style.getPropertyValue('--button-face'), '#0099ff');
-  assert.ok(native.classList.contains('css-var-atlas-docs'));
-  assert.ok(approved.classList.contains('css-var-atlas'));
+  assert.ok(native.classList.contains('css-var-genux-docs'));
+  assert.ok(approved.classList.contains('css-var-genux'));
   const css = postcss.parse(
     await readFile(new URL('../src/styles/docs-brand.css', import.meta.url), 'utf8'),
   );
@@ -283,11 +283,11 @@ test('React portal context owns documentation paint and nested approved native b
     ),
     false,
   );
-  const atlas = JSON.parse(
-    await readFile(new URL('../src/data/atlas.json', import.meta.url), 'utf8'),
+  const genux = JSON.parse(
+    await readFile(new URL('../src/data/genux.json', import.meta.url), 'utf8'),
   );
-  assert.equal(brand.docsApprovedButtonColors.face, atlas.palettes.coral.color);
-  assert.equal(brand.docsApprovedButtonColors.edge, atlas.palettes.coral.dark);
+  assert.equal(brand.docsApprovedButtonColors.face, genux.palettes.coral.color);
+  assert.equal(brand.docsApprovedButtonColors.edge, genux.palettes.coral.dark);
   assert.equal(brand.docsApprovedButtonColors.text, '#FFFFFF');
 });
 
@@ -302,7 +302,7 @@ test('documentation brand styles are scoped, retain symmetric motion and reserve
     declaration.parent.selector.includes('data-docs-brand-default'),
   );
   assert.equal(buttonOpacity.value, '1');
-  assert.match(buttonOpacity.parent.selector, /body\[data-atlas-surface='docs'\]/);
+  assert.match(buttonOpacity.parent.selector, /body\[data-genux-surface='docs'\]/);
   assert.match(buttonOpacity.parent.selector.replace(/\s+/g, ''), /:not\(:disabled\)/);
   assert.doesNotMatch(buttonOpacity.parent.selector, /color-preview-button/);
   const base = [];
@@ -335,11 +335,11 @@ test('documentation brand styles are scoped, retain symmetric motion and reserve
   });
   assert.match(
     brand.docsBrandStyleText,
-    /:root\[data-theme='light'\] body\[data-atlas-surface='docs'\]/,
+    /:root\[data-theme='light'\] body\[data-genux-surface='docs'\]/,
   );
   assert.match(
     brand.docsBrandStyleText,
-    /:root\[data-theme='dark'\] body\[data-atlas-surface='docs'\]/,
+    /:root\[data-theme='dark'\] body\[data-genux-surface='docs'\]/,
   );
   const layout = await readFile(
     new URL('../src/layouts/DocsLayout.astro', import.meta.url),

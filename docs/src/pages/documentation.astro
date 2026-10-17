@@ -44,7 +44,7 @@ const sectionPurposes: Readonly<Record<string, string>> = {
   api: 'The local API table and the official Ant Design reference.',
   accessibility: 'Keyboard, naming and focus behavior.',
   notes: 'Ownership and implementation limits.',
-  resources: 'Concrete source paths and a separate GenUI registration status.',
+  resources: 'Concrete source paths and a separate GenUX registration status.',
 };
 const sourceMap = [
   { kind: 'catalog', label: 'Catalog data', paths: ['docs/src/data/catalog.ts'] },
@@ -67,7 +67,7 @@ const sourceMap = [
     kind: 'styles',
     label: 'Styles and tokens',
     paths: [
-      'docs/src/styles/atlas-<component>.css',
+      'docs/src/styles/genux-<component>.css',
       'docs/src/styles/docs.css',
       'docs/src/styles/documentation.css',
       'docs/src/styles/preview-workbench.css',
@@ -80,12 +80,12 @@ const sourceMap = [
     paths: ['docs/tests/<component>.test.mjs', 'docs/tests/documentation-presentation.test.mjs'],
   },
   {
-    kind: 'genui',
-    label: 'GenUI contract, policy and renderer',
+    kind: 'genux',
+    label: 'GenUX contract, policy and renderer',
     paths: [
-      'docs/src/genui/contracts.ts',
-      'docs/src/genui/policy.ts',
-      'docs/src/react/genui/AtlasGenUISurface.tsx',
+      'docs/src/genux/contracts.ts',
+      'docs/src/genux/policy.ts',
+      'docs/src/react/genux/GenUXSurface.tsx',
     ],
   },
 ] as const;
@@ -95,15 +95,15 @@ const admissionSteps = [
   'Wrap each example cluster once in the shared ExamplePreview with a literal, globally unique id. The build prerenders an isolated /preview/<id>/<profile>/ document per profile that hydrates only the selected profile entry, which renders the shared business component.',
   'Keep the API table local and link the official Ant Design reference over https.',
   'Explain the trusted React-island boundary with a generic Astro example and link the shared guide.',
-  'Name concrete source paths and state the GenUI registration status separately.',
-  'Use AtlasProvider and the shared tokens. Human and AI contributions follow the same motion contract: new custom controls inherit smooth entry and exit through atlas-control, and moving decorative layers are defined separately.',
+  'Name concrete source paths and state the GenUX registration status separately.',
+  'Use GenUXProvider and the shared tokens. Human and AI contributions follow the same motion contract: new custom controls inherit smooth entry and exit through genux-control, and moving decorative layers are defined separately.',
   'Run the focused test docs-reference.spec.ts, the production build and npm run docs:verify, which includes the source motion guard; any error finding fails the build. These checks are not proof of broader QA: browser, device and screen-reader review stay separately required.',
 ] as const;
 ---
 
 <DocsLayout
   title="Documentation standard"
-  description="Page types, section order, build-time rules and the admission workflow for Atlas documentation."
+  description="Page types, section order, build-time rules and the admission workflow for GenUX documentation."
   slug="documentation"
 >
   <p class="eyebrow">
@@ -318,9 +318,9 @@ const admissionSteps = [
       ))}
     </ul>
     <p data-doc-capability-status>
-      <span data-i18n="A catalog entry or React export is not a GenUI capability. The current registry is GENUI_COMPONENT_NAMES in contracts.ts; each component page states its own registration status.">
-        A catalog entry or React export is not a GenUI capability. The current registry is
-        GENUI_COMPONENT_NAMES in contracts.ts; each component page states its own registration
+      <span data-i18n="A catalog entry or React export is not a GenUX capability. The current registry is GENUX_COMPONENT_NAMES in contracts.ts; each component page states its own registration status.">
+        A catalog entry or React export is not a GenUX capability. The current registry is
+        GENUX_COMPONENT_NAMES in contracts.ts; each component page states its own registration
         status.
       </span>
     </p>
@@ -392,8 +392,8 @@ const admissionSteps = [
         </span>
       </li>
       <li>
-        <span data-i18n="Live demo behavior, translations and GenUI registration are verified by their own tests.">
-          Live demo behavior, translations and GenUI registration are verified by their own tests.
+        <span data-i18n="Live demo behavior, translations and GenUX registration are verified by their own tests.">
+          Live demo behavior, translations and GenUX registration are verified by their own tests.
         </span>
       </li>
       <li>

@@ -11,8 +11,8 @@ test('atomic input motion overrides the actual Provider inline properties withou
     documentation: true,
   });
   t.after(() => h.dispose());
-  const owner = h.document.querySelector('.atlas-demo[data-atlas-appearance="docs"]');
-  h.document.body.dataset.atlasSurface = 'docs';
+  const owner = h.document.querySelector('.genux-demo[data-genux-appearance="docs"]');
+  h.document.body.dataset.genuxSurface = 'docs';
   const input = h.document.querySelector('#input-filled');
   const nativeOwner = input.closest('.ant-input-affix-wrapper') ?? input;
   const property = '--docs-input-transition-properties';
@@ -53,8 +53,8 @@ test('theme paint updates atomically while semantic state and normal motion stay
     format: 'esm',
     platform: 'node',
   });
-  const dom = new JSDOM('<html data-theme="light"><body data-atlas-surface="docs"></body></html>', {
-    url: 'https://atlas.test',
+  const dom = new JSDOM('<html data-theme="light"><body data-genux-surface="docs"></body></html>', {
+    url: 'https://genux.test',
   });
   const saved = new Map();
   for (const [key, value] of Object.entries({
@@ -115,7 +115,7 @@ test('theme paint updates atomically while semantic state and normal motion stay
     if (candidate.selector.includes("[data-theme-paint='atomic']")) rule = candidate;
   });
   assert.ok(rule, 'guard is scoped to documentation paint only');
-  assert.match(rule.selector, /body\[data-atlas-surface='docs'\]/);
+  assert.match(rule.selector, /body\[data-genux-surface='docs'\]/);
   const properties = rule.nodes.find(n => n.prop === 'transition-property')?.value;
   assert.ok(properties);
   assert.doesNotMatch(properties, /\b(?:color|background|border-color|all|none)\b/);
@@ -130,7 +130,7 @@ test('independent Color preview mode commits share atomic paint without changing
   const { mountPattern } = await import('./harness.mjs');
   const h = await mountPattern('default', 'docs/src/react/color/ColorSystemDemo.tsx');
   t.after(() => h.dispose());
-  h.document.body.dataset.atlasSurface = 'docs';
+  h.document.body.dataset.genuxSurface = 'docs';
   const frames = [];
   h.window.requestAnimationFrame = callback => frames.push(callback);
   const outer = h.document.documentElement.dataset.theme;

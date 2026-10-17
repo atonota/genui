@@ -93,7 +93,7 @@ const getFocusedLocalPreview = (): PreviewContextValue | null =>
 const noLocalPreview = (): PreviewContextValue | null => null;
 
 /** The actual enclosing preview, else the focused example on this page. Only Tweaker editors
-    read the registry; AtlasProvider reads the actual context alone. */
+    read the registry; GenUXProvider reads the actual context alone. */
 export function useLocalPreviewTarget(): PreviewContextValue | null {
   const preview = useContext(PreviewContext);
   const focused = useSyncExternalStore(

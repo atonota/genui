@@ -2,12 +2,12 @@ import { selectedLabel } from './selectedLabel';
 import { useI18n } from './useI18n';
 import { useEffect, useId, useRef, useState } from 'react';
 import { Form, Input, Select, type DrawerProps, type FormInstance } from 'antd';
-import { Drawer } from './AtlasOverlay';
-import { TweakerSettings } from './AtlasTweaker';
-import AtlasButton from './AtlasButton';
+import { Drawer } from './GenUXOverlay';
+import { TweakerSettings } from './GenUXTweaker';
+import GenUXButton from './GenUXButton';
 import ExamplePreview from './ExamplePreview';
 
-type WorkspaceId = 'atlas-studio' | 'harbor-retail';
+type WorkspaceId = 'genux-studio' | 'harbor-retail';
 type SectionId = 'overview' | 'orders' | 'team';
 type NoteValues = { note: string };
 type DrawerPlacement = NonNullable<DrawerProps['placement']>;
@@ -16,12 +16,12 @@ type Activity =
   | { id: string; kind: 'event'; text: string; time: string; dateTime: string }
   | { id: string; kind: 'note'; text: string };
 
-const drawerSize = 'min(var(--atlas-drawer-inline-size), 100vw)';
-const drawerBlockSize = 'min(var(--atlas-drawer-block-size), 80dvh)';
+const drawerSize = 'min(var(--genux-drawer-inline-size), 100vw)';
+const drawerBlockSize = 'min(var(--genux-drawer-block-size), 80dvh)';
 const drawerFocus = { trap: true, focusTriggerAfterClose: true };
 
 const workspaces: Record<WorkspaceId, { name: string; orders: number; members: number }> = {
-  'atlas-studio': { name: 'Atlas Studio', orders: 12, members: 8 },
+  'genux-studio': { name: 'GenUX Studio', orders: 12, members: 8 },
   'harbor-retail': { name: 'Harbor Retail', orders: 31, members: 14 },
 };
 const sections: { id: SectionId; label: string }[] = [
@@ -108,14 +108,14 @@ function PlacementFormExample() {
               />
             </div>
           </TweakerSettings>
-          <AtlasButton text={t('Open panel')} onClick={() => setOpen(true)} />
+          <GenUXButton text={t('Open panel')} onClick={() => setOpen(true)} />
         </div>
         <div className="form-result" role="status" aria-live="polite">
           {result === null ? null : t('Draft “{title}” validated locally.', { title: result })}
         </div>
       </ExamplePreview>
       <Drawer
-        rootClassName="atlas-demo atlas-drawer-demo atlas-drawer-placement"
+        rootClassName="genux-demo genux-drawer-demo genux-drawer-placement"
         title={t('Local draft')}
         open={open}
         placement={placement}
@@ -126,9 +126,9 @@ function PlacementFormExample() {
         focusable={drawerFocus}
         destroyOnHidden={false}
         footer={
-          <div className="atlas-drawer-actions">
-            <AtlasButton fill="outline" text={t('Close')} onClick={() => setOpen(false)} />
-            <AtlasButton
+          <div className="genux-drawer-actions">
+            <GenUXButton fill="outline" text={t('Close')} onClick={() => setOpen(false)} />
+            <GenUXButton
               fill="outline"
               text={t('Reset draft')}
               onClick={() => {
@@ -136,18 +136,18 @@ function PlacementFormExample() {
                 setResult(null);
               }}
             />
-            <AtlasButton text={t('Validate locally')} htmlType="submit" form={formId} />
+            <GenUXButton text={t('Validate locally')} htmlType="submit" form={formId} />
           </div>
         }
       >
-        <p className="atlas-drawer-muted">
+        <p className="genux-drawer-muted">
           {t('This form is local and sends no data to a server.')}
         </p>
         <Form<DrawerValues>
           ref={mountedForm}
-          className="atlas-form-demo"
+          className="genux-form-demo"
           id={formId}
-          name="atlas-drawer-local-draft"
+          name="genux-drawer-local-draft"
           form={form}
           noValidate
           layout="vertical"
@@ -159,8 +159,8 @@ function PlacementFormExample() {
           }}
           preserve
         >
-          <fieldset className="atlas-form-section">
-            <legend className="atlas-form-section-legend">{t('Local draft')}</legend>
+          <fieldset className="genux-form-section">
+            <legend className="genux-form-section-legend">{t('Local draft')}</legend>
             <Form.Item
               label={t('Draft title')}
               name="title"
@@ -183,7 +183,7 @@ function WorkspaceNavigationExample() {
   const workspaceId = useId();
   const filterId = useId();
   const [open, setOpen] = useState(false);
-  const [workspace, setWorkspace] = useState<WorkspaceId>('atlas-studio');
+  const [workspace, setWorkspace] = useState<WorkspaceId>('genux-studio');
   const [query, setQuery] = useState('');
   const [current, setCurrent] = useState<SectionId>('overview');
   const workspaceOptions = (Object.keys(workspaces) as WorkspaceId[]).map(id => ({
@@ -205,11 +205,11 @@ function WorkspaceNavigationExample() {
       <p>{t('Switch workspaces and move between sections without leaving the current page.')}</p>
       <ExamplePreview id="drawer-workspace-navigation" title={t('Left navigation panel')}>
         <div className="control-row">
-          <AtlasButton text={t('Open workspace navigation')} onClick={() => setOpen(true)} />
+          <GenUXButton text={t('Open workspace navigation')} onClick={() => setOpen(true)} />
         </div>
       </ExamplePreview>
       <Drawer
-        rootClassName="atlas-demo atlas-drawer-demo atlas-drawer-navigation"
+        rootClassName="genux-demo genux-drawer-demo genux-drawer-navigation"
         title={t('Workspace navigation')}
         open={open}
         placement="left"
@@ -220,15 +220,15 @@ function WorkspaceNavigationExample() {
         focusable={drawerFocus}
         destroyOnHidden={false}
         footer={
-          <div className="atlas-drawer-actions">
-            <a className="atlas-drawer-support-link" href="#drawer-guidance">
+          <div className="genux-drawer-actions">
+            <a className="genux-drawer-support-link" href="#drawer-guidance">
               {t('Read the drawer guidance')}
             </a>
-            <AtlasButton fill="outline" text={t('Close')} onClick={() => setOpen(false)} />
+            <GenUXButton fill="outline" text={t('Close')} onClick={() => setOpen(false)} />
           </div>
         }
       >
-        <div className="atlas-drawer-field">
+        <div className="genux-drawer-field">
           <label htmlFor={workspaceId}>{t('Active workspace')}</label>
           <Select<WorkspaceId>
             id={workspaceId}
@@ -238,13 +238,13 @@ function WorkspaceNavigationExample() {
             labelRender={selectedLabel(workspaceOptions)}
           />
         </div>
-        <p className="atlas-drawer-muted">
+        <p className="genux-drawer-muted">
           {t('{orders} open orders · {members} team members', {
             orders: String(active.orders),
             members: String(active.members),
           })}
         </p>
-        <div className="atlas-drawer-field">
+        <div className="genux-drawer-field">
           <label htmlFor={filterId}>{t('Filter sections')}</label>
           <Input
             id={filterId}
@@ -255,7 +255,7 @@ function WorkspaceNavigationExample() {
             onChange={event => setQuery(event.target.value)}
           />
         </div>
-        <p className="atlas-drawer-muted" role="status" aria-live="polite">
+        <p className="genux-drawer-muted" role="status" aria-live="polite">
           {visible.length === 0
             ? t('No sections match “{query}”.', { query: query.trim() })
             : t('Showing {count} of {total} sections', {
@@ -263,7 +263,7 @@ function WorkspaceNavigationExample() {
                 total: String(sections.length),
               })}
         </p>
-        <nav className="atlas-drawer-nav" aria-label={t('Workspace sections')}>
+        <nav className="genux-drawer-nav" aria-label={t('Workspace sections')}>
           <ul>
             {visible.map(section => (
               <li key={section.id}>
@@ -316,13 +316,13 @@ function OrderDetailsExample() {
       <p>{t('Review an order, its activity and internal notes beside the list it came from.')}</p>
       <ExamplePreview id="drawer-order-details" title={t('Right detail panel')}>
         <div className="control-row">
-          <AtlasButton text={t('Open order details')} onClick={() => setOpen(true)} />
+          <GenUXButton text={t('Open order details')} onClick={() => setOpen(true)} />
         </div>
       </ExamplePreview>
       <Drawer
-        rootClassName="atlas-demo atlas-drawer-demo atlas-drawer-details"
+        rootClassName="genux-demo genux-drawer-demo genux-drawer-details"
         title={t('Order details')}
-        extra={<span className="atlas-drawer-header-meta">ORD-1042</span>}
+        extra={<span className="genux-drawer-header-meta">ORD-1042</span>}
         open={open}
         placement="right"
         size={drawerSize}
@@ -332,15 +332,15 @@ function OrderDetailsExample() {
         focusable={drawerFocus}
         destroyOnHidden={false}
         footer={
-          <div className="atlas-drawer-actions">
-            <AtlasButton fill="outline" text={t('Close')} onClick={() => setOpen(false)} />
-            <AtlasButton text={t('Add note')} htmlType="submit" form={formId} />
+          <div className="genux-drawer-actions">
+            <GenUXButton fill="outline" text={t('Close')} onClick={() => setOpen(false)} />
+            <GenUXButton text={t('Add note')} htmlType="submit" form={formId} />
           </div>
         }
       >
-        <section className="atlas-drawer-group" aria-labelledby="drawer-order-summary">
+        <section className="genux-drawer-group" aria-labelledby="drawer-order-summary">
           <h3 id="drawer-order-summary">{t('Summary')}</h3>
-          <dl className="atlas-drawer-facts">
+          <dl className="genux-drawer-facts">
             <div>
               <dt>{t('Order')}</dt>
               <dd>ORD-1042</dd>
@@ -359,9 +359,9 @@ function OrderDetailsExample() {
             </div>
           </dl>
         </section>
-        <section className="atlas-drawer-group" aria-labelledby="drawer-order-items">
+        <section className="genux-drawer-group" aria-labelledby="drawer-order-items">
           <h3 id="drawer-order-items">{t('Line items')}</h3>
-          <ul className="atlas-drawer-items">
+          <ul className="genux-drawer-items">
             {lineItems.map(item => (
               <li key={item.id}>
                 <span>{t(item.name)}</span>
@@ -373,21 +373,21 @@ function OrderDetailsExample() {
                 </span>
               </li>
             ))}
-            <li className="atlas-drawer-total">
+            <li className="genux-drawer-total">
               <span>{t('Total')}</span>
               <span>{money.format(total)}</span>
             </li>
           </ul>
         </section>
-        <section className="atlas-drawer-group" aria-labelledby="drawer-order-activity">
+        <section className="genux-drawer-group" aria-labelledby="drawer-order-activity">
           <h3 id="drawer-order-activity">{t('Activity')}</h3>
-          <ol className="atlas-drawer-activity" aria-labelledby="drawer-order-activity">
+          <ol className="genux-drawer-activity" aria-labelledby="drawer-order-activity">
             {activity.map(entry => (
               <li key={entry.id}>
                 {entry.kind === 'event' ? (
                   <time dateTime={entry.dateTime}>{entry.time}</time>
                 ) : (
-                  <span className="atlas-drawer-muted">{t('Just now')}</span>
+                  <span className="genux-drawer-muted">{t('Just now')}</span>
                 )}
                 <span>
                   {entry.kind === 'event'
@@ -398,14 +398,14 @@ function OrderDetailsExample() {
             ))}
           </ol>
         </section>
-        <p className="atlas-drawer-muted">
+        <p className="genux-drawer-muted">
           {t('Notes stay in this page and are not sent to a server.')}
         </p>
         <Form<NoteValues>
           ref={mountedForm}
-          className="atlas-form-demo"
+          className="genux-form-demo"
           id={formId}
-          name="atlas-drawer-order-note"
+          name="genux-drawer-order-note"
           form={form}
           noValidate
           layout="vertical"
@@ -430,7 +430,7 @@ function OrderDetailsExample() {
             <Input.TextArea autoSize={{ minRows: 3, maxRows: 6 }} />
           </Form.Item>
         </Form>
-        <p className="atlas-drawer-muted" role="status" aria-live="polite">
+        <p className="genux-drawer-muted" role="status" aria-live="polite">
           {added === 0 ? null : t('Note {count} added to activity.', { count: String(added) })}
         </p>
       </Drawer>

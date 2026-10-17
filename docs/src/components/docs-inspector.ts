@@ -1,7 +1,7 @@
 // Component page Inspector (DocsInspector.astro): one closed native dialog. From 1900px it
 // opens non-modal with show() and docks before the contents rail; below it opens with
 // showModal(). It only speaks the preview stage contract on the document: stages publish
-// genui-preview-focus and the Inspector dispatches genui-preview-control.
+// genux-preview-focus and the Inspector dispatches genux-preview-control.
 export type PreviewDevice = 'iphone' | 'ipad' | 'macbook' | 'tv';
 export type PreviewTheme = 'light' | 'dark';
 export interface PreviewControlDetail {
@@ -18,8 +18,8 @@ export interface PreviewFocusDetail {
   theme: PreviewTheme;
   grid: boolean;
 }
-export const previewControlEvent = 'genui-preview-control';
-export const previewFocusEvent = 'genui-preview-focus';
+export const previewControlEvent = 'genux-preview-control';
+export const previewFocusEvent = 'genux-preview-focus';
 // 118.75rem = 1900px; rem keeps zoomed text on the modal layout, as in layout.css.
 const dockedQuery = '(min-width: 118.75rem)';
 const devices: readonly unknown[] = ['iphone', 'ipad', 'macbook', 'tv'];

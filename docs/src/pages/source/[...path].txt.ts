@@ -9,13 +9,15 @@ const loaders = import.meta.glob<string>(
     '../../react/**/*.{ts,tsx}',
     '../../styles/**/*.css',
     '../../data/**/*.{ts,json}',
-    '../../genui/**/*.ts',
+    '../../genux/**/*.ts',
+    '../../fab/**/*.ts',
     '../../layouts/*.astro',
     '../../components/*.astro',
     '../components/*.astro',
     '../../theme.ts',
     '../../../AGENTS.md',
     '../../../tests/*.test.mjs',
+    '../../../tests/fab-harness.mjs',
     '../../../browser/*.spec.ts',
   ],
   { query: '?raw', import: 'default' },
@@ -48,10 +50,10 @@ export const prerender = true;
 export const getStaticPaths = (() =>
   [...published.keys()].map(path => ({ params: { path } }))) satisfies GetStaticPaths;
 
-// Pages builds (GENUI_DOCS_PAGES=1) publish these copies: machine home prefixes
+// Pages builds (GENUX_DOCS_PAGES=1) publish these copies: machine home prefixes
 // become a portable <workspace> placeholder and credential-shaped text fails the
 // build without echoing it. Local builds keep the files verbatim.
-const pagesBuild = process.env.GENUI_DOCS_PAGES === '1';
+const pagesBuild = process.env.GENUX_DOCS_PAGES === '1';
 const machineHome = /\/Users\/[^/\s'"`)\]>]*/g;
 const credential =
   /-----BEGIN [A-Z ]*PRIVATE KEY-----|\bgh[pousr]_[A-Za-z0-9]{20,}|\bAKIA[0-9A-Z]{16}\b|\bsk-[A-Za-z0-9_-]{20,}/;

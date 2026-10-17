@@ -19,7 +19,7 @@ import dataEntryCatalog from './data-entry-catalog.json';
 import pillRefresh from './pill-refresh.json';
 import colorLivePreview from './color-live-preview.json';
 import cardRefresh from './card-refresh.json';
-import cardGenUI from './card-genui.json';
+import cardGenUX from './card-genux.json';
 import docs from './docs.json';
 import react from './react.json';
 import legacy from '../../../../src/i18n/tr.json';
@@ -53,11 +53,14 @@ import foundationsTokens from './foundations-tokens.json';
 import foundationsStandards from './foundations-standards.json';
 import foundationsGuides from './foundations-guides.json';
 import foundationsTools from './foundations-tools.json';
-import foundationsGenUI from './foundations-genui.json';
+import foundationsGenUX from './foundations-genux.json';
 import foundationNavigation from './foundation-navigation.json';
 import listy from './listy.json';
 import listyPatterns from './listy-patterns.json';
 import badge from './badge.json';
+import fabDocs from './fab-docs.json';
+import fabApi from './fab-api.json';
+import fab from './fab.json';
 import inputTweaker from './input-tweaker.json';
 import tweakerOptions from './tweaker-options.json';
 import { translations as themeBuilderStates } from '../../theme-builder/states';
@@ -67,6 +70,9 @@ import adaptive from './adaptive.json';
 
 const messages: Readonly<Record<string, string>> = {
   // First so existing phrase translations keep precedence over the new dictionaries.
+  ...fabDocs,
+  ...fabApi,
+  ...fab,
   ...adaptive,
   ...docsReference,
   ...previewWorkbench,
@@ -104,7 +110,7 @@ const messages: Readonly<Record<string, string>> = {
   ...pillRefresh,
   ...colorLivePreview,
   ...cardRefresh,
-  ...cardGenUI,
+  ...cardGenUX,
   ...splitterRefresh,
   ...breadcrumbRefresh,
   ...paginationRefresh,
@@ -132,7 +138,7 @@ const messages: Readonly<Record<string, string>> = {
   ...foundationsStandards,
   ...foundationsGuides,
   ...foundationsTools,
-  ...foundationsGenUI,
+  ...foundationsGenUX,
   ...foundationNavigation,
 };
 export default messages;

@@ -9,7 +9,7 @@ async function mountFixture(t, body) {
   await writeFile(
     path,
     `import {useState} from 'react';
-import AtlasProvider from '../src/react/AtlasProvider';
+import GenUXProvider from '../src/react/GenUXProvider';
 import {RecordForm} from '../src/react/workspace/kit/RecordForm';
 import {FieldEditor,FieldValue} from '../src/react/workspace/kit/Fields';
 import {EntityPicker} from '../src/react/workspace/kit/EntityPicker';
@@ -59,7 +59,7 @@ test('descriptor-safe drafts never invoke accessors and stale bases cannot overw
     `
   let reads=0;const original={id:'R',name:'base',nested:{value:1}};Object.defineProperty(original,'secret',{enumerable:true,get(){reads++;throw Error('accessor executed')}});
   const clone=cloneRecord(original);clone.nested.value=2;
-  const date=new Date('2026-10-13T00:00:00Z'), regexp=/draft/gi, url=new URL('https://atlas.test/value'), bytes=new Uint8Array([1,2]);const aliases={left:date,right:date,regexp,url,bytes};const aliasClone=cloneRecord(aliases);const cycle={id:'cycle'};cycle.self=cycle;const cycleClone=cloneRecord(cycle);
+  const date=new Date('2026-10-13T00:00:00Z'), regexp=/draft/gi, url=new URL('https://genux.test/value'), bytes=new Uint8Array([1,2]);const aliases={left:date,right:date,regexp,url,bytes};const aliasClone=cloneRecord(aliases);const cycle={id:'cycle'};cycle.self=cycle;const cycleClone=cloneRecord(cycle);
   const schema={id:'test',label:'Test',fields:[{key:'name',label:'Name',kind:'text',getValue:r=>r.name,setValue:(r,v)=>({...r,name:v})}],initialRecords:()=>[original],createRecord:id=>({id,name:''})};
   const begun=beginKitDraft(initialKitState(schema),schema,'R');const state={...begun,records:[Object.defineProperty({id:'R',name:'newer',nested:{value:1}},'secret',Object.getOwnPropertyDescriptor(original,'secret'))],draft:Object.defineProperty({id:'R',name:'draft',nested:{value:1}},'secret',Object.getOwnPropertyDescriptor(original,'secret'))};const committed=commitKitDraft(state,schema.fields);
   export default function Fixture(){return <output>{JSON.stringify({reads,originalNested:original.nested.value,cloneNested:clone.nested.value,same:recordsEqual(original,clone),message:committed.message,name:committed.records[0].name,retained:!!committed.draft,dateAlias:aliasClone.left===aliasClone.right,dateCopied:aliasClone.left!==date,aliasesEqual:recordsEqual(aliases,aliasClone),opaque:aliasClone.regexp===regexp&&aliasClone.url===url&&aliasClone.bytes===bytes,regexpWorks:aliasClone.regexp.test('draft'),urlWorks:aliasClone.url.href,bytesWork:aliasClone.bytes[1],cycleWorks:cycleClone.self===cycleClone&&recordsEqual(cycle,cycleClone)})}</output>}`,
@@ -76,7 +76,7 @@ test('descriptor-safe drafts never invoke accessors and stale bases cannot overw
   assert.equal(result.aliasesEqual, true);
   assert.equal(result.opaque, true);
   assert.equal(result.regexpWorks, true);
-  assert.equal(result.urlWorks, 'https://atlas.test/value');
+  assert.equal(result.urlWorks, 'https://genux.test/value');
   assert.equal(result.bytesWork, 2);
   assert.equal(result.cycleWorks, true);
   assert.match(result.message, /changed since this draft/i);
@@ -87,7 +87,7 @@ test('readonly fields remain labelled focusable and dirty cancellation needs an 
     t,
     `
   const record={id:'R',name:'Original'};const fields=[{key:'id',label:'Record ID',kind:'text',getValue:r=>r.id},{key:'name',label:'Name',kind:'text',required:true,getValue:r=>r.name,setValue:(r,v)=>({...r,name:v})}];
-  export default function Fixture(){const[draft,setDraft]=useState(record);const[cancelled,setCancelled]=useState('');return <AtlasProvider><RecordForm record={record} draft={draft} fields={fields} errors={{}} onDraftChange={setDraft} onCommit={()=>{}} onCancel={reason=>setCancelled(reason)}/><output>{cancelled}</output></AtlasProvider>}`,
+  export default function Fixture(){const[draft,setDraft]=useState(record);const[cancelled,setCancelled]=useState('');return <GenUXProvider><RecordForm record={record} draft={draft} fields={fields} errors={{}} onDraftChange={setDraft} onCommit={()=>{}} onCancel={reason=>setCancelled(reason)}/><output>{cancelled}</output></GenUXProvider>}`,
   );
   const readonly = h.document.querySelector('[data-field-key="id"] [aria-readonly="true"]');
   assert.ok(readonly);
@@ -116,7 +116,7 @@ test('field errors are polite, summary is submit-only and unknown results block 
     t,
     `
   const record={id:'R',name:''};const fields=[{key:'name',label:'Name',kind:'text',required:true,getValue:r=>r.name,setValue:(r,v)=>({...r,name:v})}];
-  export default function Fixture(){const[draft,setDraft]=useState(record);const[unknown,setUnknown]=useState(false);return <AtlasProvider><RecordForm record={record} draft={draft} fields={fields} errors={{name:'This field is required.'}} onDraftChange={setDraft} onCommit={()=>{}} onCancel={()=>{}} operation={{kind:unknown?'unknown':'idle'}}/><button onClick={()=>setUnknown(true)}>Unknown result</button></AtlasProvider>}`,
+  export default function Fixture(){const[draft,setDraft]=useState(record);const[unknown,setUnknown]=useState(false);return <GenUXProvider><RecordForm record={record} draft={draft} fields={fields} errors={{name:'This field is required.'}} onDraftChange={setDraft} onCommit={()=>{}} onCancel={()=>{}} operation={{kind:unknown?'unknown':'idle'}}/><button onClick={()=>setUnknown(true)}>Unknown result</button></GenUXProvider>}`,
   );
   assert.equal(h.document.querySelector('.kit-error-summary'), null);
   assert.equal(h.document.querySelector('.kit-field-error').getAttribute('aria-live'), 'polite');
@@ -132,7 +132,7 @@ test('branded date and UTC instant editors retain string contracts and precision
     t,
     `
   const record={id:'R',amount:1,date:'2026-10-13',instant:'2026-10-13T09:30:00Z'};const fields=[{key:'amount',label:'Amount',kind:'money',currency:'USD',precision:2,getValue:r=>r.amount,setValue:(r,v)=>({...r,amount:v})},{key:'date',label:'Date',kind:'date',getValue:r=>r.date,setValue:(r,v)=>({...r,date:v})},{key:'instant',label:'Instant',kind:'datetime',getValue:r=>r.instant,setValue:(r,v)=>({...r,instant:v})}];
-  export default function Fixture(){const[draft,setDraft]=useState(record);const[commits,setCommits]=useState(0);return <AtlasProvider><RecordForm record={record} draft={draft} fields={fields} errors={{}} onDraftChange={setDraft} onCommit={()=>setCommits(v=>v+1)} onCancel={()=>{}}/><output>{commits}</output></AtlasProvider>}`,
+  export default function Fixture(){const[draft,setDraft]=useState(record);const[commits,setCommits]=useState(0);return <GenUXProvider><RecordForm record={record} draft={draft} fields={fields} errors={{}} onDraftChange={setDraft} onCommit={()=>setCommits(v=>v+1)} onCancel={()=>{}}/><output>{commits}</output></GenUXProvider>}`,
   );
   assert.equal(h.document.querySelector('input[type="date"]'), null);
   assert.equal(h.document.querySelector('[data-field-key="date"] input').value, '2026-10-13');
@@ -152,7 +152,7 @@ test('entity choices share descriptions and IDs while Turkish search and require
   const h = await mountFixture(
     t,
     `
-  export default function Fixture(){const[value,setValue]=useState(null);return <AtlasProvider><EntityPicker id="relation" label="Relation" required value={value} options={[{id:'north',label:'İstanbul',description:'North office'},{id:'south',label:'İstanbul',description:'South office'}]} onChange={setValue}/><output>{value}</output></AtlasProvider>}`,
+  export default function Fixture(){const[value,setValue]=useState(null);return <GenUXProvider><EntityPicker id="relation" label="Relation" required value={value} options={[{id:'north',label:'İstanbul',description:'North office'},{id:'south',label:'İstanbul',description:'South office'}]} onChange={setValue}/><output>{value}</output></GenUXProvider>}`,
   );
   const input = h.document.querySelector('#relation');
   assert.equal(input.getAttribute('aria-required'), 'true');
@@ -166,7 +166,7 @@ test('typed comparisons preserve currency and conflict source without permitting
     t,
     `
   const fields=[{key:'cost',label:'Cost',source:0,current:1,proposed:2,metadata:{kind:'money',currency:'USD',precision:2}}];
-  export default function Fixture(){return <AtlasProvider><SourceComparedEntry fields={fields} onUseSource={()=>{}}/><ConflictResolver conflicts={fields} decisions={{}} onDecisionChange={()=>{}}/><ChangeReview targets={[{id:'R',changes:[]}]} results={[{id:'R',state:'unknown',retryable:true}]} onRetry={()=>{}}/></AtlasProvider>}`,
+  export default function Fixture(){return <GenUXProvider><SourceComparedEntry fields={fields} onUseSource={()=>{}}/><ConflictResolver conflicts={fields} decisions={{}} onDecisionChange={()=>{}}/><ChangeReview targets={[{id:'R',changes:[]}]} results={[{id:'R',state:'unknown',retryable:true}]} onRetry={()=>{}}/></GenUXProvider>}`,
   );
   assert.match(h.document.body.textContent, /\$0\.00/);
   assert.match(
@@ -181,7 +181,7 @@ test('supplied import corrections retain stable IDs and navigation never marks a
     t,
     `
   const initial=[{id:'first',fields:[{key:'name',label:'Name',source:'Source A',current:'Current A',proposed:'Draft A'}]},{id:'second',fields:[{key:'name',label:'Name',source:'Source B',current:'Current B',proposed:'Draft B'}],operation:{kind:'unknown'}}];
-  export default function Fixture(){const[items,setItems]=useState(initial);const[active,setActive]=useState('first');const[reviewed,setReviewed]=useState([]);return <AtlasProvider><ImportCorrectionQueue items={items} activeId={active} reviewedIds={reviewed} onNavigate={setActive} onCorrection={(id,key,value)=>setItems(items.map(item=>item.id===id?{...item,fields:item.fields.map(field=>field.key===key?{...field,proposed:value}:field)}:item))} onReview={id=>setReviewed([...reviewed,id])}/><output>{JSON.stringify(reviewed)}</output></AtlasProvider>}`,
+  export default function Fixture(){const[items,setItems]=useState(initial);const[active,setActive]=useState('first');const[reviewed,setReviewed]=useState([]);return <GenUXProvider><ImportCorrectionQueue items={items} activeId={active} reviewedIds={reviewed} onNavigate={setActive} onCorrection={(id,key,value)=>setItems(items.map(item=>item.id===id?{...item,fields:item.fields.map(field=>field.key===key?{...field,proposed:value}:field)}:item))} onReview={id=>setReviewed([...reviewed,id])}/><output>{JSON.stringify(reviewed)}</output></GenUXProvider>}`,
   );
   await h.click(buttonByText(h.document, 'Use source for Name'));
   assert.match(h.document.querySelector('.kit-import-corrections').textContent, /Source A/);
@@ -198,7 +198,7 @@ test('nested child precision drafts block containing form commit and removal cle
     t,
     `
   const record={id:'R',name:'Parent'};const fields=[{key:'name',label:'Name',kind:'text',getValue:r=>r.name,setValue:(r,v)=>({...r,name:v})}];const lines=[{key:'amount',label:'Amount',kind:'number',precision:2,getValue:r=>{if(r.denied)throw Error('opaque child getter');return r.amount;},setValue:(r,v)=>({...r,amount:v})}];
-  export default function Fixture(){const[rows,setRows]=useState([{id:'child',amount:1}]);const[denied,setDenied]=useState(false);const[commits,setCommits]=useState(0);const[notifications,setNotifications]=useState([]);return <AtlasProvider><RecordForm record={record} draft={record} fields={fields} errors={{}} onDraftChange={()=>{}} onCommit={()=>setCommits(v=>v+1)} onCancel={()=>{}}><RepeatingRecordEditor rows={rows} fields={lines} statesById={denied?{child:{kind:'denied'}}:{}} onRowsChange={setRows} onDraftErrorsChange={errors=>setNotifications(items=>[...items,errors])}/></RecordForm><button onClick={()=>{setRows([{id:'child',amount:1}]);setDenied(false);}}>Restore child</button><button onClick={()=>{setRows(rows.map(row=>({...row,denied:true})));setDenied(true);}}>Deny child</button><output data-commits="">{commits}</output><output data-errors="">{JSON.stringify(notifications)}</output></AtlasProvider>}`,
+  export default function Fixture(){const[rows,setRows]=useState([{id:'child',amount:1}]);const[denied,setDenied]=useState(false);const[commits,setCommits]=useState(0);const[notifications,setNotifications]=useState([]);return <GenUXProvider><RecordForm record={record} draft={record} fields={fields} errors={{}} onDraftChange={()=>{}} onCommit={()=>setCommits(v=>v+1)} onCancel={()=>{}}><RepeatingRecordEditor rows={rows} fields={lines} statesById={denied?{child:{kind:'denied'}}:{}} onRowsChange={setRows} onDraftErrorsChange={errors=>setNotifications(items=>[...items,errors])}/></RecordForm><button onClick={()=>{setRows([{id:'child',amount:1}]);setDenied(false);}}>Restore child</button><button onClick={()=>{setRows(rows.map(row=>({...row,denied:true})));setDenied(true);}}>Deny child</button><output data-commits="">{commits}</output><output data-errors="">{JSON.stringify(notifications)}</output></GenUXProvider>}`,
   );
   const child = h.document.querySelector('[data-child-id="child"] input');
   await h.type(child, '1.234');
@@ -230,7 +230,7 @@ test('acknowledged clean commit refreshes the same-ID form base for a second edi
     t,
     `
   const fields=[{key:'name',label:'Name',kind:'text',getValue:r=>r.name,setValue:(r,v)=>({...r,name:v})}];
-  export default function Fixture(){const[record,setRecord]=useState({id:'R',name:'Base'});const[draft,setDraft]=useState(record);const[bases,setBases]=useState([]);return <AtlasProvider><RecordForm record={record} draft={draft} fields={fields} errors={{}} onDraftChange={setDraft} onCommit={(value,context)=>{setBases([...bases,context.base.name]);setRecord(cloneRecord(value));}} onCancel={()=>{}}/><output>{JSON.stringify(bases)}</output></AtlasProvider>}`,
+  export default function Fixture(){const[record,setRecord]=useState({id:'R',name:'Base'});const[draft,setDraft]=useState(record);const[bases,setBases]=useState([]);return <GenUXProvider><RecordForm record={record} draft={draft} fields={fields} errors={{}} onDraftChange={setDraft} onCommit={(value,context)=>{setBases([...bases,context.base.name]);setRecord(cloneRecord(value));}} onCancel={()=>{}}/><output>{JSON.stringify(bases)}</output></GenUXProvider>}`,
   );
   const input = h.document.querySelector('[data-field-key="name"] input');
   await h.type(input, 'First');
@@ -247,7 +247,7 @@ test('command and copy-create wrappers preserve dirty bases until an explicit ca
     t,
     `
   const fields=[{key:'name',label:'Name',kind:'text',getValue:r=>r.name,setValue:(r,v)=>({...r,name:v})}];
-  export default function Fixture(){const[parameters,setParameters]=useState({id:'cmd',name:'Command'});const[candidate,setCandidate]=useState({id:'copy',name:'Copy'});const[cancels,setCancels]=useState(0);return <AtlasProvider><CommandForm parameters={parameters} fields={fields} onParametersChange={setParameters} onSubmit={()=>{}} onCancel={()=>setCancels(v=>v+1)}/><CopyCreate source={{id:'source',name:'Source'}} candidate={candidate} fields={fields} onCandidateChange={setCandidate} onCreate={()=>{}} onCancel={()=>setCancels(v=>v+1)}/><output>{cancels}</output></AtlasProvider>}`,
+  export default function Fixture(){const[parameters,setParameters]=useState({id:'cmd',name:'Command'});const[candidate,setCandidate]=useState({id:'copy',name:'Copy'});const[cancels,setCancels]=useState(0);return <GenUXProvider><CommandForm parameters={parameters} fields={fields} onParametersChange={setParameters} onSubmit={()=>{}} onCancel={()=>setCancels(v=>v+1)}/><CopyCreate source={{id:'source',name:'Source'}} candidate={candidate} fields={fields} onCandidateChange={setCandidate} onCreate={()=>{}} onCancel={()=>setCancels(v=>v+1)}/><output>{cancels}</output></GenUXProvider>}`,
   );
   for (const selector of ['.kit-command-form', '.kit-copy-create']) {
     const wrapper = h.document.querySelector(selector);
@@ -269,7 +269,7 @@ test('draft metadata cannot weaken original restrictions or invoke protected get
   let reads=0;const original={id:'R',name:'Base',restricted:true};Object.defineProperty(original,'secret',{enumerable:false,get(){reads++;throw Error('protected getter')}});const draft=cloneRecord(original);draft.name='Changed';draft.restricted=false;
   const fields=[{key:'name',label:'Name',kind:'text',getValue:r=>r.name,setValue:(r,v)=>({...r,name:v})},{key:'secret',label:'Secret',kind:'text',getValue:r=>r.secret,setValue:(r,v)=>({...r,secret:v}),availability:r=>({state:r.restricted?'restricted':'available'})}];
   const state={records:[original],activeId:'R',checkedIds:[],preparedIds:[],draft,original:cloneRecord(original),errors:{},query:{search:'',filters:[],sort:[]},projection:['name'],view:'table',message:'',baseExisted:true};const committed=commitKitDraft(state,fields);const secret=Object.getOwnPropertyDescriptor(committed.records[0],'secret');
-  export default function Fixture(){const[saved,setSaved]=useState(null);const[candidate,setCandidate]=useState(draft);return <AtlasProvider><RecordForm record={original} draft={candidate} fields={fields} errors={{}} onDraftChange={setCandidate} onCommit={value=>setSaved({restricted:value.restricted,hasGetter:!!Object.getOwnPropertyDescriptor(value,'secret').get})} onCancel={()=>{}}/><output data-result="">{JSON.stringify({reads,name:committed.records[0].name,restricted:committed.records[0].restricted,hasGetter:!!secret.get})}</output><output data-saved="">{JSON.stringify(saved)}</output></AtlasProvider>}`,
+  export default function Fixture(){const[saved,setSaved]=useState(null);const[candidate,setCandidate]=useState(draft);return <GenUXProvider><RecordForm record={original} draft={candidate} fields={fields} errors={{}} onDraftChange={setCandidate} onCommit={value=>setSaved({restricted:value.restricted,hasGetter:!!Object.getOwnPropertyDescriptor(value,'secret').get})} onCancel={()=>{}}/><output data-result="">{JSON.stringify({reads,name:committed.records[0].name,restricted:committed.records[0].restricted,hasGetter:!!secret.get})}</output><output data-saved="">{JSON.stringify(saved)}</output></GenUXProvider>}`,
   );
   assert.equal(h.document.querySelector('[data-field-key="secret"] input'), null);
   assert.match(h.document.querySelector('[data-field-key="secret"]').textContent, /Restricted/);

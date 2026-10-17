@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
-import { writeFile, unlink } from 'node:fs/promises';
-import { dirname, resolve } from 'node:path';
+import { stat, writeFile, unlink } from 'node:fs/promises';
+import { dirname, isAbsolute, relative, resolve, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { setTimeout as delay } from 'node:timers/promises';
 import { build } from 'esbuild';
@@ -24,7 +24,7 @@ function installDom() {
     }
   }
   const dom = new JSDOM('<!doctype html><html><body><main id="root"></main></body></html>', {
-    url: 'https://atlas.test/',
+    url: 'https://genux.test/',
     pretendToBeVisual: true,
   });
   const { window } = dom;
@@ -154,6 +154,12 @@ export async function mountPattern(
       platform: 'node',
       target: 'node24',
       jsx: 'automatic',
+      // Astro's static browser env for DOM tests: root base, client render. Only these keys
+      // are defined; any other import.meta.env read still fails instead of being masked.
+      define: {
+        'import.meta.env.BASE_URL': JSON.stringify('/'),
+        'import.meta.env.SSR': 'false',
+      },
       // Styles are imported by page-specific examples. DOM tests deliberately
       // ignore them; production/style gates cover emitted CSS separately.
       plugins: [
@@ -161,6 +167,30 @@ export async function mountPattern(
           name: 'dom-only-css',
           setup(builder) {
             builder.onLoad({ filter: /\.css$/ }, () => ({ contents: '', loader: 'js' }));
+          },
+        },
+        {
+          // Adaptive layouts import compiled Sass as `?inline` strings. DOM tests load a nonempty
+          // comment naming the normalized source instead; it is not compiled CSS or style proof.
+          // The source must still be an existing file inside the project, so bad imports fail.
+          name: 'dom-only-inline-styles',
+          setup(builder) {
+            builder.onResolve({ filter: /[.]scss[?]inline$/ }, args => {
+              const path = relative(
+                projectDirectory,
+                resolve(args.resolveDir, args.path.replace(/[?]inline$/, '')),
+              );
+              if (path === '..' || path.startsWith(`..${sep}`) || isAbsolute(path))
+                return { errors: [{ text: `Inline style outside project: ${args.path}` }] };
+              return { path, namespace: 'dom-only-inline-style' };
+            });
+            builder.onLoad({ filter: /.*/, namespace: 'dom-only-inline-style' }, async args => {
+              // A missing source surfaces its ENOENT; directories are not stylesheets.
+              if (!(await stat(resolve(projectDirectory, args.path))).isFile())
+                throw new Error(`Inline style is not a file: ${args.path}`);
+              const fixture = `/* DOM-only fixture, not compiled CSS: ${args.path} */`;
+              return { contents: `export default ${JSON.stringify(fixture)};`, loader: 'js' };
+            });
           },
         },
       ],

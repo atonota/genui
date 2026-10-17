@@ -1,0 +1,270 @@
+/* Native Steps skin. Catalog composition belongs only to steps-catalog.css. */
+.genux-steps {
+  min-width: 0;
+  max-width: 100%;
+  color: var(--ink);
+  font: inherit;
+}
+.genux-steps .ant-steps,
+.genux-steps .ant-steps.ant-steps-small {
+  --ant-cmp-steps-icon-size: var(--genux-steps-icon-size);
+  --ant-cmp-steps-icon-size-max: var(--genux-steps-icon-size);
+  --ant-cmp-steps-title-font-size: var(--text);
+  --ant-cmp-steps-title-line-height: var(--line-height);
+  --ant-cmp-steps-title-horizontal-title-height: var(--genux-steps-icon-size);
+  --ant-cmp-steps-heading-height: var(--genux-steps-icon-size);
+  width: 100%;
+  min-width: 0;
+  font: inherit;
+}
+.genux-steps .ant-steps .ant-steps-item {
+  min-width: 0;
+  max-width: 100%;
+  --ant-cmp-steps-item-title-color: var(--ink);
+  --ant-cmp-steps-item-content-color: var(--muted);
+  --ant-cmp-steps-item-content-active-color: var(--ink);
+  --ant-cmp-steps-item-icon-custom-color: var(--accent);
+  --ant-cmp-steps-item-text-hover-color: var(--accent);
+}
+.genux-steps .ant-steps .ant-steps-item-error {
+  --ant-cmp-steps-item-title-color: var(--error);
+  --ant-cmp-steps-item-content-color: var(--error);
+  --ant-cmp-steps-item-content-active-color: var(--error);
+  --ant-cmp-steps-item-icon-custom-color: var(--error);
+  --ant-cmp-steps-item-text-hover-color: var(--error);
+}
+.genux-steps .ant-steps.ant-steps-filled .ant-steps-item {
+  --ant-cmp-steps-item-icon-bg-color: var(--soft);
+  --ant-cmp-steps-item-icon-text-color: var(--accent);
+  --ant-cmp-steps-item-icon-active-bg-color: var(--primary);
+  --ant-cmp-steps-item-icon-active-text-color: var(--selection-mark-ink, var(--ink));
+  --ant-cmp-steps-item-icon-bg-hover-color: var(--soft);
+  --ant-cmp-steps-item-icon-text-hover-color: var(--accent);
+}
+.genux-steps .ant-steps.ant-steps-filled .ant-steps-item-wait {
+  --ant-cmp-steps-item-icon-bg-color: var(--surface);
+  --ant-cmp-steps-item-icon-text-color: var(--muted);
+}
+.genux-steps .ant-steps.ant-steps-outlined .ant-steps-item {
+  --ant-cmp-steps-item-icon-bg-color: var(--panel);
+  --ant-cmp-steps-item-icon-border-color: var(--accent);
+  --ant-cmp-steps-item-icon-text-color: var(--accent);
+  --ant-cmp-steps-item-icon-active-bg-color: var(--panel);
+  --ant-cmp-steps-item-icon-active-text-color: var(--accent);
+  --ant-cmp-steps-item-icon-bg-hover-color: var(--panel);
+  --ant-cmp-steps-item-icon-border-hover-color: var(--accent);
+  --ant-cmp-steps-item-icon-text-hover-color: var(--accent);
+}
+.genux-steps .ant-steps.ant-steps-outlined .ant-steps-item-wait {
+  --ant-cmp-steps-item-icon-border-color: var(--control-boundary);
+  --ant-cmp-steps-item-icon-text-color: var(--muted);
+}
+.genux-steps .ant-steps.ant-steps-filled .ant-steps-item-error,
+.genux-steps .ant-steps.ant-steps-outlined .ant-steps-item-error {
+  --ant-cmp-steps-item-icon-bg-color: var(--panel);
+  --ant-cmp-steps-item-icon-border-color: var(--error);
+  --ant-cmp-steps-item-icon-text-color: var(--error);
+  --ant-cmp-steps-item-icon-active-bg-color: var(--panel);
+  --ant-cmp-steps-item-icon-active-border-color: var(--error);
+  --ant-cmp-steps-item-icon-active-text-color: var(--error);
+  --ant-cmp-steps-item-icon-bg-hover-color: var(--panel);
+  --ant-cmp-steps-item-icon-border-hover-color: var(--error);
+  --ant-cmp-steps-item-icon-text-hover-color: var(--error);
+}
+.genux-steps .ant-steps-item[role='button'] {
+  min-height: var(--genux-component-height);
+  cursor: pointer;
+  border-radius: var(--radius);
+}
+.genux-steps .ant-steps-item[aria-disabled='true'] {
+  cursor: not-allowed;
+  opacity: var(--opacity-disabled);
+}
+/* Native hover matches role=button even when the ARIA adapter marks it disabled. */
+.genux-steps .ant-steps .ant-steps-item.ant-steps-item[aria-disabled='true']:hover {
+  cursor: not-allowed;
+}
+.genux-steps
+  .ant-steps
+  .ant-steps-item.ant-steps-item[aria-disabled='true']:hover
+  .ant-steps-item-title {
+  color: var(--ant-cmp-steps-item-title-color);
+}
+.genux-steps
+  .ant-steps
+  .ant-steps-item.ant-steps-item[aria-disabled='true']:hover
+  .ant-steps-item-content {
+  color: var(--ant-cmp-steps-item-content-color);
+}
+.genux-steps
+  .ant-steps
+  .ant-steps-item.ant-steps-item[aria-disabled='true']:not(.ant-steps-item-custom):hover
+  .ant-steps-item-icon {
+  color: var(--ant-cmp-steps-item-icon-text-color);
+  background: var(--ant-cmp-steps-item-icon-bg-color);
+  border-color: var(--ant-cmp-steps-item-icon-border-color);
+}
+.genux-steps
+  .ant-steps
+  .ant-steps-item.ant-steps-item[aria-disabled='true'][aria-current='step']:not(
+    .ant-steps-item-custom
+  ):hover
+  .ant-steps-item-icon {
+  color: var(--ant-cmp-steps-item-icon-active-text-color);
+  background: var(--ant-cmp-steps-item-icon-active-bg-color);
+  border-color: var(--ant-cmp-steps-item-icon-active-border-color);
+}
+.genux-steps
+  .ant-steps
+  .ant-steps-item.ant-steps-item[aria-disabled='true'].ant-steps-item-custom:hover
+  .ant-steps-item-icon {
+  color: var(--ant-cmp-steps-item-icon-custom-color);
+}
+.genux-steps
+  .ant-steps
+  .ant-steps-item.ant-steps-item[aria-disabled='true'][aria-current='step']:hover
+  .ant-steps-item-content {
+  color: var(--ant-cmp-steps-item-content-active-color);
+}
+.genux-steps .ant-steps-item-wrapper,
+.genux-steps .ant-steps-item-section,
+.genux-steps .ant-steps-item-header {
+  min-width: 0;
+}
+.genux-steps .ant-steps-item-title,
+.genux-steps .ant-steps-item-content {
+  font-size: var(--text);
+  font-weight: var(--font-weight-body);
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+.genux-steps .ant-steps-item-title {
+  position: relative;
+}
+.genux-steps .ant-steps-item-content {
+  padding-block-end: var(--space-sm);
+}
+.genux-steps .ant-steps-filled .ant-steps-item:not(.ant-steps-item-custom) .ant-steps-item-icon {
+  color: var(--accent);
+  background: var(--soft);
+}
+.genux-steps
+  .ant-steps-filled
+  .ant-steps-item-wait:not(.ant-steps-item-custom)
+  .ant-steps-item-icon {
+  color: var(--muted);
+  background: var(--surface);
+}
+.genux-steps
+  .ant-steps-filled
+  .ant-steps-item-active:not(.ant-steps-item-custom)
+  .ant-steps-item-icon {
+  color: var(--selection-mark-ink, var(--ink));
+  background: var(--primary);
+}
+.genux-steps .ant-steps-outlined .ant-steps-item:not(.ant-steps-item-custom) .ant-steps-item-icon {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--panel);
+}
+.genux-steps
+  .ant-steps-outlined
+  .ant-steps-item-wait:not(.ant-steps-item-custom)
+  .ant-steps-item-icon {
+  color: var(--muted);
+  border-color: var(--control-boundary);
+}
+.genux-steps .ant-steps .ant-steps-item-error:not(.ant-steps-item-custom) .ant-steps-item-icon {
+  color: var(--error);
+  background: var(--panel);
+  border-color: var(--error);
+}
+.genux-steps .ant-steps .ant-steps-item-rail-wait {
+  border-color: var(--control-boundary);
+}
+.genux-steps .ant-steps .ant-steps-item-rail-process,
+.genux-steps .ant-steps .ant-steps-item-rail-finish {
+  border-color: var(--accent);
+}
+.genux-steps .ant-steps .ant-steps-item-rail-error {
+  border-color: var(--error);
+}
+/* Native6.6.6 owns geometry, but its all/inset/transform transitions must not
+   animate layout. Paint transitions run in both directions on shared tokens. */
+.genux-steps .ant-steps .ant-steps-item,
+.genux-steps .ant-steps .ant-steps-item-icon,
+.genux-steps .ant-steps .ant-steps-item-title,
+.genux-steps .ant-steps .ant-steps-item-content,
+.genux-steps .ant-steps .ant-steps-item-rail {
+  transition-property: color, background-color, border-color, opacity;
+  transition-duration: var(--motion-duration-standard);
+  transition-timing-function: var(--motion-easing);
+  transition-delay: var(--motion-delay);
+}
+.genux-steps .ant-steps .ant-steps-item[role='button']:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+.genux-steps .ant-steps-item[role='button']:focus-visible .ant-steps-item-title::after {
+  content: '';
+  position: absolute;
+  inset-inline-start: calc(-1 * var(--space-xs));
+  inset-block: 0;
+  width: var(--focus-marker);
+  background: currentColor;
+  pointer-events: none;
+}
+/* Native vertical-active navigation adds8classes of specificity. The pinned
+   native skin needs9here to retain one fixed edge in both orientations. */
+.genux-steps
+  .ant-steps.ant-steps.ant-steps-navigation
+  .ant-steps-item.ant-steps-item.ant-steps-item.ant-steps-item.ant-steps-item::before {
+  inset: var(--space-xs) auto var(--space-xs) 0;
+  width: var(--focus-marker);
+  height: auto;
+  background: var(--accent);
+  opacity: 0;
+  transition-property: opacity;
+  transition-duration: var(--motion-duration-standard);
+  transition-timing-function: var(--motion-easing);
+  transition-delay: var(--motion-delay);
+}
+.genux-steps
+  .ant-steps.ant-steps.ant-steps-navigation
+  .ant-steps-item.ant-steps-item.ant-steps-item.ant-steps-item.ant-steps-item-active::before {
+  opacity: 1;
+}
+.genux-steps
+  .ant-steps.ant-steps.ant-steps-navigation
+  .ant-steps-item.ant-steps-item.ant-steps-item.ant-steps-item {
+  justify-content: flex-start;
+  padding-inline: var(--space-sm);
+}
+.genux-steps
+  .ant-steps.ant-steps.ant-steps-navigation.ant-steps-vertical
+  .ant-steps-item:not(:last-child) {
+  padding-block-end: var(--space-md);
+}
+.genux-steps-sr-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+@media (prefers-reduced-motion: reduce) {
+  .genux-steps .ant-steps .ant-steps-item,
+  .genux-steps .ant-steps .ant-steps-item-icon,
+  .genux-steps .ant-steps .ant-steps-item-title,
+  .genux-steps .ant-steps .ant-steps-item-content,
+  .genux-steps .ant-steps .ant-steps-item-rail,
+  .genux-steps
+    .ant-steps.ant-steps.ant-steps-navigation
+    .ant-steps-item.ant-steps-item.ant-steps-item.ant-steps-item.ant-steps-item::before {
+    transition-duration: 0ms;
+  }
+}

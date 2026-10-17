@@ -2,6 +2,7 @@
 import DocsLayout from '../layouts/DocsLayout.astro';
 import DocumentationNav from '../components/DocumentationNav.astro';
 import { components } from '../data/catalog';
+import { genuxPageHref } from '../data/foundation-navigation';
 const sections = [
   { id: 'component-library', label: 'Component library' },
   { id: 'shared-foundation', label: 'Shared foundation' },
@@ -29,8 +30,8 @@ const foundations = [
     summary: 'Explore theme settings built on the shared tokens.',
   },
   {
-    href: '/genui/',
-    label: 'GenUI',
+    href: genuxPageHref(import.meta.env.BASE_URL),
+    label: 'GenUX',
     summary: 'Contracts, policy and the component registry for generated interfaces.',
   },
 ];
@@ -41,7 +42,7 @@ const foundations = [
   description="Flat 2.0 components: live Ant Design examples, variants and a technical API reference."
 >
   <p class="eyebrow">
-    <span data-i18n="ATLAS / TECHNICAL DOCUMENTATION">ATLAS / TECHNICAL DOCUMENTATION</span>
+    <span data-i18n="GENUX / TECHNICAL DOCUMENTATION">GENUX / TECHNICAL DOCUMENTATION</span>
   </p>
   <h1>
     <span class="page-heading-line" data-i18n="One language.">

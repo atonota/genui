@@ -589,7 +589,7 @@ function buildWorkspaceLab() {
     renderFormFeedback();
   }
 
-  document.addEventListener('atlas:localechange', () => {
+  document.addEventListener('genux:localechange', () => {
     renderProfiles();
     renderOrders();
     renderForm();

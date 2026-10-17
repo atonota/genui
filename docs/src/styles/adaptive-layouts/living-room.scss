@@ -32,7 +32,7 @@
 
 // Remote targets reach from the closest TV root down to a nested web shell or surface, which
 // keeps its own 48/56/64 roles. The outer control owns the target and wins over the web control
-// minima, AtlasButton's inline size included; AntD proxy inputs and slot actions stay inside
+// minima, GenUXButton's inline size included; AntD proxy inputs and slot actions stay inside
 // their painted wrapper, and checkbox, radio and switch artwork keep their graphic size.
 $tv-roots: ".adaptive-layout-living-room, [data-adaptive-surface='living-room']";
 $web-limits: '.adaptive-shell:not(.adaptive-layout-living-room), ' +
@@ -41,7 +41,7 @@ $web-limits: '.adaptive-shell:not(.adaptive-layout-living-room), ' +
 @scope (#{$tv-roots}) to (#{$web-limits}) {
   :where(
     a[href],
-    button:not(.ant-switch, .atlas-slot-button),
+    button:not(.ant-switch, .genux-slot-button),
     input:not(
       .ant-select-input,
       .ant-input-affix-wrapper > input,
@@ -58,20 +58,20 @@ $web-limits: '.adaptive-shell:not(.adaptive-layout-living-room), ' +
     .ant-input-affix-wrapper,
     .ant-input-number,
     .ant-picker
-  ):where(:not(.atlas-input-frame *)) {
+  ):where(:not(.genux-input-frame *)) {
     min-block-size: var(--adaptive-tv-target) !important;
   }
 
-  // An Atlas input well is the painted control and owns its height: the frame takes the remote
+  // An GenUX input well is the painted control and owns its height: the frame takes the remote
   // target through its height roles, so native children and slot actions size inside it.
-  :where(.atlas-input-frame[data-atlas-input]) {
-    --atlas-component-height: var(--adaptive-tv-target) !important;
-    --atlas-input-height: var(--adaptive-tv-target) !important;
+  :where(.genux-input-frame[data-genux-input]) {
+    --genux-component-height: var(--adaptive-tv-target) !important;
+    --genux-input-height: var(--adaptive-tv-target) !important;
     --control-h: var(--adaptive-tv-target) !important;
   }
 
   // Icon-only actions stay square at the remote target.
-  :where(.atlas-icon-button:not(.atlas-slot-button)) {
+  :where(.genux-icon-button:not(.genux-slot-button)) {
     min-inline-size: var(--adaptive-tv-target) !important;
   }
 

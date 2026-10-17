@@ -11,7 +11,7 @@ import { expect, test, type Locator, type Page, type TestInfo } from '@playwrigh
 
 const route = '/components/card/';
 const fallbackBaseUrl = 'http://127.0.0.1:4324';
-const themeStorageKey = 'atlas-theme';
+const themeStorageKey = 'genux-theme';
 const minimumTextPx = 14;
 const minimumTargetPx = 44;
 const componentRoute = /^\/components\/[a-z0-9]+(?:-[a-z0-9]+)*\/$/;

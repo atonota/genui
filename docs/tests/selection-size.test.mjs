@@ -15,7 +15,7 @@ for (const [entry, controlSelector] of [
       documentation: true,
     });
     t.after(() => h.dispose());
-    const owner = h.document.querySelector('.atlas-demo[data-size-profile]');
+    const owner = h.document.querySelector('.genux-demo[data-size-profile]');
     const control = h.document.querySelector(controlSelector);
     await h.click(control);
     const selected = control.getAttribute('aria-checked') ?? control.checked;
@@ -29,11 +29,11 @@ for (const [entry, controlSelector] of [
       await h.click(options[i]);
       assert.equal(owner.dataset.sizeProfile, size);
       assert.equal(
-        owner.style.getPropertyValue('--atlas-selection-height'),
+        owner.style.getPropertyValue('--genux-selection-height'),
         [32, 40, 50][i] + 'px',
       );
       assert.equal(
-        owner.style.getPropertyValue('--atlas-component-height'),
+        owner.style.getPropertyValue('--genux-component-height'),
         [48, 56, 64][i] + 'px',
       );
       assert.equal(h.document.querySelector(controlSelector), control);
@@ -58,9 +58,9 @@ for (const [entry, controlSelector] of [
 test('Checkbox geometry consumes the selection profile rather than Button minus 16 px', async () => {
   const css = await readFile('docs/src/styles/size-profiles.css', 'utf8');
   const owner = css.match(
-    /\.atlas-demo\[data-size-profile\]\[data-atlas-appearance='docs'\]\s*\{([^}]+)\}/,
+    /\.genux-demo\[data-size-profile\]\[data-genux-appearance='docs'\]\s*\{([^}]+)\}/,
   )[1];
-  assert.match(owner, /--checkbox-auto-size:\s*var\(--atlas-selection-height\)/);
+  assert.match(owner, /--checkbox-auto-size:\s*var\(--genux-selection-height\)/);
   assert.match(css, /--checkbox-size:\s*var\(--checkbox-auto-size\)/);
 });
 
@@ -68,7 +68,7 @@ test('Switch content width resolves the scaled icon size on its own owner', asyn
   const css = await readFile('docs/src/styles/web.css', 'utf8');
   assert.match(
     css,
-    /\.live-preview \.atlas-demo \.atlas-switch-with-content\.css-var-atlas-docs\s*\{\s*--switch-content-width:\s*var\(--switch-content-icon-size\)/,
+    /\.live-preview \.genux-demo \.genux-switch-with-content\.css-var-genux-docs\s*\{\s*--switch-content-width:\s*var\(--switch-content-icon-size\)/,
   );
 });
 
@@ -78,18 +78,18 @@ test('Switch hit extension and keyboard focus use independent pseudo elements', 
   assert.match(shared, /\.ant-switch:focus-visible::before\s*\{/);
   assert.match(
     css,
-    /\.live-preview \.atlas-demo \.ant-switch\.css-var-atlas-docs::after,\s*\.theme-toggle::before\s*\{/,
+    /\.live-preview \.genux-demo \.ant-switch\.css-var-genux-docs::after,\s*\.theme-toggle::before\s*\{/,
   );
   assert.doesNotMatch(
     css,
-    /\.live-preview \.atlas-demo \.ant-switch::before,\s*\.theme-toggle::before/,
+    /\.live-preview \.genux-demo \.ant-switch::before,\s*\.theme-toggle::before/,
   );
 });
 
 test('Switch loading icon scales and centers within the derived thumb', async () => {
   const sheet = postcss.parse(await readFile('docs/src/styles/web.css', 'utf8'));
   const selector =
-    ':root[data-theme] .live-preview .atlas-demo .ant-switch.css-var-atlas-docs .ant-switch-loading-icon';
+    ':root[data-theme] .live-preview .genux-demo .ant-switch.css-var-genux-docs .ant-switch-loading-icon';
   const rules = [];
   sheet.walkRules(rule => {
     if (rule.selectors.some(value => value.replace(/\s+/g, ' ').trim() === selector))
@@ -108,10 +108,10 @@ test('selection dimensions and unlabeled hit widths stay owned by docs in nested
   const fixture = `docs/tests/.selection-owner-${randomUUID()}.tsx`;
   await writeFile(
     fixture,
-    `import AtlasProvider from '../src/react/AtlasProvider';
+    `import GenUXProvider from '../src/react/GenUXProvider';
 import {Checkbox,Radio,Switch} from 'antd';
 function Controls(){return <><Checkbox aria-label="Select record"/><Radio aria-label="Choose record"/><Switch aria-label="Enable record"/></>;}
-export default function Fixture(){return <div className="live-preview"><AtlasProvider appearance="docs"><Controls/><AtlasProvider appearance="approved"><Controls/></AtlasProvider></AtlasProvider></div>;}`,
+export default function Fixture(){return <div className="live-preview"><GenUXProvider appearance="docs"><Controls/><GenUXProvider appearance="approved"><Controls/></GenUXProvider></GenUXProvider></div>;}`,
   );
   t.after(() => unlink(fixture));
   const h = await mountPattern('default', fixture);
@@ -121,9 +121,9 @@ export default function Fixture(){return <div className="live-preview"><AtlasPro
   });
   await h.click(h.document.querySelector('[data-tweaker-trigger]'));
   await h.click(h.document.querySelectorAll('[data-size-control] input')[2]);
-  const docsOwner = h.document.querySelector('[data-atlas-appearance="docs"][data-size-profile]');
+  const docsOwner = h.document.querySelector('[data-genux-appearance="docs"][data-size-profile]');
   const approvedOwner = docsOwner.querySelector(
-    '.atlas-demo[data-size-profile]:not([data-atlas-appearance])',
+    '.genux-demo[data-size-profile]:not([data-genux-appearance])',
   );
   assert.equal(docsOwner.dataset.sizeProfile, 'lg');
   assert.equal(approvedOwner.dataset.sizeProfile, 'lg');
@@ -138,12 +138,12 @@ export default function Fixture(){return <div className="live-preview"><AtlasPro
     });
     return result;
   };
-  assert.equal(ownerDeclarations(docsOwner)['--radio-size'], 'var(--atlas-selection-height)');
-  assert.equal(ownerDeclarations(docsOwner)['--switch-height'], 'var(--atlas-selection-height)');
-  assert.equal(ownerDeclarations(approvedOwner)['--radio-size'], 'var(--atlas-handle-size)');
+  assert.equal(ownerDeclarations(docsOwner)['--radio-size'], 'var(--genux-selection-height)');
+  assert.equal(ownerDeclarations(docsOwner)['--switch-height'], 'var(--genux-selection-height)');
+  assert.equal(ownerDeclarations(approvedOwner)['--radio-size'], 'var(--genux-handle-size)');
   assert.equal(
     ownerDeclarations(approvedOwner)['--switch-height'],
-    'var(--atlas-component-height)',
+    'var(--genux-component-height)',
   );
   const web = postcss.parse(await readFile('docs/src/styles/web.css', 'utf8'));
   const proportionalRules = [];

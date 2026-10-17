@@ -1,6 +1,6 @@
 import { useRef, useState, type ComponentRef, type MouseEvent } from 'react';
 import { Button } from 'antd';
-import AtlasPill, { AtlasPillColorScope } from './AtlasPill';
+import GenUXPill, { GenUXPillColorScope } from './GenUXPill';
 import { useI18n } from './useI18n';
 import type { PillVariant } from '../data/pill-surfaces';
 
@@ -19,7 +19,7 @@ export default function PillColorExample({
   const add = useRef<ComponentRef<typeof Button>>(null);
   function remove(event: MouseEvent, value: string) {
     if (event.currentTarget.contains(document.activeElement)) {
-      const actions = [...(list.current?.querySelectorAll<HTMLElement>('.atlas-pill-close') ?? [])];
+      const actions = [...(list.current?.querySelectorAll<HTMLElement>('.genux-pill-close') ?? [])];
       const index = actions.indexOf(event.currentTarget as HTMLElement);
       const target = actions[index + 1] ?? actions[index - 1];
       if (target) target.focus();
@@ -38,10 +38,10 @@ export default function PillColorExample({
           'A random first color, then a different least-used color. Existing labels keep their colors when you add or remove others.',
         )}
       </p>
-      <AtlasPillColorScope values={values}>
-        <div className="atlas-pill-list" ref={list}>
+      <GenUXPillColorScope values={values}>
+        <div className="genux-pill-list" ref={list}>
           {values.map(value => (
-            <AtlasPill
+            <GenUXPill
               key={value}
               colorKey={value}
               variant={variant}
@@ -50,10 +50,10 @@ export default function PillColorExample({
               onClose={event => remove(event, value)}
             >
               {label(value)}
-            </AtlasPill>
+            </GenUXPill>
           ))}
         </div>
-      </AtlasPillColorScope>
+      </GenUXPillColorScope>
       <div className="control-row">
         <Button
           ref={add}

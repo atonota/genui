@@ -8,8 +8,8 @@ async function fixture(t) {
   const file = `docs/tests/.steps-${randomUUID()}.tsx`;
   await writeFile(
     file,
-    `import {useState} from 'react';import AtlasProvider from '../src/react/AtlasProvider';import AtlasSteps from '../src/react/AtlasSteps';
-  export default function Demo(){const[current,setCurrent]=useState(0);const[calls,setCalls]=useState(0);return <AtlasProvider appearance="docs"><AtlasSteps label="Setup steps" orientation="vertical" current={current} onChange={i=>{setCurrent(i);setCalls(n=>n+1)}} items={[{key:'name',title:'Name',content:'Choose a name'},{key:'restricted',title:'Restricted',disabled:true},{key:'review',title:'Review'}]}/><output>{calls}</output></AtlasProvider>}`,
+    `import {useState} from 'react';import GenUXProvider from '../src/react/GenUXProvider';import GenUXSteps from '../src/react/GenUXSteps';
+  export default function Demo(){const[current,setCurrent]=useState(0);const[calls,setCalls]=useState(0);return <GenUXProvider appearance="docs"><GenUXSteps label="Setup steps" orientation="vertical" current={current} onChange={i=>{setCurrent(i);setCalls(n=>n+1)}} items={[{key:'name',title:'Name',content:'Choose a name'},{key:'restricted',title:'Restricted',disabled:true},{key:'review',title:'Review'}]}/><output>{calls}</output></GenUXProvider>}`,
   );
   const h = await mountPattern('default', file);
   t.after(async () => {
@@ -62,7 +62,7 @@ test('native step activation updates once, exposes current and disabled semantic
 });
 
 test('container and short-viewport adaptation preserve the native step nodes and keyboard focus', async t => {
-  const h = await mountPattern('default', 'docs/src/react/AtlasSteps.tsx', {
+  const h = await mountPattern('default', 'docs/src/react/GenUXSteps.tsx', {
     label: 'Adaptive steps',
     current: 1,
     onChange: () => {},
@@ -73,7 +73,7 @@ test('container and short-viewport adaptation preserve the native step nodes and
     ],
   });
   t.after(() => h.dispose());
-  const owner = h.document.querySelector('.atlas-steps');
+  const owner = h.document.querySelector('.genux-steps');
   const item = h.document.querySelectorAll('.ant-steps-item')[1];
   let revealed = 0;
   item.scrollIntoView = () => revealed++;
@@ -105,7 +105,7 @@ test('container and short-viewport adaptation preserve the native step nodes and
 
 test('global disabled blocks all native activation while error and explicit item status stay readable', async t => {
   let calls = 0;
-  const h = await mountPattern('default', 'docs/src/react/AtlasSteps.tsx', {
+  const h = await mountPattern('default', 'docs/src/react/GenUXSteps.tsx', {
     label: 'Blocked review',
     current: 1,
     status: 'error',

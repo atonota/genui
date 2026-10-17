@@ -10,9 +10,10 @@ import {
   type CSSProperties,
   type ReactNode,
 } from 'react';
-import AtlasButton from './AtlasButton';
-import AtlasSegmented from './AtlasSegmented';
-import AtlasIcon from './AtlasIcon';
+import { Switch } from 'antd';
+import GenUXButton from './GenUXButton';
+import GenUXSegmented from './GenUXSegmented';
+import GenUXIcon from './GenUXIcon';
 import DeviceFrame, { type DeviceFrameZoom } from './DeviceFrame';
 import InlinePreview from './InlinePreview';
 import {
@@ -72,7 +73,7 @@ const profileLabels: Record<PreviewProfile, string> = {
   tv: 'TV profile',
 };
 // Every option keeps the shared target height through the wrapper's own height role.
-const controlStyle = { '--atlas-segmented-height': 'var(--preview-control-size)' } as CSSProperties;
+const controlStyle = { '--genux-segmented-height': 'var(--preview-control-size)' } as CSSProperties;
 const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 // One default recipe, so an unedited example keeps a stable effective recipe.
 const defaultRecipe = createDefaultRecipe();
@@ -118,7 +119,7 @@ function focusInOwnWindow(target: HTMLElement | null | undefined) {
 
 /** Expand while it is offered, else the checked view radio; focus() keeps the input modality.
     Firefox can still ignore focus() on the visually hidden radio, so an ignored attempt falls
-    back to the always-operable Grid button. */
+    back to the always-operable Grid switch. */
 function focusReturnTarget(dialog: HTMLDialogElement | null) {
   const target =
     dialog?.querySelector<HTMLElement>('[data-preview-expand]') ??
@@ -134,6 +135,8 @@ function focusReturnTarget(dialog: HTMLDialogElement | null) {
 export default function PreviewWorkbench({ id, title, children }: PreviewWorkbenchProps) {
   const { t } = useI18n();
   const titleId = `${useId()}-title`;
+  // The visible Grid label names its switch through htmlFor.
+  const gridSwitchId = `${titleId}-grid`;
   const dialogRef = useRef<HTMLDialogElement>(null);
   const frame = usePreviewFrame({ id, title, anchorRef: dialogRef });
   const [view, setView] = useState<ExampleView>('preview');
@@ -237,8 +240,8 @@ export default function PreviewWorkbench({ id, title, children }: PreviewWorkben
       presentRef.current(false);
       returnFocus.current = false;
     };
-    document.addEventListener('genui-preview-show', show);
-    return () => document.removeEventListener('genui-preview-show', show);
+    document.addEventListener('genux-preview-show', show);
+    return () => document.removeEventListener('genux-preview-show', show);
   }, [id]);
 
   // showModal requires a closed dialog, so each switch closes first and suppresses that close.
@@ -333,7 +336,7 @@ export default function PreviewWorkbench({ id, title, children }: PreviewWorkben
           {t(title)}
         </p>
         {/* One Tab stop per radiogroup: the checked native radio; the root leaves the order. */}
-        <AtlasSegmented<ExampleView>
+        <GenUXSegmented<ExampleView>
           className="example-preview-view-tabs"
           aria-label={t('Example view')}
           tabIndex={-1}
@@ -348,7 +351,7 @@ export default function PreviewWorkbench({ id, title, children }: PreviewWorkben
         />
         {view === 'preview' && (
           <div className="example-preview-settings">
-            <AtlasSegmented<PreviewDevice>
+            <GenUXSegmented<PreviewDevice>
               aria-label={t('Device preview')}
               tabIndex={-1}
               size="sm"
@@ -365,7 +368,7 @@ export default function PreviewWorkbench({ id, title, children }: PreviewWorkben
                 ),
               }))}
             />
-            <AtlasSegmented<ThemeMode>
+            <GenUXSegmented<ThemeMode>
               aria-label={t('Preview theme')}
               tabIndex={-1}
               size="sm"
@@ -375,16 +378,16 @@ export default function PreviewWorkbench({ id, title, children }: PreviewWorkben
               options={[
                 {
                   value: 'light',
-                  label: <IconOption icon={<AtlasIcon name="sun" />} label={t('Light')} />,
+                  label: <IconOption icon={<GenUXIcon name="sun" />} label={t('Light')} />,
                 },
                 {
                   value: 'dark',
-                  label: <IconOption icon={<AtlasIcon name="moon" />} label={t('Dark')} />,
+                  label: <IconOption icon={<GenUXIcon name="moon" />} label={t('Dark')} />,
                 },
               ]}
             />
             {layout.manualActual && (
-              <AtlasButton
+              <GenUXButton
                 fill="outline"
                 size="sm"
                 text={t('Actual size 1:1')}
@@ -392,15 +395,19 @@ export default function PreviewWorkbench({ id, title, children }: PreviewWorkben
                 onClick={() => setZoom(zoom === 'fit' ? 'actual' : 'fit')}
               />
             )}
-            <AtlasButton
-              fill="outline"
-              size="sm"
-              data-preview-grid-control=""
-              text={t('Grid')}
-              aria-pressed={frame.grid}
-              onClick={() => frame.setGrid(!frame.grid)}
-            />
-            <AtlasButton
+            {/* The compact GenUX switch is the focusable Grid control; its label toggles it too. */}
+            <span className="example-preview-grid-switch">
+              <label htmlFor={gridSwitchId}>{t('Grid')}</label>
+              <Switch
+                id={gridSwitchId}
+                size="small"
+                data-selection-size="sm"
+                data-preview-grid-control=""
+                checked={frame.grid}
+                onChange={checked => frame.setGrid(checked)}
+              />
+            </span>
+            <GenUXButton
               fill="outline"
               size="sm"
               text={t('Rotate')}
@@ -409,7 +416,7 @@ export default function PreviewWorkbench({ id, title, children }: PreviewWorkben
             />
             {/* Close always stays while expanded; the wide MacBook already shows 1:1 inline. */}
             {(expanded || layout.inlineExpand) && (
-              <AtlasButton
+              <GenUXButton
                 fill="outline"
                 size="sm"
                 data-preview-expand=""
@@ -417,7 +424,7 @@ export default function PreviewWorkbench({ id, title, children }: PreviewWorkben
                 onClick={() => present(!expanded)}
               />
             )}
-            <AtlasButton fill="outline" size="sm" text={t('Open tweaker')} onClick={openTweaker} />
+            <GenUXButton fill="outline" size="sm" text={t('Open tweaker')} onClick={openTweaker} />
             <a href={frame.standaloneSrc} target="_blank" rel="noopener">
               {t('Open alone')}
             </a>
@@ -465,7 +472,7 @@ export default function PreviewWorkbench({ id, title, children }: PreviewWorkben
         >
           <div className="example-preview-message">
             {caption}
-            <AtlasButton
+            <GenUXButton
               fill="outline"
               size="sm"
               text={t('Back to Preview')}

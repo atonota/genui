@@ -1,0 +1,228 @@
+.genux-demo .genux-lab,
+.genux-demo .genux-session {
+  display: grid;
+  min-width: 0;
+  gap: var(--space-lg);
+}
+.genux-demo .genux-query-lab {
+  display: grid;
+  gap: var(--space-lg);
+  min-width: 0;
+  padding-block-start: var(--space-lg);
+}
+.genux-demo .genux-query-controls {
+  display: grid;
+  gap: var(--space-sm);
+  min-width: 0;
+  justify-items: start;
+}
+.genux-demo .genux-query-controls > .ant-select {
+  width: 100%;
+  min-width: 0;
+}
+.genux-demo .genux-lab-intro,
+.genux-demo .genux-run-strip,
+.genux-demo .genux-session-name,
+.genux-demo .genux-run-result,
+.genux-demo .genux-history {
+  display: grid;
+  min-width: 0;
+  gap: var(--space-sm);
+}
+.genux-demo .genux-lab :is(h4, p) {
+  margin: 0;
+}
+.genux-demo .genux-lab :is(.genux-lab-intro p, .genux-history p, .genux-local-note) {
+  color: var(--muted);
+}
+.genux-demo .genux-actions,
+.genux-demo .genux-session-strip,
+.genux-demo .genux-session-strip nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+  min-width: 0;
+}
+.genux-demo .genux-session-strip {
+  justify-content: space-between;
+}
+.genux-demo .genux-run-strip > .ant-select,
+.genux-demo .genux-history > .ant-select,
+.genux-demo .genux-session-name > .ant-input {
+  width: 100%;
+  min-width: 0;
+}
+.genux-demo .genux-run-result {
+  padding-inline-start: var(--space-md);
+  border-inline-start: var(--focus-marker) solid var(--line);
+}
+.genux-demo .genux-run-result[data-genux-run-status='error'] {
+  border-inline-start-color: var(--error);
+}
+.genux-demo .genux-evidence {
+  min-width: 0;
+}
+.genux-demo .genux-evidence-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition-property: grid-template-rows, opacity;
+  transition-duration: var(--motion-duration-standard);
+  transition-timing-function: var(--motion-easing);
+}
+.genux-demo .genux-evidence-panel[data-open='true'] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.genux-demo .genux-evidence-content {
+  min-height: 0;
+  overflow: hidden;
+}
+@media (prefers-reduced-motion: reduce) {
+  .genux-demo .genux-evidence-panel {
+    transition-duration: 0ms;
+  }
+}
+.genux-demo .genux-evidence dl,
+.genux-demo .genux-evidence dl > div {
+  display: grid;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+.genux-demo .genux-evidence dl {
+  gap: var(--space-sm);
+}
+.genux-demo .genux-evidence :is(dt, dd) {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.genux-demo .genux-evidence dt {
+  color: var(--muted);
+}
+.genux-demo :is(.genux-message-list, .genux-event-list) {
+  padding-inline-start: var(--space-lg);
+}
+.genux-demo :is(.genux-message-list, .genux-event-list) li {
+  margin-block: var(--space-sm);
+}
+.genux-demo :is(.genux-message-list, .genux-event-list) code {
+  display: block;
+  color: var(--muted);
+}
+.genux-demo .genux-session {
+  container: genux-session / inline-size;
+}
+.genux-demo .genux-hybrid-bar,
+.genux-demo .genux-hybrid-chat,
+.genux-demo .genux-hybrid-canvas {
+  display: grid;
+  align-content: start;
+  min-width: 0;
+  gap: var(--space-md);
+}
+.genux-demo .genux-scope {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: var(--space-sm) var(--space-lg);
+  min-width: 0;
+  margin: 0;
+}
+.genux-demo .genux-scope > div {
+  display: grid;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+.genux-demo .genux-scope :is(dt, dd) {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.genux-demo .genux-scope dt,
+.genux-demo .genux-lab .genux-hint {
+  color: var(--muted);
+}
+/* One composer and one canvas stay mounted; modes only change emphasis. */
+.genux-demo .genux-hybrid-layout {
+  --genux-conversation-block: 18rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: var(--space-lg);
+  min-width: 0;
+}
+.genux-demo .genux-session[data-hybrid-mode='do'] .genux-hybrid-layout {
+  --genux-conversation-block: 8rem;
+}
+.genux-demo .genux-session[data-hybrid-mode='chat'] .genux-hybrid-layout {
+  --genux-conversation-block: 32rem;
+}
+@container genux-session (min-width: 48rem) {
+  .genux-demo .genux-hybrid-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    transition-property: grid-template-columns;
+    transition-duration: var(--motion-duration-standard);
+    transition-timing-function: var(--motion-easing);
+  }
+  .genux-demo .genux-session[data-hybrid-mode='do'] .genux-hybrid-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  }
+  .genux-demo .genux-session[data-hybrid-mode='chat'] .genux-hybrid-layout {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .genux-demo .genux-hybrid-layout {
+    transition-duration: 0ms;
+  }
+}
+/* Sender is layout only: the GenUX field owns the well and its bottom focus edge. Its zero
+   geometry rests on the base; states only keep the paint cleared. */
+.genux-demo .genux-run-strip .genux-sender {
+  padding: 0;
+  border-width: 0;
+  border-radius: 0;
+}
+.genux-demo .genux-run-strip .genux-sender,
+.genux-demo .genux-run-strip .genux-sender:is(:hover, :focus-within) {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+.genux-demo .genux-run-strip .genux-sender-content {
+  padding: 0;
+  gap: var(--space-sm);
+}
+.genux-demo .genux-prompts {
+  min-width: 0;
+  color: inherit;
+  font: inherit;
+}
+.genux-demo .genux-prompts .genux-prompt-item {
+  padding: 0;
+  border-width: 0;
+}
+.genux-demo .genux-prompts .genux-prompt-item,
+.genux-demo .genux-prompts .genux-prompt-item:is(:hover, :active) {
+  background: transparent;
+  box-shadow: none;
+  cursor: auto;
+}
+.genux-demo .genux-bubble-list {
+  min-width: 0;
+  min-block-size: calc(var(--space-lg) * 2);
+  font: inherit;
+}
+.genux-demo .genux-bubble-list .genux-bubble-content {
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+  color: var(--ink);
+  font: inherit;
+}
+.genux-demo .genux-bubble-list .genux-bubble-content-user {
+  background: var(--paper);
+}
+.genux-demo .genux-bubble-list code {
+  color: var(--muted);
+  font-size: inherit;
+}

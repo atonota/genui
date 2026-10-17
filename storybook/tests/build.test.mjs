@@ -61,8 +61,8 @@ test('production index preserves every playground and exposes approved Button de
 });
 
 test('production carries local Outfit assets and compiled preview', async () => {
-  await access(new URL('atlas-assets/outfit-latin.woff2', output));
-  await access(new URL('atlas-assets/outfit-latin-ext.woff2', output));
+  await access(new URL('genux-assets/outfit-latin.woff2', output));
+  await access(new URL('genux-assets/outfit-latin-ext.woff2', output));
   const assets = await readdir(new URL('assets/', output));
   assert.ok(assets.some(name => name.endsWith('.css')));
   assert.ok(assets.some(name => name.endsWith('.js')));

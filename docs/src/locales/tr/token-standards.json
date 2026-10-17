@@ -1,6 +1,6 @@
 {
   "Token definitions and standards": "Token tanımları ve standartları",
-  "Token definitions and standards · Atlas Components": "Token tanımları ve standartları · Atlas Components",
+  "Token definitions and standards · GenUX Components": "Token tanımları ve standartları · GenUX Components",
   "Every Theme Builder token definition and the standards behind it, generated from the shared definitions.": "Theme Builder token tanımlarının tamamı ve dayandıkları standartlar; ortak tanımlardan üretilir.",
   "FOUNDATIONS / TOKEN STANDARDS": "TEMELLER / TOKEN STANDARTLARI",
   "Every token.": "Her token.",
@@ -101,6 +101,6 @@
   "Read-only metadata for state axes, measurement policy, layer order and surface recipes.": "Durum eksenleri, ölçü politikası, katman sırası ve yüzey tarifleri için salt okunur meta veriler.",
   "Shared easing, durations and delay.": "Ortak yumuşatma eğrisi, süreler ve gecikme.",
   "Status": "Durum",
-  "These definitions are documented standards. They are not full runtime acceptance or GenUI registrations, and not every CSS binding has been verified in every component at runtime.": "Bu tanımlar belgelenmiş standartlardır. Tam çalışma zamanı kabulü veya GenUI kaydı değildir ve her CSS bağlantısı her bileşende çalışma zamanında doğrulanmamıştır.",
+  "These definitions are documented standards. They are not full runtime acceptance or GenUX registrations, and not every CSS binding has been verified in every component at runtime.": "Bu tanımlar belgelenmiş standartlardır. Tam çalışma zamanı kabulü veya GenUX kaydı değildir ve her CSS bağlantısı her bileşende çalışma zamanında doğrulanmamıştır.",
   "Content on this page is generated statically. The shared documentation shell still initializes the theme store and applies persisted themes. Known Theme Builder server-rendering and first paint failures remain open.": "Bu sayfanın içeriği statik olarak üretilir. Ortak dokümantasyon kabuğu yine de tema deposunu başlatır ve saklanan temaları uygular. Bilinen Theme Builder sunucu tarafı oluşturma ve ilk boyama hataları hâlâ açıktır."
 }

@@ -2,11 +2,11 @@ import { selectedLabel } from './selectedLabel';
 import { useI18n } from './useI18n';
 import { useState, type ReactNode } from 'react';
 import { Select, Switch, Button } from 'antd';
-import atlas from '../data/atlas.json';
-import AtlasProvider from './AtlasProvider';
-import { TweakerSettings } from './AtlasTweaker';
-import AtlasPill, { AtlasCheckablePill } from './AtlasPill';
-import AtlasIcon from './AtlasIcon';
+import genux from '../data/genux.json';
+import GenUXProvider from './GenUXProvider';
+import { TweakerSettings } from './GenUXTweaker';
+import GenUXPill, { GenUXCheckablePill } from './GenUXPill';
+import GenUXIcon from './GenUXIcon';
 import PillIcon from './PillIcon';
 import PillColorExample from './PillColorExample';
 import ExamplePreview from './ExamplePreview';
@@ -22,7 +22,7 @@ const statuses = [
 ] as const;
 function StatusIcon({ name }: { name: string }) {
   return name === 'loading' ? (
-    <AtlasIcon name="loading" motion="spin" />
+    <GenUXIcon name="loading" motion="spin" />
   ) : (
     <PillIcon name={name as 'check-circle' | 'warning-circle' | 'x-circle' | 'clock'} />
   );
@@ -35,7 +35,7 @@ export default function PillDemo({ documentation = false }: { documentation?: bo
   const radius = radiusChoice ?? undefined;
   const radiusOptions = [
     { value: 'inherit', label: 'Use general radius' },
-    ...atlas.decisions.buttons.radius_variants,
+    ...genux.decisions.buttons.radius_variants,
   ];
   const [labels, setLabels] = useState(['Mühendislik', 'Operasyon']);
   const [variant, setVariant] = useState<PillVariant>('filled');
@@ -47,12 +47,12 @@ export default function PillDemo({ documentation = false }: { documentation?: bo
   const [checked, setChecked] = useState(['Design']);
   const [removed, setRemoved] = useState('');
   const basic = (
-    <div className="atlas-pill-list" data-pill-removable>
-      <AtlasPill radius={radius} colorIndex={0}>
+    <div className="genux-pill-list" data-pill-removable>
+      <GenUXPill radius={radius} colorIndex={0}>
         {t('Design')}
-      </AtlasPill>
+      </GenUXPill>
       {labels.map(label => (
-        <AtlasPill
+        <GenUXPill
           key={label}
           radius={radius}
           colorIndex={label === 'Mühendislik' ? 1 : 2}
@@ -63,18 +63,18 @@ export default function PillDemo({ documentation = false }: { documentation?: bo
           }}
         >
           {t(label === 'Mühendislik' ? 'Engineering' : 'Operations')}
-        </AtlasPill>
+        </GenUXPill>
       ))}
     </div>
   );
   const longText = (
-    <div className="atlas-pill-list">
-      <AtlasPill radius={radius} colorIndex={3} closable>
+    <div className="genux-pill-list">
+      <GenUXPill radius={radius} colorIndex={3} closable>
         {t('Istanbul corporate operations and engineering workspace')}
-      </AtlasPill>
-      <AtlasPill radius={radius} colorIndex={4} closable disabled>
+      </GenUXPill>
+      <GenUXPill radius={radius} colorIndex={4} closable disabled>
         {t('Disabled')}
-      </AtlasPill>
+      </GenUXPill>
     </div>
   );
   const settings = (
@@ -145,9 +145,9 @@ export default function PillDemo({ documentation = false }: { documentation?: bo
       content: (
         <ExamplePreview id="pill-playground" title={t('Playground')}>
           <div className="pill-playground">
-            <div className="atlas-pill-list">
+            <div className="genux-pill-list">
               {previewVisible ? (
-                <AtlasPill
+                <GenUXPill
                   variant={variant}
                   radius={radius}
                   color={statuses.some(s => s.color === color) ? color : undefined}
@@ -156,13 +156,13 @@ export default function PillDemo({ documentation = false }: { documentation?: bo
                       ? pillColorPresets.findIndex(p => p.value === color)
                       : undefined
                   }
-                  icon={icon ? <AtlasIcon name="check" /> : undefined}
+                  icon={icon ? <GenUXIcon name="check" /> : undefined}
                   closable={closable}
                   disabled={disabled}
                   onClose={() => setPreviewVisible(false)}
                 >
                   {t('Workspace label')}
-                </AtlasPill>
+                </GenUXPill>
               ) : (
                 <Button type="text" onClick={() => setPreviewVisible(true)}>
                   {t('Restore preview')}
@@ -188,14 +188,14 @@ export default function PillDemo({ documentation = false }: { documentation?: bo
             {pillVariants.map(surface => (
               <div className="example-block" key={surface}>
                 <h4>{t(surface)}</h4>
-                <div className="atlas-pill-list">
-                  <AtlasPill variant={surface} radius={radius}>
+                <div className="genux-pill-list">
+                  <GenUXPill variant={surface} radius={radius}>
                     {t('Current color scheme')}
-                  </AtlasPill>
+                  </GenUXPill>
                 </div>
-                <div className="atlas-pill-list" data-pill-status={surface}>
+                <div className="genux-pill-list" data-pill-status={surface}>
                   {statuses.map(status => (
-                    <AtlasPill
+                    <GenUXPill
                       key={status.color}
                       color={status.color}
                       variant={surface}
@@ -203,7 +203,7 @@ export default function PillDemo({ documentation = false }: { documentation?: bo
                       icon={<StatusIcon name={status.icon} />}
                     >
                       {t(status.label)}
-                    </AtlasPill>
+                    </GenUXPill>
                   ))}
                 </div>
               </div>
@@ -227,19 +227,19 @@ export default function PillDemo({ documentation = false }: { documentation?: bo
                   {surface === 'filled' ? t('Color sequence · 75% white / 5% black') : t(surface)}
                 </h4>
                 <div
-                  className="atlas-pill-list"
+                  className="genux-pill-list"
                   data-pill-palette={surface === 'filled' ? '' : undefined}
                   data-pill-presets={surface}
                 >
                   {pillColorPresets.map((preset, index) => (
-                    <AtlasPill
+                    <GenUXPill
                       key={preset.value}
                       variant={surface}
                       radius={radius}
                       colorIndex={index}
                     >
                       {t(preset.label)}
-                    </AtlasPill>
+                    </GenUXPill>
                   ))}
                 </div>
               </div>
@@ -259,7 +259,7 @@ export default function PillDemo({ documentation = false }: { documentation?: bo
           <ExamplePreview id="pill-icons" title={t('With icon')}>
             <div className="example-block">
               <h4>{t('With icon')}</h4>
-              <div className="atlas-pill-list">
+              <div className="genux-pill-list">
                 {(
                   [
                     { name: 'twitter-logo', label: 'Twitter', color: 10 },
@@ -268,41 +268,41 @@ export default function PillDemo({ documentation = false }: { documentation?: bo
                     { name: 'linkedin-logo', label: 'LinkedIn', color: 9 },
                   ] as const
                 ).map(item => (
-                  <AtlasPill
+                  <GenUXPill
                     key={item.name}
                     radius={radius}
                     colorIndex={item.color}
                     icon={<PillIcon name={item.name} />}
                   >
                     {item.label}
-                  </AtlasPill>
+                  </GenUXPill>
                 ))}
               </div>
-              <div className="atlas-pill-list">
-                <AtlasPill radius={radius} colorIndex={7} icon={<AtlasIcon name="check" />}>
+              <div className="genux-pill-list">
+                <GenUXPill radius={radius} colorIndex={7} icon={<GenUXIcon name="check" />}>
                   {t('Published')}
-                </AtlasPill>
-                <AtlasPill radius={radius} colorIndex={10} icon={<AtlasIcon name="download" />}>
+                </GenUXPill>
+                <GenUXPill radius={radius} colorIndex={10} icon={<GenUXIcon name="download" />}>
                   {t('Download')}
-                </AtlasPill>
-                <AtlasPill radius={radius} colorIndex={14} icon={<AtlasIcon name="lock-simple" />}>
+                </GenUXPill>
+                <GenUXPill radius={radius} colorIndex={14} icon={<GenUXIcon name="lock-simple" />}>
                   {t('Private')}
-                </AtlasPill>
+                </GenUXPill>
               </div>
             </div>
           </ExamplePreview>
           <ExamplePreview id="pill-custom-icons" title={t('Alternative and custom icons')}>
             <div className="example-block">
               <h4>{t('Alternative and custom icons')}</h4>
-              <div className="atlas-pill-list">
-                <AtlasPill
+              <div className="genux-pill-list">
+                <GenUXPill
                   radius={radius}
                   colorIndex={12}
-                  icon={<AtlasIcon library="antd" name="settings" />}
+                  icon={<GenUXIcon library="antd" name="settings" />}
                 >
                   {t('Settings')}
-                </AtlasPill>
-                <AtlasPill
+                </GenUXPill>
+                <GenUXPill
                   radius={radius}
                   colorIndex={4}
                   icon={
@@ -312,15 +312,15 @@ export default function PillDemo({ documentation = false }: { documentation?: bo
                   }
                 >
                   {t('Custom mark')}
-                </AtlasPill>
-                <AtlasPill
+                </GenUXPill>
+                <GenUXPill
                   radius={radius}
                   colorIndex={16}
                   icon={<PillIcon name="heart" />}
                   closable
                 >
                   {t('Favorite')}
-                </AtlasPill>
+                </GenUXPill>
               </div>
             </div>
           </ExamplePreview>
@@ -328,24 +328,24 @@ export default function PillDemo({ documentation = false }: { documentation?: bo
             <div className="example-block">
               <h4>{t('Semantic styling')}</h4>
               <div className="pill-semantic-group">
-                <AtlasPill
+                <GenUXPill
                   radius={radius}
                   colorIndex={9}
-                  icon={<AtlasIcon name="settings" />}
+                  icon={<GenUXIcon name="settings" />}
                   styles={{ content: { fontStyle: 'italic' } }}
                 >
                   {t('Object styles')}
-                </AtlasPill>
-                <AtlasPill
+                </GenUXPill>
+                <GenUXPill
                   radius={radius}
                   colorIndex={14}
-                  icon={<AtlasIcon name="check" />}
+                  icon={<GenUXIcon name="check" />}
                   styles={({ props }) => ({
                     content: { fontStyle: props.variant === 'filled' ? 'italic' : 'normal' },
                   })}
                 >
                   {t('Function styles')}
-                </AtlasPill>
+                </GenUXPill>
               </div>
             </div>
           </ExamplePreview>
@@ -363,14 +363,14 @@ export default function PillDemo({ documentation = false }: { documentation?: bo
           <ExamplePreview id="pill-checkable" title={t('Checkable tags with icon')}>
             <div className="example-block" data-pill-checkable>
               <h4>{t('Checkable tags with icon')}</h4>
-              <div className="atlas-pill-list">
+              <div className="genux-pill-list">
                 {['Design', 'Engineering', 'Operations'].map((label, index) => (
-                  <AtlasCheckablePill
+                  <GenUXCheckablePill
                     key={label}
                     radius={radius}
                     colorIndex={index * 5}
                     variant={variant}
-                    icon={<AtlasIcon name={checked.includes(label) ? 'check' : 'plus'} />}
+                    icon={<GenUXIcon name={checked.includes(label) ? 'check' : 'plus'} />}
                     checked={checked.includes(label)}
                     onChange={active =>
                       setChecked(current =>
@@ -379,9 +379,9 @@ export default function PillDemo({ documentation = false }: { documentation?: bo
                     }
                   >
                     {t(label)}
-                  </AtlasCheckablePill>
+                  </GenUXCheckablePill>
                 ))}
-                <AtlasCheckablePill
+                <GenUXCheckablePill
                   aria-label={t('Favorite')}
                   radius={radius}
                   colorIndex={3}
@@ -396,14 +396,14 @@ export default function PillDemo({ documentation = false }: { documentation?: bo
                     )
                   }
                 />
-                <AtlasCheckablePill
+                <GenUXCheckablePill
                   radius={radius}
                   checked
                   disabled
-                  icon={<AtlasIcon name="lock-simple" />}
+                  icon={<GenUXIcon name="lock-simple" />}
                 >
                   {t('Disabled')}
-                </AtlasCheckablePill>
+                </GenUXCheckablePill>
               </div>
               <p role="status">{t('{count} labels selected', { count: checked.length })}</p>
             </div>
@@ -443,23 +443,23 @@ export default function PillDemo({ documentation = false }: { documentation?: bo
                 <h4>
                   {t(size)} · {pillSizes[size]} px
                 </h4>
-                <div className="atlas-pill-list">
+                <div className="genux-pill-list">
                   {pillVariants.map((surface, index) => (
-                    <AtlasPill
+                    <GenUXPill
                       key={surface}
                       size={size}
                       variant={surface}
                       colorIndex={index * 6}
                       radius={index === 2 ? 'pill' : radius}
-                      icon={index > 0 ? <AtlasIcon name="check" /> : undefined}
+                      icon={index > 0 ? <GenUXIcon name="check" /> : undefined}
                       closable={index === 1}
                     >
                       {t(surface)}
-                    </AtlasPill>
+                    </GenUXPill>
                   ))}
-                  <AtlasPill size={size} radius={radius} disabled>
+                  <GenUXPill size={size} radius={radius} disabled>
                     {t('Disabled')}
-                  </AtlasPill>
+                  </GenUXPill>
                 </div>
               </div>
             ))}
@@ -469,7 +469,7 @@ export default function PillDemo({ documentation = false }: { documentation?: bo
     },
   ];
   return (
-    <AtlasProvider
+    <GenUXProvider
       appearance={documentation ? 'docs' : undefined}
       sizeFamily={documentation ? 'pill' : 'component'}
     >
@@ -514,6 +514,6 @@ export default function PillDemo({ documentation = false }: { documentation?: bo
           </>
         )}
       </div>
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }

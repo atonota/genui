@@ -1,106 +1,106 @@
 /* Buttons/fields and selection controls own separate shared height profiles. */
-.atlas-demo[data-size-profile] {
-  --control-height: var(--atlas-component-height);
-  --field-height: var(--atlas-component-height);
-  --atlas-handle-size: calc(var(--atlas-component-height) - 1rem);
-  --checkbox-auto-size: var(--atlas-handle-size);
+.genux-demo[data-size-profile] {
+  --control-height: var(--genux-component-height);
+  --field-height: var(--genux-component-height);
+  --genux-handle-size: calc(var(--genux-component-height) - 1rem);
+  --checkbox-auto-size: var(--genux-handle-size);
   --checkbox-size: var(--checkbox-auto-size);
-  --radio-size: var(--atlas-handle-size);
+  --radio-size: var(--genux-handle-size);
   --switch-min-height: 3rem;
-  --switch-auto-height: var(--atlas-component-height);
-  --switch-height: var(--atlas-component-height);
+  --switch-auto-height: var(--genux-component-height);
+  --switch-height: var(--genux-component-height);
 }
-.atlas-demo[data-size-profile][data-atlas-appearance='docs'] {
-  --checkbox-auto-size: var(--atlas-selection-height);
-  --radio-size: var(--atlas-selection-height);
-  --switch-min-height: var(--atlas-selection-height);
-  --switch-auto-height: var(--atlas-selection-height);
-  --switch-height: var(--atlas-selection-height);
+.genux-demo[data-size-profile][data-genux-appearance='docs'] {
+  --checkbox-auto-size: var(--genux-selection-height);
+  --radio-size: var(--genux-selection-height);
+  --switch-min-height: var(--genux-selection-height);
+  --switch-auto-height: var(--genux-selection-height);
+  --switch-height: var(--genux-selection-height);
 }
-.atlas-size-control {
+.genux-size-control {
   display: grid;
   gap: var(--space-xs);
   margin-block-end: var(--space-xl);
   min-width: 0;
 }
-.atlas-size-options {
-  --atlas-size-radius: var(--radius-round);
+.genux-size-options {
+  --genux-size-radius: var(--radius-round);
   max-width: 100%;
   overflow-x: auto;
-  border-radius: var(--atlas-size-radius);
+  border-radius: var(--genux-size-radius);
 }
-.atlas-size-options.ant-segmented-vertical {
-  --atlas-size-radius: var(--radius);
+.genux-size-options.ant-segmented-vertical {
+  --genux-size-radius: var(--radius);
 }
-.atlas-size-options .ant-segmented-item-label {
+.genux-size-options .ant-segmented-item-label {
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: var(--target-min);
   font-size: var(--text);
 }
-.atlas-size-options .ant-segmented-item,
-.atlas-size-options .ant-segmented-thumb {
-  border-radius: var(--atlas-size-radius);
+.genux-size-options .ant-segmented-item,
+.genux-size-options .ant-segmented-thumb {
+  border-radius: var(--genux-size-radius);
 }
 /* Field-well slots and framed natives take their geometry from the frame roles;
    :where keeps the existing specificity. */
-.atlas-demo[data-size-profile]
-  :is(.ant-btn, .atlas-button, .atlas-icon-button):where(:not(.atlas-slot-button)) {
-  min-height: var(--atlas-component-height);
+.genux-demo[data-size-profile]
+  :is(.ant-btn, .genux-button, .genux-icon-button):where(:not(.genux-slot-button)) {
+  min-height: var(--genux-component-height);
 }
-.atlas-demo[data-size-profile] .ant-input-number:where(:not(.atlas-input-frame *)),
-.atlas-demo[data-size-profile] .ant-select-single {
-  min-height: var(--atlas-component-height);
+.genux-demo[data-size-profile] .ant-input-number:where(:not(.genux-input-frame *)),
+.genux-demo[data-size-profile] .ant-select-single {
+  min-height: var(--genux-component-height);
 }
 /* Exact light blue needs the same dark foreground for selection marks as Buttons. */
 .live-preview
-  .atlas-demo[data-atlas-appearance='docs']
+  .genux-demo[data-genux-appearance='docs']
   .ant-checkbox:not(.ant-checkbox-disabled)::after {
   background-color: var(--docs-brand-on-primary);
 }
-.live-preview .atlas-demo[data-atlas-appearance='docs'] .ant-radio:not(.ant-radio-disabled)::after {
+.live-preview .genux-demo[data-genux-appearance='docs'] .ant-radio:not(.ant-radio-disabled)::after {
   background-color: var(--docs-brand-on-primary);
 }
 @media (any-pointer: coarse) {
-  .atlas-demo[data-size-profile] {
-    --atlas-handle-size: max(2.75rem, calc(var(--atlas-component-height) - 1rem));
+  .genux-demo[data-size-profile] {
+    --genux-handle-size: max(2.75rem, calc(var(--genux-component-height) - 1rem));
   }
 }
 /* Select popups portal outside their island, so the open trigger's profile selects the
    central regular row height. Rows start at that height and grow with wrapped text. */
-:root:has(.atlas-demo[data-size-profile] .ant-select-open)
-  .atlas-select-popup
+:root:has(.genux-demo[data-size-profile] .ant-select-open)
+  .genux-select-popup
   .ant-select-item-option {
   box-sizing: border-box;
   height: auto;
   padding-block: calc(var(--space-xs, 0px) / 2);
 }
-:root:has(.atlas-demo[data-size-profile='sm'] .ant-select-open)
-  .atlas-select-popup
+:root:has(.genux-demo[data-size-profile='sm'] .ant-select-open)
+  .genux-select-popup
   .ant-select-item-option {
   min-height: var(--size-sm, 3rem);
 }
-:root:has(.atlas-demo[data-size-profile='md'] .ant-select-open)
-  .atlas-select-popup
+:root:has(.genux-demo[data-size-profile='md'] .ant-select-open)
+  .genux-select-popup
   .ant-select-item-option {
   min-height: var(--size-md, 3.5rem);
 }
-:root:has(.atlas-demo[data-size-profile='lg'] .ant-select-open)
-  .atlas-select-popup
+:root:has(.genux-demo[data-size-profile='lg'] .ant-select-open)
+  .genux-select-popup
   .ant-select-item-option {
   min-height: var(--size-lg, 4rem);
 }
 /* Toasts, notifications and alerts render inside their island and inherit its profile;
    description-bearing containers start at that height and grow, never clip. */
-.atlas-demo[data-size-profile] .ant-message-notice-content {
+.genux-demo[data-size-profile] .ant-message-notice-content {
   box-sizing: border-box;
   display: inline-flex;
   align-items: center;
-  min-height: var(--atlas-component-height);
+  min-height: var(--genux-component-height);
   padding-block: 0;
 }
-.atlas-demo[data-size-profile] :is(.ant-alert, .ant-notification-notice) {
+.genux-demo[data-size-profile] :is(.ant-alert, .ant-notification-notice) {
   box-sizing: border-box;
-  min-height: var(--atlas-component-height);
+  min-height: var(--genux-component-height);
 }

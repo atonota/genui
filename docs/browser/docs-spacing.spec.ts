@@ -10,11 +10,11 @@ import { expect, test, type Locator, type Page, type TestInfo } from '@playwrigh
 // column either sits beside the showcase or stacks on the h1 edge. Assertions use landmarks,
 // section anchors and computed geometry only, and are
 // soft so every missing inset is reported in one run. Viewport screenshots are saved under
-// testInfo.outputPath, labelled with the source stage from ATLAS_SOURCE_STAGE.
+// testInfo.outputPath, labelled with the source stage from GENUX_SOURCE_STAGE.
 
 const fallbackBaseUrl = 'http://127.0.0.1:4324';
-const themeStorageKey = 'atlas-theme';
-const stage = (process.env.ATLAS_SOURCE_STAGE ?? 'unlabeled').replace(/[^a-z0-9-]+/gi, '-');
+const themeStorageKey = 'genux-theme';
+const stage = (process.env.GENUX_SOURCE_STAGE ?? 'unlabeled').replace(/[^a-z0-9-]+/gi, '-');
 const tolerancePx = 0.5;
 const alignTolerancePx = 1;
 const minimumChromeInsetPx = 16;
@@ -497,7 +497,7 @@ async function expectFrozenColors(page: Page, colors: (typeof frozenColors)[Mode
     [
       'search field well',
       page
-        .locator('.atlas-input-frame[data-atlas-input]')
+        .locator('.genux-input-frame[data-genux-input]')
         .filter({ has: page.locator('#component-search') }),
       colors.field,
     ],
@@ -663,11 +663,11 @@ async function focusPaint(target: Locator) {
   });
 }
 
-/** Outer border-box height of an md field well, from the shared Atlas size profile. */
+/** Outer border-box height of an md field well, from the shared GenUX size profile. */
 const mdFieldHeightPx = 56;
 
 /**
- * Paint of a search field: its `.atlas-input-frame[data-atlas-input]` paint owners, the shared
+ * Paint of a search field: its `.genux-input-frame[data-genux-input]` paint owners, the shared
  * frame paint and the native child. The general radius and the canonical inset shadow resolve
  * where the frame reads them, through a momentary out-of-flow probe. Geometry and paint are
  * read after the finite native animations of the containing dialog and the paint owners finish,
@@ -683,7 +683,7 @@ async function searchWell(search: Locator) {
       style.outlineStyle === 'none' ? 0 : parseFloat(style.outlineWidth);
     const owners: Element[] = [];
     for (let node = input.parentElement; node; node = node.parentElement)
-      if (node.matches('.atlas-input-frame[data-atlas-input]')) owners.push(node);
+      if (node.matches('.genux-input-frame[data-genux-input]')) owners.push(node);
     const scopes = [input.closest('dialog'), ...owners].filter(
       (scope): scope is Element => scope !== null,
     );
@@ -747,7 +747,7 @@ async function searchWell(search: Locator) {
  */
 async function expectSearchWell(search: Locator, field: string, label: string) {
   const rest = await searchWell(search);
-  expect.soft(rest.owners, `${label}: one .atlas-input-frame paint owner`).toBe(1);
+  expect.soft(rest.owners, `${label}: one .genux-input-frame paint owner`).toBe(1);
   const well = rest.well;
   if (well) {
     expect.soft(well.size, `${label}: well uses the md size profile`).toBe('md');
@@ -821,7 +821,7 @@ test('shell aesthetic: compact header, navigation rhythm and frozen colors', asy
     .toBeLessThanOrEqual(maximumHeaderHeightPx + tolerancePx);
   const expectedControls = [
     ['menu toggle', header.locator('button[data-docs-menu-toggle]')],
-    ['GenUI home wordmark', header.locator(`a[href='/']`)],
+    ['GenUX home wordmark', header.locator(`a[href='/']`)],
     ['EN · English', header.getByRole('button', { name: 'EN · English', exact: true })],
     ['TR · Turkish', header.getByRole('button', { name: 'TR · Turkish', exact: true })],
     ['dark theme switch', header.getByRole('switch')],
@@ -832,8 +832,8 @@ test('shell aesthetic: compact header, navigation rhythm and frozen colors', asy
     await expect.soft(control, `${label}: ${name} is visible`).toBeVisible();
   }
   await expect
-    .soft(header.locator(`a[href='/']`), `${label}: the home wordmark names GenUI`)
-    .toHaveAccessibleName(/GenUI/);
+    .soft(header.locator(`a[href='/']`), `${label}: the home wordmark names GenUX`)
+    .toHaveAccessibleName(/GenUX/);
   const { controls, text: readable } = await headerControls(header);
   expect.soft(controls.length, `${label}: header renders controls`).toBeGreaterThan(0);
   for (const control of controls) {

@@ -1,61 +1,61 @@
 /* Dropdown documentation reading order; menus retain their shared master skin. */
-.atlas-demo .dropdown-catalog {
+.genux-demo .dropdown-catalog {
   --dropdown-reading-width: 720px;
   --dropdown-column-min: 260px;
   display: grid;
   gap: var(--space-section);
   min-width: 0;
 }
-.atlas-demo .dropdown-catalog :is(h3, h4, p) {
+.genux-demo .dropdown-catalog :is(h3, h4, p) {
   margin: 0;
 }
-.atlas-demo .dropdown-navigation {
+.genux-demo .dropdown-navigation {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-xs) var(--space-xl);
 }
-.atlas-demo .dropdown-navigation a {
+.genux-demo .dropdown-navigation a {
   display: flex;
   align-items: center;
   min-height: var(--target-min);
 }
-.atlas-demo .dropdown-local-context,
-.atlas-demo .dropdown-section,
-.atlas-demo .dropdown-section > header {
+.genux-demo .dropdown-local-context,
+.genux-demo .dropdown-section,
+.genux-demo .dropdown-section > header {
   display: grid;
   gap: var(--space-sm);
   min-width: 0;
 }
-.atlas-demo .dropdown-local-context {
+.genux-demo .dropdown-local-context {
   padding-block-end: var(--space-lg);
   border-block-end: 1px solid var(--line);
 }
-.atlas-demo .dropdown-facts {
+.genux-demo .dropdown-facts {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: var(--space-sm);
 }
-.atlas-demo .dropdown-section {
+.genux-demo .dropdown-section {
   gap: var(--space-lg);
   scroll-margin-block-start: var(--space-lg);
 }
-.atlas-demo .dropdown-section h3,
-.atlas-demo .dropdown-local-context h3 {
+.genux-demo .dropdown-section h3,
+.genux-demo .dropdown-local-context h3 {
   font-size: var(--text-section);
 }
-.atlas-demo .dropdown-section h4 {
+.genux-demo .dropdown-section h4 {
   font-size: var(--text-large);
   font-weight: var(--font-weight-label);
 }
-.atlas-demo .dropdown-section > header > p:last-child,
-.atlas-demo .dropdown-guidance,
-.atlas-demo .dropdown-status,
-.atlas-demo .dropdown-notes {
+.genux-demo .dropdown-section > header > p:last-child,
+.genux-demo .dropdown-guidance,
+.genux-demo .dropdown-status,
+.genux-demo .dropdown-notes {
   max-width: var(--dropdown-reading-width);
   color: var(--muted);
 }
-.atlas-demo .dropdown-stage {
+.genux-demo .dropdown-stage {
   display: grid;
   justify-items: start;
   gap: var(--space-md);
@@ -64,14 +64,14 @@
   border-radius: var(--radius);
   background: var(--panel);
 }
-.atlas-demo .dropdown-surface-grid {
+.genux-demo .dropdown-surface-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--dropdown-column-min)), 1fr));
   align-items: start;
   gap: var(--space-lg);
   min-width: 0;
 }
-.atlas-demo .dropdown-notes ul {
+.genux-demo .dropdown-notes ul {
   margin: 0;
   padding-inline-start: var(--space-lg);
 }

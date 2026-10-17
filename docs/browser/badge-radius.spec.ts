@@ -1,16 +1,16 @@
 import { expect, test, type Locator, type Page, type TestInfo } from '@playwright/test';
 import definitions from '../src/theme-builder/definitions.json' with { type: 'json' };
 
-// Explicit user request (2026-10-15): an AtlasBadge catalog page with fixed 20/26/32 geometry,
+// Explicit user request (2026-10-15): an GenUXBadge catalog page with fixed 20/26/32 geometry,
 // and the general radius role edited as four choices without discarding numeric custom recipes.
-const origin = process.env.ATLAS_DOCS_ORIGIN ?? 'http://127.0.0.1:4324';
-const stage = (process.env.ATLAS_SOURCE_STAGE ?? 'unlabeled').replace(/[^a-z0-9-]/gi, '-');
+const origin = process.env.GENUX_DOCS_ORIGIN ?? 'http://127.0.0.1:4324';
+const stage = (process.env.GENUX_SOURCE_STAGE ?? 'unlabeled').replace(/[^a-z0-9-]/gi, '-');
 const badgeRoute = '/components/badge/';
 const inputRoute = '/components/input/';
 const buttonRoute = '/components/button/';
 const tokensRoute = '/tokens/';
-const RECIPE_KEY = 'atlas-theme-builder-v1';
-const THEME_KEY = 'atlas-theme';
+const RECIPE_KEY = 'genux-theme-builder-v1';
+const THEME_KEY = 'genux-theme';
 const radiusLabel = 'Radius MD';
 const radiusChoices = ['0px', '3px', '5px', '100%'];
 const radiusIds = ['radius-sm', 'radius-md', 'radius-lg'];
@@ -61,7 +61,7 @@ async function attachShot(page: Page, testInfo: TestInfo, name: string) {
 
 async function openTweaker(page: Page) {
   await page
-    .locator('.atlas-tweaker-trigger')
+    .locator('.genux-tweaker-trigger')
     .first()
     .getByRole('button', { name: 'Open tweaker' })
     .click();
@@ -113,8 +113,8 @@ function markField(page: Page) {
       .forEach(el => el.removeAttribute('data-radius-probe'));
     const shown = (el: Element) =>
       el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden';
-    const slot = [...document.querySelectorAll('.atlas-slot-button')].find(
-      el => !el.closest('.atlas-tweaker-panel') && shown(el),
+    const slot = [...document.querySelectorAll('.genux-slot-button')].find(
+      el => !el.closest('.genux-tweaker-panel') && shown(el),
     );
     let wrapper = slot?.parentElement ?? null;
     while (
@@ -149,10 +149,10 @@ function buttonRadii(page: Page) {
   return page.evaluate(() => {
     const shown = (el: Element) =>
       el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden';
-    const button = [...document.querySelectorAll('.atlas-button')].find(
+    const button = [...document.querySelectorAll('.genux-button')].find(
       el =>
-        !el.matches('.atlas-slot-button, .atlas-icon-button') &&
-        !el.closest('.atlas-tweaker-panel, .atlas-tweaker-trigger, [data-tweaker-settings]') &&
+        !el.matches('.genux-slot-button, .genux-icon-button') &&
+        !el.closest('.genux-tweaker-panel, .genux-tweaker-trigger, [data-tweaker-settings]') &&
         shown(el),
     );
     if (!button) return null;
@@ -180,23 +180,23 @@ test('Badge page: controlled native badges keep 20/26/32 geometry, Outfit 14/400
   const demo = page.locator('[data-demo=badge]');
   await expect(demo).toHaveCount(1);
   const caseOf = (id: string) => demo.locator(`[data-badge-case=${id}]`);
-  const bodyIn = (id: string) => caseOf(id).locator('.atlas-badge-body').first();
+  const bodyIn = (id: string) => caseOf(id).locator('.genux-badge-body').first();
 
   // Passive: label/count bodies, ribbon strips and the reserved dot box paint the profile height.
   async function expectGeometry(label: string) {
     for (const size of Object.keys(heights)) {
-      const root = caseOf(`size-${size}`).locator('.atlas-badge').first();
+      const root = caseOf(`size-${size}`).locator('.genux-badge').first();
       await expect(root, `${label}: size-${size} is a label`).toHaveAttribute('data-kind', 'label');
       await expect(root).toHaveAttribute('data-size', size);
     }
     await settle(page);
-    const painted = await demo.locator('.atlas-badge').evaluateAll(roots =>
+    const painted = await demo.locator('.genux-badge').evaluateAll(roots =>
       roots.map(root => {
         const kind = root.getAttribute('data-kind');
         const pick = (selector: string) =>
           root.matches(selector) ? root : root.querySelector(selector);
         const target =
-          kind === 'dot' ? root : pick(kind === 'ribbon' ? '.ant-ribbon' : '.atlas-badge-body');
+          kind === 'dot' ? root : pick(kind === 'ribbon' ? '.ant-ribbon' : '.genux-badge-body');
         return {
           kind,
           size: root.getAttribute('data-size') ?? '',
@@ -232,7 +232,7 @@ test('Badge page: controlled native badges keep 20/26/32 geometry, Outfit 14/400
   // wrap inside the viewport at 320 and desktop widths instead of touching or overlapping.
   async function expectLayout(label: string) {
     await settle(page);
-    const layout = await demo.locator('.atlas-badge-demo-group').evaluateAll(groups => {
+    const layout = await demo.locator('.genux-badge-demo-group').evaluateAll(groups => {
       type Box = { top: number; bottom: number; left: number; right: number };
       const painted = (el: Element) => {
         const rect = el.getBoundingClientRect();
@@ -243,7 +243,7 @@ test('Badge page: controlled native badges keep 20/26/32 geometry, Outfit 14/400
         return { top: rect.top, bottom: rect.bottom, left: rect.left, right: rect.right };
       };
       // An item's extent includes every painted badge part that overhangs its host.
-      const parts = '.atlas-badge-body, .ant-badge-dot, .ant-ribbon, .ant-scroll-number';
+      const parts = '.genux-badge-body, .ant-badge-dot, .ant-ribbon, .ant-scroll-number';
       const extent = (el: Element) =>
         [el, ...el.querySelectorAll(parts)]
           .filter(painted)
@@ -256,7 +256,7 @@ test('Badge page: controlled native badges keep 20/26/32 geometry, Outfit 14/400
           }));
       return groups.map(group => {
         const heading = group.querySelector(':scope > h3');
-        const row = group.querySelector(':scope > .atlas-badge-demo-row');
+        const row = group.querySelector(':scope > .genux-badge-demo-row');
         return {
           title: heading?.textContent?.trim() ?? '',
           heading: heading ? box(heading) : null,
@@ -311,7 +311,7 @@ test('Badge page: controlled native badges keep 20/26/32 geometry, Outfit 14/400
   await expectGeometry('default');
   await expectLayout('default');
 
-  const type = await demo.locator('.atlas-badge-body, .ant-ribbon-text').evaluateAll(nodes =>
+  const type = await demo.locator('.genux-badge-body, .ant-ribbon-text').evaluateAll(nodes =>
     nodes
       .filter(node => node.textContent?.trim())
       .map(node => {
@@ -332,7 +332,7 @@ test('Badge page: controlled native badges keep 20/26/32 geometry, Outfit 14/400
   }
 
   // The dot keeps its reserved profile box with a smaller native interior dot and no outline.
-  const dots = await demo.locator('.atlas-badge[data-kind=dot]').evaluateAll(roots =>
+  const dots = await demo.locator('.genux-badge[data-kind=dot]').evaluateAll(roots =>
     roots.map(root => {
       const dot = root.querySelector('.ant-badge-dot');
       const style = dot ? getComputedStyle(dot) : null;
@@ -354,7 +354,7 @@ test('Badge page: controlled native badges keep 20/26/32 geometry, Outfit 14/400
 
   const paints: string[] = [];
   for (const variant of ['solid', 'soft', 'outlined']) {
-    await expect(caseOf(`variant-${variant}`).locator('.atlas-badge').first()).toHaveAttribute(
+    await expect(caseOf(`variant-${variant}`).locator('.genux-badge').first()).toHaveAttribute(
       'data-variant',
       variant,
     );
@@ -396,11 +396,11 @@ test('Badge page: controlled native badges keep 20/26/32 geometry, Outfit 14/400
 
   for (const [id, host] of [
     ['attached-button', 'button'],
-    ['attached-avatar', '.ant-avatar, .atlas-avatar'],
+    ['attached-avatar', '.ant-avatar, .genux-avatar'],
   ] as const) {
     const hostBox = await caseOf(id).locator(host).first().boundingBox();
     const badgeBox = await caseOf(id)
-      .locator('.atlas-badge-body, .ant-badge-dot')
+      .locator('.genux-badge-body, .ant-badge-dot')
       .first()
       .boundingBox();
     expect(
@@ -422,7 +422,7 @@ test('Badge page: controlled native badges keep 20/26/32 geometry, Outfit 14/400
   await demo.getByRole('button', { name: 'Remove notification', exact: true }).click();
   await expect(counter).toHaveText('5');
   await demo.getByRole('button', { name: 'Clear notifications', exact: true }).click();
-  await expect(caseOf('dynamic-count').locator('.atlas-badge-body:visible')).toHaveCount(0);
+  await expect(caseOf('dynamic-count').locator('.genux-badge-body:visible')).toHaveCount(0);
   await demo.getByRole('button', { name: 'Add notification', exact: true }).click();
   await expect(counter).toHaveText('1');
 
@@ -458,7 +458,7 @@ test('Badge page: controlled native badges keep 20/26/32 geometry, Outfit 14/400
   const specific = (await dialog.locator('[data-tweaker-settings]').allInnerTexts()).join(' ');
   expect(specific, 'Badge Tweaker offers size').toMatch(/size/i);
   expect(specific, 'Badge Tweaker offers count position').toMatch(/position|offset/i);
-  await dialog.locator('.atlas-size-control .ant-segmented-item').nth(2).click();
+  await dialog.locator('.genux-size-control .ant-segmented-item').nth(2).click();
   await closeTweaker(page, dialog);
   await expectGeometry('lg profile');
 

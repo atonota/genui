@@ -122,7 +122,7 @@
   color: var(--ink);
 }
 .theme-toggle {
-  --theme-toggle-height: var(--atlas-selection-height-md);
+  --theme-toggle-height: var(--genux-selection-height-md);
   --theme-toggle-thumb-surface: #ffffff;
   --theme-toggle-off-surface: var(--field-bg);
   --theme-toggle-icon-size: 1.25rem;
@@ -141,7 +141,7 @@
   background: var(--docs-brand-primary);
   color: var(--docs-brand-on-primary);
 }
-.atlas-motion-layer.theme-toggle-thumb {
+.genux-motion-layer.theme-toggle-thumb {
   position: absolute;
   inset-block-start: var(--switch-track-padding);
   inline-size: var(--switch-handle-size);
@@ -160,7 +160,7 @@
   color: var(--docs-brand-on-primary);
   pointer-events: none;
 }
-.theme-toggle-icon .atlas-icon {
+.theme-toggle-icon .genux-icon {
   inline-size: var(--theme-toggle-icon-size);
   block-size: var(--theme-toggle-icon-size);
 }
@@ -189,7 +189,7 @@
   -webkit-backdrop-filter: blur(var(--overlay-backdrop-blur));
   backdrop-filter: blur(var(--overlay-backdrop-blur));
 }
-/* The sidebar search is the canonical .atlas-input-frame rendered by DocsNav; atlas-input.css
+/* The sidebar search is the canonical .genux-input-frame rendered by DocsNav; genux-input.css
    and focus-fields.css paint it from the shared field model, so the shell adds no well. */
 .sidebar-note {
   color: var(--muted);

@@ -18,7 +18,7 @@ const theme = await import(
 
 function environment(t) {
   const dom = new JSDOM('<!doctype html><html></html>', {
-    url: 'https://atlas.test/',
+    url: 'https://genux.test/',
     pretendToBeVisual: true,
   });
   const saved = new Map();
@@ -202,9 +202,9 @@ test('theme builder shadow and density edits reach the legacy CSS aliases', asyn
     );
   // Density moves space only: control heights and readable text stay fixed.
   for (const name of [
-    '--atlas-size-sm',
-    '--atlas-size-md',
-    '--atlas-size-lg',
+    '--genux-size-sm',
+    '--genux-size-md',
+    '--genux-size-lg',
     '--font-size-body',
     '--font-size-label',
     '--font-size-helper',

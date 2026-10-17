@@ -5,11 +5,22 @@ import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import postcss from 'postcss';
 import ts from 'typescript';
+import { fabMotionFailures, validateFabMotionOwner } from '../../tools/fab-motion-guard.mjs';
 
 const styles = resolve(dirname(fileURLToPath(import.meta.url)), '../src/styles');
 const sources = resolve(styles, '..');
 const storybook = resolve(sources, '../../.storybook');
 const stories = resolve(sources, '../../storybook');
+// The validated FAB factory emits these roles inline with bounded computed values. They are trusted
+// only in that one file, and FAB CSS only uses its delay role, after both FAB guards pass.
+const fabMotionOwner = resolve(sources, 'fab/motion.ts');
+const fabStylesheet = resolve(styles, 'genux-fab.css');
+const fabFactoryRoles = new Set([
+  '--fab-open-duration',
+  '--fab-close-duration',
+  '--fab-easing',
+  '--fab-delay',
+]);
 const transitionToken = '--control-transition-properties';
 const paintProperties = ['background-color', 'border-color', 'color', 'opacity', 'box-shadow'];
 // Provider-owned property lists are authored in TypeScript and emitted as inline
@@ -40,6 +51,38 @@ assert.ok(
   semanticPropertyValues.has('--docs-input-transition-properties'),
   'documentation inputs require a normal provider-owned transition property list',
 );
+// The overlay provider emits its motion roles inline. Read their actual literals from that one
+// owner; authored CSS still adds its own branches, so mixed, cyclic or unknown values fail.
+const overlayOwner = resolve(sources, 'data/overlay-tokens.ts');
+const overlayMotionRoles = new Map();
+function collectOverlayMotion(node) {
+  if (
+    ts.isPropertyAssignment(node) &&
+    ts.isStringLiteral(node.name) &&
+    /^--overlay-[a-z-]+$/.test(node.name.text) &&
+    /(?:^|-)(?:duration|easing|delay)(?:-|$)/.test(node.name.text.slice(2))
+  ) {
+    assert.ok(
+      ts.isStringLiteral(node.initializer),
+      `${node.name.text} must be an explicit literal in ${overlayOwner}`,
+    );
+    overlayMotionRoles.set(node.name.text, [
+      ...(overlayMotionRoles.get(node.name.text) ?? []),
+      node.initializer.text,
+    ]);
+  }
+  ts.forEachChild(node, collectOverlayMotion);
+}
+collectOverlayMotion(
+  ts.createSourceFile(
+    'overlay-tokens.ts',
+    await readFile(overlayOwner, 'utf8'),
+    ts.ScriptTarget.Latest,
+    true,
+  ),
+);
+for (const role of ['--overlay-open-duration', '--overlay-close-duration', '--overlay-easing'])
+  assert.ok(overlayMotionRoles.has(role), `${role} requires its provider-owned literal`);
 const motion = JSON.parse(await readFile(resolve(styles, '../data/motion.json'), 'utf8'));
 const motionDurations = new Map(
   Object.entries(motion.durationMs).map(([name, value]) => [
@@ -71,8 +114,176 @@ function parseStyles(files) {
   });
 }
 
-function inspectInlineMotion(source, path = 'fixture.tsx') {
+// The canonical provider may turn AntD motion off for its hydration render only. That one branch
+// is proven from the file's own syntax: a const flag read through React's useSyncExternalStore
+// with a non-live subscription, a client snapshot of true and a server snapshot of false, which
+// selects the owned theme once hydrated and otherwise a copy that changes only token.motion.
+function unparenthesized(node) {
+  while (node && ts.isParenthesizedExpression(node)) node = node.expression;
+  return node;
+}
+
+function parentExpression(node) {
+  let parent = node?.parent;
+  while (parent && ts.isParenthesizedExpression(parent)) parent = parent.parent;
+  return parent;
+}
+
+// A helper resolves only when the file declares that name once, as a function or const function.
+function topLevelFunction(file, name) {
+  const found = [];
+  for (const statement of file.statements) {
+    if (ts.isFunctionDeclaration(statement) && statement.name?.text === name) found.push(statement);
+    if (!ts.isVariableStatement(statement)) continue;
+    for (const declaration of statement.declarationList.declarations) {
+      if (!ts.isIdentifier(declaration.name) || declaration.name.text !== name) continue;
+      const initializer = unparenthesized(declaration.initializer);
+      found.push(
+        statement.declarationList.flags & ts.NodeFlags.Const &&
+          initializer &&
+          (ts.isArrowFunction(initializer) || ts.isFunctionExpression(initializer))
+          ? initializer
+          : undefined,
+      );
+    }
+  }
+  return found.length === 1 ? found[0] : undefined;
+}
+
+function returnedExpression(fn) {
+  if (!fn?.body) return undefined;
+  if (!ts.isBlock(fn.body)) return unparenthesized(fn.body);
+  const [statement, ...rest] = fn.body.statements;
+  return statement && !rest.length && ts.isReturnStatement(statement)
+    ? unparenthesized(statement.expression)
+    : undefined;
+}
+
+function emptyFunction(node) {
+  return (
+    node !== undefined &&
+    (ts.isArrowFunction(node) || ts.isFunctionExpression(node)) &&
+    (ts.isBlock(node.body)
+      ? node.body.statements.length === 0
+      : ts.isIdentifier(node.body) && node.body.text === 'undefined')
+  );
+}
+
+function constantSnapshot(fn, kind) {
+  return fn !== undefined && fn.parameters.length === 0 && returnedExpression(fn)?.kind === kind;
+}
+
+function hydrationMotionGate(node, file) {
+  const tokenObject = node.parent;
+  const tokenProperty = parentExpression(tokenObject);
+  const themeObject = tokenProperty?.parent;
+  const choice = parentExpression(themeObject);
+  if (
+    !ts.isObjectLiteralExpression(tokenObject) ||
+    tokenObject.properties.length !== 2 ||
+    !tokenProperty ||
+    !ts.isPropertyAssignment(tokenProperty) ||
+    !(ts.isIdentifier(tokenProperty.name) || ts.isStringLiteral(tokenProperty.name)) ||
+    tokenProperty.name.text !== 'token' ||
+    unparenthesized(tokenProperty.initializer) !== tokenObject ||
+    !themeObject ||
+    !ts.isObjectLiteralExpression(themeObject) ||
+    themeObject.properties.length !== 2 ||
+    !choice ||
+    !ts.isConditionalExpression(choice) ||
+    unparenthesized(choice.whenFalse) !== themeObject
+  )
+    return false;
+  // Ready selects the owned theme itself; the fallback spreads it and its token unchanged.
+  const owned = unparenthesized(choice.whenTrue);
+  const flag = unparenthesized(choice.condition);
+  const tokenSpread = tokenObject.properties.find(property => property !== node);
+  const themeSpread = themeObject.properties.find(property => property !== tokenProperty);
+  if (
+    !ts.isIdentifier(owned) ||
+    !ts.isIdentifier(flag) ||
+    !tokenSpread ||
+    !ts.isSpreadAssignment(tokenSpread) ||
+    !themeSpread ||
+    !ts.isSpreadAssignment(themeSpread)
+  )
+    return false;
+  const tokenSource = unparenthesized(tokenSpread.expression);
+  const themeSource = unparenthesized(themeSpread.expression);
+  if (
+    !ts.isIdentifier(themeSource) ||
+    themeSource.text !== owned.text ||
+    !ts.isPropertyAccessExpression(tokenSource) ||
+    tokenSource.name.text !== 'token' ||
+    !ts.isIdentifier(unparenthesized(tokenSource.expression)) ||
+    unparenthesized(tokenSource.expression).text !== owned.text
+  )
+    return false;
+  // The flag is the enclosing component's one const read of React's external-store hook.
+  let scope = choice.parent;
+  while (scope && !ts.isFunctionLike(scope)) scope = scope.parent;
+  if (
+    !scope?.body ||
+    scope.parameters.some(
+      parameter => ts.isIdentifier(parameter.name) && parameter.name.text === flag.text,
+    )
+  )
+    return false;
+  const declarations = [];
+  const collect = child => {
+    if (ts.isFunctionLike(child)) return;
+    if (
+      ts.isVariableDeclaration(child) &&
+      ts.isIdentifier(child.name) &&
+      child.name.text === flag.text
+    )
+      declarations.push(child);
+    ts.forEachChild(child, collect);
+  };
+  ts.forEachChild(scope.body, collect);
+  const [declaration] = declarations;
+  const read = unparenthesized(declaration?.initializer);
+  if (
+    declarations.length !== 1 ||
+    !(declaration.parent.flags & ts.NodeFlags.Const) ||
+    !read ||
+    !ts.isCallExpression(read) ||
+    !ts.isIdentifier(read.expression) ||
+    read.expression.text !== 'useSyncExternalStore' ||
+    read.arguments.length !== 3 ||
+    !read.arguments.every(argument => ts.isIdentifier(argument))
+  )
+    return false;
+  const reactHook = file.statements.some(
+    statement =>
+      ts.isImportDeclaration(statement) &&
+      !statement.importClause?.isTypeOnly &&
+      ts.isStringLiteral(statement.moduleSpecifier) &&
+      statement.moduleSpecifier.text === 'react' &&
+      statement.importClause?.namedBindings !== undefined &&
+      ts.isNamedImports(statement.importClause.namedBindings) &&
+      statement.importClause.namedBindings.elements.some(
+        element =>
+          !element.propertyName &&
+          !element.isTypeOnly &&
+          element.name.text === 'useSyncExternalStore',
+      ),
+  );
+  const [subscribe, client, server] = read.arguments.map(argument =>
+    topLevelFunction(file, argument.text),
+  );
+  return (
+    reactHook &&
+    emptyFunction(returnedExpression(subscribe)) &&
+    constantSnapshot(client, ts.SyntaxKind.TrueKeyword) &&
+    constantSnapshot(server, ts.SyntaxKind.FalseKeyword)
+  );
+}
+
+function inspectInlineMotion(source, path = 'fixture.tsx', trustedRoles = new Set()) {
   const issues = [];
+  // Factory role trust is bound to the one validated owner file, never to a caller-chosen path.
+  const trusted = path === fabMotionOwner ? trustedRoles : new Set();
   const file = ts.createSourceFile(path, source, ts.ScriptTarget.Latest, true);
   const directMotion =
     /^(?:transition(?:Property|Duration|TimingFunction|Delay)?|animation(?:Name|Duration|TimingFunction|Delay|IterationCount|Direction|FillMode|PlayState)?|(?:transition|animation)(?:-[a-z]+)*)$/;
@@ -103,13 +314,14 @@ function inspectInlineMotion(source, path = 'fixture.tsx') {
               (ts.isPropertyAssignment(node) &&
                 (node.initializer.kind === ts.SyntaxKind.FalseKeyword ||
                   node.initializer.kind === ts.SyntaxKind.TrueKeyword))))) &&
-        (path !== resolve(sources, 'react/AtlasProvider.tsx') ||
+        (path !== resolve(sources, 'react/GenUXProvider.tsx') ||
           (name.text === 'motion' &&
             ts.isPropertyAssignment(node) &&
-            node.initializer.kind === ts.SyntaxKind.FalseKeyword))
+            node.initializer.kind === ts.SyntaxKind.FalseKeyword &&
+            !hydrationMotionGate(node, file)))
       ) {
         issues.push(
-          `${path}:${file.getLineAndCharacterOfPosition(node.getStart(file)).line + 1} ${name.text}: native motion configuration belongs to the canonical AtlasProvider`,
+          `${path}:${file.getLineAndCharacterOfPosition(node.getStart(file)).line + 1} ${name.text}: native motion configuration belongs to the canonical GenUXProvider`,
         );
       }
       if (
@@ -127,9 +339,10 @@ function inspectInlineMotion(source, path = 'fixture.tsx') {
             ? [...motionDurations.keys()].map(token => `var(${token})`)
             : [`var(--motion-${kind})`];
         if (
-          !ts.isPropertyAssignment(node) ||
-          !ts.isStringLiteral(node.initializer) ||
-          !allowed.includes(node.initializer.text)
+          !trusted.has(name.text) &&
+          (!ts.isPropertyAssignment(node) ||
+            !ts.isStringLiteral(node.initializer) ||
+            !allowed.includes(node.initializer.text))
         )
           issues.push(
             `${path}:${file.getLineAndCharacterOfPosition(node.getStart(file)).line + 1} ${name.text}: inline motion aliases must reference canonical tokens`,
@@ -172,9 +385,9 @@ function decorativeMotion(selector) {
   // Only the target can opt in; a marked ancestor must not exempt a control.
   const target = postcss.list.space(selector).at(-1)?.split(/[>+~]/).at(-1) ?? '';
   return (
-    /^\.atlas-motion-layer(?:$|[.:#\[])/.test(target) ||
-    /^\.(?:ant-switch-handle|atlas-button-lip)(?:$|[.:#\[])/.test(target) ||
-    /^\.(?:atlas-button|ant-btn-primary)[^\s]*::(?:before|after)$/.test(target)
+    /^\.genux-motion-layer(?:$|[.:#\[])/.test(target) ||
+    /^\.(?:ant-switch-handle|genux-button-lip)(?:$|[.:#\[])/.test(target) ||
+    /^\.(?:genux-button|ant-btn-primary)[^\s]*::(?:before|after)$/.test(target)
   );
 }
 
@@ -187,19 +400,38 @@ function inspect(sheets) {
   const propertyValues = new Map(
     [...semanticPropertyValues].map(([name, values]) => [name, [...values]]),
   );
+  // Authored variables may carry whole transition clauses; reduced-motion overrides stay out.
+  const shorthandValues = new Map();
   for (const sheet of sheets)
     sheet.walkDecls(declaration => {
+      if (declaration.prop.startsWith('--') && !reducedMotion(declaration)) {
+        const authored = shorthandValues.get(declaration.prop) ?? [];
+        authored.push(declaration.value);
+        shorthandValues.set(declaration.prop, authored);
+      }
       if (!/^--[\w-]+transition-properties$/.test(declaration.prop)) return;
       const values = propertyValues.get(declaration.prop) ?? [];
       values.push(declaration.value);
       propertyValues.set(declaration.prop, values);
     });
-  const clauses = (value, visited = new Set()) =>
+  const clauses = (value, shorthand, visited = new Set()) =>
     postcss.list.comma(value).flatMap(clause => {
       const name = /^var\((--[\w-]+)\)$/.exec(clause)?.[1];
-      if (!name || visited.has(name) || !propertyValues.has(name)) return [clause];
-      const next = new Set(visited).add(name);
-      const resolved = propertyValues.get(name).flatMap(value => clauses(value, next));
+      if (name && !visited.has(name) && propertyValues.has(name)) {
+        const next = new Set(visited).add(name);
+        const resolved = propertyValues.get(name).flatMap(value => clauses(value, shorthand, next));
+        return resolved.some(value => value.toLowerCase() === 'none') ? [clause] : resolved;
+      }
+      // A shorthand clause may be one whole alias. Every authored value and the fallback expand
+      // and are checked; unknown, cyclic or none-valued aliases stay unresolved and fail.
+      const reference = shorthand ? varReference(clause) : undefined;
+      if (!reference || reference.name.startsWith('--motion-') || visited.has(reference.name))
+        return [clause];
+      const branches = [...(shorthandValues.get(reference.name) ?? [])];
+      if (reference.fallback !== undefined) branches.push(reference.fallback);
+      if (!branches.length) return [clause];
+      const next = new Set(visited).add(reference.name);
+      const resolved = branches.flatMap(value => clauses(value, shorthand, next));
       return resolved.some(value => value.toLowerCase() === 'none') ? [clause] : resolved;
     });
 
@@ -240,14 +472,14 @@ function inspect(sheets) {
       }
       const prop = declaration.prop.replace(/^-(?:webkit|moz|ms|o)-/, '');
       if (prop !== 'transition' && prop !== 'transition-property') return;
-      for (const clause of clauses(declaration.value)) {
+      for (const clause of clauses(declaration.value, prop === 'transition')) {
         const first = postcss.list.space(clause)[0];
         const keyword = first.toLowerCase();
         if (keyword === 'none' && postcss.list.comma(declaration.value).length === 1) continue;
         if (
           keyword === 'all' ||
           keyword === 'none' ||
-          !/^(?:--)?[a-z][\w-]*$/i.test(first) ||
+          !/^(?:--|-(?:webkit|moz|ms|o)-)?[a-z][\w-]*$/i.test(first) ||
           /^(?:initial|inherit|unset|revert|revert-layer|ease|linear|ease-in|ease-out|ease-in-out|step-start|step-end|normal|allow-discrete)$/.test(
             keyword,
           )
@@ -336,6 +568,26 @@ function motionProperties(rule, kind) {
   return properties.filter(property => property !== 'none');
 }
 
+// Native rc-motion phase classes (X-appear-active, X-enter-active, X-leave-active) are lifecycle
+// steps. Enter and appear pair with leave; the swap renames only that motion's own phase classes.
+function phaseCounterparts(selector) {
+  const match = /\.([\w-]+-)(appear|enter|leave)-active(?![\w-])/.exec(selector);
+  if (!match) return [];
+  const [, prefix, phase] = match;
+  return (phase === 'leave' ? ['enter', 'appear'] : ['leave']).map(other =>
+    selector
+      .replace(/\.([\w-]+)/g, (whole, name) =>
+        name === `${prefix}${phase}`
+          ? `.${prefix}${other}`
+          : name === `${prefix}${phase}-active`
+            ? `.${prefix}${other}-active`
+            : whole,
+      )
+      .replace(/\s+/g, ' ')
+      .trim(),
+  );
+}
+
 function inspectStateOwners(sheets) {
   const owners = [];
   const states = [];
@@ -353,11 +605,33 @@ function inspectStateOwners(sheets) {
       }
     });
   const issues = [];
+  const phaseRules = new Map();
+  for (const { rule, selector } of states) {
+    const key = selector.replace(/\s+/g, ' ').trim();
+    phaseRules.set(key, [...(phaseRules.get(key) ?? []), rule]);
+  }
+  const longhands = (rule, kind) =>
+    rule.nodes
+      .filter(
+        node => node.type === 'decl' && (node.prop === kind || node.prop.startsWith(`${kind}-`)),
+      )
+      .map(node => node.prop)
+      .sort()
+      .join();
   for (const { rule, selector } of states) {
     for (const kind of ['transition', 'animation']) {
       if (
         !rule.nodes.some(
           node => node.type === 'decl' && (node.prop === kind || node.prop.startsWith(`${kind}-`)),
+        )
+      )
+        continue;
+      // A native phase pairs with its opposite phase only when both declare the same motion
+      // longhands; otherwise it still needs a matching base owner like any other state.
+      const own = longhands(rule, kind);
+      if (
+        phaseCounterparts(selector).some(other =>
+          (phaseRules.get(other) ?? []).some(match => longhands(match, kind) === own),
         )
       )
         continue;
@@ -399,9 +673,18 @@ function inspectStateOwners(sheets) {
   return issues;
 }
 
-function inspectMotion(sheets, requireFoundation = true) {
+// var(--alias) or var(--alias, fallback); a nested var() fallback stays whole.
+function varReference(value) {
+  const match = /^var\(\s*(--[\w-]+)\s*(?:,\s*([\s\S]+?))?\s*\)$/.exec(value);
+  return match ? { name: match[1], fallback: match[2] } : undefined;
+}
+
+function inspectMotion(sheets, requireFoundation = true, trust = {}) {
   const issues = [];
-  const variables = new Map();
+  // Inline provider roles from one validated owner seed the resolver; authored CSS adds branches.
+  const variables = new Map(
+    [...(trust.inlineRoles ?? [])].map(([name, values]) => [name, [...values]]),
+  );
   const declarations = sheets.flatMap(sheet => {
     const items = [];
     sheet.walkDecls(declaration => {
@@ -423,15 +706,65 @@ function inspectMotion(sheets, requireFoundation = true) {
     const literal = /^(-?(?:\d+(?:\.\d*)?|\.\d+))(ms|s)$/.exec(value);
     if (literal)
       return [{ milliseconds: Number(literal[1]) * (literal[2] === 's' ? 1000 : 1), canonical }];
-    const name = /^var\((--[\w-]+)\)$/.exec(value)?.[1];
-    if (!name || seen.has(name)) return [];
-    return (variables.get(name) ?? []).flatMap(alias =>
-      resolveTime(alias, new Set([...seen, name]), canonical || motionDurations.has(name)),
+    const reference = varReference(value);
+    if (!reference || seen.has(reference.name)) return [];
+    // Every authored value and the fallback must resolve; an unknown or cyclic branch fails the alias.
+    const next = new Set([...seen, reference.name]);
+    const branches = (variables.get(reference.name) ?? []).map(alias =>
+      resolveTime(alias, next, canonical || motionDurations.has(reference.name)),
     );
+    if (reference.fallback !== undefined)
+      branches.push(resolveTime(reference.fallback, next, canonical));
+    return branches.length && branches.every(times => times.length) ? branches.flat() : [];
   };
   const positive = value => {
     const times = resolveTime(value);
     return times.length > 0 && times.every(time => time.milliseconds > 0 && time.canonical);
+  };
+  // An easing alias is shared only when every authored value and fallback ends at the central token.
+  const sharedEasing = (value, seen = new Set()) => {
+    if (value === 'var(--motion-easing)') return true;
+    const reference = varReference(value);
+    if (!reference || reference.name.startsWith('--motion-') || seen.has(reference.name))
+      return false;
+    const next = new Set([...seen, reference.name]);
+    const branches = [...(variables.get(reference.name) ?? [])];
+    if (reference.fallback !== undefined) branches.push(reference.fallback);
+    return branches.length > 0 && branches.every(branch => sharedEasing(branch, next));
+  };
+  // A whole transition/animation clause may be one authored alias; every authored value and the
+  // fallback expand and are checked, while unknown or cyclic aliases stay unresolved and fail.
+  const wholeClauses = (value, seen = new Set()) =>
+    postcss.list.comma(value).flatMap(clause => {
+      const reference = varReference(clause);
+      if (!reference || reference.name.startsWith('--motion-') || seen.has(reference.name))
+        return [clause];
+      const branches = [...(variables.get(reference.name) ?? [])];
+      if (reference.fallback !== undefined) branches.push(reference.fallback);
+      if (!branches.length) return [clause];
+      const next = new Set([...seen, reference.name]);
+      return branches.flatMap(branch => wholeClauses(branch, next));
+    });
+  // A delay alias is shared only when every authored value and fallback ends at the central token;
+  // the FAB delay role stays trusted only at use sites in its validated stylesheet.
+  const sharedDelay = (declaration, value, seen = new Set()) => {
+    if (value === 'var(--motion-delay)') return true;
+    if (value === 'var(--fab-delay)')
+      return (
+        trust.fabStylesheet !== undefined && declaration.source?.input.file === trust.fabStylesheet
+      );
+    const reference = varReference(value);
+    if (
+      !reference ||
+      reference.name.startsWith('--motion-') ||
+      reference.name === '--fab-delay' ||
+      seen.has(reference.name)
+    )
+      return false;
+    const next = new Set([...seen, reference.name]);
+    const branches = [...(variables.get(reference.name) ?? [])];
+    if (reference.fallback !== undefined) branches.push(reference.fallback);
+    return branches.length > 0 && branches.every(branch => sharedDelay(declaration, branch, next));
   };
 
   for (const [name, expected] of motionDurations) {
@@ -451,9 +784,9 @@ function inspectMotion(sheets, requireFoundation = true) {
   for (const declaration of declarations) {
     const prop = declaration.prop.replace(/^-(?:webkit|moz|ms|o)-/, '');
     if (prop === 'transition' || prop === 'animation') {
-      for (const clause of postcss.list.comma(declaration.value)) {
+      for (const clause of wholeClauses(declaration.value)) {
         const parts = postcss.list.space(clause);
-        if (!parts.includes('var(--motion-easing)'))
+        if (!parts.some(part => sharedEasing(part)))
           issue(declaration, 'motion must explicitly use shared ease-in/out');
         if (
           parts.some(part =>
@@ -463,24 +796,27 @@ function inspectMotion(sheets, requireFoundation = true) {
           )
         )
           issue(declaration, 'local timing functions must not override the shared curve');
-        const times = parts.filter(part => resolveTime(part).length > 0);
+        // An unresolved non-easing alias still takes a timing slot, so it cannot slip past the checks.
+        const times = parts.filter(
+          part => resolveTime(part).length > 0 || (varReference(part) && !sharedEasing(part)),
+        );
         const duration = times[0];
         if (!duration || !positive(duration))
           issue(
             declaration,
             'motion requires a positive canonical duration, including continuous animations',
           );
-        if (times.length > 2 || (times.length === 2 && times[1] !== 'var(--motion-delay)'))
+        if (times.length > 2 || (times.length === 2 && !sharedDelay(declaration, times[1])))
           issue(declaration, 'shorthand delay must use the shared delay token');
       }
     } else if (/^(?:transition|animation)-timing-function$/.test(prop)) {
-      if (postcss.list.comma(declaration.value).some(value => value !== 'var(--motion-easing)'))
+      if (postcss.list.comma(declaration.value).some(value => !sharedEasing(value)))
         issue(declaration, 'timing must use shared ease-in/out');
     } else if (/^(?:transition|animation)-duration$/.test(prop)) {
       if (postcss.list.comma(declaration.value).some(value => !positive(value)))
         issue(declaration, 'duration must resolve to a positive canonical token');
     } else if (/^(?:transition|animation)-delay$/.test(prop)) {
-      if (postcss.list.comma(declaration.value).some(value => value !== 'var(--motion-delay)'))
+      if (postcss.list.comma(declaration.value).some(value => !sharedDelay(declaration, value)))
         issue(declaration, 'delay must use the shared delay token');
     } else if (prop === 'transition-property' && declaration.value.toLowerCase() === 'none') {
       issue(declaration, 'normal motion must not be disabled');
@@ -493,7 +829,7 @@ function inspectMotion(sheets, requireFoundation = true) {
         declaration.prop === 'transition-property' &&
         declaration.value === `var(${transitionToken})` &&
         declaration.parent.type === 'rule' &&
-        declaration.parent.selectors.some(selector => selector.trim() === '.atlas-control'),
+        declaration.parent.selectors.some(selector => selector.trim() === '.genux-control'),
     )?.parent;
     for (const prop of [
       'transition-property',
@@ -505,7 +841,7 @@ function inspectMotion(sheets, requireFoundation = true) {
         node => node.type === 'decl' && node.prop === prop,
       );
       if (!declaration || declaration.important)
-        issues.push(`Shared .atlas-control foundation requires normal-priority ${prop}`);
+        issues.push(`Shared .genux-control foundation requires normal-priority ${prop}`);
       else if (prop === 'transition-delay' && declaration.value !== 'var(--motion-delay)')
         issue(declaration, 'foundation delay must use shared token');
     }
@@ -520,24 +856,30 @@ const authoredFiles = Promise.all([
 ]).then(groups => groups.flat());
 const authoredStyles = authoredFiles.then(parseStyles);
 const fixture = css =>
-  postcss.parse(`.atlas-demo { ${transitionToken}: ${paintProperties.join(', ')}; }\n${css}`);
+  postcss.parse(`.genux-demo { ${transitionToken}: ${paintProperties.join(', ')}; }\n${css}`);
 
 test('authored hover rules preserve control geometry and transitions name explicit properties', async () => {
   assert.equal(motion.easing.replace(/\s/g, ''), 'cubic-bezier(0.65,0,0.35,1)');
   assert.ok(Object.values(motion.durationMs).every(value => Number.isFinite(value) && value > 0));
   assert.equal(motion.delayMs, 0);
+  // Validate the FAB factory and stylesheet once before their exact roles are trusted below.
+  await validateFabMotionOwner();
+  assert.deepEqual(fabMotionFailures(await readFile(fabStylesheet, 'utf8')), []);
   const result = inspect(await authoredStyles);
   assert.deepEqual(result.hover, []);
   assert.deepEqual(result.transitions, []);
-  assert.deepEqual(inspectMotion(await authoredStyles), []);
+  assert.deepEqual(
+    inspectMotion(await authoredStyles, true, { fabStylesheet, inlineRoles: overlayMotionRoles }),
+    [],
+  );
   const rules = [];
   for (const sheet of await authoredStyles) sheet.walkRules(rule => rules.push(rule));
   for (const [selector, excluded] of [
     [
-      ':root[data-theme] .atlas-demo :is(.ant-input, .ant-input-affix-wrapper, .ant-input-number, .ant-select)',
+      ':root[data-theme] .genux-demo :is(.ant-input, .ant-input-affix-wrapper, .ant-input-number, .ant-select)',
       ['all', 'border', 'border-color', 'border-bottom', 'border-bottom-color'],
     ],
-    ['.atlas-demo .atlas-pill .atlas-pill-close', ['all', 'box-shadow']],
+    ['.genux-demo .genux-pill .genux-pill-close', ['all', 'box-shadow']],
     ['.table-scroll', ['all', 'border', 'border-color', 'border-bottom', 'border-bottom-color']],
     ['.kit-table-scroll', ['all', 'border', 'border-color', 'border-block-end-color']],
     ['.kit-board', ['all', 'border', 'border-color', 'border-block-end-color']],
@@ -562,13 +904,14 @@ test('authored hover rules preserve control geometry and transitions name explic
   const inlineIssues = (await authoredFiles).flatMap(({ path, source }) =>
     /\.[cm]?[jt]sx?$/.test(path) &&
     (path.startsWith(resolve(sources, 'react')) ||
+      path === fabMotionOwner ||
       path.startsWith(storybook) ||
       path.startsWith(stories))
-      ? inspectInlineMotion(source, path)
+      ? inspectInlineMotion(source, path, fabFactoryRoles)
       : [],
   );
   assert.deepEqual(inlineIssues, []);
-  const provider = await readFile(resolve(styles, '../react/AtlasProvider.tsx'), 'utf8');
+  const provider = await readFile(resolve(styles, '../react/GenUXProvider.tsx'), 'utf8');
   assert.match(provider, /import\s+motion\s+from\s+['"]\.\.\/data\/motion\.json['"]/);
   const easeFields = [
     'motionEaseInOut',
@@ -626,7 +969,7 @@ test('new component hover geometry and unrestricted transitions fail the guard',
   assert.match(result.hover.join('\n'), /font-weight/);
   assert.match(result.hover.join('\n'), /--control-height/);
   assert.match(result.hover.join('\n'), /--local/);
-  const badToken = inspect([postcss.parse(`.atlas-demo { ${transitionToken}: color, height; }`)]);
+  const badToken = inspect([postcss.parse(`.genux-demo { ${transitionToken}: color, height; }`)]);
   assert.equal(badToken.transitions.length, 1);
   for (const css of [
     'transition: color var(--motion-duration-standard) linear',
@@ -664,10 +1007,54 @@ test('new component hover geometry and unrestricted transitions fail the guard',
   assert.equal(
     inspectInlineMotion(
       'const theme = { motion: false };',
-      resolve(sources, 'react/AtlasProvider.tsx'),
+      resolve(sources, 'react/GenUXProvider.tsx'),
     ).length,
     1,
   );
+  // Only the canonical provider's hydration render may turn AntD motion off; every broken proof
+  // of that one branch, or the same skeleton in another file, still fails.
+  const providerPath = resolve(sources, 'react/GenUXProvider.tsx');
+  const hydrationFallback = '{ ...ownedTheme, token: { ...ownedTheme.token, motion: false } }';
+  const hydrationSkeleton = ({
+    subscribe = '() => () => {}',
+    client = '() => true',
+    server = '() => false',
+    flag = 'useSyncExternalStore(subscribeNothing, hydratedSnapshot, hydratingSnapshot)',
+    choice = `motionReady ? ownedTheme : ${hydrationFallback}`,
+  } = {}) => `import { useSyncExternalStore } from 'react';
+const subscribeNothing = ${subscribe};
+const hydratedSnapshot = ${client};
+const hydratingSnapshot = ${server};
+export default function GenUXProvider({ ownedTheme }) {
+  const motionReady = ${flag};
+  const providerTheme = ${choice};
+  return providerTheme;
+}`;
+  assert.deepEqual(inspectInlineMotion(hydrationSkeleton(), providerPath), []);
+  for (const [label, variant, path = providerPath] of [
+    ['another file', {}, resolve(sources, 'react/Fab.tsx')],
+    ['client snapshot false', { client: '() => false' }],
+    ['server snapshot true', { server: '() => true' }],
+    [
+      'swapped snapshots',
+      { flag: 'useSyncExternalStore(subscribeNothing, hydratingSnapshot, hydratedSnapshot)' },
+    ],
+    [
+      'live subscription',
+      { subscribe: `callback => { addEventListener('resize', callback); return () => {}; }` },
+    ],
+    ['unverified caller', { flag: 'useHydrated()' }],
+    ['unknown condition', { choice: `otherFlag ? ownedTheme : ${hydrationFallback}` }],
+    ['flipped branch', { choice: `motionReady ? ${hydrationFallback} : ownedTheme` }],
+    [
+      'extra fallback override',
+      {
+        choice:
+          'motionReady ? ownedTheme : { ...ownedTheme, token: { ...ownedTheme.token, motion: false, motionDurationFast: 0 } }',
+      },
+    ],
+  ])
+    assert.equal(inspectInlineMotion(hydrationSkeleton(variant), path).length, 1, label);
   for (const property of [
     "'--press-duration': '0ms'",
     "'--switch-motion-duration': '500ms'",
@@ -679,7 +1066,7 @@ test('new component hover geometry and unrestricted transitions fail the guard',
   const stateOnly = inspectMotion(
     [
       motionFixture(`
-    .new-control:hover .atlas-motion-layer { transition: transform var(--motion-duration-standard) var(--motion-easing); transform: translateX(2px); }
+    .new-control:hover .genux-motion-layer { transition: transform var(--motion-duration-standard) var(--motion-easing); transform: translateX(2px); }
     .new-control:focus { animation: pulse var(--motion-duration-pulse) var(--motion-easing) infinite; }
   `),
     ],
@@ -693,9 +1080,9 @@ test('paint changes and explicit decorative motion pass without exempting ancest
     fixture(`
     .new-control:hover { color: red; opacity: 1; --control-color: blue; }
     .new-control { transition: color 140ms ease; transition-property: var(${transitionToken}); }
-    .new-control:hover .atlas-motion-layer { transform: translateX(2px); }
+    .new-control:hover .genux-motion-layer { transform: translateX(2px); }
     .ant-switch:hover .ant-switch-handle { inset-inline-start: 2px; }
-    .atlas-motion-layer .new-control:hover { height: 60px; }
+    .genux-motion-layer .new-control:hover { height: 60px; }
   `),
   ]);
   assert.equal(result.hover.length, 1);
@@ -730,7 +1117,7 @@ test('paint changes and explicit decorative motion pass without exempting ancest
   assert.deepEqual(
     inspectInlineMotion(
       'const theme = { motionEaseOut: motion.easing };',
-      resolve(sources, 'react/AtlasProvider.tsx'),
+      resolve(sources, 'react/GenUXProvider.tsx'),
     ),
     [],
   );
@@ -738,9 +1125,9 @@ test('paint changes and explicit decorative motion pass without exempting ancest
     inspectMotion(
       [
         motionFixture(`
-    .new-control .atlas-motion-layer { transition: transform var(--motion-duration-standard) var(--motion-easing); }
-    .new-control:hover .atlas-motion-layer { transition: transform var(--motion-duration-standard) var(--motion-easing); transform: translateX(2px); }
-    .new-control:active .atlas-motion-layer { transition-duration: var(--motion-duration-fast); transform: translateX(1px); }
+    .new-control .genux-motion-layer { transition: transform var(--motion-duration-standard) var(--motion-easing); }
+    .new-control:hover .genux-motion-layer { transition: transform var(--motion-duration-standard) var(--motion-easing); transform: translateX(2px); }
+    .new-control:active .genux-motion-layer { transition-duration: var(--motion-duration-fast); transform: translateX(1px); }
   `),
       ],
       false,
@@ -752,6 +1139,186 @@ test('paint changes and explicit decorative motion pass without exempting ancest
   ]);
   assert.equal(astro.length, 1);
   assert.ok(inspectMotion([motionFixture(''), ...astro], false).length > 0);
+});
+
+test('canonical aliases, native motion phases and the validated FAB owner resolve without blanket exemptions', () => {
+  assert.deepEqual(
+    inspect([fixture('.layer { transition-property: background-color, -webkit-backdrop-filter; }')])
+      .transitions,
+    [],
+  );
+  assert.equal(
+    inspect([fixture('.layer { transition-property: -unknown-filter; }')]).transitions.length,
+    1,
+  );
+  const aliases =
+    ':root { --overlay-easing: var(--motion-easing); --overlay-open-duration: var(--motion-duration-standard); --local-curve: linear; }';
+  // Whole-clause transition aliases expand through every authored value and fallback.
+  const shorthands = `:root { --layer-transition: background-color var(--overlay-open-duration) var(--overlay-easing), box-shadow var(--motion-duration-fast) var(--motion-easing); --nested-transition: var(--layer-transition); --mixed-transition: color var(--motion-duration-standard) var(--motion-easing); --zero-transition: color var(--zero) var(--motion-easing); --curve-transition: color var(--motion-duration-standard) var(--local-curve); --all-transition: all var(--motion-duration-standard) var(--motion-easing); --implicit-transition: var(--motion-duration-standard) var(--motion-easing); --none-transition: none; --loop-transition: var(--loop-transition); }
+    .mixed-scope { --mixed-transition: all var(--motion-duration-standard) linear; }`;
+  const wholeAlias =
+    '.layer { transition: var(--nested-transition), var(--undeclared-transition, opacity var(--motion-duration-fast) var(--motion-easing)); }';
+  assert.deepEqual(inspect([fixture(`${aliases} ${shorthands} ${wholeAlias}`)]).transitions, []);
+  assert.deepEqual(
+    inspectMotion([motionFixture(`${aliases} ${shorthands} ${wholeAlias}`)], false),
+    [],
+  );
+  for (const value of [
+    'var(--mixed-transition)',
+    'var(--all-transition)',
+    'var(--implicit-transition)',
+    'var(--none-transition)',
+    'var(--undeclared-transition)',
+    'var(--loop-transition)',
+    'var(--nested-transition), var(--all-transition)',
+    'var(--undeclared-transition, all var(--motion-duration-fast) var(--motion-easing))',
+  ])
+    assert.ok(
+      inspect([fixture(`${aliases} ${shorthands} .new-control { transition: ${value}; }`)])
+        .transitions.length > 0,
+      value,
+    );
+  for (const value of [
+    'var(--mixed-transition)',
+    'var(--zero-transition)',
+    'var(--curve-transition)',
+    'var(--undeclared-transition)',
+    'var(--loop-transition)',
+    'var(--nested-transition), var(--zero-transition)',
+    'var(--layer-transition, color var(--motion-duration-standard) linear)',
+    'var(--undeclared-transition, color 0ms var(--motion-easing))',
+  ])
+    assert.ok(
+      inspectMotion(
+        [motionFixture(`${aliases} ${shorthands} .new-control { transition: ${value}; }`)],
+        false,
+      ).length > 0,
+      value,
+    );
+  assert.deepEqual(
+    inspectMotion(
+      [
+        motionFixture(`${aliases}
+    .layer { transition: background-color var(--overlay-open-duration, var(--duration-alias)) var(--overlay-easing, var(--motion-easing)), -webkit-backdrop-filter var(--overlay-open-duration, var(--duration-alias)) var(--overlay-easing, var(--motion-easing)); }
+    .layer { transition-duration: var(--undeclared-duration, var(--motion-duration-fast)); transition-timing-function: var(--overlay-easing, var(--motion-easing)); }
+  `),
+      ],
+      false,
+    ),
+    [],
+  );
+  for (const css of [
+    'transition-duration: var(--motion-duration-standard, 0ms)',
+    'transition-duration: var(--undeclared-duration)',
+    'transition-duration: var(--cycle, var(--motion-duration-standard))',
+    'transition: color var(--duration-alias, 0ms) var(--motion-easing)',
+    'transition-timing-function: var(--local-curve, var(--motion-easing))',
+    'transition-timing-function: var(--undeclared-easing)',
+    'transition-timing-function: var(--motion-easing, linear)',
+    'transition: color var(--motion-duration-standard) var(--undeclared-easing, linear)',
+  ])
+    assert.ok(
+      inspectMotion([motionFixture(`${aliases} .new-control { ${css}; }`)], false).length > 0,
+      css,
+    );
+  const phaseIssues = css =>
+    inspectMotion([motionFixture(css)], false).filter(issue => issue.includes('state-only'));
+  assert.deepEqual(
+    phaseIssues(`
+    .new-toast-appear.new-toast-appear-active, .new-toast-enter.new-toast-enter-active { animation-name: new-in; animation-play-state: running; }
+    .new-toast-leave.new-toast-leave-active { animation-name: new-out; animation-play-state: running; }
+    .new-mask-motion-enter-active { animation-duration: var(--motion-duration-standard); }
+    .new-mask-motion-leave-active { animation-duration: var(--motion-duration-standard); }
+  `),
+    [],
+  );
+  assert.equal(
+    phaseIssues(`
+    .one-way-enter-active { animation-duration: var(--motion-duration-standard); }
+    .uneven-enter-active { animation-name: grow; animation-duration: var(--motion-duration-standard); }
+    .uneven-leave-active { animation-duration: var(--motion-duration-standard); }
+  `).length,
+    3,
+  );
+  const fabRules =
+    '.genux-fab-action { transition: opacity var(--motion-duration-standard) var(--motion-easing) var(--fab-delay); transition-delay: var(--fab-delay); }';
+  const fabSheet = postcss.parse(fabRules, { from: fabStylesheet });
+  const otherSheet = postcss.parse(fabRules, { from: resolve(styles, 'new-component.css') });
+  assert.equal(inspectMotion([motionFixture(''), fabSheet], false).length, 2);
+  assert.deepEqual(inspectMotion([motionFixture(''), fabSheet], false, { fabStylesheet }), []);
+  assert.equal(inspectMotion([motionFixture(''), otherSheet], false, { fabStylesheet }).length, 2);
+  const factoryRole = "const style = { '--fab-delay': `${rank * stagger}ms` };";
+  assert.equal(inspectInlineMotion(factoryRole, fabMotionOwner).length, 1);
+  assert.deepEqual(inspectInlineMotion(factoryRole, fabMotionOwner, fabFactoryRoles), []);
+  assert.equal(
+    inspectInlineMotion(factoryRole, resolve(sources, 'react/Fab.tsx'), fabFactoryRoles).length,
+    1,
+  );
+  assert.equal(
+    inspectInlineMotion(
+      "const style = { '--fab-press-duration': '0ms' };",
+      fabMotionOwner,
+      fabFactoryRoles,
+    ).length,
+    1,
+  );
+  // Overlay motion roles are inline provider literals: they resolve only through the roles read
+  // from the validated owner, and every authored branch still has to stay canonical.
+  const pressRoles =
+    ':root { --press-duration: var(--motion-duration-fast); --release-duration: var(--motion-duration-standard); }';
+  const overlayRules =
+    '.overlay { transition-duration: var(--overlay-open-duration); transition-timing-function: var(--overlay-easing); } .overlay-close { transition-duration: var(--overlay-close-duration); }';
+  assert.equal(inspectMotion([motionFixture(`${pressRoles} ${overlayRules}`)], false).length, 3);
+  assert.deepEqual(
+    inspectMotion([motionFixture(`${pressRoles} ${overlayRules}`)], false, {
+      inlineRoles: overlayMotionRoles,
+    }),
+    [],
+  );
+  for (const css of [
+    ':root { --press-duration: 0ms; }',
+    ':root { --release-duration: var(--release-duration); }',
+    ':root { --overlay-open-duration: 0ms; }',
+    ':root { --overlay-easing: linear; }',
+  ])
+    assert.ok(
+      inspectMotion([motionFixture(`${pressRoles} ${css} ${overlayRules}`)], false, {
+        inlineRoles: overlayMotionRoles,
+      }).length > 0,
+      css,
+    );
+  // Delay aliases resolve through every authored value and fallback to the central token; the
+  // FAB delay role never becomes shared through an alias outside its validated stylesheet.
+  const delays =
+    ':root { --layer-delay: var(--motion-delay); --nested-delay: var(--layer-delay); --local-delay: 60s; --mixed-delay: var(--motion-delay); --loop-delay: var(--loop-delay); --fab-alias: var(--fab-delay); } .mixed-scope { --mixed-delay: 60s; }';
+  assert.deepEqual(
+    inspectMotion(
+      [
+        motionFixture(
+          `${delays} .layer { transition-delay: var(--nested-delay); animation-delay: var(--layer-delay); }`,
+        ),
+      ],
+      false,
+    ),
+    [],
+  );
+  for (const value of [
+    'var(--motion-delay, 0s)',
+    'var(--layer-delay, 60s)',
+    'var(--local-delay)',
+    'var(--mixed-delay)',
+    'var(--loop-delay)',
+    'var(--undeclared-delay)',
+    'var(--fab-alias)',
+  ])
+    assert.ok(
+      inspectMotion(
+        [motionFixture(`${delays} .new-control { transition-delay: ${value}; }`)],
+        false,
+        { fabStylesheet },
+      ).length > 0,
+      value,
+    );
 });
 
 function motionFixture(css) {

@@ -1,4 +1,4 @@
-# Atlas project instructions
+# GenUX project instructions
 
 Follow [AGENTS.md](AGENTS.md), [docs/AGENTS.md](docs/AGENTS.md) for documentation code,
 and [CONTRIBUTING.md](CONTRIBUTING.md) for every contribution. Claude, Codex and human

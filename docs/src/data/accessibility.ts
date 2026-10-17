@@ -56,8 +56,8 @@ export const docsAccessibilityStyleText = (['light', 'dark'] as const)
   .map(mode => {
     const owner =
       mode === 'light'
-        ? `:root:not([data-theme]) body[data-atlas-surface='docs'],:root[data-theme='light'] body[data-atlas-surface='docs']`
-        : `:root[data-theme='dark'] body[data-atlas-surface='docs']`;
+        ? `:root:not([data-theme]) body[data-genux-surface='docs'],:root[data-theme='light'] body[data-genux-surface='docs']`
+        : `:root[data-theme='dark'] body[data-genux-surface='docs']`;
     return `${owner}{${Object.entries(docsAccessibilityVariables(mode))
       .map(([key, value]) => `${key}:${value}`)
       .join(';')}}`;

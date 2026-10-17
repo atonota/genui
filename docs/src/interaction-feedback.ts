@@ -30,7 +30,7 @@ const clickable = [
   '.ant-picker',
   '.ant-picker-cell',
   '.ant-picker-time-panel-cell',
-  '[data-atlas-click-feedback="true"]',
+  '[data-genux-click-feedback="true"]',
 ].join(',');
 const sliderSelector = '[role="slider"],input[type="range"]';
 const blockedSelector = [
@@ -39,7 +39,7 @@ const blockedSelector = [
   '[aria-busy="true"]',
   '[aria-readonly="true"]',
   '[data-state-kind="busy"]',
-  '[data-atlas-click-feedback="false"]',
+  '[data-genux-click-feedback="false"]',
   'fieldset[disabled]',
   '.ant-btn-loading',
   '.ant-radio-wrapper-disabled',
@@ -97,7 +97,7 @@ function createController(doc: Document): FeedbackController {
   const blocked = (target: HTMLElement) =>
     Boolean(
       target.closest(blockedSelector) ||
-        target.closest('[data-atlas-choice-card]')?.querySelector(':disabled') ||
+        target.closest('[data-genux-choice-card]')?.querySelector(':disabled') ||
         readonlyField(target) ||
         [...target.querySelectorAll(readonlyFieldSelector)].some(readonlyField),
     );
@@ -107,7 +107,7 @@ function createController(doc: Document): FeedbackController {
     const label = source.closest('label');
     // A choice card's native label activation dispatches one click to its own
     // control; skip the card's outer click so the whole-card wave starts once.
-    if (label?.matches('[data-atlas-choice-card]') && !label.contains(source.closest(clickable)))
+    if (label?.matches('[data-genux-choice-card]') && !label.contains(source.closest(clickable)))
       return null;
     if (label) {
       const id = label.getAttribute('for');
@@ -159,7 +159,7 @@ function createController(doc: Document): FeedbackController {
     if (reduced?.matches || !target.isConnected || !allowed(target) || blocked(target)) return;
     // Whole choice cards and Radio.Button wrappers paint the control; their
     // native input is transparent and would give the wave the wrong geometry.
-    const card = target.closest<HTMLElement>('[data-atlas-choice-card]');
+    const card = target.closest<HTMLElement>('[data-genux-choice-card]');
     const visual =
       card ??
       target.closest<HTMLElement>('.ant-segmented-item') ??
@@ -189,9 +189,9 @@ function createController(doc: Document): FeedbackController {
         : target);
     active.get(feedbackOwner)?.dispose();
     const wave = doc.createElement('span');
-    wave.className = 'atlas-click-feedback atlas-motion-layer';
+    wave.className = 'genux-click-feedback genux-motion-layer';
     wave.setAttribute('aria-hidden', 'true');
-    wave.dataset.atlasFeedback = 'click';
+    wave.dataset.genuxFeedback = 'click';
     const position = (bounds: DOMRect) => {
       wave.style.left = `${bounds.left}px`;
       wave.style.top = `${bounds.top}px`;
@@ -202,8 +202,8 @@ function createController(doc: Document): FeedbackController {
     wave.style.borderRadius = style.borderRadius;
     const token = (name: string) => style.getPropertyValue(name).trim();
     const seed = token('--ant-color-primary') || token('--primary');
-    const button = target.matches('.atlas-button,.ant-btn-primary');
-    // Both Atlas and native primary Buttons paint their face on ::before; the
+    const button = target.matches('.genux-button,.ant-btn-primary');
+    // Both GenUX and native primary Buttons paint their face on ::before; the
     // root background is only the lower edge. Read the current hover/press paint,
     // not the unchanged --button-face seed. Transparent actions use their ink.
     const face = button ? view.getComputedStyle(visual, '::before') : null;

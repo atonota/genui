@@ -32,7 +32,7 @@ const tableWords = [
   'checklist',
 ];
 
-type NodeProof = HTMLElement & { atlasNodeProof?: string };
+type NodeProof = HTMLElement & { genuxNodeProof?: string };
 
 /** Viewport and full-page PNGs in this test's own output directory, attached to the report. */
 async function saveShot(page: Page, name: string) {
@@ -517,7 +517,7 @@ async function fillAndReview(page: Page) {
   await l.name.fill(draftName);
   await l.category.click();
   await expect(l.category).toHaveAttribute('aria-expanded', 'true');
-  // AtlasCascader exposes a tree of Level N groups whose treeitems are named by their path.
+  // GenUXCascader exposes a tree of Level N groups whose treeitems are named by their path.
   const tree = page.getByRole('tree', { name: /category path/i });
   for (const [level, label] of categoryPath.entries())
     await tree
@@ -533,7 +533,7 @@ async function fillAndReview(page: Page) {
   await expect(l.result).toContainText(draftName);
   await expect(l.result).toContainText(pathText);
   await l.name.evaluate(el => {
-    (el as NodeProof).atlasNodeProof = 'kept';
+    (el as NodeProof).genuxNodeProof = 'kept';
   });
   const handle = await l.name.elementHandle();
   expect(handle).not.toBeNull();
@@ -544,7 +544,7 @@ async function fillAndReview(page: Page) {
 async function expectDraftKept(page: Page, handle: ElementHandle<HTMLElement | SVGElement>) {
   const l = lab(page);
   expect(await handle.evaluate(el => el.isConnected)).toBe(true);
-  expect(await l.name.evaluate(el => (el as NodeProof).atlasNodeProof)).toBe('kept');
+  expect(await l.name.evaluate(el => (el as NodeProof).genuxNodeProof)).toBe('kept');
   await expect(l.name).toHaveValue(draftName);
   await expect(l.result).toContainText(draftName);
   await expect(l.result).toContainText(pathText);
@@ -579,7 +579,7 @@ async function readSignals(list: Locator) {
 function markedFields(page: Page) {
   return page.evaluate(
     () =>
-      Array.from(document.querySelectorAll('.atlas-input-frame[data-atlas-input]')).filter(
+      Array.from(document.querySelectorAll('.genux-input-frame[data-genux-input]')).filter(
         el => getComputedStyle(el).backgroundImage !== 'none',
       ).length,
   );
@@ -653,7 +653,7 @@ type ResourceGroup = {
   files: Record<string, ResourceFile>;
 };
 type EntryGroup = ResourceGroup & { entry: string };
-type AdaptiveOwner = LayoutProfile | 'genuiLab';
+type AdaptiveOwner = LayoutProfile | 'genuxLab';
 /** One adaptive-ownership.json record, keyed in the map by its base-prefixed URL. */
 type OwnershipRecord = { sources: string[]; owners: AdaptiveOwner[] };
 type AdaptiveResourceMap = {
@@ -661,7 +661,7 @@ type AdaptiveResourceMap = {
   manifestPath: string;
   profiles: Record<LayoutProfile, EntryGroup>;
   baseline: ResourceGroup & { html: string; roots: string[] };
-  features: { genuiLab: EntryGroup & { entries: string[] } };
+  features: { genuxLab: EntryGroup & { entries: string[] } };
   ownership: Record<string, OwnershipRecord>;
 };
 type BuildAdaptiveResourceMap = (options: { outDir: string; base?: string }) => Promise<unknown>;
@@ -698,7 +698,7 @@ function expectGroup(value: unknown, label: string, withEntry: boolean) {
   expect(group.js, `${label} closure includes its entry`).toContain(group.entry);
 }
 
-const adaptiveOwners: readonly AdaptiveOwner[] = [...layoutProfiles, 'genuiLab'];
+const adaptiveOwners: readonly AdaptiveOwner[] = [...layoutProfiles, 'genuxLab'];
 
 /**
  * Emitted adaptive resources read from the production docs dist by the committed helper's
@@ -732,8 +732,8 @@ async function loadAdaptiveResourceMap(
     expectGroup(map.profiles?.[profile], `profiles.${profile}`, true);
   expectGroup(map.baseline, 'baseline', false);
   expect(map.baseline?.roots?.length ?? 0, 'baseline roots').toBeGreaterThan(0);
-  expectGroup(map.features?.genuiLab, 'features.genuiLab', true);
-  expect(Array.isArray(map.features?.genuiLab?.entries), 'features.genuiLab.entries').toBe(true);
+  expectGroup(map.features?.genuxLab, 'features.genuxLab', true);
+  expect(Array.isArray(map.features?.genuxLab?.entries), 'features.genuxLab.entries').toBe(true);
   // Every record is one build-emitted owner list; unknown owners or missing sources fail here.
   const ownership = map.ownership;
   expect(
@@ -753,7 +753,7 @@ async function loadAdaptiveResourceMap(
   // Unknown ownership of mapped code fails the loader; it never passes as shared.
   const groups = [
     map.baseline!,
-    map.features!.genuiLab,
+    map.features!.genuxLab,
     ...layoutProfiles.map(profile => map.profiles![profile]),
   ];
   const unowned = [...new Set(groups.flatMap(group => [...group.js, ...group.css]))].filter(
@@ -764,8 +764,8 @@ async function loadAdaptiveResourceMap(
     expect(ownership?.[map.profiles![profile].entry]?.owners, `${profile} entry owner`).toContain(
       profile,
     );
-  for (const entry of map.features!.genuiLab.entries)
-    expect(ownership?.[entry]?.owners, `genuiLab entry ${entry} owner`).toContain('genuiLab');
+  for (const entry of map.features!.genuxLab.entries)
+    expect(ownership?.[entry]?.owners, `genuxLab entry ${entry} owner`).toContain('genuxLab');
   return {
     map: map as AdaptiveResourceMap,
     assertIsolation: tool.assertAdaptiveResourceIsolation!,
@@ -820,12 +820,12 @@ function profileStyles(page: Page) {
   }, layoutProfiles);
 }
 
-/** The optional native GenUI style is a React 19 hoisted resource keyed by its href. */
-const nativeStyleSelector = 'style[data-href=genui-native-styles]';
-/** Native control selectors that only the optional GenUI style may carry. */
-const nativeCssSelector = /[.]atlas-(?:slider|rich-menu)/g;
+/** The optional native GenUX style is a React 19 hoisted resource keyed by its href. */
+const nativeStyleSelector = 'style[data-href=genux-native-styles]';
+/** Native control selectors that only the optional GenUX style may carry. */
+const nativeCssSelector = /[.]genux-(?:slider|rich-menu)/g;
 
-/** Optional native GenUI style tags in the live document: compiled text and parsed rule count. */
+/** Optional native GenUX style tags in the live document: compiled text and parsed rule count. */
 function nativeStyles(page: Page) {
   return page.evaluate(
     selector =>
@@ -1232,7 +1232,7 @@ test('Simulation, phone lock, preview theme and explicit TV focus keep one draft
   const html = page.locator('html');
   const handle = await fillAndReview(page);
   const actualSignals = signalList(page, /^actual signals$/i);
-  // The nearest AtlasProvider owner around the journey publishes the resolved short height.
+  // The nearest GenUXProvider owner around the journey publishes the resolved short height.
   const journeyOwner = l.main.locator('xpath=ancestor::*[@data-adaptive-short-height][1]');
 
   // Actual rotation without a lock: an established phone survives 430x932 to 932x430.
@@ -1353,7 +1353,7 @@ test('Simulation, phone lock, preview theme and explicit TV focus keep one draft
       className: el.className,
       colorScheme: getComputedStyle(el).colorScheme,
     }));
-  // The preview owner is the first AtlasProvider inside the lab frame.
+  // The preview owner is the first GenUXProvider inside the lab frame.
   const frame = page.locator('[data-adaptive-preview-mode]');
   await expect(frame).toHaveCount(1);
   const previewOwner = frame.locator('[data-theme-mode]').first();
@@ -1371,7 +1371,7 @@ test('Simulation, phone lock, preview theme and explicit TV focus keep one draft
     field: await l.name.evaluate(input => {
       const owner = input.closest('[data-adaptive-preview-mode] [data-theme-mode]');
       if (!owner) throw new Error('The draft field is outside the preview owner.');
-      const frame = input.closest('.atlas-input-frame') ?? owner;
+      const frame = input.closest('.genux-input-frame') ?? owner;
       const clear = (color: string) => {
         const compact = color.replace(/\s/g, '');
         return color === 'transparent' || compact.endsWith(',0)') || compact.endsWith('/0)');
@@ -1443,10 +1443,10 @@ test('Simulation, phone lock, preview theme and explicit TV focus keep one draft
   const hostBeforeFocus = await focusPaint(hostLink);
   const hostContrastBefore = await focusContrast(hostLink);
   await page.evaluate(() => {
-    const view = window as Window & { atlasHashChanges?: number };
-    view.atlasHashChanges = 0;
+    const view = window as Window & { genuxHashChanges?: number };
+    view.genuxHashChanges = 0;
     view.addEventListener('hashchange', () => {
-      view.atlasHashChanges = (view.atlasHashChanges ?? 0) + 1;
+      view.genuxHashChanges = (view.genuxHashChanges ?? 0) + 1;
     });
   });
   await page.keyboard.press('ArrowDown');
@@ -1498,7 +1498,7 @@ test('Simulation, phone lock, preview theme and explicit TV focus keep one draft
   await expect(page).toHaveURL(/#integration$/);
   await expect
     .poll(() =>
-      page.evaluate(() => (window as Window & { atlasHashChanges?: number }).atlasHashChanges),
+      page.evaluate(() => (window as Window & { genuxHashChanges?: number }).genuxHashChanges),
     )
     .toBe(1);
   await expectDraftKept(page, handle);
@@ -1593,27 +1593,27 @@ test('Cold 320 delivery loads only baseline and phone until the user asks for mo
   // The production validator itself accepts the initial phone delivery before anything is derived.
   expect(assertIsolation(resources)).toBe(true);
   expect(assertIsolation(resources, ['phone'])).toBe(true);
-  // Negative oracle on cloned metadata only: an actual genuiLab-owned non-entry JS dependency the
+  // Negative oracle on cloned metadata only: an actual genuxLab-owned non-entry JS dependency the
   // baseline does not ship is added to a cloned baseline, which the validator must then reject.
-  const genuiLab = resources.features.genuiLab;
-  const genuiEntries = new Set([genuiLab.entry, ...genuiLab.entries]);
-  const injected = genuiLab.js.find(
+  const genuxLab = resources.features.genuxLab;
+  const genuxEntries = new Set([genuxLab.entry, ...genuxLab.entries]);
+  const injected = genuxLab.js.find(
     url =>
       url.endsWith('.js') &&
-      !genuiEntries.has(url) &&
+      !genuxEntries.has(url) &&
       !resources.baseline.js.includes(url) &&
-      (resources.ownership[url]?.owners ?? []).includes('genuiLab'),
+      (resources.ownership[url]?.owners ?? []).includes('genuxLab'),
   );
   expect(
     injected,
-    'an actual genuiLab-owned non-entry JS dependency outside the baseline',
+    'an actual genuxLab-owned non-entry JS dependency outside the baseline',
   ).toBeTruthy();
   const injectedBaseline = {
     ...resources,
     baseline: { ...resources.baseline, js: [...resources.baseline.js, injected!] },
   };
   expect(injectedBaseline.baseline.js).toContain(injected);
-  expect(() => assertIsolation(injectedBaseline)).toThrow(/owned by \[[^\]]*genuiLab/);
+  expect(() => assertIsolation(injectedBaseline)).toThrow(/owned by \[[^\]]*genuxLab/);
   // Two unselected owners are still foreign: a multi-owner file is never treated as shared.
   const twoUnselected = {
     ...injectedBaseline,
@@ -1628,14 +1628,14 @@ test('Cold 320 delivery loads only baseline and phone until the user asks for mo
   expect(() => assertIsolation(twoUnselected)).toThrow(/owned by \[tablet, desktop\]/);
   // The clones left the actual map untouched, and it still passes.
   expect(resources.baseline.js).not.toContain(injected);
-  expect(resources.ownership[injected!].owners).toContain('genuiLab');
+  expect(resources.ownership[injected!].owners).toContain('genuxLab');
   expect(assertIsolation(resources)).toBe(true);
   const isolation = {
     initialPhone: 'pass',
     negative: {
       injected,
       actualOwners: [...resources.ownership[injected!].owners],
-      rejected: ['genuiLab in baseline', 'tablet and desktop in baseline'],
+      rejected: ['genuxLab in baseline', 'tablet and desktop in baseline'],
     },
   };
   const pathOf = (url: string) => new URL(url, baseURL).pathname;
@@ -1644,13 +1644,13 @@ test('Cold 320 delivery loads only baseline and phone until the user asks for mo
   const baseline = new Set(paths(resources.baseline));
   const phone = new Set(paths(resources.profiles.phone));
   const required = new Set([...baseline, ...phone]);
-  const genuiPaths = paths(genuiLab);
+  const genuxPaths = paths(genuxLab);
   // The map must name real phone, TV and AI code, so empty walks cannot pass the checks below.
   expect(required.has(pathOf(resources.profiles.phone.entry))).toBe(true);
   expect(resources.baseline.js).not.toEqual([]);
   for (const [owner, group] of [
     ['living-room', resources.profiles['living-room']],
-    ['genuiLab', genuiLab],
+    ['genuxLab', genuxLab],
   ] as const)
     expect(
       paths(group).filter(
@@ -1715,12 +1715,12 @@ test('Cold 320 delivery loads only baseline and phone until the user asks for mo
       block => block.css.match(anyProfileSelector) ?? [],
     );
     expect(htmlProfileSelectors, 'profile selectors in initial HTML style blocks').toEqual([]);
-    // The optional native GenUI CSS is neither a server style tag nor inlined in a style block.
+    // The optional native GenUX CSS is neither a server style tag nor inlined in a style block.
     const htmlNative = {
-      tags: htmlStyles.filter(block => /genui-native-styles/i.test(block.attributes)).length,
+      tags: htmlStyles.filter(block => /genux-native-styles/i.test(block.attributes)).length,
       selectors: htmlStyles.flatMap(block => block.css.match(nativeCssSelector) ?? []),
     };
-    expect(htmlNative, 'native GenUI styles in initial HTML').toEqual({ tags: 0, selectors: [] });
+    expect(htmlNative, 'native GenUX styles in initial HTML').toEqual({ tags: 0, selectors: [] });
     expect(
       htmlStyles.filter(block => /data-adaptive-layout-style/i.test(block.attributes)).length,
       'profile style tags in initial HTML',
@@ -1730,9 +1730,9 @@ test('Cold 320 delivery loads only baseline and phone until the user asks for mo
     // After the phone shell resolves, only its own compiled, scoped style tag is installed.
     const phoneStyles = await expectProfileStyles(page, ['phone'], 'phone');
     const phoneCss = await expectCompiledProfileCss(page, 'phone');
-    // The phone shell renders no GenUI surface, so no native style tag or control CSS is live.
-    expect(await nativeStyles(page), 'native GenUI style tags at the phone shell').toEqual([]);
-    expect(await liveNativeSelectors(page), 'native GenUI selectors in live style blocks').toEqual(
+    // The phone shell renders no GenUX surface, so no native style tag or control CSS is live.
+    expect(await nativeStyles(page), 'native GenUX style tags at the phone shell').toEqual([]);
+    expect(await liveNativeSelectors(page), 'native GenUX selectors in live style blocks').toEqual(
       [],
     );
     expect(await pageOverflow(page)).toBeLessThanOrEqual(0);
@@ -1796,17 +1796,17 @@ test('Cold 320 delivery loads only baseline and phone until the user asks for mo
     expect(leaks(['initial', 'interaction', 'orientation'], ['phone'])).toEqual([]);
 
     // Interaction, rotation and simulation still render no surface and install no native CSS.
-    const beforeGenui = {
+    const beforeGenUX = {
       tags: (await nativeStyles(page)).length,
       selectors: await liveNativeSelectors(page),
     };
-    expect(beforeGenui, 'native GenUI styles before the AI story').toEqual({
+    expect(beforeGenUX, 'native GenUX styles before the AI story').toEqual({
       tags: 0,
       selectors: [],
     });
 
-    // The recorded GenUI lab loads only from the explicit button and says it is a fixture.
-    phase = 'genui';
+    // The recorded GenUX lab loads only from the explicit button and says it is a fixture.
+    phase = 'genux';
     const open = page.getByRole('button', { name: /^open ai result story$/i });
     const labId = await open.getAttribute('aria-controls');
     expect(labId).toBeTruthy();
@@ -1817,30 +1817,30 @@ test('Cold 320 delivery loads only baseline and phone until the user asks for mo
     );
     const story = page.locator(`[id='${labId}']`);
     await expect(story).toContainText(/recorded/i);
-    await expect(story.getByText(/loading the optional genui lab/i)).toHaveCount(0);
+    await expect(story.getByText(/loading the optional genux lab/i)).toHaveCount(0);
     await expect(story.getByRole('alert')).toHaveCount(0);
     // The explicit story renders a surface, which installs exactly one hoisted, compiled native style.
     await expect
-      .poll(async () => (await nativeStyles(page)).length, 'native GenUI style tags')
+      .poll(async () => (await nativeStyles(page)).length, 'native GenUX style tags')
       .toBe(1);
     const [nativeStyle] = await nativeStyles(page);
-    expect(nativeStyle.bytes, 'native GenUI style text').toBeGreaterThan(0);
-    expect(nativeStyle.text.match(scssSyntax) ?? [], 'native GenUI SCSS syntax').toEqual([]);
-    expect(nativeStyle.parsedRules, 'native GenUI parsed CSS rules').toBeGreaterThan(0);
+    expect(nativeStyle.bytes, 'native GenUX style text').toBeGreaterThan(0);
+    expect(nativeStyle.text.match(scssSyntax) ?? [], 'native GenUX SCSS syntax').toEqual([]);
+    expect(nativeStyle.parsedRules, 'native GenUX parsed CSS rules').toBeGreaterThan(0);
     expect(
       nativeStyle.text.match(nativeCssSelector) ?? [],
-      'native control selectors in the GenUI style',
+      'native control selectors in the GenUX style',
     ).not.toEqual([]);
-    const genuiNative = {
+    const genuxNative = {
       precedence: nativeStyle.precedence,
       bytes: nativeStyle.bytes,
       parsedRules: nativeStyle.parsedRules,
     };
     // Its static closure and CSS are now loaded, shared earlier or seen here; dynamic adapters are not required.
-    await expect.poll(() => genuiPaths.filter(file => !requested().has(file))).toEqual([]);
-    expect(leaks(['genui'], ['phone', 'genuiLab'])).toEqual([]);
+    await expect.poll(() => genuxPaths.filter(file => !requested().has(file))).toEqual([]);
+    expect(leaks(['genux'], ['phone', 'genuxLab'])).toEqual([]);
     await expectProfileStyles(page, ['phone'], 'phone');
-    expect(requests.filter(r => r.phase === 'genui' && new URL(r.url).origin !== origin)).toEqual(
+    expect(requests.filter(r => r.phase === 'genux' && new URL(r.url).origin !== origin)).toEqual(
       [],
     );
 
@@ -1850,13 +1850,13 @@ test('Cold 320 delivery loads only baseline and phone until the user asks for mo
     await expectShell(page, 'living-room', 'living-room');
     const tvPaths = paths(resources.profiles['living-room']);
     await expect.poll(() => tvPaths.filter(file => !requested().has(file))).toEqual([]);
-    expect(leaks(['tv'], ['phone', 'genuiLab', 'living-room'])).toEqual([]);
+    expect(leaks(['tv'], ['phone', 'genuxLab', 'living-room'])).toEqual([]);
     // The explicit TV choice installs its own scoped style; cached phone styles may honestly remain.
     const tvStyles = await expectProfileStyles(page, ['phone', 'living-room'], 'living-room');
     const tvCss = await expectCompiledProfileCss(page, 'living-room');
     // React dedupes the hoisted resource by href: the TV switch keeps exactly one native style.
     const dedupeStyleCount = (await nativeStyles(page)).length;
-    expect(dedupeStyleCount, 'native GenUI style tags after the TV switch').toBe(1);
+    expect(dedupeStyleCount, 'native GenUX style tags after the TV switch').toBe(1);
     await expectDraftKept(page, handle);
     await settleMotion(page.locator('body'));
     await saveShot(page, 'adaptive-cold-320-tv.png');
@@ -1908,7 +1908,7 @@ test('Cold 320 delivery loads only baseline and phone until the user asks for mo
         expect(m.encodedBodySize, m.url).toBe(m.decodedBodySize);
     }
     const budgets = Object.fromEntries(
-      ['initial', 'interaction', 'orientation', 'genui', 'tv'].map(name => {
+      ['initial', 'interaction', 'orientation', 'genux', 'tv'].map(name => {
         const list = sameOrigin.filter(m => m.phase === name);
         const sum = (pick: (m: Measured) => number) =>
           list.reduce((total, m) => total + Math.max(0, pick(m)), 0);
@@ -1947,8 +1947,8 @@ test('Cold 320 delivery loads only baseline and phone until the user asks for mo
         optionalNative: {
           selector: nativeStyleSelector,
           initialHtml: htmlNative,
-          beforeGenui,
-          genui: genuiNative,
+          beforeGenUX,
+          genux: genuxNative,
           dedupeStyleCount,
         },
       },

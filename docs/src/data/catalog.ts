@@ -3,6 +3,7 @@ import { contentComponents } from './catalog-content';
 import { uxPatternComponents } from './catalog-ux-patterns';
 import { listyComponents } from './catalog-listy';
 import { badgeComponents } from './catalog-badge';
+import { fabComponents } from './catalog-fab';
 
 export type ComponentDoc = {
   slug: string;
@@ -36,7 +37,7 @@ export const components: ComponentDoc[] = [
     slug: 'button',
     title: 'Button',
     summary:
-      'Actions share three sizes, five surfaces and one Processing state. Wrapped double and triple choices, search and icon-only actions use the same Atlas controls.',
+      'Actions share three sizes, five surfaces and one Processing state. Wrapped double and triple choices, search and icon-only actions use the same GenUX controls.',
     antdComponent: 'Button',
     category: 'Actions',
     sourceUrl: 'https://ant.design/components/button/',
@@ -49,12 +50,12 @@ export const components: ComponentDoc[] = [
         id: 'basic',
         title: 'Basic action',
         description:
-          'AtlasButton represents actions. onClick connects the action; htmlType states the form behavior explicitly. Native form, name and id attributes pass through to Ant Design Button. Use Ant Design Typography.Link for links.',
-        code: `import AtlasButton from '../src/react/AtlasButton';
+          'GenUXButton represents actions. onClick connects the action; htmlType states the form behavior explicitly. Native form, name and id attributes pass through to Ant Design Button. Use Ant Design Typography.Link for links.',
+        code: `import GenUXButton from '../src/react/GenUXButton';
 
 export default function BasicButton({ onContinue }: { onContinue: () => void }) {
   return (
-    <AtlasButton
+    <GenUXButton
       id="continue-action"
       name="continue"
       htmlType="button"
@@ -68,14 +69,14 @@ export default function BasicButton({ onContinue }: { onContinue: () => void }) 
         id: 'icon-only',
         title: 'Icon only',
         description:
-          'AtlasIconButton shares AtlasButton sizes, radii, bottom lip and states. Its square presentation requires an aria-label describing the action; the icon does not replace an accessible name.',
-        code: `import AtlasIconButton from '../src/react/AtlasIconButton';
+          'GenUXIconButton shares GenUXButton sizes, radii, bottom lip and states. Its square presentation requires an aria-label describing the action; the icon does not replace an accessible name.',
+        code: `import GenUXIconButton from '../src/react/GenUXIconButton';
 
 export default function IconActions({ onAdd, onRemove }: { onAdd: () => void; onRemove: () => void }) {
   return (
     <div className="control-row">
-      <AtlasIconButton icon="plus" aria-label="Increase" onClick={onAdd} />
-      <AtlasIconButton icon="trash" aria-label="Delete" onClick={onRemove} />
+      <GenUXIconButton icon="plus" aria-label="Increase" onClick={onAdd} />
+      <GenUXIconButton icon="trash" aria-label="Delete" onClick={onRemove} />
     </div>
   );
 }`,
@@ -86,16 +87,16 @@ export default function IconActions({ onAdd, onRemove }: { onAdd: () => void; on
         description:
           'Native type/variant defines the action hierarchy. Visual sizes and radii use shared project tokens.',
         code: `import { Space } from 'antd';
-import AtlasButton from '../src/react/AtlasButton';
+import GenUXButton from '../src/react/GenUXButton';
 
 export default function ButtonVariants() {
   return <Space wrap>
-    <AtlasButton fill="solid" text="Save" />
-    <AtlasButton fill="outline" text="Cancel" />
-    <AtlasButton fill="tint" text="Preview" />
-    <AtlasButton fill="text" text="Details" />
-    <AtlasButton fill="link" href="#usage" text="Usage" />
-    <AtlasButton disabled text="Unavailable" />
+    <GenUXButton fill="solid" text="Save" />
+    <GenUXButton fill="outline" text="Cancel" />
+    <GenUXButton fill="tint" text="Preview" />
+    <GenUXButton fill="text" text="Details" />
+    <GenUXButton fill="link" href="#usage" text="Usage" />
+    <GenUXButton disabled text="Unavailable" />
   </Space>;
 }`,
       },
@@ -114,15 +115,15 @@ export default function ButtonDimensions() {
         id: 'states',
         title: 'Interaction and Processing states',
         description:
-          'The shared AtlasButton shows a thin moving line while processing and prevents repeat submission. This preview does not save data or start a network request.',
-        code: `import AtlasButton from '../src/react/AtlasButton';
-import atlas from '../src/data/atlas.json';
+          'The shared GenUXButton shows a thin moving line while processing and prevents repeat submission. This preview does not save data or start a network request.',
+        code: `import GenUXButton from '../src/react/GenUXButton';
+import genux from '../src/data/genux.json';
 
 export default function ButtonStates() {
   return (
     <div className="state-grid">
-      {atlas.decisions.buttons.state_variants.map(state => (
-        <AtlasButton key={state.value} state={state.value} />
+      {genux.decisions.buttons.state_variants.map(state => (
+        <GenUXButton key={state.value} state={state.value} />
       ))}
     </div>
   );
@@ -133,14 +134,14 @@ export default function ButtonStates() {
         title: 'Double and triple buttons',
         description:
           'One shared wrapper contains two or three equal choices. Exactly one native radio is selected; arrow keys change the selection.',
-        code: `import AtlasButtonGroup from '../src/react/AtlasButtonGroup';
+        code: `import GenUXButtonGroup from '../src/react/GenUXButtonGroup';
 
 export default function ButtonGroups() {
   return <div className="pattern-stack">
-    <AtlasButtonGroup aria-label="Delivery" defaultValue="delivery" options={[
+    <GenUXButtonGroup aria-label="Delivery" defaultValue="delivery" options={[
       {value:'delivery',label:'Delivery'}, {value:'pickup',label:'Pickup'}
     ]} />
-    <AtlasButtonGroup aria-label="View" defaultValue="list" options={[
+    <GenUXButtonGroup aria-label="View" defaultValue="list" options={[
       {value:'list',label:'List'}, {value:'table',label:'Table'}, {value:'calendar',label:'Calendar'}
     ]} />
   </div>;
@@ -149,28 +150,28 @@ export default function ButtonGroups() {
     ],
     api: [
       {
-        property: 'AtlasIconButton.icon / aria-label',
-        type: 'AtlasIconName / string',
+        property: 'GenUXIconButton.icon / aria-label',
+        type: 'GenUXIconName / string',
         defaultValue: 'Required / required',
         description:
           'Phosphor icon and action name. A square presentation uses the shared Button size; state, radius and onClick pass through to the same renderer.',
       },
       {
-        property: 'AtlasButton.width',
+        property: 'GenUXButton.width',
         type: "'content' | 'wide' | 'full'",
         defaultValue: "'content'",
         description:
           'Content, Wide or Full width. The Wide minimum fits its container; full uses native block. Unknown values fall back to content.',
       },
       {
-        property: 'AtlasButton.size',
+        property: 'GenUXButton.size',
         type: "'sm' | 'md' | 'lg'",
         defaultValue: "'md'",
         description:
           'Shared sizes are sm 48 px, md 56 px and lg 64 px. The default inherits the component profile; old size names are compatibility aliases.',
       },
       {
-        property: 'AtlasButton.state',
+        property: 'GenUXButton.state',
         type: 'Default, Hover, Pressed, Disabled or Processing',
         defaultValue: "'default'",
         description:
@@ -205,7 +206,7 @@ export default function ButtonGroups() {
         property: 'size',
         type: "'small' | 'medium' | 'large'",
         defaultValue: "'medium'",
-        description: 'Native Ant Design size; the shared Atlas profiles map to 48, 56 and 64 px.',
+        description: 'Native Ant Design size; the shared GenUX profiles map to 48, 56 and 64 px.',
       },
       {
         property: 'icon / iconPlacement',
@@ -228,7 +229,7 @@ export default function ButtonGroups() {
     ],
     notes: [
       'Buttons use sm/md/lg at 48/56/64 px and the existing 0, 3, 5 px and pill radii. Normal solid buttons have no surrounding border.',
-      'AtlasIconButton composes the shared AtlasButton without a second visual renderer. Icon-only presentation is a web experiment; it adds no decisions to the existing Storybook gallery.',
+      'GenUXIconButton composes the shared GenUXButton without a second visual renderer. Icon-only presentation is a web experiment; it adds no decisions to the existing Storybook gallery.',
       'Approved widths: Content, Wide and Full width. Narrow is experimental and is excluded from the decision gallery and selector.',
       'Preserves normal opacity 0.9, hover 1.0, Outfit (default weight 400, minimum 300), minimum 14px documentation text and natural 0 px letter spacing.',
       'The 4 px bottom layer, 2 px top layer when pressed, fixed body geometry and non-surrounding focus indicator are project CSS contracts rather than native Ant Design features.',
@@ -372,7 +373,7 @@ export default function InputStates() {
     ],
     notes: [
       'InputNumber is a separate component; its onChange value differs from the Input text event.',
-      'NumberStepper places real AtlasIconButton actions alongside InputNumber, without interactive buttons inside native icon slots. A button click produces one step; typing and arrow keys retain native behavior. The application handles removal in onRemove.',
+      'NumberStepper places real GenUXIconButton actions alongside InputNumber, without interactive buttons inside native icon slots. A button click produces one step; typing and arrow keys retain native behavior. The application handles removal in onRemove.',
       'The project offers only the filled field surface. Normal surrounding borders are invisible; existing shadows, semantic error/warning borders and single-edge keyboard focus are preserved. This catalog records no new decisions.',
       'Light gray and dark gray field fills are darker than their page and panel backgrounds. Shared surface tokens are used; theme changes do not reset data through keys or conditional component trees.',
     ],
@@ -397,9 +398,9 @@ export default function InputStates() {
         description:
           'The host controls the text and selected context separately. Choosing a suggestion reveals its purpose; editing or clearing removes a stale choice.',
         code: `import { useState } from 'react';
-import AtlasProvider from '../src/react/AtlasProvider';
-import AtlasAutoComplete from '../src/react/AtlasAutoComplete';
-import '../src/styles/atlas-autocomplete.css';
+import GenUXProvider from '../src/react/GenUXProvider';
+import GenUXAutoComplete from '../src/react/GenUXAutoComplete';
+import '../src/styles/genux-autocomplete.css';
 const items = [
   { key: 'button', value: 'Button', title: 'Button', description: 'Choose an action and its emphasis.', group: { key: 'components', label: 'Components' }, meta: 'Actions' },
   { key: 'start', value: 'Getting started', title: 'Getting started', description: 'Set up shared native components.', group: { key: 'guides', label: 'Guides' }, meta: 'Setup' },
@@ -408,11 +409,11 @@ export default function GroupedCompletion() {
   const [value, setValue] = useState('');
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const selected = items.find(item => item.key === selectedKey);
-  return <AtlasProvider appearance="docs"><AtlasAutoComplete label="Find documentation" value={value} items={items}
+  return <GenUXProvider appearance="docs"><GenUXAutoComplete label="Find documentation" value={value} items={items}
     onChange={next => { setValue(next); setSelectedKey(null); }} onSelect={item => setSelectedKey(item.key)}
     help="Type freely or choose a suggestion to see its purpose." />
     <p role="status">{selected ? selected.description : 'Choose a suggestion to preview its context.'}</p>
-  </AtlasProvider>;
+  </GenUXProvider>;
 }`,
       },
       {
@@ -421,17 +422,17 @@ export default function GroupedCompletion() {
         description:
           'Generate suggested suffixes from the current input. The typed value stays unchanged until someone explicitly chooses a completion.',
         code: `import { useState } from 'react';
-import AtlasProvider from '../src/react/AtlasProvider';
-import AtlasAutoComplete from '../src/react/AtlasAutoComplete';
-import '../src/styles/atlas-autocomplete.css';
+import GenUXProvider from '../src/react/GenUXProvider';
+import GenUXAutoComplete from '../src/react/GenUXAutoComplete';
+import '../src/styles/genux-autocomplete.css';
 export default function EmailCompletion() {
   const [value, setValue] = useState('');
   const name = value.trim().split('@')[0] ?? '';
   const items = name ? ['example.com', 'example.org'].map(domain => ({
     key: domain, value: name + '@' + domain, title: name + '@' + domain, description: 'Complete with a sample domain',
   })) : [];
-  return <AtlasProvider appearance="docs"><AtlasAutoComplete label="Contact email" value={value} onChange={setValue} items={items}
-    placeholder="name@example.com" help="These are sample domains. You can enter your own address." /></AtlasProvider>;
+  return <GenUXProvider appearance="docs"><GenUXAutoComplete label="Contact email" value={value} onChange={setValue} items={items}
+    placeholder="name@example.com" help="These are sample domains. You can enter your own address." /></GenUXProvider>;
 }`,
       },
       {
@@ -440,15 +441,15 @@ export default function EmailCompletion() {
         description:
           'Availability belongs to the caller. This local error sample recovers only through Retry, with no fabricated request or timer and no lost draft.',
         code: `import { useState } from 'react';
-import AtlasProvider from '../src/react/AtlasProvider';
-import AtlasAutoComplete from '../src/react/AtlasAutoComplete';
-import '../src/styles/atlas-autocomplete.css';
+import GenUXProvider from '../src/react/GenUXProvider';
+import GenUXAutoComplete from '../src/react/GenUXAutoComplete';
+import '../src/styles/genux-autocomplete.css';
 export default function CompletionRecovery() {
   const [value, setValue] = useState('Keep my text');
   const [availability, setAvailability] = useState<'ready' | 'error'>('error');
-  return <AtlasProvider appearance="docs"><AtlasAutoComplete label="Team suggestions" value={value} onChange={setValue}
-    items={[{ key: 'atlas', value: 'Atlas Studio', title: 'Atlas Studio' }]} availability={availability}
-    onRetry={() => setAvailability('ready')} help="Local error sample. Retry restores the suggestions and preserves your text." /></AtlasProvider>;
+  return <GenUXProvider appearance="docs"><GenUXAutoComplete label="Team suggestions" value={value} onChange={setValue}
+    items={[{ key: 'genux', value: 'GenUX Studio', title: 'GenUX Studio' }]} availability={availability}
+    onRetry={() => setAvailability('ready')} help="Local error sample. Retry restores the suggestions and preserves your text." /></GenUXProvider>;
 }`,
       },
       {
@@ -457,21 +458,21 @@ export default function CompletionRecovery() {
         description:
           'Validation is a host rule, separate from suggestion availability. Give errors a linked explanation and keep disabled values and their reasons readable.',
         code: `import { useState } from 'react';
-import AtlasProvider from '../src/react/AtlasProvider';
-import AtlasAutoComplete from '../src/react/AtlasAutoComplete';
-import '../src/styles/atlas-autocomplete.css';
+import GenUXProvider from '../src/react/GenUXProvider';
+import GenUXAutoComplete from '../src/react/GenUXAutoComplete';
+import '../src/styles/genux-autocomplete.css';
 export default function CompletionValidation() {
   const [value, setValue] = useState('');
   const error = value.trim().length < 2 ? 'Enter a team name with at least two characters.' : undefined;
-  return <AtlasProvider appearance="docs"><AtlasAutoComplete label="Team name" value={value} onChange={setValue} items={[]}
+  return <GenUXProvider appearance="docs"><GenUXAutoComplete label="Team name" value={value} onChange={setValue} items={[]}
     error={error} help="A custom team name is allowed." />
-    <AtlasAutoComplete label="Assigned team" value="Atlas Studio" onChange={() => {}} items={[]} disabled
-      help="Team assignment is unavailable in this local example." /></AtlasProvider>;
+    <GenUXAutoComplete label="Assigned team" value="GenUX Studio" onChange={() => {}} items={[]} disabled
+      help="Team assignment is unavailable in this local example." /></GenUXProvider>;
 }`,
       },
     ],
     apiDescription:
-      'AtlasAutoComplete wraps installed native Ant Design AutoComplete. It owns local suggestion filtering, grouped presentation and field feedback; the caller owns text, selected context, validation and availability.',
+      'GenUXAutoComplete wraps installed native Ant Design AutoComplete. It owns local suggestion filtering, grouped presentation and field feedback; the caller owns text, selected context, validation and availability.',
     api: [
       {
         property: 'id / label',
@@ -489,14 +490,14 @@ export default function CompletionValidation() {
       },
       {
         property: 'items',
-        type: 'readonly AtlasSuggestion[]',
+        type: 'readonly GenUXSuggestion[]',
         defaultValue: 'Required',
         description:
           'Unique keys and values, a readable title, optional description, group, metadata, search keywords and disabled state. Search matches value, title, description and keywords without case or accent sensitivity.',
       },
       {
         property: 'onSelect',
-        type: '(item: AtlasSuggestion) => void',
+        type: '(item: GenUXSuggestion) => void',
         defaultValue: 'undefined',
         description:
           'Called only for an explicit available suggestion selection. Use its stable key for context; typing alone never selects a record or opens a page.',
@@ -536,42 +537,42 @@ export default function CompletionValidation() {
         type: 'DefaultOptionType[]',
         defaultValue: '[]',
         description:
-          'Native value/label suggestions and grouped options. Atlas maps serializable suggestion data to native labels.',
+          'Native value/label suggestions and grouped options. GenUX maps serializable suggestion data to native labels.',
       },
       {
         property: 'onChange / onSelect',
         type: '(value) => void / (value, option) => void',
         defaultValue: 'undefined',
         description:
-          'Native editable value and explicit selection events. Atlas forwards the text and resolves the selected suggestion.',
+          'Native editable value and explicit selection events. GenUX forwards the text and resolves the selected suggestion.',
       },
       {
         property: 'showSearch.filterOption',
         type: 'boolean | function',
-        defaultValue: 'false (Atlas)',
+        defaultValue: 'false (GenUX)',
         description:
-          'Native filtering is disabled because Atlas already filters the supplied local suggestion data.',
+          'Native filtering is disabled because GenUX already filters the supplied local suggestion data.',
       },
       {
         property: 'defaultActiveFirstOption / backfill',
         type: 'boolean / boolean',
-        defaultValue: 'false / false (Atlas)',
+        defaultValue: 'false / false (GenUX)',
         description:
-          'Atlas requires a deliberate choice and keeps arrow navigation from replacing the entered text.',
+          'GenUX requires a deliberate choice and keeps arrow navigation from replacing the entered text.',
       },
       {
         property: 'notFoundContent',
         type: 'ReactNode',
-        defaultValue: 'Atlas status content',
+        defaultValue: 'GenUX status content',
         description:
           'Native empty-list presentation distinguishes no match, unavailable suggestions and loading without fake selectable items.',
       },
       {
         property: 'allowClear / virtual',
         type: 'boolean | object / boolean',
-        defaultValue: 'Branded clear action / false (Atlas)',
+        defaultValue: 'Branded clear action / false (GenUX)',
         description:
-          'The native clear action uses its accessible label and Atlas icon. Small local suggestion sets render without virtualization.',
+          'The native clear action uses its accessible label and GenUX icon. Small local suggestion sets render without virtualization.',
       },
     ],
     accessibility: [
@@ -584,7 +585,7 @@ export default function CompletionValidation() {
       'This page uses local entries and explicit sample availability states. It does not search a backend, verify an email address, create a team or pretend that a request is running.',
       'Use onChange for the controlled value rather than onSearch. Native suggestion selection and text composition are different events; entered text must stay immediate.',
       'The shared sm/md/lg profile supplies 48/56/64px controls. Settings stay in the initially closed Tweaker; size, detail, theme and language changes preserve drafts and selected context.',
-      'Only this documentation route loads the AutoComplete master and catalog styles. Storybook, approved decisions and GenUI capability registries are unchanged.',
+      'Only this documentation route loads the AutoComplete master and catalog styles. Storybook, approved decisions and GenUX capability registries are unchanged.',
     ],
   },
   {
@@ -606,32 +607,32 @@ export default function CompletionValidation() {
         title: 'Browse or search',
         description:
           'The caller owns the selected path. Search combines terms across ancestors, leaves, descriptions and keywords; browsing never commits a leaf selection.',
-        code: "import { useState } from 'react';\nimport AtlasProvider from '../src/react/AtlasProvider';\nimport AtlasCascader, { type AtlasCascadeOption } from '../src/react/AtlasCascader';\nimport '../src/styles/atlas-cascader.css';\nconst options: AtlasCascadeOption[] = [{ value: 'studio', label: 'Studio', children: [\n  { value: 'design', label: 'Design', children: [{ value: 'review', label: 'Review', description: 'Review design systems' }] },\n  { value: 'engineering', label: 'Engineering', children: [{ value: 'review', label: 'Review', description: 'Review release quality' }] },\n] }];\nexport default function SearchablePath() {\n  const [value, setValue] = useState<string[]>([]);\n  return <AtlasProvider appearance=\"docs\"><AtlasCascader label=\"Destination\" options={options}\n    value={value} onChange={setValue} help=\"Try engineering review.\" /></AtlasProvider>;\n}",
+        code: "import { useState } from 'react';\nimport GenUXProvider from '../src/react/GenUXProvider';\nimport GenUXCascader, { type GenUXCascadeOption } from '../src/react/GenUXCascader';\nimport '../src/styles/genux-cascader.css';\nconst options: GenUXCascadeOption[] = [{ value: 'studio', label: 'Studio', children: [\n  { value: 'design', label: 'Design', children: [{ value: 'review', label: 'Review', description: 'Review design systems' }] },\n  { value: 'engineering', label: 'Engineering', children: [{ value: 'review', label: 'Review', description: 'Review release quality' }] },\n] }];\nexport default function SearchablePath() {\n  const [value, setValue] = useState<string[]>([]);\n  return <GenUXProvider appearance=\"docs\"><GenUXCascader label=\"Destination\" options={options}\n    value={value} onChange={setValue} help=\"Try engineering review.\" /></GenUXProvider>;\n}",
       },
       {
         id: 'multiple',
         title: 'Select several paths',
         description:
           'Native checking preserves partial branches. Choose parent summaries or individual leaves; keep a readable full selection beside the field.',
-        code: "import { useState } from 'react';\nimport AtlasProvider from '../src/react/AtlasProvider';\nimport AtlasCascader, { type AtlasCascadeOption } from '../src/react/AtlasCascader';\nimport '../src/styles/atlas-cascader.css';\nconst options: AtlasCascadeOption[] = [{ value: 'studio', label: 'Studio', children: [\n  { value: 'design', label: 'Design', children: [{ value: 'review', label: 'Review', description: 'Review design systems' }] },\n  { value: 'engineering', label: 'Engineering', children: [{ value: 'review', label: 'Review', description: 'Review release quality' }] },\n] }];\nexport default function MultiplePaths() {\n  const [value, setValue] = useState<string[][]>([]);\n  return <AtlasProvider appearance=\"docs\"><AtlasCascader label=\"Assigned areas\" options={options}\n    multiple value={value} onChange={setValue} checkedStrategy=\"child\" /></AtlasProvider>;\n}",
+        code: "import { useState } from 'react';\nimport GenUXProvider from '../src/react/GenUXProvider';\nimport GenUXCascader, { type GenUXCascadeOption } from '../src/react/GenUXCascader';\nimport '../src/styles/genux-cascader.css';\nconst options: GenUXCascadeOption[] = [{ value: 'studio', label: 'Studio', children: [\n  { value: 'design', label: 'Design', children: [{ value: 'review', label: 'Review', description: 'Review design systems' }] },\n  { value: 'engineering', label: 'Engineering', children: [{ value: 'review', label: 'Review', description: 'Review release quality' }] },\n] }];\nexport default function MultiplePaths() {\n  const [value, setValue] = useState<string[][]>([]);\n  return <GenUXProvider appearance=\"docs\"><GenUXCascader label=\"Assigned areas\" options={options}\n    multiple value={value} onChange={setValue} checkedStrategy=\"child\" /></GenUXProvider>;\n}",
       },
       {
         id: 'display',
         title: 'Path presentation',
         description:
           'A final-item label keeps the control compact. Render the complete path nearby; changeOnSelect allows an intentional earlier branch choice.',
-        code: "import { useState } from 'react';\nimport AtlasProvider from '../src/react/AtlasProvider';\nimport AtlasCascader, { type AtlasCascadeOption } from '../src/react/AtlasCascader';\nimport '../src/styles/atlas-cascader.css';\nconst options: AtlasCascadeOption[] = [{ value: 'studio', label: 'Studio', children: [\n  { value: 'design', label: 'Design', children: [{ value: 'review', label: 'Review', description: 'Review design systems' }] },\n  { value: 'engineering', label: 'Engineering', children: [{ value: 'review', label: 'Review', description: 'Review release quality' }] },\n] }];\nexport default function CompactPath() {\n  const [value, setValue] = useState<string[]>(['studio', 'engineering', 'review']);\n  return <AtlasProvider appearance=\"docs\"><AtlasCascader label=\"Destination\" options={options}\n    value={value} onChange={setValue} selectionLabel=\"leaf\" changeOnSelect />\n    <p>{value.join(' / ')}</p></AtlasProvider>;\n}",
+        code: "import { useState } from 'react';\nimport GenUXProvider from '../src/react/GenUXProvider';\nimport GenUXCascader, { type GenUXCascadeOption } from '../src/react/GenUXCascader';\nimport '../src/styles/genux-cascader.css';\nconst options: GenUXCascadeOption[] = [{ value: 'studio', label: 'Studio', children: [\n  { value: 'design', label: 'Design', children: [{ value: 'review', label: 'Review', description: 'Review design systems' }] },\n  { value: 'engineering', label: 'Engineering', children: [{ value: 'review', label: 'Review', description: 'Review release quality' }] },\n] }];\nexport default function CompactPath() {\n  const [value, setValue] = useState<string[]>(['studio', 'engineering', 'review']);\n  return <GenUXProvider appearance=\"docs\"><GenUXCascader label=\"Destination\" options={options}\n    value={value} onChange={setValue} selectionLabel=\"leaf\" changeOnSelect />\n    <p>{value.join(' / ')}</p></GenUXProvider>;\n}",
       },
       {
         id: 'lazy',
         title: 'Reveal on demand',
         description:
           'The host supplies children after a branch is opened. Native loadData and search cannot be combined; this example reveals local data without a request.',
-        code: "import { useState } from 'react';\nimport AtlasProvider from '../src/react/AtlasProvider';\nimport AtlasCascader, { type AtlasCascadeOption } from '../src/react/AtlasCascader';\nimport '../src/styles/atlas-cascader.css';\nexport default function LocalReveal() {\n  const [value, setValue] = useState<string[]>([]);\n  const [loaded, setLoaded] = useState(false);\n  const options: AtlasCascadeOption[] = [{ value: 'collection', label: 'Collection', isLeaf: false,\n    ...(loaded ? { children: [{ value: 'active', label: 'Active records' }] } : {}) }];\n  return <AtlasProvider appearance=\"docs\"><AtlasCascader label=\"Record group\" options={options}\n    value={value} onChange={setValue} searchable={false} loadData={() => setLoaded(true)} /></AtlasProvider>;\n}",
+        code: "import { useState } from 'react';\nimport GenUXProvider from '../src/react/GenUXProvider';\nimport GenUXCascader, { type GenUXCascadeOption } from '../src/react/GenUXCascader';\nimport '../src/styles/genux-cascader.css';\nexport default function LocalReveal() {\n  const [value, setValue] = useState<string[]>([]);\n  const [loaded, setLoaded] = useState(false);\n  const options: GenUXCascadeOption[] = [{ value: 'collection', label: 'Collection', isLeaf: false,\n    ...(loaded ? { children: [{ value: 'active', label: 'Active records' }] } : {}) }];\n  return <GenUXProvider appearance=\"docs\"><GenUXCascader label=\"Record group\" options={options}\n    value={value} onChange={setValue} searchable={false} loadData={() => setLoaded(true)} /></GenUXProvider>;\n}",
       },
     ],
     apiDescription:
-      'AtlasCascader wraps native Ant Design6.6.6 Cascader. Native navigation and branch checking stay intact; Atlas adds complete-path search, branded presentation and a bounded tree accessibility adapter.',
+      'GenUXCascader wraps native Ant Design6.6.6 Cascader. Native navigation and branch checking stay intact; GenUX adds complete-path search, branded presentation and a bounded tree accessibility adapter.',
     api: [
       {
         property: 'id / label',
@@ -642,7 +643,7 @@ export default function CompletionValidation() {
       },
       {
         property: 'options',
-        type: 'readonly AtlasCascadeOption[]',
+        type: 'readonly GenUXCascadeOption[]',
         defaultValue: 'Required',
         description:
           'Stable string values unique among siblings, readable labels, optional descriptions, keywords, disabled state, children and isLeaf. The caller replaces options when data changes.',
@@ -693,7 +694,7 @@ export default function CompletionValidation() {
       {
         property: 'showSearch',
         type: 'boolean | SearchConfig',
-        defaultValue: 'Atlas search configuration',
+        defaultValue: 'GenUX search configuration',
         description:
           'Nested searchValue/onSearch manage the draft. filter matches complete paths and render keeps a readable full trail; no private native search markers are used.',
       },
@@ -702,12 +703,12 @@ export default function CompletionValidation() {
         type: 'boolean / SHOW_PARENT | SHOW_CHILD',
         defaultValue: 'false / SHOW_PARENT',
         description:
-          'Native branch conduction and indeterminate checkbox state. Atlas maps its parent/child contract to the installed native constants.',
+          'Native branch conduction and indeterminate checkbox state. GenUX maps its parent/child contract to the installed native constants.',
       },
       {
         property: 'optionRender / displayRender',
         type: 'function / function',
-        defaultValue: 'Atlas renderers',
+        defaultValue: 'GenUX renderers',
         description:
           'Option descriptions appear only in the popup. Plain string labels keep the selected control measurable and compact.',
       },
@@ -716,12 +717,12 @@ export default function CompletionValidation() {
         type: '(selectedOptions) => void',
         defaultValue: 'undefined',
         description:
-          'Native lazy branch expansion cannot be combined with showSearch. Atlas passes stable path values to the host.',
+          'Native lazy branch expansion cannot be combined with showSearch. GenUX passes stable path values to the host.',
       },
       {
         property: 'popupRender / classNames / getPopupContainer',
         type: 'function / object / function',
-        defaultValue: 'Atlas contained popup',
+        defaultValue: 'GenUX contained popup',
         description:
           'The popup uses local theme tokens, a contained horizontal column scroller and a useful footer. The semantic adapter links actual tree items to the native combobox.',
       },
@@ -735,7 +736,7 @@ export default function CompletionValidation() {
     notes: [
       'Examples use local data. They do not search a backend, assign permissions or simulate network progress. Lazy reveal is deliberately separate from searchable data.',
       'The shared sm/md/lg profile supplies48/56/64px fields and32/40/50px check marks. Theme, language and presentation changes keep mounted values.',
-      'Cascader master and catalog assets load only on this route. No Storybook approval or GenUI registry capability is implied by this documentation example.',
+      'Cascader master and catalog assets load only on this route. No Storybook approval or GenUX registry capability is implied by this documentation example.',
     ],
   },
   {
@@ -1091,7 +1092,7 @@ const options = [
 export default function SegmentedChoice() {
   return (
     <Segmented
-      className="atlas-segmented"
+      className="genux-segmented"
       name="period"
       aria-label="Period"
       shape="round"
@@ -1307,7 +1308,7 @@ export default function SwitchStates() {
     slug: 'slider',
     title: 'Slider',
     summary:
-      'Chooses a value or interval with radio-sized handles. Horizontal, range, numeric, vertical and reversed controls share one Atlas master.',
+      'Chooses a value or interval with radio-sized handles. Horizontal, range, numeric, vertical and reversed controls share one GenUX master.',
     antdComponent: 'Slider · InputNumber',
     category: 'Data entry',
     sourceUrl: 'https://ant.design/components/slider/',
@@ -1322,14 +1323,14 @@ export default function SwitchStates() {
         description:
           'A single handle uses a number; a range uses an array and distinct accessible names for its bounds.',
         code: `import { useState } from 'react';
-import AtlasSlider from '../src/react/AtlasSlider';
+import GenUXSlider from '../src/react/GenUXSlider';
 
 export default function LinearAndRange() {
   const [value, setValue] = useState(40);
   const [range, setRange] = useState<number[]>([20, 80]);
   return <>
-    <AtlasSlider value={value} onChange={setValue} ariaLabelForHandle="Volume" />
-    <AtlasSlider range value={range} onChange={setRange}
+    <GenUXSlider value={value} onChange={setValue} ariaLabelForHandle="Volume" />
+    <GenUXSlider range value={range} onChange={setRange}
       ariaLabelForHandle={['Minimum volume', 'Maximum volume']} />
   </>;
 }`,
@@ -1341,12 +1342,12 @@ export default function LinearAndRange() {
           'Valid step-aligned values update immediately. Off-step numbers stay as drafts until Enter or blur applies precision.',
         code: `import { useState } from 'react';
 import { InputNumber } from 'antd';
-import AtlasSlider from '../src/react/AtlasSlider';
+import GenUXSlider from '../src/react/GenUXSlider';
 
 export default function PreciseValue() {
   const [value, setValue] = useState(0.47);
   return <>
-    <AtlasSlider min={0} max={1} step={0.01} value={value}
+    <GenUXSlider min={0} max={1} step={0.01} value={value}
       onChange={setValue} ariaLabelForHandle="Opacity" />
     <label htmlFor="opacity-number">Opacity</label>
     <InputNumber id="opacity-number" min={0} max={1} step={0.01} precision={2}
@@ -1363,23 +1364,23 @@ export default function PreciseValue() {
           'Orientation and reverse change presentation without changing the value model. Give vertical controls a container with an explicit height.',
         code: `import { useRef } from 'react';
 import type { SliderRef } from 'antd';
-import AtlasSlider from '../src/react/AtlasSlider';
+import GenUXSlider from '../src/react/GenUXSlider';
 
 export default function Directions() {
   const slider = useRef<SliderRef>(null);
   return <>
     <div className="slider-demo-vertical-frame">
-      <AtlasSlider orientation="vertical" defaultValue={30}
+      <GenUXSlider orientation="vertical" defaultValue={30}
         ariaLabelForHandle="Vertical level" />
     </div>
-    <AtlasSlider ref={slider} reverse defaultValue={40}
+    <GenUXSlider ref={slider} reverse defaultValue={40}
       ariaLabelForHandle="Reversed level" />
   </>;
 }`,
       },
     ],
     apiDescription:
-      'AtlasSlider forwards the installed Ant Design single/range props and ref. Common root props and semantic classNames/styles pass through; Atlas owns the shared visual and motion rules.',
+      'GenUXSlider forwards the installed Ant Design single/range props and ref. Common root props and semantic classNames/styles pass through; GenUX owns the shared visual and motion rules.',
     api: [
       {
         property: 'value / defaultValue',
@@ -1428,7 +1429,7 @@ export default function Directions() {
         property: 'className / rootClassName / style',
         type: 'string / string / CSSProperties',
         defaultValue: '—',
-        description: 'Native common root props pass through alongside the required Atlas class.',
+        description: 'Native common root props pass through alongside the required GenUX class.',
       },
       {
         property: 'classNames / styles / tooltip',
@@ -1451,7 +1452,7 @@ export default function Directions() {
       'Numeric inputs offer an exact-entry alternative. Readable labels and values remain at least 14px at 320 CSS px.',
     ],
     notes: [
-      'One AtlasSlider master is shared by this page and the color system. Its stylesheet loads only on routes that use it.',
+      'One GenUXSlider master is shared by this page and the color system. Its stylesheet loads only on routes that use it.',
       'Values and ARIA update immediately; presentation uses the central symmetric easing and honors reduced motion.',
       'This page uses Ant Design 6.6.6 public APIs. The legacy vertical prop remains supported; orientation is used in these examples.',
       'Storybook and previously approved component decisions are unchanged. Browser and physical-device acceptance remain separate from source and DOM checks.',
@@ -1636,7 +1637,7 @@ export default function BasicForm() {
         <Form.Item name="email" label="Email" rules={[{ required: true, type: 'email', message: 'Enter a valid email address.' }]}>
           <Input type="email" autoComplete="email" />
         </Form.Item>
-        <Button className="atlas-button" type="primary" htmlType="submit">Preview</Button>
+        <Button className="genux-button" type="primary" htmlType="submit">Preview</Button>
       </Form>
       <p role="status">{submitted ? submitted.name + ' has a local preview ready.' : ''}</p>
     </>
@@ -1673,7 +1674,7 @@ export default function ValidationForm() {
       >
         <Input.Password autoComplete="new-password" />
       </Form.Item>
-      <Button className="atlas-button" htmlType="submit">Validate</Button>
+      <Button className="genux-button" htmlType="submit">Validate</Button>
     </Form>
   );
 }`,
@@ -1703,7 +1704,7 @@ export default function PreferencesForm() {
       </Form.Item>
       <Form.Item name="notifications" label="Notifications" valuePropName="checked"><Switch /></Form.Item>
       <Form.Item name="digest" valuePropName="checked"><Checkbox>Receive digest emails</Checkbox></Form.Item>
-      <Button className="atlas-button" htmlType="button" onClick={() => form.resetFields()}>Reset to initial values</Button>
+      <Button className="genux-button" htmlType="button" onClick={() => form.resetFields()}>Reset to initial values</Button>
     </Form>
   );
 }`,
@@ -1797,7 +1798,7 @@ export default function BasicDrawer() {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <Button className="atlas-button" onClick={() => setOpen(true)}>Open details</Button>
+      <Button className="genux-button" onClick={() => setOpen(true)}>Open details</Button>
       <Drawer
         title="Component details"
         open={open}
@@ -1829,7 +1830,7 @@ export default function DrawerPlacements() {
     <>
       <Space wrap>
         {placements.map((direction) => (
-          <Button className="atlas-button" key={direction} onClick={() => { setPlacement(direction); setOpen(true); }}>
+          <Button className="genux-button" key={direction} onClick={() => { setPlacement(direction); setOpen(true); }}>
             {direction}
           </Button>
         ))}
@@ -1861,7 +1862,7 @@ export default function FormDrawer() {
   };
   return (
     <>
-      <Button className="atlas-button" onClick={() => setOpen(true)}>Edit draft</Button>
+      <Button className="genux-button" onClick={() => setOpen(true)}>Edit draft</Button>
       <p role="status">{submitted ? 'Local preview: ' + submitted : ''}</p>
       <Drawer
         title="Draft"
@@ -1870,8 +1871,8 @@ export default function FormDrawer() {
         destroyOnHidden={false}
         footer={
           <Space wrap>
-            <Button className="atlas-button" onClick={() => setOpen(false)}>Close</Button>
-            <Button className="atlas-button" type="primary" htmlType="submit" form="drawer-draft">Preview</Button>
+            <Button className="genux-button" onClick={() => setOpen(false)}>Close</Button>
+            <Button className="genux-button" type="primary" htmlType="submit" form="drawer-draft">Preview</Button>
           </Space>
         }
       >
@@ -1967,48 +1968,48 @@ export default function FormDrawer() {
         title: 'Basic Pill',
         description:
           'Minimum 32 px height, a surface that grows with content and shared Button radii.',
-        code: `import AtlasPill from '../src/react/AtlasPill';
-export default function BasicPill() { return <AtlasPill radius="pill" colorIndex={2}>Engineering</AtlasPill>; }`,
+        code: `import GenUXPill from '../src/react/GenUXPill';
+export default function BasicPill() { return <GenUXPill radius="pill" colorIndex={2}>Engineering</GenUXPill>; }`,
       },
       {
         id: 'closable',
         title: 'Removable tag',
         description: 'Phosphor X, native Tag keyboard behavior and a separate removal callback.',
         code: `import { useState } from 'react';
-import AtlasPill from '../src/react/AtlasPill';
+import GenUXPill from '../src/react/GenUXPill';
 export default function ClosablePill() {
   const [visible, setVisible] = useState(true);
-  return visible ? <AtlasPill closable onClose={() => setVisible(false)}>Design</AtlasPill> : null;
+  return visible ? <GenUXPill closable onClose={() => setVisible(false)}>Design</GenUXPill> : null;
 }`,
       },
       {
         id: 'surface',
         title: 'Surfaces and status',
         description: 'A semantic color works independently with all three native Tag variants.',
-        code: `import AtlasPill from '../src/react/AtlasPill';
-export default function StatusPills() { return <><AtlasPill color="success">Success</AtlasPill><AtlasPill color="success" variant="solid">Success</AtlasPill><AtlasPill color="success" variant="outlined">Success</AtlasPill></>; }`,
+        code: `import GenUXPill from '../src/react/GenUXPill';
+export default function StatusPills() { return <><GenUXPill color="success">Success</GenUXPill><GenUXPill color="success" variant="solid">Success</GenUXPill><GenUXPill color="success" variant="outlined">Success</GenUXPill></>; }`,
       },
       {
         id: 'checkable',
         title: 'Checkable tags with icon',
         description: 'A fully controlled selection with native checkbox semantics.',
         code: `import { useState } from 'react';
-import { AtlasCheckablePill } from '../src/react/AtlasPill';
-export default function SelectablePill() { const [checked, setChecked] = useState(true); return <AtlasCheckablePill checked={checked} onChange={setChecked}>Design</AtlasCheckablePill>; }`,
+import { GenUXCheckablePill } from '../src/react/GenUXPill';
+export default function SelectablePill() { const [checked, setChecked] = useState(true); return <GenUXCheckablePill checked={checked} onChange={setChecked}>Design</GenUXCheckablePill>; }`,
       },
       {
         id: 'automatic-colors',
         title: 'Automatic color distribution',
         description:
           'The Pill scope owns random, balanced assignments for a collection of stable raw keys.',
-        code: `import AtlasPill, { AtlasPillColorScope } from '../src/react/AtlasPill';
+        code: `import GenUXPill, { GenUXPillColorScope } from '../src/react/GenUXPill';
 const values = ['design', 'engineering', 'operations'];
-export default function ColoredPills() { return <AtlasPillColorScope values={values}>{values.map(value => <AtlasPill key={value} colorKey={value}>{value}</AtlasPill>)}</AtlasPillColorScope>; }`,
+export default function ColoredPills() { return <GenUXPillColorScope values={values}>{values.map(value => <GenUXPill key={value} colorKey={value}>{value}</GenUXPill>)}</GenUXPillColorScope>; }`,
       },
     ],
     api: [
       {
-        property: 'colorKey / AtlasPillColorScope',
+        property: 'colorKey / GenUXPillColorScope',
         type: 'string / values: readonly string[]',
         defaultValue: 'Opt in per collection',
         description:
@@ -2043,7 +2044,7 @@ export default function ColoredPills() { return <AtlasPillColorScope values={val
           'Leading React icon and native root, icon, content and close semantic slots; object and function forms are supported.',
       },
       {
-        property: 'AtlasCheckablePill',
+        property: 'GenUXCheckablePill',
         type: 'checked / onChange / disabled',
         defaultValue: 'Controlled',
         description:
@@ -2082,7 +2083,7 @@ export default function ColoredPills() { return <AtlasPillColorScope values={val
       'Focus returns to the native input after removing a Select tag.',
     ],
     notes: [
-      'AtlasPill uses native Ant Design Tag. AtlasCheckablePill uses fully controlled native CheckableTag; Select composes the same master.',
+      'GenUXPill uses native Ant Design Tag. GenUXCheckablePill uses fully controlled native CheckableTag; Select composes the same master.',
       'The filled palette retains 75% white and 5% black. Solid and outlined use the same 17 chromatic families, with contrast-selected ink. Neutral presets and the duplicate red endpoint are excluded.',
       'Automatic collections allocate after client commit, preserving identical SSR/hydration fallback. Theme, locale and size do not recreate the allocator. Explicit semantic colors and fixed palette assignments take precedence.',
       'Pill is a web experiment and requires user approval before entering the Storybook decision list.',
@@ -2107,12 +2108,12 @@ export default function ColoredPills() { return <AtlasPillColorScope values={val
         description:
           'A named button opens an action menu. Each enabled choice reports one local outcome; unavailable choices cannot run.',
         code: `import { useState } from 'react';
-import AtlasDropdown from '../src/react/AtlasDropdown';
+import GenUXDropdown from '../src/react/GenUXDropdown';
 
 export default function ActionMenu() {
   const [result, setResult] = useState('Choose an action');
   return <>
-    <AtlasDropdown label="Workspace actions" items={[
+    <GenUXDropdown label="Workspace actions" items={[
       { key: 'note', label: 'Add review note' },
       { key: 'publish', label: 'Publish remotely', disabled: true },
       { type: 'divider' },
@@ -2127,12 +2128,12 @@ export default function ActionMenu() {
         title: 'Quiet surface · object styles',
         description:
           'An object supplies native semantic classes and styles for a consistent quiet surface. The interaction contract stays the same.',
-        code: `import AtlasDropdown from '../src/react/AtlasDropdown';
+        code: `import GenUXDropdown from '../src/react/GenUXDropdown';
 
 export default function QuietMenu() {
-  return <AtlasDropdown label="Review tools" items={[{ key: 'review', label: 'Review notes' }]}
+  return <GenUXDropdown label="Review tools" items={[{ key: 'review', label: 'Review notes' }]}
     onAction={() => {}}
-    classNames={{ root: 'atlas-dropdown-quiet', item: 'atlas-dropdown-quiet-item' }}
+    classNames={{ root: 'genux-dropdown-quiet', item: 'genux-dropdown-quiet-item' }}
     styles={{ root: { borderRadius: 'var(--radius)' }, itemTitle: { color: 'var(--ink)' } }} />;
 }`,
       },
@@ -2141,12 +2142,12 @@ export default function QuietMenu() {
         title: 'Contextual surface · function styles',
         description:
           'A function reads native component props to resolve semantic styles as the menu opens and closes.',
-        code: `import AtlasDropdown from '../src/react/AtlasDropdown';
+        code: `import GenUXDropdown from '../src/react/GenUXDropdown';
 
 export default function ContextualMenu() {
-  return <AtlasDropdown label="Review options" items={[{ key: 'review', label: 'Review notes' }]}
+  return <GenUXDropdown label="Review options" items={[{ key: 'review', label: 'Review notes' }]}
     onAction={() => {}}
-    classNames={({ props }) => ({ root: props.open ? 'atlas-dropdown-context atlas-dropdown-context-open' : 'atlas-dropdown-context' })}
+    classNames={({ props }) => ({ root: props.open ? 'genux-dropdown-context genux-dropdown-context-open' : 'genux-dropdown-context' })}
     styles={({ props }) => ({ root: { boxShadow: props.open ? 'var(--shadow-soft)' : 'var(--shadow-contact)' }, item: { borderRadius: 'var(--radius-sm)' } })} />;
 }`,
       },
@@ -2155,10 +2156,10 @@ export default function ContextualMenu() {
         title: 'Cascading menu',
         description:
           'Groups give the menu a reading order. Submenus open by click or keyboard; unavailable branches remain disabled.',
-        code: `import AtlasDropdown from '../src/react/AtlasDropdown';
+        code: `import GenUXDropdown from '../src/react/GenUXDropdown';
 
 export default function OrganizeMenu() {
-  return <AtlasDropdown label="Organize workspace" onAction={() => {}} items={[
+  return <GenUXDropdown label="Organize workspace" onAction={() => {}} items={[
     { type: 'group', key: 'workspace', label: 'Workspace', children: [
       { key: 'move', label: 'Move to folder', children: [{ key: 'planning', label: 'Planning' }, { key: 'delivery', label: 'Delivery' }] },
       { key: 'access', label: 'Access settings', disabled: true, children: [{ key: 'permissions', label: 'Manage access' }] },
@@ -2170,7 +2171,7 @@ export default function OrganizeMenu() {
       },
     ],
     apiDescription:
-      'AtlasDropdown adds a named keyboard trigger, native menu focus and one explicit action callback to the installed Dropdown and Menu.',
+      'GenUXDropdown adds a named keyboard trigger, native menu focus and one explicit action callback to the installed Dropdown and Menu.',
     api: [
       {
         property: 'label',
@@ -2194,7 +2195,7 @@ export default function OrganizeMenu() {
       {
         property: 'classNames / styles',
         type: "DropdownProps['classNames'] / DropdownProps['styles']",
-        defaultValue: 'Shared Atlas skin',
+        defaultValue: 'Shared GenUX skin',
         description:
           'Native semantic object or function styling. Shared accessibility and popup ownership remain intact.',
       },
@@ -2203,7 +2204,7 @@ export default function OrganizeMenu() {
       {
         property: 'trigger / open / onOpenChange',
         type: 'click / boolean / callback',
-        defaultValue: 'Managed by Atlas',
+        defaultValue: 'Managed by GenUX',
         description:
           'Click and keyboard opening share the same popup state. Closing returns keyboard focus immediately.',
       },
@@ -2236,7 +2237,7 @@ export default function OrganizeMenu() {
     slug: 'pagination',
     title: 'Pagination',
     summary:
-      'Keep your place in a long collection. Move between pages, change the page size and jump directly to a known page with shared Atlas controls.',
+      'Keep your place in a long collection. Move between pages, change the page size and jump directly to a known page with shared GenUX controls.',
     antdComponent: 'Button · Select · Input',
     category: 'Navigation',
     sourceUrl: 'https://ant.design/components/pagination/',
@@ -2252,12 +2253,12 @@ export default function OrganizeMenu() {
         description:
           'The page owns current and pageSize. One callback handles page navigation, size changes and direct jumps; the default controls include the range and total.',
         code: `import { useState } from 'react';
-import AtlasPagination from '../src/react/AtlasPagination';
+import GenUXPagination from '../src/react/GenUXPagination';
 
 export default function ReviewPages() {
   const [current, setCurrent] = useState(42);
   const [pageSize, setPageSize] = useState(10);
-  return <AtlasPagination
+  return <GenUXPagination
     label="Order review pages"
     current={current}
     total={500}
@@ -2271,10 +2272,10 @@ export default function ReviewPages() {
         title: 'Page boundaries',
         description:
           'A short result keeps one readable page. First, previous, next and last actions cannot move beyond the available range.',
-        code: `import AtlasPagination from '../src/react/AtlasPagination';
+        code: `import GenUXPagination from '../src/react/GenUXPagination';
 
 export default function SinglePage() {
-  return <AtlasPagination
+  return <GenUXPagination
     label="Single page results"
     current={1}
     total={8}
@@ -2291,14 +2292,14 @@ export default function SinglePage() {
         description:
           'The five approved Button surfaces come from the shared decision model. Ordinary buttons and the active page can use independent surfaces; each example owns its current page.',
         code: `import { useState } from 'react';
-import AtlasPagination, { type AtlasPaginationProps } from '../src/react/AtlasPagination';
-import atlas from '../src/data/atlas.json';
+import GenUXPagination, { type GenUXPaginationProps } from '../src/react/GenUXPagination';
+import genux from '../src/data/genux.json';
 
-type Surface = NonNullable<AtlasPaginationProps['buttonType']>;
+type Surface = NonNullable<GenUXPaginationProps['buttonType']>;
 
 function SurfacePages({ surface }: { surface: Surface }) {
   const [current, setCurrent] = useState(4);
-  return <AtlasPagination
+  return <GenUXPagination
     current={current}
     total={80}
     pageSize={10}
@@ -2313,7 +2314,7 @@ function SurfacePages({ surface }: { surface: Surface }) {
 
 export default function PaginationSurfaces() {
   return <div className="pattern-stack">
-    {atlas.decisions.buttons.fill_variants.map(surface => <section key={surface.value}>
+    {genux.decisions.buttons.fill_variants.map(surface => <section key={surface.value}>
       <h3>{surface.label}</h3>
       <SurfacePages surface={surface.value as Surface} />
     </section>)}
@@ -2325,10 +2326,10 @@ export default function PaginationSurfaces() {
         title: 'Availability',
         description:
           'Zero results and an explicitly disabled collection keep their range readable. Disabled page actions cannot invoke the callback.',
-        code: `import AtlasPagination from '../src/react/AtlasPagination';
+        code: `import GenUXPagination from '../src/react/GenUXPagination';
 
 export default function UnavailablePages() {
-  return <AtlasPagination
+  return <GenUXPagination
     label="Unavailable queue pages"
     current={2}
     total={30}
@@ -2342,7 +2343,7 @@ export default function UnavailablePages() {
       },
     ],
     apiDescription:
-      'AtlasPagination composes shared Atlas buttons with native Select and Input controls. Its controlled API is separate from the installed Ant Design Pagination reference.',
+      'GenUXPagination composes shared GenUX buttons with native Select and Input controls. Its controlled API is separate from the installed Ant Design Pagination reference.',
     api: [
       {
         property: 'current',
@@ -2404,13 +2405,13 @@ export default function UnavailablePages() {
         type: "'solid' | 'outline' | 'tint' | 'text' | 'link'",
         defaultValue: "'text'",
         description:
-          'Existing AtlasButton surface for direction buttons and ordinary page numbers.',
+          'Existing GenUXButton surface for direction buttons and ordinary page numbers.',
       },
       {
         property: 'activeButtonType',
         type: "'solid' | 'outline' | 'tint' | 'text' | 'link'",
         defaultValue: "'solid'",
-        description: 'Existing AtlasButton surface for the current page and Go action.',
+        description: 'Existing GenUXButton surface for the current page and Go action.',
       },
       {
         property: 'label',
@@ -2428,7 +2429,7 @@ export default function UnavailablePages() {
     notes: [
       'The first two pages, last two pages and current page with its immediate neighbors remain visible; ellipses separate gaps.',
       'Pagination inherits the shared sm/md/lg component size profile. It has no separate size prop.',
-      'The installed Ant Design 6.6.6 Pagination is an API reference. Explicit first and last actions belong to AtlasPagination; they are not native Pagination props.',
+      'The installed Ant Design 6.6.6 Pagination is an API reference. Explicit first and last actions belong to GenUXPagination; they are not native Pagination props.',
       'The example owns its page, page size and local review note. Presentation and language changes preserve that state.',
       'The current page keeps a separate single-edge marker across all five Button surfaces, including Text button and Link.',
     ],
@@ -2453,17 +2454,17 @@ export default function UnavailablePages() {
         description:
           'The consumer owns the current step. Back and Continue change the local sequence within its bounds.',
         code: `import { useState } from 'react';
-import AtlasProvider from '../src/react/AtlasProvider';
-import AtlasSteps from '../src/react/AtlasSteps';
-import AtlasButton from '../src/react/AtlasButton';
-import '../src/styles/atlas-steps.css';
+import GenUXProvider from '../src/react/GenUXProvider';
+import GenUXSteps from '../src/react/GenUXSteps';
+import GenUXButton from '../src/react/GenUXButton';
+import '../src/styles/genux-steps.css';
 const items = [{ key: 'details', title: 'Details', content: 'Name and purpose' }, { key: 'review', title: 'Review', content: 'Check the details' }, { key: 'ready', title: 'Ready', content: 'Confirm your choice' }];
 export default function GuidedSteps() {
   const [current, setCurrent] = useState(0);
-  return <AtlasProvider appearance="docs"><AtlasSteps label="Setup progress" items={items} current={current} />
-    <AtlasButton text="Back" fill="text" disabled={current === 0} onClick={() => setCurrent(value => value - 1)} />
-    <AtlasButton text="Continue" disabled={current === 2} onClick={() => setCurrent(value => value + 1)} />
-  </AtlasProvider>;
+  return <GenUXProvider appearance="docs"><GenUXSteps label="Setup progress" items={items} current={current} />
+    <GenUXButton text="Back" fill="text" disabled={current === 0} onClick={() => setCurrent(value => value - 1)} />
+    <GenUXButton text="Continue" disabled={current === 2} onClick={() => setCurrent(value => value + 1)} />
+  </GenUXProvider>;
 }`,
       },
       {
@@ -2471,16 +2472,16 @@ export default function GuidedSteps() {
         title: 'Layouts and markers',
         description:
           'Numbered, icon and outlined markers use the same native Steps. Auto layout stacks in narrow containers; Vertical keeps a checklist stacked.',
-        code: `import AtlasProvider from '../src/react/AtlasProvider';
-import AtlasSteps from '../src/react/AtlasSteps';
-import AtlasIcon from '../src/react/AtlasIcon';
-import '../src/styles/atlas-steps.css';
+        code: `import GenUXProvider from '../src/react/GenUXProvider';
+import GenUXSteps from '../src/react/GenUXSteps';
+import GenUXIcon from '../src/react/GenUXIcon';
+import '../src/styles/genux-steps.css';
 export default function IconSteps() {
-  return <AtlasProvider appearance="docs"><AtlasSteps label="Review checklist" current={1} orientation="vertical" variant="outlined" items={[
-    { key: 'details', title: 'Details', icon: <AtlasIcon name="house" /> },
-    { key: 'review', title: 'Review', icon: <AtlasIcon name="search" /> },
-    { key: 'ready', title: 'Ready', icon: <AtlasIcon name="check" /> },
-  ]} /></AtlasProvider>;
+  return <GenUXProvider appearance="docs"><GenUXSteps label="Review checklist" current={1} orientation="vertical" variant="outlined" items={[
+    { key: 'details', title: 'Details', icon: <GenUXIcon name="house" /> },
+    { key: 'review', title: 'Review', icon: <GenUXIcon name="search" /> },
+    { key: 'ready', title: 'Ready', icon: <GenUXIcon name="check" /> },
+  ]} /></GenUXProvider>;
 }`,
       },
       {
@@ -2489,17 +2490,17 @@ export default function IconSteps() {
         description:
           'An error identifies the current issue and an explicit action lets the consumer recover. Changing presentation never implies a successful operation.',
         code: `import { useState } from 'react';
-import AtlasProvider from '../src/react/AtlasProvider';
-import AtlasSteps from '../src/react/AtlasSteps';
-import AtlasButton from '../src/react/AtlasButton';
-import '../src/styles/atlas-steps.css';
+import GenUXProvider from '../src/react/GenUXProvider';
+import GenUXSteps from '../src/react/GenUXSteps';
+import GenUXButton from '../src/react/GenUXButton';
+import '../src/styles/genux-steps.css';
 export default function StepRecovery() {
   const [issue, setIssue] = useState(true);
-  return <AtlasProvider appearance="docs"><AtlasSteps label="Local review progress" current={1} status={issue ? 'error' : 'process'} items={[
+  return <GenUXProvider appearance="docs"><GenUXSteps label="Local review progress" current={1} status={issue ? 'error' : 'process'} items={[
     { key: 'details', title: 'Details', content: 'Name is available' },
     { key: 'review', title: 'Review', content: issue ? 'Confirmation is missing' : 'Review the confirmation' },
     { key: 'ready', title: 'Ready', content: 'Waiting for confirmation' },
-  ]} /><AtlasButton text="Review locally" disabled={!issue} onClick={() => setIssue(false)} /></AtlasProvider>;
+  ]} /><GenUXButton text="Review locally" disabled={!issue} onClick={() => setIssue(false)} /></GenUXProvider>;
 }`,
       },
       {
@@ -2508,25 +2509,25 @@ export default function StepRecovery() {
         description:
           'Controlled navigation allows revisiting available steps. Arrow keys move focus; Enter or Space chooses a step. Disabled steps remain explained.',
         code: `import { useState } from 'react';
-import AtlasProvider from '../src/react/AtlasProvider';
-import AtlasSteps from '../src/react/AtlasSteps';
-import '../src/styles/atlas-steps.css';
+import GenUXProvider from '../src/react/GenUXProvider';
+import GenUXSteps from '../src/react/GenUXSteps';
+import '../src/styles/genux-steps.css';
 export default function StepNavigation() {
   const [current, setCurrent] = useState(0);
-  return <AtlasProvider appearance="docs"><AtlasSteps label="Workspace sections" current={current} onChange={setCurrent} type="navigation" items={[
+  return <GenUXProvider appearance="docs"><GenUXSteps label="Workspace sections" current={current} onChange={setCurrent} type="navigation" items={[
     { key: 'overview', title: 'Overview' },
     { key: 'members', title: 'Members' },
     { key: 'access', title: 'Access', content: 'Available after workspace creation', disabled: true },
-  ]} /><p role="status">Current section: {current + 1}</p></AtlasProvider>;
+  ]} /><p role="status">Current section: {current + 1}</p></GenUXProvider>;
 }`,
       },
     ],
     apiDescription:
-      'AtlasSteps wraps the installed native Steps. Container adaptation, shared sizes and keyboard focus are Atlas behavior; current remains controlled by the caller.',
+      'GenUXSteps wraps the installed native Steps. Container adaptation, shared sizes and keyboard focus are GenUX behavior; current remains controlled by the caller.',
     api: [
       {
         property: 'items',
-        type: 'readonly AtlasStepItem[]',
+        type: 'readonly GenUXStepItem[]',
         defaultValue: 'Required',
         description:
           'Stable keys, titles and optional content, Phosphor icon nodes, status and disabled state. Keep a logical sequence in a stable order.',
@@ -2596,14 +2597,14 @@ export default function StepNavigation() {
         type: "'horizontal' | 'vertical'",
         defaultValue: "'horizontal'",
         description:
-          'Native orientation. Atlas auto container layout is separate from the native viewport responsive behavior.',
+          'Native orientation. GenUX auto container layout is separate from the native viewport responsive behavior.',
       },
       {
         property: 'size',
         type: "'small' | 'medium'",
         defaultValue: "'medium'",
         description:
-          'Native Steps supports two sizes. Atlas maps sm to small and md/lg to medium with shared marker geometry.',
+          'Native Steps supports two sizes. GenUX maps sm to small and md/lg to medium with shared marker geometry.',
       },
       {
         property: 'items.content',
@@ -2644,10 +2645,10 @@ export default function StepNavigation() {
         title: 'Quick navigation',
         description:
           'An ancestor link and its adjacent menu have separate targets. The menu opens by click or keyboard and offers real destinations.',
-        code: `import AtlasBreadcrumb from '../src/react/AtlasBreadcrumb';
+        code: `import GenUXBreadcrumb from '../src/react/GenUXBreadcrumb';
 
 export default function WorkspacePath() {
-  return <AtlasBreadcrumb label="Workspace path" items={[
+  return <GenUXBreadcrumb label="Workspace path" items={[
     { key: 'home', label: 'Overview', href: '/' },
     { key: 'workspace', label: 'Data workspace', href: '/components/record-workspace/', menuLabel: 'Navigate Data workspace pages', menu: [
       { key: 'data-table', label: 'Data table', href: '/components/data-table/' },
@@ -2662,10 +2663,10 @@ export default function WorkspacePath() {
         title: 'Icon style',
         description:
           'The home shortcut has an accessible name. Other icons accompany visible text; the final item remains a non-link current page.',
-        code: `import AtlasBreadcrumb from '../src/react/AtlasBreadcrumb';
+        code: `import GenUXBreadcrumb from '../src/react/GenUXBreadcrumb';
 
 export default function IconPath() {
-  return <AtlasBreadcrumb label="Workspace path" items={[
+  return <GenUXBreadcrumb label="Workspace path" items={[
     { key: 'home', label: 'Overview', href: '/', icon: 'house', iconOnly: true },
     { key: 'workspace', label: 'Record workspace', href: '/components/record-workspace/', icon: 'settings' },
     { key: 'record-details', label: 'Record details', icon: 'check' },
@@ -2674,7 +2675,7 @@ export default function IconPath() {
       },
     ],
     apiDescription:
-      'AtlasBreadcrumb composes the native Breadcrumb and Dropdown with explicit link, current-page and keyboard semantics.',
+      'GenUXBreadcrumb composes the native Breadcrumb and Dropdown with explicit link, current-page and keyboard semantics.',
     api: [
       {
         property: 'label',
@@ -2685,7 +2686,7 @@ export default function IconPath() {
       },
       {
         property: 'items',
-        type: 'readonly AtlasBreadcrumbItem[]',
+        type: 'readonly GenUXBreadcrumbItem[]',
         defaultValue: 'Required',
         description:
           'Ordered stable keys and readable labels. The last item is the current page and never a link.',
@@ -2698,14 +2699,14 @@ export default function IconPath() {
       },
       {
         property: 'item.icon / iconOnly',
-        type: 'AtlasIconName / boolean',
+        type: 'GenUXIconName / boolean',
         defaultValue: '— / false',
         description:
           'Shared Phosphor icon. Icon-only ancestors retain their text label as an accessible name.',
       },
       {
         property: 'item.menu / menuLabel',
-        type: 'readonly AtlasBreadcrumbDestination[] / string',
+        type: 'readonly GenUXBreadcrumbDestination[] / string',
         defaultValue: '— / item label',
         description:
           'Named sibling destinations opened by a separate native keyboard-operable button.',
@@ -2734,7 +2735,7 @@ export default function IconPath() {
       'Paths wrap at narrow widths without reducing text size. Links and menu targets retain shared minimum dimensions.',
     ],
     notes: [
-      'The two variants share one native component and the existing Atlas tokens, sizing, language and motion contracts.',
+      'The two variants share one native component and the existing GenUX tokens, sizing, language and motion contracts.',
       'The example path describes a workspace context; its links lead to actual documentation routes.',
     ],
   },
@@ -2755,11 +2756,11 @@ export default function IconPath() {
         id: 'adaptive',
         title: 'Adaptive workspace panels',
         description:
-          'AtlasSplitter owns panel proportions and native rendering. The page owns its records and draft; the same content stays mounted as the available space changes.',
-        code: `import AtlasSplitter from '../src/react/AtlasSplitter';
+          'GenUXSplitter owns panel proportions and native rendering. The page owns its records and draft; the same content stays mounted as the available space changes.',
+        code: `import GenUXSplitter from '../src/react/GenUXSplitter';
 
 export default function WorkspacePanels() {
-  return <AtlasSplitter id="workspace-panels" label="Records and review" initialSizes={[60, 40]} panels={[
+  return <GenUXSplitter id="workspace-panels" label="Records and review" initialSizes={[60, 40]} panels={[
     { id: 'records-pane', label: 'Records', children: <p>Choose a record.</p> },
     { id: 'review-pane', label: 'Review', children: <p>Inspect the current record.</p> },
   ]} />;
@@ -2770,10 +2771,10 @@ export default function WorkspacePanels() {
         title: 'Vertical editor and review',
         description:
           'Use a vertical flow when tasks should stay above and below each other at every width. Panel buttons and keyboard arrows share the same bounded value as dragging.',
-        code: `import AtlasSplitter from '../src/react/AtlasSplitter';
+        code: `import GenUXSplitter from '../src/react/GenUXSplitter';
 
 export default function EditorPanels() {
-  return <AtlasSplitter id="editor-panels" label="Editor and review" orientation="vertical" panels={[
+  return <GenUXSplitter id="editor-panels" label="Editor and review" orientation="vertical" panels={[
     { id: 'editor-pane', label: 'Editor', min: 25, children: <p>Edit the draft.</p> },
     { id: 'preview-pane', label: 'Preview', min: 25, children: <p>Review the draft.</p> },
   ]} />;
@@ -2781,11 +2782,11 @@ export default function EditorPanels() {
       },
     ],
     apiDescription:
-      'AtlasSplitter is the accessible adaptive two-panel contract used by Data workspace pages. Native Ant Design supports additional panel arrangements; its underlying API is listed separately.',
+      'GenUXSplitter is the accessible adaptive two-panel contract used by Data workspace pages. Native Ant Design supports additional panel arrangements; its underlying API is listed separately.',
     api: [
       {
-        property: 'AtlasSplitter.panels',
-        type: '[AtlasSplitterPanel, AtlasSplitterPanel]',
+        property: 'GenUXSplitter.panels',
+        type: '[GenUXSplitterPanel, GenUXSplitterPanel]',
         defaultValue: 'Required',
         description:
           'Two stable IDs, accessible labels and caller-owned React content. Optional min/max values are percentages.',
@@ -2824,28 +2825,28 @@ export default function EditorPanels() {
         type: "'horizontal' | 'vertical'",
         defaultValue: 'horizontal',
         description:
-          'Native panel layout direction. The Atlas auto mode resolves this value from the container.',
+          'Native panel layout direction. The GenUX auto mode resolves this value from the container.',
       },
       {
         property: 'Splitter.Panel size / min / max',
         type: 'number | string',
         defaultValue: 'Automatic',
         description:
-          'Native sizes support pixels or percentage strings. Atlas passes controlled bounded percentages.',
+          'Native sizes support pixels or percentage strings. GenUX passes controlled bounded percentages.',
       },
       {
         property: 'onResize / onResizeEnd',
         type: '(sizes: number[]) => void',
         defaultValue: '—',
         description:
-          'Native resize events expose panel pixel sizes. Atlas adds pointer cancellation, keyboard access and named non-drag actions.',
+          'Native resize events expose panel pixel sizes. GenUX adds pointer cancellation, keyboard access and named non-drag actions.',
       },
       {
         property: 'collapsible / destroyOnHidden',
         type: 'object / boolean',
         defaultValue: 'Not enabled / false',
         description:
-          'Optional native collapse lifecycle. The Atlas two-panel contract keeps both panes available and mounted.',
+          'Optional native collapse lifecycle. The GenUX two-panel contract keeps both panes available and mounted.',
       },
     ],
     accessibility: [
@@ -2864,14 +2865,14 @@ export default function EditorPanels() {
     slug: 'card',
     title: 'Card',
     summary:
-      'Purpose-built cards for records, metrics and actions. Explore 23 card purposes, domain recipes and controlled interactions before opening the optional GenUI lab.',
-    antdComponent: 'Card · AtlasCard · EntityCard · MetricCard · PurposeCard',
+      'Purpose-built cards for records, metrics and actions. Explore 23 card purposes, domain recipes and controlled interactions before opening the optional GenUX lab.',
+    antdComponent: 'Card · GenUXCard · EntityCard · MetricCard · PurposeCard',
     category: 'Content',
     sourceUrl: 'https://ant.design/components/card/',
     whenToUse: [
       'Use EntityCard for a recognizable record and MetricCard for a value with its period and comparison.',
       'Choose a clear purpose and useful content. A task workspace may combine a table, form, chart and related actions; arrange peer cards as siblings.',
-      'Use serializable card definitions for trusted rendering and validated GenUI intents; keep data access, queries and mutation in the Frappe host.',
+      'Use serializable card definitions for trusted rendering and validated GenUX intents; keep data access, queries and mutation in the Frappe host.',
     ],
     examples: [
       {
@@ -2880,9 +2881,9 @@ export default function EditorPanels() {
         description:
           'EntityCard renders a serializable record model. Its action returns the model to the host instead of assuming navigation or persistence.',
         code: `import { EntityCard } from '../src/react/cards';
-import type { AtlasCardModel } from '../src/data/card-model';
-const model: AtlasCardModel = { id: 'ORDER-24', kind: 'entity', title: 'Workspace review', facts: [{ key: 'amount', label: 'Amount', value: 0, format: 'currency', currency: 'EUR' }], primaryAction: { id: 'inspect', label: 'Open review', intent: 'inspect' } };
-export default function RecordCard({ onInspect }: { onInspect: (model: AtlasCardModel) => void }) {
+import type { GenUXCardModel } from '../src/data/card-model';
+const model: GenUXCardModel = { id: 'ORDER-24', kind: 'entity', title: 'Workspace review', facts: [{ key: 'amount', label: 'Amount', value: 0, format: 'currency', currency: 'EUR' }], primaryAction: { id: 'inspect', label: 'Open review', intent: 'inspect' } };
+export default function RecordCard({ onInspect }: { onInspect: (model: GenUXCardModel) => void }) {
   return <EntityCard model={model} onAction={(_action, selected) => onInspect(selected)} />;
 }`,
       },
@@ -2915,9 +2916,9 @@ export default function SelectionCard() {
           'Named move buttons provide the non-drag path. The host owns the task lane and decides whether a move can be applied.',
         code: `import { useState } from 'react';
 import { PurposeCard } from '../src/react/cards';
-import type { AtlasCardModel } from '../src/data/card-model';
+import type { GenUXCardModel } from '../src/data/card-model';
 export default function TaskCard() {
-  const [lane, setLane] = useState<NonNullable<AtlasCardModel['task']>['lane']>('planned');
+  const [lane, setLane] = useState<NonNullable<GenUXCardModel['task']>['lane']>('planned');
   return <PurposeCard model={{ id: 'task-1', kind: 'task', title: 'Prepare review', task: { lane, priority: 'normal', completed: 1, total: 3 } }} onMove={setLane} />;
 }`,
       },
@@ -2928,8 +2929,8 @@ export default function TaskCard() {
           'The catalog offers domain fixtures as data. Render one selected recipe and connect its primary action to a real local detail view.',
         code: `import { PurposeCard } from '../src/react/cards';
 import { CARD_RECIPES } from '../src/data/card-recipes';
-import type { AtlasCardModel } from '../src/data/card-model';
-export default function RecipeCard({ onInspect }: { onInspect: (model: AtlasCardModel) => void }) {
+import type { GenUXCardModel } from '../src/data/card-model';
+export default function RecipeCard({ onInspect }: { onInspect: (model: GenUXCardModel) => void }) {
   const recipe = CARD_RECIPES[0];
   return <PurposeCard model={recipe.model} onAction={(_action, model) => onInspect(model)} />;
 }`,
@@ -2959,25 +2960,25 @@ export default function PeerCards() {
       },
     ],
     apiDescription:
-      'AtlasCard owns trusted presentation slots. EntityCard, MetricCard and PurposeCard consume a serializable AtlasCardModel; callbacks, queries and authorization stay with the host. The optional lab loads X Cards and X SDK only after explicit intent.',
+      'GenUXCard owns trusted presentation slots. EntityCard, MetricCard and PurposeCard consume a serializable GenUXCardModel; callbacks, queries and authorization stay with the host. The optional lab loads X Cards and X SDK only after explicit intent.',
     api: [
       {
         property: 'model',
-        type: 'AtlasCardModel',
+        type: 'GenUXCardModel',
         defaultValue: 'required',
         description:
           'Serializable purpose, identity, content, state, facts and optional action. It contains no JSX, callbacks, HTML or CSS.',
       },
       {
         property: 'onAction',
-        type: '(action: CardAction, model: AtlasCardModel) => void',
+        type: '(action: CardAction, model: GenUXCardModel) => void',
         defaultValue: 'undefined',
         description:
           'An explicit host callback. Without a handler, a supplied primary action is disabled with an explanation.',
       },
       {
         property: 'onSelectionChange / onMove / onFieldChange',
-        type: 'AtlasCardCallbacks',
+        type: 'GenUXCardCallbacks',
         defaultValue: 'undefined',
         description:
           'Controlled selection, task lane and field editing. Callbacks do not persist or authorize changes.',
@@ -3035,16 +3036,16 @@ export default function PeerCards() {
       {
         property: 'Card',
         type: 'native Ant Design 6.6.6',
-        defaultValue: 'trusted Atlas adapter',
+        defaultValue: 'trusted GenUX adapter',
         description:
-          'AtlasCard uses native Card for its surface, with shared sm/md/lg spacing and supported small/medium native sizes.',
+          'GenUXCard uses native Card for its surface, with shared sm/md/lg spacing and supported small/medium native sizes.',
       },
       {
         property: 'X Cards / X SDK',
         type: 'optional lab packages',
         defaultValue: 'not loaded by the basic catalog',
         description:
-          'Advanced rendering and local stream examples belong to the optional GenUI lab, separate from the baseline renderer.',
+          'Advanced rendering and local stream examples belong to the optional GenUX lab, separate from the baseline renderer.',
       },
     ],
     accessibility: [
@@ -3055,7 +3056,7 @@ export default function PeerCards() {
     ],
     notes: [
       'The purpose catalog covers 23 card purposes and at least 31 domain recipes, one selected preview at a time.',
-      'Entity and Metric are the foundation. The page then groups domain recipes, interactions, states and the optional GenUI lab.',
+      'Entity and Metric are the foundation. The page then groups domain recipes, interactions, states and the optional GenUX lab.',
       'No initial Card page import requires X Cards or X SDK. Open the lab explicitly to request its additional resources.',
       'Every example action changes local host state only. Metadata and supplied capability reasons do not prove server authorization.',
       'Card is a web experiment; this delivery does not promote approved decisions or Storybook stories.',
@@ -3065,7 +3066,7 @@ export default function PeerCards() {
     slug: 'data-table',
     title: 'Data table',
     summary:
-      'Explore readable tables, grouping, hierarchy and local row editing with stable records, explicit selection and shared Atlas controls.',
+      'Explore readable tables, grouping, hierarchy and local row editing with stable records, explicit selection and shared GenUX controls.',
     antdComponent: 'Table · Input · Checkbox',
     category: 'Data workspace',
     sourceUrl: 'https://ant.design/components/table/',
@@ -3168,7 +3169,7 @@ export default function PeerCards() {
       'Controlled collection, form and display components are demonstrated together on the Record workspace page.',
       'Experimental web examples awaiting user approval. They are not added to Storybook or the approved decision model.',
       'The examples use twelve fictional records and local state. They do not implement a server, permissions, live AI, an ERP engine or persistence.',
-      'The reference material supplies data arrangements and view types. The visual identity comes from existing Atlas components and semantic tokens.',
+      'The reference material supplies data arrangements and view types. The visual identity comes from existing GenUX components and semantic tokens.',
     ],
   },
   {
@@ -3278,7 +3279,7 @@ export default function PeerCards() {
       'Controlled collection, form and display components are demonstrated together on the Record workspace page.',
       'Experimental web examples awaiting user approval. They are not added to Storybook or the approved decision model.',
       'The examples use twelve fictional records and local state. They do not implement a server, permissions, live AI, an ERP engine or persistence.',
-      'The reference material supplies data arrangements and view types. The visual identity comes from existing Atlas components and semantic tokens.',
+      'The reference material supplies data arrangements and view types. The visual identity comes from existing GenUX components and semantic tokens.',
     ],
   },
   {
@@ -3306,7 +3307,7 @@ export default function PeerCards() {
         title: 'Shared record summary',
         description:
           'Use the same semantic record summary in a collection pane or a detail surface.',
-        code: "import AtlasProvider from '../src/react/AtlasProvider';\nimport RecordSummary from '../src/react/workspace/RecordSummary';\nimport { initialRecords } from '../src/data/workspace';\nimport '../src/styles/workspace.css';\nimport '../src/styles/workspace-kit.css';\n\nexport default function Example() {\n  const record = initialRecords()[0];\n  return record ? <AtlasProvider><div className=\"workspace-lab\"><RecordSummary record={record} /></div></AtlasProvider> : null;\n}",
+        code: "import GenUXProvider from '../src/react/GenUXProvider';\nimport RecordSummary from '../src/react/workspace/RecordSummary';\nimport { initialRecords } from '../src/data/workspace';\nimport '../src/styles/workspace.css';\nimport '../src/styles/workspace-kit.css';\n\nexport default function Example() {\n  const record = initialRecords()[0];\n  return record ? <GenUXProvider><div className=\"workspace-lab\"><RecordSummary record={record} /></div></GenUXProvider> : null;\n}",
       },
     ],
     apiDescription:
@@ -3386,7 +3387,7 @@ export default function PeerCards() {
       'Controlled collection, form and display components are demonstrated together on the Record workspace page.',
       'Experimental web examples awaiting user approval. They are not added to Storybook or the approved decision model.',
       'The examples use twelve fictional records and local state. They do not implement a server, permissions, live AI, an ERP engine or persistence.',
-      'The reference material supplies data arrangements and view types. The visual identity comes from existing Atlas components and semantic tokens.',
+      'The reference material supplies data arrangements and view types. The visual identity comes from existing GenUX components and semantic tokens.',
     ],
   },
   {
@@ -3413,8 +3414,8 @@ export default function PeerCards() {
         id: 'composition-detail',
         title: 'Compose the form under one provider',
         description:
-          'The named form example can share an existing AtlasProvider without nesting a second theme provider.',
-        code: "import AtlasProvider from '../src/react/AtlasProvider';\nimport { RecordFormsExamples } from '../src/react/workspace/RecordFormsDemo';\nimport '../src/styles/workspace.css';\nimport '../src/styles/workspace-forms.css';\n\nexport default function Example() {\n  return <AtlasProvider><RecordFormsExamples /></AtlasProvider>;\n}",
+          'The named form example can share an existing GenUXProvider without nesting a second theme provider.',
+        code: "import GenUXProvider from '../src/react/GenUXProvider';\nimport { RecordFormsExamples } from '../src/react/workspace/RecordFormsDemo';\nimport '../src/styles/workspace.css';\nimport '../src/styles/workspace-forms.css';\n\nexport default function Example() {\n  return <GenUXProvider><RecordFormsExamples /></GenUXProvider>;\n}",
       },
     ],
     apiDescription:
@@ -3498,7 +3499,7 @@ export default function PeerCards() {
       'Controlled collection, form and display components are demonstrated together on the Record workspace page.',
       'Experimental web examples awaiting user approval. They are not added to Storybook or the approved decision model.',
       'The examples use twelve fictional records and local state. They do not implement a server, permissions, live AI, an ERP engine or persistence.',
-      'The reference material supplies data arrangements and view types. The visual identity comes from existing Atlas components and semantic tokens.',
+      'The reference material supplies data arrangements and view types. The visual identity comes from existing GenUX components and semantic tokens.',
     ],
   },
   {
@@ -3526,24 +3527,24 @@ export default function PeerCards() {
         title: 'Controlled collection',
         description:
           'The consumer owns query, selection, active record and field projection independently.',
-        code: "import { useState } from 'react';\nimport AtlasProvider from '../src/react/AtlasProvider';\nimport RecordCollection from '../src/react/workspace/kit/RecordCollection';\nimport type { FieldDefinition, QueryState } from '../src/react/workspace/kit/contracts';\nimport '../src/styles/workspace-kit.css';\nimport '../src/styles/kit-collections.css';\nimport '../src/styles/atlas-pagination.css';\n\ntype Row = { id: string; name: string };\nconst fields: FieldDefinition<Row>[] = [{ key: 'name', label: 'Name', kind: 'text',\n  getValue: row => row.name, setValue: (row, value) => ({ ...row, name: String(value ?? '') }) }];\nexport default function ControlledListing() {\n  const [query, setQuery] = useState<QueryState>({ search: '', filters: [], sort: [] });\n  const [activeId, setActiveId] = useState<string | null>(null);\n  const [checkedIds, setCheckedIds] = useState<readonly string[]>([]);\n  const [projection, setProjection] = useState<readonly string[]>(['name']);\n  return <AtlasProvider><RecordCollection records={[{ id: 'r1', name: 'Example' }]}\n    fields={fields} query={query} onQueryChange={setQuery}\n    activeId={activeId} onActiveIdChange={setActiveId}\n    checkedIds={checkedIds} onCheckedIdsChange={setCheckedIds}\n    projection={projection} onProjectionChange={setProjection} /></AtlasProvider>;\n}",
+        code: "import { useState } from 'react';\nimport GenUXProvider from '../src/react/GenUXProvider';\nimport RecordCollection from '../src/react/workspace/kit/RecordCollection';\nimport type { FieldDefinition, QueryState } from '../src/react/workspace/kit/contracts';\nimport '../src/styles/workspace-kit.css';\nimport '../src/styles/kit-collections.css';\nimport '../src/styles/genux-pagination.css';\n\ntype Row = { id: string; name: string };\nconst fields: FieldDefinition<Row>[] = [{ key: 'name', label: 'Name', kind: 'text',\n  getValue: row => row.name, setValue: (row, value) => ({ ...row, name: String(value ?? '') }) }];\nexport default function ControlledListing() {\n  const [query, setQuery] = useState<QueryState>({ search: '', filters: [], sort: [] });\n  const [activeId, setActiveId] = useState<string | null>(null);\n  const [checkedIds, setCheckedIds] = useState<readonly string[]>([]);\n  const [projection, setProjection] = useState<readonly string[]>(['name']);\n  return <GenUXProvider><RecordCollection records={[{ id: 'r1', name: 'Example' }]}\n    fields={fields} query={query} onQueryChange={setQuery}\n    activeId={activeId} onActiveIdChange={setActiveId}\n    checkedIds={checkedIds} onCheckedIdsChange={setCheckedIds}\n    projection={projection} onProjectionChange={setProjection} /></GenUXProvider>;\n}",
       },
       {
         id: 'controlled-record',
         title: 'Controlled form and display',
         description: 'Only an explicit commit changes the read display; typing changes the draft.',
-        code: "import { useState } from 'react';\nimport AtlasProvider from '../src/react/AtlasProvider';\nimport RecordForm from '../src/react/workspace/kit/RecordForm';\nimport RecordDisplay from '../src/react/workspace/kit/RecordDisplay';\nimport type { FieldDefinition } from '../src/react/workspace/kit/contracts';\nimport '../src/styles/workspace-kit.css';\nimport '../src/styles/kit-records.css';\n\ntype Row = { id: string; name: string };\nconst fields: FieldDefinition<Row>[] = [{ key: 'name', label: 'Name', kind: 'text', required: true,\n  getValue: row => row.name, setValue: (row, value) => ({ ...row, name: String(value ?? '') }) }];\nexport default function ControlledRecord() {\n  const [record, setRecord] = useState<Row>({ id: 'r1', name: 'Example' });\n  const [draft, setDraft] = useState(record);\n  return <AtlasProvider><RecordForm record={record} draft={draft} fields={fields} errors={{}}\n    onDraftChange={setDraft} onCommit={next => { setRecord(next); setDraft(next); }}\n    onCancel={() => setDraft(record)} />\n    <RecordDisplay record={record} fields={fields} /></AtlasProvider>;\n}",
+        code: "import { useState } from 'react';\nimport GenUXProvider from '../src/react/GenUXProvider';\nimport RecordForm from '../src/react/workspace/kit/RecordForm';\nimport RecordDisplay from '../src/react/workspace/kit/RecordDisplay';\nimport type { FieldDefinition } from '../src/react/workspace/kit/contracts';\nimport '../src/styles/workspace-kit.css';\nimport '../src/styles/kit-records.css';\n\ntype Row = { id: string; name: string };\nconst fields: FieldDefinition<Row>[] = [{ key: 'name', label: 'Name', kind: 'text', required: true,\n  getValue: row => row.name, setValue: (row, value) => ({ ...row, name: String(value ?? '') }) }];\nexport default function ControlledRecord() {\n  const [record, setRecord] = useState<Row>({ id: 'r1', name: 'Example' });\n  const [draft, setDraft] = useState(record);\n  return <GenUXProvider><RecordForm record={record} draft={draft} fields={fields} errors={{}}\n    onDraftChange={setDraft} onCommit={next => { setRecord(next); setDraft(next); }}\n    onCancel={() => setDraft(record)} />\n    <RecordDisplay record={record} fields={fields} /></GenUXProvider>;\n}",
       },
       {
         id: 'controlled-panel',
         title: 'Controlled record container',
         description:
           'Container and relation return actions remain caller-owned while the same record is displayed.',
-        code: "import { useState } from 'react';\nimport AtlasProvider from '../src/react/AtlasProvider';\nimport AtlasButton from '../src/react/AtlasButton';\nimport RecordPanel from '../src/react/workspace/kit/RecordPanel';\nimport type { FieldDefinition } from '../src/react/workspace/kit/contracts';\nimport '../src/styles/workspace-kit.css';\nimport '../src/styles/kit-records.css';\n\ntype Row = { id: string; name: string };\nconst record: Row = { id: 'r1', name: 'Example' };\nconst fields: FieldDefinition<Row>[] = [{ key: 'name', label: 'Name', kind: 'text', getValue: row => row.name }];\nexport default function ControlledPanel() {\n  const [open, setOpen] = useState(false);\n  return <AtlasProvider><AtlasButton text=\"Open record\" onClick={() => setOpen(true)} />\n    <RecordPanel open={open} onClose={() => setOpen(false)} container=\"drawer\"\n      record={record} fields={fields} presentation=\"sections\"\n      returnTrail={[{ id: 'list', label: 'All records', onReturn: () => setOpen(false) }]} />\n    </AtlasProvider>;\n}",
+        code: "import { useState } from 'react';\nimport GenUXProvider from '../src/react/GenUXProvider';\nimport GenUXButton from '../src/react/GenUXButton';\nimport RecordPanel from '../src/react/workspace/kit/RecordPanel';\nimport type { FieldDefinition } from '../src/react/workspace/kit/contracts';\nimport '../src/styles/workspace-kit.css';\nimport '../src/styles/kit-records.css';\n\ntype Row = { id: string; name: string };\nconst record: Row = { id: 'r1', name: 'Example' };\nconst fields: FieldDefinition<Row>[] = [{ key: 'name', label: 'Name', kind: 'text', getValue: row => row.name }];\nexport default function ControlledPanel() {\n  const [open, setOpen] = useState(false);\n  return <GenUXProvider><GenUXButton text=\"Open record\" onClick={() => setOpen(true)} />\n    <RecordPanel open={open} onClose={() => setOpen(false)} container=\"drawer\"\n      record={record} fields={fields} presentation=\"sections\"\n      returnTrail={[{ id: 'list', label: 'All records', onReturn: () => setOpen(false) }]} />\n    </GenUXProvider>;\n}",
       },
     ],
     apiDescription:
-      'These are reusable Atlas contracts. The connected gallery is one local consumer of the same components.',
+      'These are reusable GenUX contracts. The connected gallery is one local consumer of the same components.',
     api: [
       {
         property: 'RecordCollection.boardFieldKey / supportedViews',
@@ -3682,4 +3683,5 @@ export default function PeerCards() {
   ...uxPatternComponents,
   ...listyComponents,
   ...badgeComponents,
+  ...fabComponents,
 ];

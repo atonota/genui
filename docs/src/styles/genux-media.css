@@ -1,0 +1,117 @@
+/* Media frame: reserved ratio, image or readable fallback, optional opaque text panel. */
+.genux-demo .genux-media {
+  display: grid;
+  gap: var(--space-sm);
+  min-width: 0;
+  margin: 0;
+  /* Reserved transparent bottom edge, so the focus marker never shifts the layout. */
+  border-block-end: var(--focus-marker) solid transparent;
+  outline: none;
+  box-shadow: none;
+  /* Focus paint (border, outline, shadow) stays immediate; ordinary paint keeps the central motion. */
+  transition-property: color, background-color, opacity;
+}
+/* The figure only takes focus from a removed retry button; a bottom edge marks it, never a ring. */
+.genux-demo .genux-media:focus-visible {
+  outline: none;
+  box-shadow: none;
+  border-block-end-color: var(--focus-color);
+}
+/* No overflow clipping, so a long fallback text grows the frame instead of being cut. */
+.genux-demo .genux-media-frame {
+  position: relative;
+  display: grid;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius);
+  background: var(--soft);
+}
+.genux-demo .genux-media[data-ratio='square'] .genux-media-frame {
+  aspect-ratio: 1;
+}
+.genux-demo .genux-media[data-ratio='portrait'] .genux-media-frame {
+  aspect-ratio: 3 / 4;
+}
+/* Image-only inner edge separates light images from the frame; the fallback stays edgeless. */
+.genux-demo .genux-media-image {
+  position: absolute;
+  inset: 0;
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  border: var(--image-edge-width, 1px) solid var(--line);
+  border-radius: inherit;
+  object-fit: cover;
+}
+.genux-demo .genux-media[data-fit='contain'] .genux-media-image {
+  object-fit: contain;
+}
+.genux-demo .genux-media-fallback {
+  /* Positioned after the image, so it stays above and clickable while a retry loads. */
+  position: relative;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  color: var(--muted);
+  font-size: var(--text);
+  text-align: center;
+  overflow-wrap: break-word;
+}
+.genux-demo .genux-media-fallback p {
+  margin: 0;
+}
+.genux-demo .genux-media-fallback-text {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-sm);
+}
+.genux-demo .genux-media-fallback p:first-child {
+  color: var(--ink);
+}
+.genux-demo .genux-media-overlay {
+  position: absolute;
+  inset-inline-start: var(--space-sm);
+  inset-block-end: var(--space-sm);
+  max-width: calc(100% - 2 * var(--space-sm));
+  margin: 0;
+  padding: var(--space-sm);
+  border-radius: var(--radius);
+  background: var(--panel);
+  color: var(--ink);
+  font-size: var(--text);
+  overflow-wrap: break-word;
+}
+/* Caption and retry status keep the shared prose measure; the frame stays as wide as its column. */
+.genux-demo .genux-media-caption,
+.genux-demo .genux-media-retry-status {
+  max-inline-size: var(--prose-measure);
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text);
+  overflow-wrap: break-word;
+}
+.genux-demo .genux-media-demo,
+.genux-demo .genux-media-section {
+  display: grid;
+  gap: var(--space-md);
+  min-width: 0;
+}
+.genux-demo .genux-media-section h3,
+.genux-demo .genux-media-status,
+.genux-demo .genux-media-note {
+  margin: 0;
+}
+.genux-demo .genux-media-status,
+.genux-demo .genux-media-note {
+  max-inline-size: var(--prose-measure);
+  color: var(--muted);
+  font-size: var(--text);
+}
+.genux-demo .genux-media-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: var(--space-md);
+  align-items: start;
+}

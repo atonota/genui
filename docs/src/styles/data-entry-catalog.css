@@ -1,12 +1,12 @@
 /* Only the seven Data entry routes link this documentation composition. */
-.atlas-demo .data-entry-catalog {
+.genux-demo .data-entry-catalog {
   --entry-column-min: 280px;
   --entry-reading-width: 720px;
   display: grid;
   gap: var(--space-section);
   min-width: 0;
 }
-.atlas-demo .data-entry-navigation {
+.genux-demo .data-entry-navigation {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-xs) var(--space-xl);
@@ -14,72 +14,72 @@
   margin: 0;
   padding: 0;
 }
-.atlas-demo .data-entry-navigation > li {
+.genux-demo .data-entry-navigation > li {
   margin: 0;
   min-width: 0;
 }
-.atlas-demo .data-entry-navigation a {
+.genux-demo .data-entry-navigation a {
   display: flex;
   align-items: center;
   min-height: var(--target-min);
   max-width: 100%;
 }
-.atlas-demo .data-entry-section {
+.genux-demo .data-entry-section {
   display: grid;
   gap: var(--space-xl);
   min-width: 0;
   scroll-margin-block-start: var(--space-lg);
 }
-.atlas-demo .data-entry-section > header {
+.genux-demo .data-entry-section > header {
   display: grid;
   gap: var(--space-xs);
 }
-.atlas-demo .data-entry-section > header > h3 {
+.genux-demo .data-entry-section > header > h3 {
   font-size: var(--text-section);
 }
-.atlas-demo .data-entry-section > header > p {
+.genux-demo .data-entry-section > header > p {
   max-width: var(--entry-reading-width);
   color: var(--muted);
 }
-.atlas-demo .data-entry-grid {
+.genux-demo .data-entry-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--entry-column-min)), 1fr));
   align-items: start;
   gap: var(--space-xl);
   min-width: 0;
 }
-.atlas-demo .data-entry-grid > * {
+.genux-demo .data-entry-grid > * {
   min-width: 0;
 }
-.atlas-demo .data-entry-catalog .example-block {
+.genux-demo .data-entry-catalog .example-block {
   align-content: start;
 }
-.atlas-demo .data-entry-catalog :is(header, .example-block) > :is(h3, h4, h5, p) {
+.genux-demo .data-entry-catalog :is(header, .example-block) > :is(h3, h4, h5, p) {
   margin: 0;
 }
-.atlas-demo .data-entry-catalog .switch-content-variant > h4 {
+.genux-demo .data-entry-catalog .switch-content-variant > h4 {
   margin: 0;
 }
-.atlas-demo .data-entry-grid > .example-block:has(> label[for]) {
+.genux-demo .data-entry-grid > .example-block:has(> label[for]) {
   gap: var(--space-sm);
 }
-.atlas-demo .data-entry-grid.ant-form > .ant-form-item {
+.genux-demo .data-entry-grid.ant-form > .ant-form-item {
   margin-bottom: 0;
 }
-.atlas-demo .data-entry-catalog p[role='status']:empty,
-.atlas-demo .data-entry-catalog .form-result:empty {
+.genux-demo .data-entry-catalog p[role='status']:empty,
+.genux-demo .data-entry-catalog .form-result:empty {
   margin: 0;
   padding: 0;
 }
-.atlas-demo .data-entry-state-grid {
+.genux-demo .data-entry-state-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--entry-column-min)), 1fr));
   align-items: start;
   gap: var(--space-lg);
 }
-.atlas-demo .data-entry-state-grid > .ant-checkbox-wrapper {
+.genux-demo .data-entry-state-grid > .ant-checkbox-wrapper {
   margin-inline-start: 0;
 }
-.atlas-demo .data-entry-catalog .ant-form-vertical .ant-form-item:last-child {
+.genux-demo .data-entry-catalog .ant-form-vertical .ant-form-item:last-child {
   margin-bottom: 0;
 }

@@ -1,17 +1,17 @@
 import { useId, useState } from 'react';
 import { Select, Switch } from 'antd';
-import Input from './AtlasInput';
-import AtlasProvider from './AtlasProvider';
-import AtlasPagination, { type AtlasPaginationProps } from './AtlasPagination';
+import Input from './GenUXInput';
+import GenUXProvider from './GenUXProvider';
+import GenUXPagination, { type GenUXPaginationProps } from './GenUXPagination';
 import ExamplePreview from './ExamplePreview';
 import NumberStepper from './NumberStepper';
-import { TweakerSettings } from './AtlasTweaker';
+import { TweakerSettings } from './GenUXTweaker';
 import { useI18n } from './useI18n';
-import atlas from '../data/atlas.json';
+import genux from '../data/genux.json';
 
 type PreviewState = 'ready' | 'empty' | 'disabled';
-type ButtonSurface = NonNullable<AtlasPaginationProps['buttonType']>;
-const buttonSurfaces = atlas.decisions.buttons.fill_variants.map(surface => ({
+type ButtonSurface = NonNullable<GenUXPaginationProps['buttonType']>;
+const buttonSurfaces = genux.decisions.buttons.fill_variants.map(surface => ({
   ...surface,
   value: surface.value as ButtonSurface,
 }));
@@ -139,7 +139,7 @@ function PaginationExamples() {
         <ExamplePreview id="pagination-explore-pages" title={t('Explore pages')}>
           <div className="pagination-stage" data-pagination-primary>
             <h4>{t('Order review queue')}</h4>
-            <AtlasPagination
+            <GenUXPagination
               current={page}
               total={effectiveTotal}
               pageSize={pageSize}
@@ -186,7 +186,7 @@ function PaginationExamples() {
         <ExamplePreview id="pagination-page-boundaries" title={t('Page boundaries')}>
           <div className="pagination-stage" data-pagination-single>
             <h4>{t('One page of matching records')}</h4>
-            <AtlasPagination
+            <GenUXPagination
               current={1}
               total={8}
               pageSize={10}
@@ -213,7 +213,7 @@ function PaginationExamples() {
           <h3 id="pagination-surfaces-title">{t('Button surfaces')}</h3>
           <p>
             {t(
-              'Five existing Atlas button surfaces share the same navigation. Each example keeps its own page, and the current page retains a separate marker.',
+              'Five existing GenUX button surfaces share the same navigation. Each example keeps its own page, and the current page retains a separate marker.',
             )}
           </p>
         </header>
@@ -226,7 +226,7 @@ function PaginationExamples() {
                 data-pagination-surface={surface.value}
               >
                 <h4>{t(surface.label)}</h4>
-                <AtlasPagination
+                <GenUXPagination
                   current={surfacePages[surface.value]}
                   total={80}
                   pageSize={10}
@@ -266,7 +266,7 @@ function PaginationExamples() {
               <p className="pagination-guidance">
                 {t('The result is empty. The total stays at zero and navigation is unavailable.')}
               </p>
-              <AtlasPagination
+              <GenUXPagination
                 current={1}
                 total={0}
                 pageSize={10}
@@ -281,7 +281,7 @@ function PaginationExamples() {
               <p className="pagination-guidance">
                 {t('The current range remains readable while every page action is disabled.')}
               </p>
-              <AtlasPagination
+              <GenUXPagination
                 current={2}
                 total={30}
                 pageSize={10}
@@ -303,8 +303,8 @@ export default function PaginationDemo({
   documentation = false,
 }: { documentation?: boolean } = {}) {
   return (
-    <AtlasProvider appearance={documentation ? 'docs' : 'approved'}>
+    <GenUXProvider appearance={documentation ? 'docs' : 'approved'}>
       <PaginationExamples />
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }

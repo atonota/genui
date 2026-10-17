@@ -19,7 +19,7 @@ import { expect, test, type Locator, type Page, type TestInfo } from '@playwrigh
  * the DocsNav extraction, so every selector stays on them.
  */
 
-const PREVIEW_URL = process.env.ATLAS_PREVIEW_URL ?? 'http://127.0.0.1:4324';
+const PREVIEW_URL = process.env.GENUX_PREVIEW_URL ?? 'http://127.0.0.1:4324';
 const PAGE_PATH = '/getting-started/';
 const THEMES = ['light', 'dark'] as const;
 type ThemeMode = (typeof THEMES)[number];

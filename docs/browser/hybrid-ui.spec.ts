@@ -5,9 +5,9 @@ import { init, parse } from 'es-module-lexer';
 
 const LAB_TIMEOUT = 10_000;
 const RUN_TIMEOUT = 15_000;
-// Atlas card surface rendered by AtlasGenUISurface inside the session.
-const GENUI_CANVAS = '.atlas-genui-runtime';
-const GENUI_CARD = `${GENUI_CANVAS} .atlas-card`;
+// GenUX card surface rendered by GenUXSurface inside the session.
+const GENUX_CANVAS = '.genux-genux-runtime';
+const GENUX_CARD = `${GENUX_CANVAS} .genux-card`;
 const NATIVE_X = '.ant-sender, .ant-bubble-list, .ant-prompts';
 
 test.use({ viewport: { width: 320, height: 720 } });
@@ -72,7 +72,7 @@ async function labExclusiveAssets(testFile: string) {
   expect(otherPages.length, 'other component pages establish shared ownership').toBeGreaterThan(0);
   const shared = closure(otherPages.flatMap(path => pageRefs(readFileSync(path, 'utf8'))));
   // docs/src/data/card-model.ts is a source-owned, serializable presentation contract: the card
-  // gallery imports CARD_PURPOSES on its own and the GenUI lab reuses the same module, so its
+  // gallery imports CARD_PURPOSES on its own and the GenUX lab reuses the same module, so its
   // emitted card-model.<hash>.js chunk is shared even though no other component page references
   // it. Only this exact stem is shared; every other card page asset still counts as lab-owned.
   for (const name of files) if (/^card-model\.[A-Za-z0-9_-]+\.js$/.test(name)) shared.add(name);
@@ -80,7 +80,7 @@ async function labExclusiveAssets(testFile: string) {
   const css = files.filter(
     name =>
       name.endsWith('.css') &&
-      ['.genui-sender', '.atlas-genui-runtime'].some(selector => read(name).includes(selector)),
+      ['.genux-sender', '.genux-genux-runtime'].some(selector => read(name).includes(selector)),
   );
   // Vite `?url` helpers are pure: no import records, a default export and a literal URL of a
   // required stylesheet. The launch loader imports them, so they are required roots, never shared.
@@ -125,8 +125,8 @@ async function labExclusiveAssets(testFile: string) {
 
 async function openHybridLab(page: Page) {
   await page.goto('/components/card/');
-  await page.getByRole('button', { name: 'Open GenUI lab', exact: true }).click();
-  const root = page.locator('[data-genui-session]');
+  await page.getByRole('button', { name: 'Open GenUX lab', exact: true }).click();
+  const root = page.locator('[data-genux-session]');
   await expect(root).toHaveCount(1, { timeout: LAB_TIMEOUT });
   await expect(root).toBeVisible();
   return root;
@@ -164,7 +164,7 @@ async function readMark(target: Locator) {
 
 async function readEvidence(root: Locator, term: string) {
   const value = root
-    .locator('.genui-evidence-panel dt')
+    .locator('.genux-evidence-panel dt')
     .filter({ hasText: exactText(term) })
     .locator('xpath=following-sibling::dd[1]');
   await expect(value).toHaveCount(1);
@@ -176,7 +176,7 @@ async function runRecord(root: Locator) {
     requestId: await readEvidence(root, 'Request identifier'),
     revision: await readEvidence(root, 'Current revision'),
     messages: await readEvidence(root, 'Native SDK messages'),
-    status: ((await root.locator('.genui-run-result').textContent()) ?? '').trim(),
+    status: ((await root.locator('.genux-run-result').textContent()) ?? '').trim(),
   };
 }
 
@@ -194,7 +194,7 @@ interface PaintSnapshot {
   shadowAnimated: boolean;
 }
 
-/** Computed paint of the Sender textarea, its Atlas input frame and the Sender wrapper. */
+/** Computed paint of the Sender textarea, its GenUX input frame and the Sender wrapper. */
 async function senderPaint(input: Locator): Promise<PaintSnapshot[]> {
   return input.evaluate(el => {
     const isTransparent = (color: string) => {
@@ -241,7 +241,7 @@ async function senderPaint(input: Locator): Promise<PaintSnapshot[]> {
     };
     const nodes: [string, Element | null][] = [
       ['native input', el],
-      ['Atlas input frame', el.closest('.atlas-input-frame')],
+      ['GenUX input frame', el.closest('.genux-input-frame')],
       ['Sender wrapper', el.closest('.ant-sender')],
     ];
     return nodes
@@ -408,17 +408,17 @@ test('mode switches keep one native Sender, runtime and recorded request without
 }, testInfo) => {
   const root = await openHybridLab(page);
   await switchMode(page, 'Do + Chat', 'balanced');
-  const status = root.locator('.genui-run-result');
+  const status = root.locator('.genux-run-result');
   const scenario = page
     .locator('.ant-select')
     .filter({ has: page.getByRole('combobox', { name: 'Recorded scenario' }) });
   await expect(scenario).toContainText('Workspace cards');
 
   await root.getByRole('button', { name: 'Run recorded stream', exact: true }).click();
-  await expect(status).toHaveAttribute('data-genui-run-status', 'success', {
+  await expect(status).toHaveAttribute('data-genux-run-status', 'success', {
     timeout: RUN_TIMEOUT,
   });
-  await expect(root.locator(GENUI_CARD)).toHaveCount(3);
+  await expect(root.locator(GENUX_CARD)).toHaveCount(3);
 
   // Existing SDK messages are projected through the native Bubble.List, one bubble each.
   await expect(page.locator('.ant-bubble-list')).toHaveCount(1);
@@ -451,9 +451,9 @@ test('mode switches keep one native Sender, runtime and recorded request without
     await expect(intent).toHaveValue(draft);
     await expect(page.locator('.ant-sender')).toHaveCount(1);
     await expect(page.locator('.ant-bubble-list')).toHaveCount(1);
-    await expect(root.locator(GENUI_CANVAS)).toHaveCount(1);
-    await expect(root.locator(GENUI_CARD)).toHaveCount(3);
-    await expect(status).toHaveAttribute('data-genui-run-status', 'success');
+    await expect(root.locator(GENUX_CANVAS)).toHaveCount(1);
+    await expect(root.locator(GENUX_CARD)).toHaveCount(3);
+    await expect(status).toHaveAttribute('data-genux-run-status', 'success');
     expect(await runRecord(root), `${label} must not start a new run`).toEqual(before);
   }
   await expectNoPageOverflow(page);
@@ -465,7 +465,7 @@ test('order review prompt prepares without running and mode switches keep review
 }, testInfo) => {
   const root = await openHybridLab(page);
   await switchMode(page, 'Do + Chat', 'balanced');
-  const status = root.locator('.genui-run-result');
+  const status = root.locator('.genux-run-result');
   const intent = senderInput(page);
   const placeholder = 'Placeholder intent before the prompt';
   await intent.fill(placeholder);
@@ -474,7 +474,7 @@ test('order review prompt prepares without running and mode switches keep review
     .locator('.ant-prompts')
     .getByRole('button', { name: 'Prepare order review', exact: true });
   await expect(prompt).toHaveCount(1);
-  await expect(prompt).toHaveClass(/\batlas-button\b/);
+  await expect(prompt).toHaveClass(/\bgenux-button\b/);
   await prompt.focus();
   await expect(prompt).toBeFocused();
   await page.keyboard.press('Enter');
@@ -487,14 +487,14 @@ test('order review prompt prepares without running and mode switches keep review
     .locator('.ant-select')
     .filter({ has: page.getByRole('combobox', { name: 'Recorded scenario' }) });
   await expect(scenario).toContainText('Orders · query to review');
-  await expect(status).toHaveAttribute('data-genui-run-status', 'idle');
+  await expect(status).toHaveAttribute('data-genux-run-status', 'idle');
   // Adjacent status paragraphs concatenate in container text, so read the summary itself.
   await expect(status.getByText('0 frames received · 0 accepted', { exact: true })).toHaveCount(1);
   expect(await readEvidence(root, 'Request identifier')).toBe('No request yet');
   const prepared = await intent.inputValue();
 
   await root.getByRole('button', { name: 'Run recorded stream', exact: true }).click();
-  await expect(status).toHaveAttribute('data-genui-run-status', 'success', {
+  await expect(status).toHaveAttribute('data-genux-run-status', 'success', {
     timeout: RUN_TIMEOUT,
   });
   await expect(status.getByText(/^[0-9]+ frames received · 5 accepted$/)).toHaveCount(1);
@@ -521,7 +521,7 @@ test('order review prompt prepares without running and mode switches keep review
     await expect(note).toHaveValue(noteText);
     await expect(rowSelect).toBeChecked();
     await expect(intent).toHaveValue(prepared);
-    await expect(status).toHaveAttribute('data-genui-run-status', 'success');
+    await expect(status).toHaveAttribute('data-genux-run-status', 'success');
     await expect(status.getByText(/^[0-9]+ frames received · 5 accepted$/)).toHaveCount(1);
     expect(await readEvidence(root, 'Current revision'), `${label} keeps the revision`).toBe(
       revision,
@@ -547,7 +547,7 @@ test('native X UI mounts on launch with bottom-only focus, readable sizing and s
     requested.push({ url: request.url(), type: request.resourceType() }),
   );
   await page.goto('/components/card/');
-  const launch = page.getByRole('button', { name: 'Open GenUI lab', exact: true });
+  const launch = page.getByRole('button', { name: 'Open GenUX lab', exact: true });
   await expect(launch).toBeVisible({ timeout: LAB_TIMEOUT });
   await expect(page.locator(NATIVE_X)).toHaveCount(0);
   // Let hydration and any eager preload settle before drawing the launch boundary.
@@ -556,7 +556,7 @@ test('native X UI mounts on launch with bottom-only focus, readable sizing and s
   const lab = await labExclusiveAssets(testInfo.file);
 
   await launch.click();
-  const root = page.locator('[data-genui-session]');
+  const root = page.locator('[data-genux-session]');
   await expect(root).toHaveCount(1, { timeout: LAB_TIMEOUT });
   await expect(page.locator('.ant-sender')).toHaveCount(1);
   await switchMode(page, 'Do + Chat', 'balanced');
@@ -587,7 +587,7 @@ test('native X UI mounts on launch with bottom-only focus, readable sizing and s
   await expect(intent).toBeFocused();
   expect(await intent.evaluate(el => el.matches(':focus-visible'))).toBe(true);
   const focused = await senderPaint(intent);
-  const paintNodes = ['native input', 'Atlas input frame', 'Sender wrapper'];
+  const paintNodes = ['native input', 'GenUX input frame', 'Sender wrapper'];
   expect(resting.map(item => item.node)).toEqual(paintNodes);
   expect(focused.map(item => item.node)).toEqual(paintNodes);
 
@@ -653,14 +653,14 @@ test('native X UI mounts on launch with bottom-only focus, readable sizing and s
     .toBeGreaterThan(0.5);
 
   // Generate the recorded overview once so the wide layout compares real cards.
-  const status = root.locator('.genui-run-result');
+  const status = root.locator('.genux-run-result');
   await root.getByRole('button', { name: 'Run recorded stream', exact: true }).click();
-  await expect(status).toHaveAttribute('data-genui-run-status', 'success', {
+  await expect(status).toHaveAttribute('data-genux-run-status', 'success', {
     timeout: RUN_TIMEOUT,
   });
-  const canvas = root.locator(GENUI_CANVAS);
+  const canvas = root.locator(GENUX_CANVAS);
   await expect(canvas).toHaveCount(1);
-  await expect(root.locator(GENUI_CARD)).toHaveCount(3);
+  await expect(root.locator(GENUX_CARD)).toHaveCount(3);
 
   const wideDraft = 'Wide layout keeps this unsent draft.';
   await intent.fill(wideDraft);
@@ -674,8 +674,8 @@ test('native X UI mounts on launch with bottom-only focus, readable sizing and s
   expect(await readMark(canvas), 'resize must not remount the canvas').toBe('hybrid-resize-canvas');
   await expect(intent).toHaveValue(wideDraft);
   await expect(page.locator('.ant-sender')).toHaveCount(1);
-  await expect(root.locator(GENUI_CARD)).toHaveCount(3);
-  await expect(status).toHaveAttribute('data-genui-run-status', 'success');
+  await expect(root.locator(GENUX_CARD)).toHaveCount(3);
+  await expect(status).toHaveAttribute('data-genux-run-status', 'success');
   await expect(canvas).toBeVisible();
   await expect(page.locator('.ant-sender')).toBeVisible();
   const canvasBox = await canvas.boundingBox();

@@ -19,12 +19,12 @@ import {
   type KitDatasetState,
   type RecordSchema,
 } from '../../../data/workspace-kit';
-import AtlasButton from '../../AtlasButton';
-import AtlasSplitter from '../../AtlasSplitter';
-import AtlasProvider from '../../AtlasProvider';
+import GenUXButton from '../../GenUXButton';
+import GenUXSplitter from '../../GenUXSplitter';
+import GenUXProvider from '../../GenUXProvider';
 import ExamplePreview from '../../ExamplePreview';
 import { useI18n } from '../../useI18n';
-import { TweakerSettings } from '../../AtlasTweaker';
+import { TweakerSettings } from '../../GenUXTweaker';
 import WorkspaceFrame, { type WorkspaceProfile } from '../WorkspaceFrame';
 import { RecordCollection } from './RecordCollection';
 import { RecordForm } from './RecordForm';
@@ -179,7 +179,7 @@ function SchemaWorkspace<R extends RecordIdentity>({
   return (
     <div className="workspace-kit" data-connected-schema={schema.id}>
       <div className="kit-connected-actions">
-        <AtlasButton
+        <GenUXButton
           id={`kit-${schema.id}-create`}
           text={t('Create record')}
           disabled={
@@ -211,7 +211,7 @@ function SchemaWorkspace<R extends RecordIdentity>({
           {t('Prepared record IDs')}: {state.preparedIds.join(', ')}
         </p>
       )}
-      <AtlasSplitter
+      <GenUXSplitter
         id={`connected-${schema.id}-splitter`}
         className="kit-connected-splitter"
         label={t('Collection and record inspector')}
@@ -318,7 +318,7 @@ function SchemaWorkspace<R extends RecordIdentity>({
                   aria-label={t('Record inspector')}
                 >
                   <div className="kit-inspector-tools">
-                    <AtlasButton
+                    <GenUXButton
                       fill="text"
                       text={t(inspection.pinned ? 'Unpin inspector' : 'Pin inspector')}
                       aria-pressed={inspection.pinned}
@@ -521,13 +521,13 @@ export default function ConnectedWorkspace({
   documentation = false,
 }: { documentation?: boolean } = {}) {
   return (
-    <AtlasProvider appearance={documentation ? 'docs' : undefined}>
+    <GenUXProvider appearance={documentation ? 'docs' : undefined}>
       <ExamplePreview
         id="record-workspace-connected"
         title="Connected Collection, Form and Record display"
       >
         <ConnectedWorkspaceExamples />
       </ExamplePreview>
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }

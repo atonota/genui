@@ -1,10 +1,10 @@
 import type { CSSProperties, ReactNode } from 'react';
 import { Checkbox, Select, Table, type TableColumnsType } from 'antd';
-import AtlasButton from '../AtlasButton';
-import AtlasIconButton from '../AtlasIconButton';
-import AtlasPill from '../AtlasPill';
+import GenUXButton from '../GenUXButton';
+import GenUXIconButton from '../GenUXIconButton';
+import GenUXPill from '../GenUXPill';
 import { EntityCard } from '../cards';
-import type { AtlasCardModel, CardTone } from '../../data/card-model';
+import type { GenUXCardModel, CardTone } from '../../data/card-model';
 import { workspacePillColorIndex } from '../../data/workspace-pill-colors';
 import { selectedLabel } from '../selectedLabel';
 import { useI18n } from '../useI18n';
@@ -83,7 +83,7 @@ export default function CollectionViews(props: CollectionViewsProps) {
         : checkedIds.filter(id => id !== record.id),
     );
   const openAction = (record: WorkspaceRecord) => (
-    <AtlasButton
+    <GenUXButton
       id={`collection-open-${record.id}`}
       fill="text"
       text={t('Open {id}', { id: record.id })}
@@ -98,7 +98,7 @@ export default function CollectionViews(props: CollectionViewsProps) {
       approved: 'success',
       shipped: 'processing',
     };
-    const model: AtlasCardModel = {
+    const model: GenUXCardModel = {
       id: record.id,
       kind: 'entity',
       title: record.customer,
@@ -158,9 +158,9 @@ export default function CollectionViews(props: CollectionViewsProps) {
                 <strong>{record.customer}</strong>
                 <span>{record.id}</span>
                 <div className="collection-inline">
-                  <AtlasPill colorIndex={workspacePillColorIndex.status[record.status]}>
+                  <GenUXPill colorIndex={workspacePillColorIndex.status[record.status]}>
                     {t(STATUS_LABELS[record.status])}
-                  </AtlasPill>
+                  </GenUXPill>
                   <span>{moneyText(record.amount, record.currency, locale)}</span>
                 </div>
                 <p>
@@ -169,7 +169,7 @@ export default function CollectionViews(props: CollectionViewsProps) {
                 </p>
                 {record.readOnly && <p>{t('Read only')}</p>}
                 {editable ? (
-                  <AtlasButton
+                  <GenUXButton
                     id={`collection-edit-${record.id}`}
                     fill="text"
                     disabled={record.readOnly || !!props.editingId}
@@ -214,9 +214,9 @@ export default function CollectionViews(props: CollectionViewsProps) {
         className: `collection-col-${key}`,
         render: (_, record) =>
           key === 'status' ? (
-            <AtlasPill colorIndex={workspacePillColorIndex.status[record.status]}>
+            <GenUXPill colorIndex={workspacePillColorIndex.status[record.status]}>
               {t(STATUS_LABELS[record.status])}
-            </AtlasPill>
+            </GenUXPill>
           ) : key === 'amount' ? (
             moneyText(record.amount, record.currency, locale)
           ) : key === 'due' ? (
@@ -232,7 +232,7 @@ export default function CollectionViews(props: CollectionViewsProps) {
         className: 'collection-col-actions',
         render: (_, record) =>
           editable ? (
-            <AtlasButton
+            <GenUXButton
               id={`collection-edit-${record.id}`}
               fill="text"
               disabled={record.readOnly || !!props.editingId}
@@ -246,7 +246,7 @@ export default function CollectionViews(props: CollectionViewsProps) {
     ];
     return (
       <div
-        className="collection-table-scroll workspace-scroll atlas-control"
+        className="collection-table-scroll workspace-scroll genux-control"
         role="region"
         aria-label={t(
           tree ? 'Tree table with horizontal scrolling' : 'Order table with horizontal scrolling',
@@ -279,7 +279,7 @@ export default function CollectionViews(props: CollectionViewsProps) {
               ? {
                   expandIcon: ({ expanded, expandable, record, onExpand }) =>
                     expandable ? (
-                      <AtlasIconButton
+                      <GenUXIconButton
                         icon={expanded ? 'minus' : 'plus'}
                         fill="text"
                         aria-expanded={expanded}
@@ -376,7 +376,7 @@ export default function CollectionViews(props: CollectionViewsProps) {
             </div>
             {record.children && (
               <>
-                <AtlasButton
+                <GenUXButton
                   fill="text"
                   text={t(
                     props.expandedIds.includes(record.id) ? 'Collapse children' : 'Expand children',
@@ -463,14 +463,14 @@ export default function CollectionViews(props: CollectionViewsProps) {
     return (
       <div className="collection-view-stack">
         <div className="collection-inline">
-          <AtlasButton
+          <GenUXButton
             id="collection-month-prev"
             fill="text"
             text={t('Previous month')}
             onClick={() => changeMonth(-1)}
           />
           <h4 aria-live="polite">{monthTitle}</h4>
-          <AtlasButton
+          <GenUXButton
             id="collection-month-next"
             fill="text"
             text={t('Next month')}
@@ -503,7 +503,7 @@ export default function CollectionViews(props: CollectionViewsProps) {
           </ul>
         ) : (
           <div
-            className="collection-calendar-scroll workspace-scroll atlas-control"
+            className="collection-calendar-scroll workspace-scroll genux-control"
             role="region"
             tabIndex={0}
             aria-label={t('Calendar with horizontal scrolling')}
@@ -583,7 +583,7 @@ export default function CollectionViews(props: CollectionViewsProps) {
           </ul>
         ) : (
           <div
-            className="collection-timeline-scroll workspace-scroll atlas-control"
+            className="collection-timeline-scroll workspace-scroll genux-control"
             role="region"
             tabIndex={0}
             aria-label={t('Timeline with horizontal scrolling')}
@@ -693,7 +693,7 @@ export default function CollectionViews(props: CollectionViewsProps) {
           </>
         ) : (
           <div
-            className="collection-compare-scroll workspace-scroll atlas-control"
+            className="collection-compare-scroll workspace-scroll genux-control"
             role="region"
             tabIndex={0}
             aria-label={t('Record comparison with horizontal scrolling')}
@@ -747,7 +747,7 @@ export default function CollectionViews(props: CollectionViewsProps) {
         {t('{count} records awaiting review', { count: queue.length })}
       </h4>
       {props.deferredIds.length > 0 && (
-        <AtlasButton
+        <GenUXButton
           fill="text"
           text={t('Restore {count} deferred records', { count: props.deferredIds.length })}
           onClick={props.onRestoreDeferred}
@@ -766,12 +766,12 @@ export default function CollectionViews(props: CollectionViewsProps) {
               <p>{record.notes}</p>
               <div className="collection-inline">
                 {openAction(record)}
-                <AtlasButton
+                <GenUXButton
                   text={t('Approve {id}', { id: record.id })}
                   disabled={record.readOnly}
                   onClick={() => props.onApprove(record)}
                 />
-                <AtlasButton
+                <GenUXButton
                   fill="text"
                   text={t('Defer {id}', { id: record.id })}
                   onClick={() => props.onDefer(record)}

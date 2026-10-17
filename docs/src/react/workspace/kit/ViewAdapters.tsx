@@ -2,9 +2,9 @@ import { useEffect, useId, useState, type CSSProperties, type ReactNode } from '
 import { Checkbox } from 'antd';
 import { EntityCard, MetricCard } from '../../cards';
 import { entityCardFromFields } from '../../../data/card-field-adapter';
-import type { AtlasCardCallbacks, AtlasCardModel } from '../../../data/card-model';
-import AtlasButton from '../../AtlasButton';
-import AtlasAvatar from '../../AtlasAvatar';
+import type { GenUXCardCallbacks, GenUXCardModel } from '../../../data/card-model';
+import GenUXButton from '../../GenUXButton';
+import GenUXAvatar from '../../GenUXAvatar';
 import { useI18n } from '../../useI18n';
 import {
   presentFieldValue,
@@ -38,7 +38,7 @@ function Actions<R extends RecordIdentity>(
   return (
     <div className="kit-actions">
       {props.openAction !== false && (
-        <AtlasButton
+        <GenUXButton
           fill="text"
           aria-pressed={props.activeId === record.id}
           text={t('Open {id}', { id: record.id })}
@@ -46,7 +46,7 @@ function Actions<R extends RecordIdentity>(
         />
       )}
       {props.onEdit && (
-        <AtlasButton
+        <GenUXButton
           fill="text"
           disabled={
             edit?.allowed === false ||
@@ -159,7 +159,7 @@ function IdentityValue<R extends RecordIdentity>({
   return (
     <span className="kit-identity-value" data-identity-field={field.key}>
       <span className="kit-identity-avatar" aria-hidden="true">
-        <AtlasAvatar name={identity.name} src={identity.src} size="sm" />
+        <GenUXAvatar name={identity.name} src={identity.src} size="sm" />
       </span>
       <FieldValue record={record} field={field} />
     </span>
@@ -212,7 +212,7 @@ function HeaderFilter<R extends RecordIdentity>({
   };
   return (
     <div className="kit-header-filter">
-      <AtlasButton
+      <GenUXButton
         fill="text"
         text={t('Filter {field}', { field: t(field.label) })}
         aria-expanded={open}
@@ -237,13 +237,13 @@ function HeaderFilter<R extends RecordIdentity>({
             onDraftError={setDraftError}
             resetKey={resetKey}
           />
-          <AtlasButton
+          <GenUXButton
             fill="text"
             text={t('Apply {field} filter', { field: t(field.label) })}
             onClick={apply}
           />
           {(value !== null || draftError) && (
-            <AtlasButton
+            <GenUXButton
               fill="text"
               text={t('Reset {field} filter draft', { field: t(field.label) })}
               onClick={() => {
@@ -255,7 +255,7 @@ function HeaderFilter<R extends RecordIdentity>({
             />
           )}
           {query.filters.some(filter => filter.id === 'header-' + field.key) && (
-            <AtlasButton
+            <GenUXButton
               fill="text"
               text={t('Clear {field} filter', { field: t(field.label) })}
               onClick={() => {
@@ -319,7 +319,7 @@ export function TableView<R extends RecordIdentity>(props: ViewAdapterProps<R>) 
         aria-sort={sortIndex === 0 ? (direction === 'asc' ? 'ascending' : 'descending') : undefined}
       >
         <strong className="kit-column-field-label">{t(field.label)}</strong>
-        <AtlasButton
+        <GenUXButton
           fill="text"
           text={t('Sort {field}', { field: t(field.label) })}
           onClick={() => sort(field.key)}
@@ -338,7 +338,7 @@ export function TableView<R extends RecordIdentity>(props: ViewAdapterProps<R>) 
   };
   return (
     <div
-      className="kit-table-scroll atlas-control"
+      className="kit-table-scroll genux-control"
       role="region"
       aria-label={t('Record table with horizontal scrolling')}
       tabIndex={0}
@@ -535,8 +535,8 @@ export function DashboardView({
   models,
   onAction,
 }: {
-  models: readonly AtlasCardModel[];
-  onAction?: AtlasCardCallbacks['onAction'];
+  models: readonly GenUXCardModel[];
+  onAction?: GenUXCardCallbacks['onAction'];
 }) {
   const { t } = useI18n();
   return (
@@ -690,7 +690,7 @@ export function BoardView<R extends RecordIdentity>(props: ViewAdapterProps<R>) 
   }
   return (
     <div
-      className="kit-board atlas-control"
+      className="kit-board genux-control"
       role="region"
       tabIndex={0}
       aria-label={t('Board lanes with horizontal scrolling')}
@@ -755,9 +755,9 @@ export function CalendarView<R extends RecordIdentity>(props: ViewAdapterProps<R
   return (
     <section className="kit-calendar">
       <div className="kit-actions">
-        <AtlasButton fill="text" text={t('Previous month')} onClick={() => change(-1)} />
+        <GenUXButton fill="text" text={t('Previous month')} onClick={() => change(-1)} />
         <h4 aria-live="polite">{monthLabel}</h4>
-        <AtlasButton fill="text" text={t('Next month')} onClick={() => change(1)} />
+        <GenUXButton fill="text" text={t('Next month')} onClick={() => change(1)} />
       </div>
       <p>
         {t(
@@ -771,7 +771,7 @@ export function CalendarView<R extends RecordIdentity>(props: ViewAdapterProps<R
         )}
       </p>
       <div
-        className="kit-table-scroll atlas-control"
+        className="kit-table-scroll genux-control"
         role="region"
         tabIndex={0}
         aria-label={t('Month calendar with horizontal scrolling')}
@@ -813,7 +813,7 @@ export function CalendarView<R extends RecordIdentity>(props: ViewAdapterProps<R
       </div>
       {outsideMonth.length > 0 && (
         <section>
-          <AtlasButton
+          <GenUXButton
             fill="text"
             text={t('Show dated records outside this month ({count})', {
               count: outsideMonth.length,
@@ -892,7 +892,7 @@ export function GanttView<R extends RecordIdentity>(props: ViewAdapterProps<R>) 
       </p>
       {valid.length > 0 ? (
         <div
-          className="kit-table-scroll atlas-control"
+          className="kit-table-scroll genux-control"
           role="region"
           tabIndex={0}
           aria-label={t('Gantt spans with horizontal scrolling')}
@@ -936,7 +936,7 @@ export function GanttView<R extends RecordIdentity>(props: ViewAdapterProps<R>) 
                   <td>
                     <div className="kit-gantt-track" aria-hidden="true">
                       <span
-                        className="kit-gantt-span atlas-motion-layer"
+                        className="kit-gantt-span genux-motion-layer"
                         style={
                           {
                             '--kit-span-offset': `${((span.start - first) / range) * 100}%`,
@@ -1022,7 +1022,7 @@ export function TreeView<R extends RecordIdentity>(props: ViewAdapterProps<R>) {
                 <SelectRecord {...props} record={record} />
                 <strong>{record.id}</strong>
                 {descendants.length > 0 && (
-                  <AtlasButton
+                  <GenUXButton
                     fill="text"
                     data-tree-expand={record.id}
                     aria-expanded={open}

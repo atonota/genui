@@ -1,7 +1,7 @@
-import { assertPlainJSON, GENUI_LIMITS } from '../genui/native-contract';
+import { assertPlainJSON, GENUX_LIMITS } from '../genux/native-contract';
 
 /**
- * Serializable model for the Atlas date and time family.
+ * Serializable model for the GenUX date and time family.
  *
  * Dates are `YYYY-MM-DD`, times are `HH:mm:ss` and date-times are `YYYY-MM-DDTHH:mm:ss`.
  * Times and date-times are explicit local wall times: they carry no offset, are never
@@ -178,7 +178,7 @@ function assertArrayPrototypes(input: unknown): void {
   let visits = 0;
   const active = new WeakSet<object>();
   const visit = (value: unknown, path: string, depth: number): void => {
-    if (++visits > 6000 || depth > GENUI_LIMITS.depth) fail(path, 'bounded JSON complexity');
+    if (++visits > 6000 || depth > GENUX_LIMITS.depth) fail(path, 'bounded JSON complexity');
     if (!value || typeof value !== 'object' || active.has(value)) return;
     const array = Array.isArray(value);
     if (array && Object.getPrototypeOf(value) !== Array.prototype) fail(path, 'plain array');

@@ -1,0 +1,93 @@
+.genux-genux-runtime {
+  --genux-chart-track: var(--surface);
+  --genux-column-min: 280px;
+  --genux-cell-min: 140px;
+  display: grid;
+  gap: var(--space-lg);
+  min-width: 0;
+}
+.genux-block-stack,
+.genux-task-content,
+.genux-data-block {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-md);
+  min-width: 0;
+}
+.genux-data-block > div {
+  min-width: 0;
+  max-width: 100%;
+}
+.genux-block-stack[data-layout='grid'] {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--genux-column-min)), 1fr));
+}
+.genux-block-text,
+.genux-scope-label,
+.genux-data-block :is(h5, h6, p) {
+  margin: 0;
+  font: inherit;
+}
+.genux-scope-label {
+  color: var(--muted);
+}
+.genux-data-block :is(h5, h6) {
+  color: var(--ink);
+}
+.genux-field {
+  display: grid;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+.genux-data-block .ant-table-wrapper {
+  min-width: 0;
+  max-width: 100%;
+}
+.genux-data-block .ant-table-cell {
+  min-width: var(--genux-cell-min);
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+.genux-field-error {
+  color: var(--error);
+}
+.genux-chart {
+  display: grid;
+  gap: var(--space-md);
+  margin: 0;
+}
+.genux-chart > div {
+  display: grid;
+  gap: var(--space-xs);
+}
+.genux-chart dd {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-md);
+  margin: 0;
+}
+.genux-chart meter {
+  width: 100%;
+  height: var(--space-md);
+}
+.genux-chart meter::-webkit-meter-bar {
+  background: var(--genux-chart-track);
+  border: 0;
+  border-radius: var(--radius);
+}
+.genux-chart meter::-webkit-meter-optimum-value,
+.genux-chart meter::-moz-meter-bar {
+  background: var(--primary);
+  border-radius: var(--radius);
+  transition-property: width;
+  transition-duration: var(--motion-duration-standard);
+  transition-delay: var(--motion-delay);
+  transition-timing-function: var(--motion-easing);
+}
+@media (prefers-reduced-motion: reduce) {
+  .genux-chart meter::-webkit-meter-optimum-value,
+  .genux-chart meter::-moz-meter-bar {
+    transition-duration: 0ms;
+  }
+}

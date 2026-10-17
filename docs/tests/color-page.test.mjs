@@ -372,14 +372,14 @@ test('Color sliders consume the shared Radio-sized master without a competing ge
     new URL('../src/react/color/ColorSystemDemo.tsx', import.meta.url),
     'utf8',
   );
-  assert.match(entry, /import AtlasSlider from '..\/AtlasSlider'/);
-  assert.equal((entry.match(/<AtlasSlider/g) ?? []).length, 3);
+  assert.match(entry, /import GenUXSlider from '..\/GenUXSlider'/);
+  assert.equal((entry.match(/<GenUXSlider/g) ?? []).length, 3);
   const family = await readFile(
     new URL('../src/react/color/ColorFamilyPreview.tsx', import.meta.url),
     'utf8',
   );
-  assert.match(family, /import AtlasSlider from '..\/AtlasSlider'/);
-  assert.equal((family.match(/<AtlasSlider/g) ?? []).length, 1);
+  assert.match(family, /import GenUXSlider from '..\/GenUXSlider'/);
+  assert.equal((family.match(/<GenUXSlider/g) ?? []).length, 1);
   const ownStyles = await readFile(
     new URL('../src/styles/color-system.css', import.meta.url),
     'utf8',

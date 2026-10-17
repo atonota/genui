@@ -21,11 +21,11 @@ for (const surface of surfaces) {
     t.after(() => h.dispose());
     if (surface.name.startsWith('Storybook'))
       assert.ok(
-        h.document.querySelector('.atlas-story-frame .live-preview'),
+        h.document.querySelector('.genux-story-frame .live-preview'),
         'shared field stylesheet scope',
       );
     const input = h.document.querySelector('#input-number');
-    const owner = input.closest('.atlas-number-stepper');
+    const owner = input.closest('.genux-number-stepper');
     assert.ok(owner, 'quantity must compose the shared stepper');
     assert.equal(owner.querySelectorAll('svg[data-icon-library="phosphor"]').length, 2);
     assert.equal(input.value, '1');
@@ -51,20 +51,20 @@ for (const surface of surfaces) {
     const h = await surface.select();
     t.after(() => h.dispose());
     if (surface.name.startsWith('Storybook'))
-      assert.ok(h.document.querySelector('.atlas-story-frame .live-preview'));
+      assert.ok(h.document.querySelector('.genux-story-frame .live-preview'));
     const multiple = h.document.querySelector('#select-multiple');
     const owner = multiple.closest('.ant-select');
-    assert.equal(owner.querySelectorAll('.atlas-pill').length, 2);
+    assert.equal(owner.querySelectorAll('.genux-pill').length, 2);
     for (const key of ['Enter', ' ']) {
-      const close = owner.querySelector('.atlas-pill-close');
-      const count = owner.querySelectorAll('.atlas-pill').length;
+      const close = owner.querySelector('.genux-pill-close');
+      const count = owner.querySelectorAll('.genux-pill').length;
       await h.act(async () => {
         close.focus();
         close.dispatchEvent(
           new h.window.KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }),
         );
       });
-      assert.equal(owner.querySelectorAll('.atlas-pill').length, count - 1);
+      assert.equal(owner.querySelectorAll('.genux-pill').length, count - 1);
       assert.equal(multiple.getAttribute('aria-expanded'), 'false');
       assert.equal(h.document.activeElement, multiple);
     }
@@ -76,9 +76,9 @@ for (const surface of surfaces) {
     ]) {
       await h.act(async () => h.setLocale(locale));
       assert.equal(h.document.querySelector('#select-tags'), tags);
-      if (tagOwner.querySelector('.atlas-pill')) {
-        assert.equal(tagOwner.querySelector('.atlas-pill-label').textContent, label);
-        await h.click(tagOwner.querySelector('.atlas-pill-close'));
+      if (tagOwner.querySelector('.genux-pill')) {
+        assert.equal(tagOwner.querySelector('.genux-pill-label').textContent, label);
+        await h.click(tagOwner.querySelector('.genux-pill-close'));
       }
       await h.act(async () =>
         tags
@@ -106,8 +106,8 @@ for (const surface of surfaces) {
           new h.window.KeyboardEvent('keydown', { key: 'Escape', keyCode: 27, bubbles: true }),
         ),
       );
-      assert.equal(tagOwner.querySelectorAll('.atlas-pill').length, 1);
-      assert.equal(tagOwner.querySelector('.atlas-pill-label').textContent, label);
+      assert.equal(tagOwner.querySelectorAll('.genux-pill').length, 1);
+      assert.equal(tagOwner.querySelector('.genux-pill-label').textContent, label);
     }
   });
 }
@@ -116,9 +116,9 @@ test('unflagged Storybook controls retain their native demo scope', async () => 
   for (const component of ['Checkbox', 'Radio', 'Switch']) {
     const h = await mountStory(`storybook/${component}.stories.tsx`);
     try {
-      assert.ok(h.document.querySelector('.atlas-story-frame .atlas-demo'), component);
-      assert.equal(h.document.querySelector('.atlas-story-frame .live-preview'), null, component);
-      assert.equal(h.document.querySelector('.atlas-story-toolbar .live-preview'), null, component);
+      assert.ok(h.document.querySelector('.genux-story-frame .genux-demo'), component);
+      assert.equal(h.document.querySelector('.genux-story-frame .live-preview'), null, component);
+      assert.equal(h.document.querySelector('.genux-story-toolbar .live-preview'), null, component);
     } finally {
       await h.dispose();
     }

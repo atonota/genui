@@ -37,7 +37,7 @@ import {
 } from '../theme-builder/model';
 import { docsThemeColors, themeColorVariables, type ThemeMode } from '../theme';
 import { documentationVariables } from '../data/docs-brand';
-import { AtlasSsrTheme } from './AtlasProvider';
+import { GenUXSsrTheme } from './GenUXProvider';
 import AdaptiveProvider from './AdaptiveProvider';
 import { layoutLoaders } from '../adaptive/delivery';
 import type { AdaptiveOptions, LayoutProfile } from '../adaptive/policy';
@@ -52,8 +52,8 @@ import {
 const serverDemos = import.meta.env.SSR
   ? (await import('../preview/registry.server')).serverDemos
   : null;
-// Local mode event for the applied recipe; the global atlas-theme-change event stays untouched.
-const PREVIEW_THEME_EVENT = 'atlas-preview-theme-change';
+// Local mode event for the applied recipe; the global genux-theme-change event stays untouched.
+const PREVIEW_THEME_EVENT = 'genux-preview-theme-change';
 const PREVIEW_ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 /** Allowlisted slug of this document's own route, <base>preview/<id>/<profile>/; anything else is
@@ -166,7 +166,7 @@ export default function PreviewDocument({
   // Style extraction renders under each scheme, so its dark pass emits dark roles; the real SSR
   // and the first client render have no provider and stay light, matching the light markup. An
   // explicit theme prop wins over both, and only the standalone query wins over that.
-  const ssrMode = useContext(AtlasSsrTheme);
+  const ssrMode = useContext(GenUXSsrTheme);
   const [queryMode, setMode] = useState<ThemeMode>();
   const [queryOrientation, setOrientation] = useState<PreviewOrientation>();
   const [queryGrid, setGrid] = useState(false);

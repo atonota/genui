@@ -1,13 +1,13 @@
 import { generate } from '@ant-design/colors';
 import { themeColors, type ThemeMode } from '../theme';
-import atlas from './atlas.json';
+import genux from './genux.json';
 import { contrastRatio } from './color-system';
 
 /** Documentation identity is separate from the approved component palette catalog. */
 export const DOCS_BRAND_SEED = '#0099ff';
 export const docsApprovedButtonColors = Object.freeze({
-  face: atlas.palettes.coral.color,
-  edge: atlas.palettes.coral.dark,
+  face: genux.palettes.coral.color,
+  edge: genux.palettes.coral.dark,
   text: '#FFFFFF',
 });
 export const docsBrandPalette = Object.freeze(generate(DOCS_BRAND_SEED));
@@ -111,7 +111,7 @@ export const docsBrandStyleText = (['light', 'dark'] as const)
     const tokens = Object.entries(documentationVariables(mode))
       .map(([name, value]) => `${name}:${value}`)
       .join(';');
-    return `:root[data-theme='${mode}'] body[data-atlas-surface='docs']{${tokens}}`;
+    return `:root[data-theme='${mode}'] body[data-genux-surface='docs']{${tokens}}`;
   })
   .join('\n');
 

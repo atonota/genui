@@ -2091,7 +2091,7 @@
     }
   },
   "outputs": {
-    "atlas-dropdowns.min.js": {
+    "genux-dropdowns.min.js": {
       "imports": [],
       "exports": [],
       "entryPoint": "adapter.mjs",

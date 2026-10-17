@@ -30,6 +30,8 @@ credentials/
 /backups/
 /tmp/
 /output/
+# Local Playwright run artifacts; kept on disk, never source or public data.
+/test-results/
 .cache/
 .eslintcache
 .stylelintcache

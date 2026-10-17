@@ -1,16 +1,16 @@
 import { useId, useState, type ReactNode } from 'react';
 import { Select } from 'antd';
 import dayjs, { type Dayjs } from 'dayjs';
-import AtlasProvider from './AtlasProvider';
-import AtlasDateTime, {
-  AtlasDateTimeRange,
-  type AtlasDateTimeMode,
-  type AtlasDateTimeProps,
-  type AtlasDateTimeRangeValue,
-} from './AtlasDateTime';
+import GenUXProvider from './GenUXProvider';
+import GenUXDateTime, {
+  GenUXDateTimeRange,
+  type GenUXDateTimeMode,
+  type GenUXDateTimeProps,
+  type GenUXDateTimeRangeValue,
+} from './GenUXDateTime';
 import DataEntryCatalog, { DataEntryGrid, type DataEntrySection } from './DataEntryCatalog';
 import DateRangeFilterExample from './DateRangeFilterExample';
-import { TweakerSettings } from './AtlasTweaker';
+import { TweakerSettings } from './GenUXTweaker';
 import ExamplePreview from './ExamplePreview';
 import { useI18n } from './useI18n';
 
@@ -19,7 +19,7 @@ const REFERENCE_TEXT = '2026-10-14';
 const REFERENCE = dayjs(REFERENCE_TEXT);
 
 /** Local wall formats; date-only values never pass through toISOString. */
-const valueFormats: Record<AtlasDateTimeMode, string> = {
+const valueFormats: Record<GenUXDateTimeMode, string> = {
   date: 'YYYY-MM-DD',
   week: 'gggg-[W]ww',
   month: 'YYYY-MM',
@@ -114,7 +114,7 @@ const isOffice = (day: Dayjs) => !isWeekend(day) && !officeHolidays.has(day.form
 const ordersOn = (day: Dayjs) => ((day.date() * 37 + (day.month() + 1) * 11) % 90) + 10;
 const changeOn = (day: Dayjs) => (((day.date() * 53 + (day.month() + 1) * 7) % 41) - 20) / 10;
 
-type CellRender = NonNullable<AtlasDateTimeProps['cellRender']>;
+type CellRender = NonNullable<GenUXDateTimeProps['cellRender']>;
 type CellNote = { text: string; trend?: 'up' | 'down' } | null;
 const noteCells =
   (note: (day: Dayjs) => CellNote): CellRender =>
@@ -159,7 +159,7 @@ function DateTimeExamples() {
   const id = useId();
   const [availability, setAvailability] = useState<Availability>('editable');
   const [singles, setSingles] = useState<Partial<Record<string, Dayjs | null>>>({});
-  const [ranges, setRanges] = useState<Partial<Record<string, AtlasDateTimeRangeValue>>>({});
+  const [ranges, setRanges] = useState<Partial<Record<string, GenUXDateTimeRangeValue>>>({});
   const single = (key: string) => ({
     id: `${id}-${key}`,
     value: singles[key] ?? null,
@@ -168,12 +168,12 @@ function DateTimeExamples() {
   const range = (key: string) => ({
     id: `${id}-${key}`,
     value: ranges[key] ?? null,
-    onChange: (next: AtlasDateTimeRangeValue) =>
+    onChange: (next: GenUXDateTimeRangeValue) =>
       setRanges(current => ({ ...current, [key]: next })),
   });
-  const show = (value: Dayjs | null | undefined, mode: AtlasDateTimeMode) =>
+  const show = (value: Dayjs | null | undefined, mode: GenUXDateTimeMode) =>
     value ? value.format(valueFormats[mode]) : t('Nothing selected');
-  const showRange = (value: AtlasDateTimeRangeValue | undefined, mode: AtlasDateTimeMode) =>
+  const showRange = (value: GenUXDateTimeRangeValue | undefined, mode: GenUXDateTimeMode) =>
     value
       ? t('{start} to {end}', {
           start: value[0] ? value[0].format(valueFormats[mode]) : t('Not chosen'),
@@ -250,7 +250,7 @@ function DateTimeExamples() {
                 resultFor={`${id}-${example.mode}`}
                 result={show(singles[example.mode], example.mode)}
               >
-                <AtlasDateTime
+                <GenUXDateTime
                   {...single(example.mode)}
                   {...availabilityProps}
                   mode={example.mode}
@@ -280,7 +280,7 @@ function DateTimeExamples() {
                 resultFor={`${id}-${example.mode}`}
                 result={show(singles[example.mode], example.mode)}
               >
-                <AtlasDateTime
+                <GenUXDateTime
                   {...single(example.mode)}
                   mode={example.mode}
                   label={t(example.label)}
@@ -309,7 +309,7 @@ function DateTimeExamples() {
                 resultFor={`${id}-range-${example.mode}`}
                 result={showRange(ranges[`range-${example.mode}`], example.mode)}
               >
-                <AtlasDateTimeRange
+                <GenUXDateTimeRange
                   {...range(`range-${example.mode}`)}
                   mode={example.mode}
                   label={t(example.label)}
@@ -339,7 +339,7 @@ function DateTimeExamples() {
               resultFor={`${id}-preset`}
               result={show(singles.preset, 'date')}
             >
-              <AtlasDateTime
+              <GenUXDateTime
                 {...single('preset')}
                 label={t('Report date')}
                 help={t('Choose Yesterday, Last week or Last month, or pick any day.')}
@@ -352,7 +352,7 @@ function DateTimeExamples() {
               resultFor={`${id}-preset-range`}
               result={showRange(ranges['preset-range'], 'date')}
             >
-              <AtlasDateTimeRange
+              <GenUXDateTimeRange
                 {...range('preset-range')}
                 label={t('Report period')}
                 help={t('Choose a recent period or pick both endpoints.')}
@@ -378,7 +378,7 @@ function DateTimeExamples() {
               resultFor={`${id}-office`}
               result={show(singles.office, 'date')}
             >
-              <AtlasDateTime
+              <GenUXDateTime
                 {...single('office')}
                 label={t('Office day')}
                 help={t('Weekends and the Republic Day holiday on 29 October are unavailable.')}
@@ -399,7 +399,7 @@ function DateTimeExamples() {
                   : t('Nothing selected')
               }
             >
-              <AtlasDateTime
+              <GenUXDateTime
                 {...single('sales')}
                 label={t('Sales day')}
                 help={t('Each day shows its order count from a fixed local sample.')}
@@ -419,7 +419,7 @@ function DateTimeExamples() {
                   : t('Nothing selected')
               }
             >
-              <AtlasDateTime
+              <GenUXDateTime
                 {...single('finance')}
                 label={t('Trading day')}
                 help={t('Each day shows a sample daily change with its sign.')}
@@ -458,8 +458,8 @@ function DateTimeExamples() {
 
 export default function DateTimeDemo({ documentation = false }: { documentation?: boolean } = {}) {
   return (
-    <AtlasProvider appearance={documentation ? 'docs' : undefined}>
+    <GenUXProvider appearance={documentation ? 'docs' : undefined}>
       <DateTimeExamples />
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }

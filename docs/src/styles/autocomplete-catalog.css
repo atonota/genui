@@ -1,90 +1,90 @@
 /* Catalog composition only; the native control and popup share the master styles. */
-.atlas-demo .autocomplete-catalog {
+.genux-demo .autocomplete-catalog {
   --autocomplete-reading-width: 720px;
   --autocomplete-example-min: 320px;
   display: grid;
   gap: var(--space-section);
   min-width: 0;
 }
-.atlas-demo .autocomplete-navigation {
+.genux-demo .autocomplete-navigation {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-xs) var(--space-xl);
 }
-.atlas-demo .autocomplete-navigation a,
-.atlas-demo .autocomplete-context-actions a {
+.genux-demo .autocomplete-navigation a,
+.genux-demo .autocomplete-context-actions a {
   display: flex;
   align-items: center;
   min-height: var(--target-min);
 }
-.atlas-demo .autocomplete-section,
-.atlas-demo .autocomplete-section > header,
-.atlas-demo .autocomplete-primary-field,
-.atlas-demo .autocomplete-context,
-.atlas-demo .autocomplete-example,
-.atlas-demo .autocomplete-recovery {
+.genux-demo .autocomplete-section,
+.genux-demo .autocomplete-section > header,
+.genux-demo .autocomplete-primary-field,
+.genux-demo .autocomplete-context,
+.genux-demo .autocomplete-example,
+.genux-demo .autocomplete-recovery {
   display: grid;
   align-content: start;
   gap: var(--space-md);
   min-width: 0;
 }
-.atlas-demo .autocomplete-section {
+.genux-demo .autocomplete-section {
   gap: var(--space-xl);
   scroll-margin-block-start: var(--space-lg);
 }
-.atlas-demo .autocomplete-section > header {
+.genux-demo .autocomplete-section > header {
   gap: var(--space-xs);
   max-width: var(--autocomplete-reading-width);
 }
-.atlas-demo .autocomplete-section :is(h3, h4, p) {
+.genux-demo .autocomplete-section :is(h3, h4, p) {
   margin: 0;
 }
-.atlas-demo .autocomplete-section h3 {
+.genux-demo .autocomplete-section h3 {
   font-size: var(--text-section);
 }
-.atlas-demo .autocomplete-section h4 {
+.genux-demo .autocomplete-section h4 {
   font-size: var(--text-large);
 }
-.atlas-demo .autocomplete-section > header > p:last-child,
-.atlas-demo .autocomplete-guidance {
+.genux-demo .autocomplete-section > header > p:last-child,
+.genux-demo .autocomplete-guidance {
   color: var(--muted);
 }
-.atlas-demo .autocomplete-discovery-grid,
-.atlas-demo .autocomplete-example-grid {
+.genux-demo .autocomplete-discovery-grid,
+.genux-demo .autocomplete-example-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--autocomplete-example-min)), 1fr));
   align-items: start;
   gap: var(--space-xl);
   min-width: 0;
 }
-.atlas-demo .autocomplete-primary-field {
+.genux-demo .autocomplete-primary-field {
   gap: var(--space-sm);
 }
-.atlas-demo .autocomplete-context {
+.genux-demo .autocomplete-context {
   padding: var(--space-md);
   border-radius: var(--radius);
   background: var(--surface);
 }
-.atlas-demo .autocomplete-context-actions {
+.genux-demo .autocomplete-context-actions {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-xs) var(--space-xl);
 }
-.atlas-demo .autocomplete-context :is(h4, p, a) {
+.genux-demo .autocomplete-context :is(h4, p, a) {
   overflow-wrap: anywhere;
 }
-.atlas-demo .autocomplete-example {
+.genux-demo .autocomplete-example {
   gap: var(--space-lg);
 }
-.atlas-demo .autocomplete-recovery {
+.genux-demo .autocomplete-recovery {
   max-width: var(--autocomplete-reading-width);
 }
 @media (min-width: 960px) {
-  .atlas-demo .autocomplete-discovery-grid {
+  .genux-demo .autocomplete-discovery-grid {
     grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
     gap: var(--space-section);
   }
-  .atlas-demo .autocomplete-context {
+  .genux-demo .autocomplete-context {
     padding: var(--space-lg);
   }
 }

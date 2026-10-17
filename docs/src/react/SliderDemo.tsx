@@ -1,9 +1,9 @@
 import { useId, useState } from 'react';
 import { Switch } from 'antd';
-import InputNumber from './AtlasInputNumber';
-import AtlasProvider from './AtlasProvider';
-import { TweakerSettings } from './AtlasTweaker';
-import AtlasSlider from './AtlasSlider';
+import InputNumber from './GenUXInputNumber';
+import GenUXProvider from './GenUXProvider';
+import { TweakerSettings } from './GenUXTweaker';
+import GenUXSlider from './GenUXSlider';
 import DataEntryCatalog, { DataEntryGrid } from './DataEntryCatalog';
 import ExamplePreview from './ExamplePreview';
 import { useI18n } from './useI18n';
@@ -48,7 +48,7 @@ export default function SliderDemo({ documentation = false }: { documentation?: 
       </ExampleHeading>
       <div className="slider-demo-field">
         <span id={`${id}-linear-label`}>{t('Linear value')}</span>
-        <AtlasSlider
+        <GenUXSlider
           id={`${id}-linear`}
           value={linear}
           onChange={setLinear}
@@ -71,7 +71,7 @@ export default function SliderDemo({ documentation = false }: { documentation?: 
       </ExampleHeading>
       <div className="slider-demo-field">
         {documentation && <span>{t('Range')}</span>}
-        <AtlasSlider
+        <GenUXSlider
           id={`${id}-range`}
           range
           value={range}
@@ -100,7 +100,7 @@ export default function SliderDemo({ documentation = false }: { documentation?: 
           {t('Integer value')}
         </label>
         <div className="slider-demo-number-row">
-          <AtlasSlider
+          <GenUXSlider
             id={`${id}-integer`}
             min={1}
             max={20}
@@ -130,7 +130,7 @@ export default function SliderDemo({ documentation = false }: { documentation?: 
           {t('Decimal value')}
         </label>
         <div className="slider-demo-number-row">
-          <AtlasSlider
+          <GenUXSlider
             id={`${id}-decimal`}
             min={0}
             max={1}
@@ -173,7 +173,7 @@ export default function SliderDemo({ documentation = false }: { documentation?: 
         <div className="slider-demo-field">
           <span id={`${id}-vertical-label`}>{t('Vertical value')}</span>
           <div className="slider-demo-vertical-frame">
-            <AtlasSlider
+            <GenUXSlider
               id={`${id}-vertical`}
               orientation="vertical"
               value={vertical}
@@ -188,7 +188,7 @@ export default function SliderDemo({ documentation = false }: { documentation?: 
         <div className="slider-demo-field">
           <span>{t('Range slider')}</span>
           <div className="slider-demo-vertical-frame">
-            <AtlasSlider
+            <GenUXSlider
               id={`${id}-vertical-range`}
               orientation="vertical"
               range
@@ -204,7 +204,7 @@ export default function SliderDemo({ documentation = false }: { documentation?: 
         <div className="slider-demo-field">
           <span id={`${id}-temperature-label`}>{t('Marked temperature')}</span>
           <div className="slider-demo-vertical-frame">
-            <AtlasSlider
+            <GenUXSlider
               id={`${id}-temperature`}
               orientation="vertical"
               min={0}
@@ -241,7 +241,7 @@ export default function SliderDemo({ documentation = false }: { documentation?: 
       </ExampleHeading>
       <p>{t('Reversed sliders use the same value model.')}</p>
       <div className="slider-demo-field">
-        <AtlasSlider
+        <GenUXSlider
           id={`${id}-reverse`}
           reverse
           value={reversedValue}
@@ -253,7 +253,7 @@ export default function SliderDemo({ documentation = false }: { documentation?: 
         <output htmlFor={`${id}-reverse`}>{currentValue(reversedValue)}</output>
       </div>
       <div className="slider-demo-field">
-        <AtlasSlider
+        <GenUXSlider
           id={`${id}-reverse-range`}
           range
           reverse
@@ -284,7 +284,7 @@ export default function SliderDemo({ documentation = false }: { documentation?: 
       </TweakerSettings>
       <p>{t('Disabled controls retain their values.')}</p>
       <div className="slider-demo-field">
-        <AtlasSlider
+        <GenUXSlider
           id={`${id}-state`}
           disabled={disabled}
           value={stateValue}
@@ -296,7 +296,7 @@ export default function SliderDemo({ documentation = false }: { documentation?: 
         <output htmlFor={`${id}-state`}>{currentValue(stateValue)}</output>
       </div>
       <div className="slider-demo-field">
-        <AtlasSlider
+        <GenUXSlider
           id={`${id}-state-range`}
           range
           disabled={disabled}
@@ -311,7 +311,7 @@ export default function SliderDemo({ documentation = false }: { documentation?: 
     </section>
   );
   return (
-    <AtlasProvider
+    <GenUXProvider
       appearance={documentation ? 'docs' : undefined}
       sizeFamily={documentation ? 'selection' : 'component'}
     >
@@ -395,6 +395,6 @@ export default function SliderDemo({ documentation = false }: { documentation?: 
           {statesExample}
         </div>
       )}
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }

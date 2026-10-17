@@ -1,7 +1,7 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
 const origin = 'http://127.0.0.1:4324';
-const stage = process.env.ATLAS_TDD_STAGE === 'after' ? 'after' : 'before';
+const stage = process.env.GENUX_TDD_STAGE === 'after' ? 'after' : 'before';
 
 async function snap(page: Page, name: string) {
   await page.screenshot({
@@ -37,14 +37,14 @@ const withoutRing = (element: Locator) =>
     return style.outlineStyle === 'none' || parseFloat(style.outlineWidth) === 0;
   });
 
-test('Listy rows share Atlas sizes and Cascader rows keep native keyboard semantics', async ({
+test('Listy rows share GenUX sizes and Cascader rows keep native keyboard semantics', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 320, height: 720 });
   const response = await page.goto(`${origin}/components/listy/`);
   expect(response?.status()).toBe(200);
 
-  const row = page.locator('[data-atlas-listy-item]').first();
+  const row = page.locator('[data-genux-listy-item]').first();
   await expect(row).toBeVisible();
   expect(
     await page.evaluate(
@@ -82,7 +82,7 @@ test('Listy rows share Atlas sizes and Cascader rows keep native keyboard semant
 
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.locator('[data-tweaker-trigger]').click();
-  const sizes = page.locator('.atlas-tweaker-panel [data-size-control] .ant-segmented-item');
+  const sizes = page.locator('.genux-tweaker-panel [data-size-control] .ant-segmented-item');
   await expect(sizes).toHaveCount(3);
   for (const [index, height] of [
     [0, 32],
@@ -101,7 +101,7 @@ test('Listy rows share Atlas sizes and Cascader rows keep native keyboard semant
   const field = page.locator('[data-cascader-primary] [data-cascader-field]');
   const input = field.locator('input[role="combobox"]');
   await tabTo(page, input);
-  expect(await withoutRing(field.locator('.atlas-cascader-control'))).toBe(true);
+  expect(await withoutRing(field.locator('.genux-cascader-control'))).toBe(true);
 
   await page.keyboard.press('ArrowDown');
   await expect(input).toHaveAttribute('aria-expanded', 'true');
@@ -119,8 +119,8 @@ test('Listy rows share Atlas sizes and Cascader rows keep native keyboard semant
       items: items.length,
       shared: items.filter(
         item =>
-          item.hasAttribute('data-atlas-listy-item') ||
-          !!item.querySelector('[data-atlas-listy-item]'),
+          item.hasAttribute('data-genux-listy-item') ||
+          !!item.querySelector('[data-genux-listy-item]'),
       ).length,
     };
   });
@@ -200,12 +200,12 @@ test('Listy reference variants and shared inset surface are functional', async (
         );
       };
       const root = section.querySelector('.ant-listy');
-      const rows = [...section.querySelectorAll('[data-atlas-listy-item]')];
+      const rows = [...section.querySelectorAll('[data-genux-listy-item]')];
       if (!root || !rows.length) return null;
       return {
-        outlined: root.classList.contains('atlas-listy-outlined'),
+        outlined: root.classList.contains('genux-listy-outlined'),
         outer: edges(root).every(width => width > 0),
-        frame: edges(root.parentElement?.closest('.atlas-listy-frame')).some(width => width > 0),
+        frame: edges(root.parentElement?.closest('.genux-listy-frame')).some(width => width > 0),
         rows: rows.flatMap(row => edges(row)).reduce((sum, width) => sum + width, 0),
         insetShadow: getComputedStyle(root).boxShadow.includes('inset'),
       };
@@ -224,7 +224,7 @@ test('Listy reference variants and shared inset surface are functional', async (
       const frame = () => new Promise(resolve => requestAnimationFrame(resolve));
       const owners = () => {
         const roots = new Set<Element>();
-        for (const panel of document.querySelectorAll('.atlas-tweaker-panel')) {
+        for (const panel of document.querySelectorAll('.genux-tweaker-panel')) {
           roots.add(panel);
           const drawer = panel.closest('.ant-drawer');
           if (drawer) roots.add(drawer);
@@ -252,7 +252,7 @@ test('Listy reference variants and shared inset surface are functional', async (
         await Promise.all(pending.map(animation => animation.finished.catch(() => undefined)));
       }
     });
-    const dialog = page.locator('.atlas-tweaker-panel [role="dialog"]');
+    const dialog = page.locator('.genux-tweaker-panel [role="dialog"]');
     if (await dialog.isVisible())
       await dialog.getByRole('button', { name: 'Close tweaker', exact: true }).click();
     // The fixed Drawer root stays mounted while closed; wait until its dialog is physically hidden.
@@ -275,7 +275,7 @@ test('Listy reference variants and shared inset surface are functional', async (
   // Native Listy hosts are the visible rows: the first plain host holds the default 40px compact
   // height and draws no border on any physical or logical side; sections keep whitespace apart.
   const host = await pattern('plain')
-    .locator('[data-atlas-listy-item]')
+    .locator('[data-genux-listy-item]')
     .first()
     .evaluate(row => {
       const item = row.closest('.ant-listy-item');
@@ -309,7 +309,7 @@ test('Listy reference variants and shared inset surface are functional', async (
   });
   expect(sectionGap).toBeGreaterThanOrEqual(16);
   expect(await noOverflow()).toBe(true);
-  const richText = await typography(pattern('rich').locator('[data-atlas-listy-item]').first());
+  const richText = await typography(pattern('rich').locator('[data-genux-listy-item]').first());
   expect(richText.size).toBeGreaterThanOrEqual(14);
   expect(richText.family).toContain('Outfit');
   await expect.poll(surface).toMatchObject({ outlined: false, rows: 0, insetShadow: true });
@@ -365,7 +365,7 @@ test('Listy reference variants and shared inset surface are functional', async (
   // Reorder: the named native radio selects Documentation by keyboard; a toolbar outside the
   // list moves it while the radio keeps its checked state.
   const drag = pattern('draggable');
-  const order = () => drag.locator('[data-atlas-listy-item] .atlas-listy-label').allTextContents();
+  const order = () => drag.locator('[data-genux-listy-item] .genux-listy-label').allTextContents();
   const initial = await order();
   expect(initial).toHaveLength(3);
   const docs = drag.getByRole('radio', { name: /^Documentation, position [0-9] of 3$/ });
@@ -394,10 +394,10 @@ test('Listy reference variants and shared inset surface are functional', async (
   await expect(drag.getByRole('status')).toContainText('Documentation moved to position');
 
   const grouped = pattern('grouped');
-  // The callback classNames form resolves through AtlasListy and keeps the shared header class.
-  const teamHeader = grouped.locator('.atlas-listy-team-header').first();
+  // The callback classNames form resolves through GenUXListy and keeps the shared header class.
+  const teamHeader = grouped.locator('.genux-listy-team-header').first();
   await expect(teamHeader).toBeVisible();
-  await expect(teamHeader).toHaveClass(/(^| )atlas-listy-group-header( |$)/);
+  await expect(teamHeader).toHaveClass(/(^| )genux-listy-group-header( |$)/);
   await grouped.locator('.ant-listy').first().hover();
   await page.mouse.wheel(0, 400);
   await expect
@@ -418,11 +418,11 @@ test('Listy reference variants and shared inset surface are functional', async (
     .toBe(true);
 
   const virtual = pattern('virtual');
-  const virtualRows = virtual.locator('[data-atlas-listy-item]');
+  const virtualRows = virtual.locator('[data-genux-listy-item]');
   // Only rendered row labels count; the live status region may echo the jumped record.
   const virtualRow = (label: string) =>
     virtualRows.filter({
-      has: page.locator('.atlas-listy-label', { hasText: new RegExp(`^${label}$`) }),
+      has: page.locator('.genux-listy-label', { hasText: new RegExp(`^${label}$`) }),
     });
   await expect(virtualRow('Record 1')).toBeVisible();
   await expect(virtualRow('Record 10000')).toHaveCount(0);
@@ -430,7 +430,7 @@ test('Listy reference variants and shared inset surface are functional', async (
     const scroller = [...root.querySelectorAll<HTMLElement>('*')].find(
       element => element.clientHeight > 0 && element.scrollHeight > element.clientHeight + 1,
     );
-    const row = root.querySelector('[data-atlas-listy-item]');
+    const row = root.querySelector('[data-genux-listy-item]');
     if (!scroller || !row) return null;
     return {
       bounded: scroller.clientHeight <= window.innerHeight,
@@ -449,7 +449,7 @@ test('Listy reference variants and shared inset surface are functional', async (
   await captureReference('patterns-desktop-inset');
   await page.locator('[data-tweaker-trigger]').click();
   const combo = page
-    .locator('.atlas-tweaker-panel')
+    .locator('.genux-tweaker-panel')
     .getByRole('combobox', { name: 'Listy surface' });
   await combo.focus();
   await page.keyboard.press('ArrowDown');
@@ -481,10 +481,10 @@ test('Listy reference variants and shared inset surface are functional', async (
   await tabTo(page, input);
   await page.keyboard.press('ArrowDown');
   await expect(input).toHaveAttribute('aria-expanded', 'true');
-  const popup = page.locator('[data-cascader-primary] .atlas-cascader-popup');
-  await expect(popup).toHaveClass(/(^| )atlas-listy-outlined( |$)/);
+  const popup = page.locator('[data-cascader-primary] .genux-cascader-popup');
+  await expect(popup).toHaveClass(/(^| )genux-listy-outlined( |$)/);
   const rowBorder = await popup
-    .locator('[data-atlas-listy-item]')
+    .locator('[data-genux-listy-item]')
     .first()
     .evaluate(row => {
       const style = getComputedStyle(row);

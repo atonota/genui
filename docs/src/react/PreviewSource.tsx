@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 import { useEffect, useRef, useState } from 'react';
-import AtlasButton from './AtlasButton';
+import GenUXButton from './GenUXButton';
 import { useI18n } from './useI18n';
 import type { ThemeMode } from '../theme';
 import type { PreviewOrientation } from '../data/preview-devices';
@@ -92,7 +92,7 @@ function SourceBlock({ title, note, source, copyLabel, onCopy }: BlockProps) {
       <pre>
         <code>{source.code}</code>
       </pre>
-      <AtlasButton text={copyLabel} fill="outline" onClick={onCopy} />
+      <GenUXButton text={copyLabel} fill="outline" onClick={onCopy} />
       <a href={source.sourceUrl}>{t('Open source file')}</a>
     </div>
   );
@@ -187,7 +187,7 @@ export default function PreviewSource({ id, profile, settings, active }: Props) 
         <pre>
           <code>{usage}</code>
         </pre>
-        <AtlasButton
+        <GenUXButton
           text={t('Copy usage code')}
           fill="outline"
           onClick={() => copy(t('Usage code copied'), usage)}

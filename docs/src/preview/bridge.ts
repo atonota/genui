@@ -5,7 +5,7 @@ import { isPreviewOrientation, type PreviewOrientation } from '../data/preview-d
 import type { ThemeMode } from '../theme';
 import { isPreviewProfile, type PreviewProfile } from './profiles';
 
-export const PREVIEW_CHANNEL = 'atlas-preview';
+export const PREVIEW_CHANNEL = 'genux-preview';
 const MAX_FIELDS = 200;
 const MAX_KEY = 256;
 const MAX_VALUE = 4000;

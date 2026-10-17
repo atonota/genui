@@ -1,8 +1,8 @@
 import { useRef, useState } from 'react';
 import { Checkbox, Select } from 'antd';
-import AtlasButton from '../../AtlasButton';
+import GenUXButton from '../../GenUXButton';
 import { useI18n } from '../../useI18n';
-import { TweakerSettings } from '../../AtlasTweaker';
+import { TweakerSettings } from '../../GenUXTweaker';
 import { EntityPicker } from './EntityPicker';
 import {
   RepeatingRecordEditor,
@@ -83,7 +83,7 @@ export function AttachmentPreview({
       <div className="kit-record-heading">
         <h3>{t('Attachment preview')}</h3>
         {onClose && (
-          <AtlasButton fill="text" text={t('Close attachment preview')} onClick={onClose} />
+          <GenUXButton fill="text" text={t('Close attachment preview')} onClick={onClose} />
         )}
       </div>
       <StateSurface
@@ -142,7 +142,7 @@ export function AttachmentList({
           <ul>
             {attachments.map(attachment => (
               <li key={attachment.id}>
-                <AtlasButton
+                <GenUXButton
                   fill={selectedId === attachment.id ? 'solid' : 'ghost'}
                   text={attachment.name}
                   aria-pressed={selectedId === attachment.id}
@@ -518,7 +518,7 @@ export function AdvancedRecordExamples() {
             'The same supplied equipment ID and return trail survive container changes. Closing does not discard caller-owned data or drafts.',
           )}
         </p>
-        <AtlasButton
+        <GenUXButton
           fill="text"
           text={t('Reopen current inspector')}
           disabled={panelOpen}
@@ -535,7 +535,7 @@ export function AdvancedRecordExamples() {
         >
           <nav className="kit-panel-record-links" aria-label={t('Supplied equipment records')}>
             {panelRecords.map(record => (
-              <AtlasButton
+              <GenUXButton
                 key={record.id}
                 fill="text"
                 text={t('Inspect {id}', { id: record.id })}
@@ -564,7 +564,7 @@ export function AdvancedRecordExamples() {
             }))}
           >
             <div className="kit-action-row">
-              <AtlasButton
+              <GenUXButton
                 fill="text"
                 text={t('Open related equipment')}
                 onClick={() => {
@@ -575,7 +575,7 @@ export function AdvancedRecordExamples() {
                   }
                 }}
               />
-              <AtlasButton
+              <GenUXButton
                 fill="text"
                 text={t('Close inspector at end')}
                 onClick={() => setPanelOpen(false)}

@@ -2,7 +2,7 @@ import { createElement, type ComponentType } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { createCache, extractStyle, StyleProvider } from '@ant-design/cssinjs';
 import postcss from 'postcss';
-import { AtlasSsrTheme } from '../react/AtlasProvider';
+import { GenUXSsrTheme } from '../react/GenUXProvider';
 import type { ThemeMode } from '../theme';
 
 type DocumentationDemoProps = { documentation?: boolean };
@@ -17,7 +17,7 @@ function collectStyles(
       StyleProvider,
       { cache },
       createElement(
-        AtlasSsrTheme.Provider,
+        GenUXSsrTheme.Provider,
         { value: mode },
         createElement(Demo, { documentation }),
       ),
@@ -69,6 +69,6 @@ export function extractDemoStyles(
   const dark = collectStyles(Demo, 'dark', documentation);
   return (
     extractStyle(light) +
-    `<style data-atlas-theme-tokens>${scopeVariables(light, 'light', dynamicVariableKeys)}${scopeVariables(dark, 'dark', dynamicVariableKeys)}</style>`
+    `<style data-genux-theme-tokens>${scopeVariables(light, 'light', dynamicVariableKeys)}${scopeVariables(dark, 'dark', dynamicVariableKeys)}</style>`
   );
 }

@@ -1,0 +1,1055 @@
+/* GenUXFab layout over the master GenUXButton contract. Renderer anatomy:
+   .genux-fab-trigger > .genux-fab-tooltip-anchor > button.genux-fab-trigger-button and
+   .genux-fab-action > button.genux-fab-action-button. Wrappers only place and size; the
+   native master buttons paint, and the master slot cue stays their only focus indicator.
+   Geometry vars come from the renderer; colour, radius and motion alias central roles. */
+
+.genux-fab {
+  --fab-open-duration: var(--motion-duration-standard);
+  --fab-close-duration: var(--motion-duration-standard);
+  --fab-easing: var(--motion-easing);
+  --fab-stagger: var(--motion-delay);
+  --fab-duration: var(--fab-open-duration);
+  --fab-delay: var(--motion-delay);
+  --fab-target-min: max(48px, var(--target-min, 48px));
+  --fab-icon-size: 24px;
+  --fab-action-visual: 48px;
+  --fab-action-hit: 48px;
+  --fab-action-icon: 24px;
+  --fab-inline-sign: 1;
+  --fab-shift: calc(var(--fab-action-visual) / 3);
+  --fab-slide-x: 0px;
+  --fab-slide-y: 0px;
+  --fab-hide-o: 1;
+  --fab-hide-s: 1;
+  --fab-hide-tx: 0px;
+  --fab-hide-ty: 0px;
+  --fab-o: var(--fab-hide-o);
+  --fab-s: var(--fab-hide-s);
+  --fab-tx: var(--fab-hide-tx);
+  --fab-ty: var(--fab-hide-ty);
+  --fab-label-on: 1;
+  --fab-trigger-label-on: 1;
+  --fab-safe-top: env(safe-area-inset-top, 0px);
+  --fab-safe-right: env(safe-area-inset-right, 0px);
+  --fab-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --fab-safe-left: env(safe-area-inset-left, 0px);
+  /* Wrapped label and inside-text measure: the usable width the position hook reports (the root box until it does),
+     minus the collision padding on both sides. */
+  --fab-label-measure: max(
+    0px,
+    calc(var(--fab-usable-width, var(--fab-root-width, 100%)) - 2 * var(--fab-collision-pad, 0px))
+  );
+  /* The root box is the resolved usable boundary in its containing block; without measurement it fills that block. */
+  position: absolute;
+  inset: auto;
+  left: var(--fab-root-x, 0px);
+  top: var(--fab-root-y, 0px);
+  width: var(--fab-root-width, 100%);
+  height: var(--fab-root-height, 100%);
+  isolation: isolate;
+  /* Static containing block: the fixed native dialog layers (kept fixed so the native focus lock engages) fill this
+     root, never the host viewport. It never animates and never moves a hit area. */
+  transform: translateZ(0);
+  pointer-events: none;
+  font-family: inherit;
+}
+.genux-fab:dir(rtl) {
+  --fab-inline-sign: -1;
+}
+/* A sticky root stays in flow: its offsets are stick thresholds, and the covered bounds never take layout space. */
+.genux-fab[data-fab-positioning='sticky'] {
+  left: 0;
+  top: 0;
+  height: var(--fab-root-height, 0px);
+  margin-block-end: calc(-1 * var(--fab-root-height, 0px));
+}
+.genux-fab[data-fab-size='sm'] {
+  --fab-icon-size: 20px;
+  --fab-action-visual: 40px;
+  --fab-action-icon: 20px;
+}
+.genux-fab[data-fab-size='lg'] {
+  --fab-icon-size: 28px;
+  --fab-action-visual: 56px;
+  --fab-action-hit: 56px;
+}
+/* Presentation follows the open phase alone, so busy or disabled work never skips the retained exit. */
+.genux-fab[data-fab-phase='closing'] {
+  --fab-duration: var(--fab-close-duration);
+}
+
+.genux-fab-demo-stage {
+  position: relative;
+  min-height: var(--fab-demo-height, 480px);
+}
+.genux-fab-demo-stage .genux-fab-backdrop {
+  position: absolute;
+}
+
+/* Demo shell: settings fall to one column in narrow containers; scroll content overflows its stage. */
+.genux-fab-settings {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16em), 1fr));
+  gap: calc(2 * var(--space-xs, 0.25em));
+}
+.genux-fab-settings > * {
+  min-width: 0;
+}
+.genux-fab-settings label {
+  font-size: max(14px, 1em);
+  overflow-wrap: break-word;
+}
+.genux-fab-settings :is(label > *, .ant-select, .ant-input, .ant-input-number, .ant-segmented) {
+  max-width: 100%;
+}
+.genux-fab-demo-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs, 0.25em);
+}
+.genux-fab-demo-content[data-fab-scroll='true'] {
+  display: grid;
+  align-content: start;
+  gap: calc(3 * var(--space-xs, 0.25em));
+  max-height: calc(var(--fab-demo-height, 480px) - 48px);
+  overflow: auto;
+  overscroll-behavior: contain;
+  overflow-wrap: break-word;
+}
+.genux-fab-demo-content[data-fab-scroll='true'] > * {
+  min-width: 0;
+  margin: 0;
+  padding-block: calc(3 * var(--space-xs, 0.25em));
+}
+
+/* Shapes reach the actual native buttons; squircle superellipse is decoration only. */
+.genux-fab[data-fab-shape='circle'] {
+  --fab-shape-radius: 50%;
+}
+.genux-fab[data-fab-shape='square'] {
+  --fab-shape-radius: 0px;
+}
+.genux-fab[data-fab-shape='pill'] {
+  --fab-shape-radius: calc(infinity * 1px);
+}
+.genux-fab[data-fab-shape='squircle'] {
+  --fab-shape-radius: 30%;
+}
+@supports (corner-shape: superellipse(2)) {
+  .genux-fab[data-fab-shape='squircle'] {
+    --fab-shape-radius: 50%;
+    --fab-corner: superellipse(2);
+  }
+}
+.genux-fab .genux-fab-trigger .genux-fab-trigger-button,
+.genux-fab .genux-fab-action .genux-fab-action-button {
+  box-sizing: border-box;
+  margin: 0;
+  border-radius: var(--fab-shape-radius, var(--slot-radius, var(--radius)));
+  corner-shape: var(--fab-corner, round);
+  font-size: max(14px, 1em);
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+.genux-fab :is(.genux-fab-trigger-button, .genux-fab-action-button)::before,
+.genux-fab :is(.genux-fab-trigger-button, .genux-fab-action-button) .genux-button-lip {
+  border-radius: var(--fab-shape-radius, var(--slot-radius, var(--radius)));
+  corner-shape: var(--fab-corner, round);
+}
+/* Press and release take the canonical button-feedback duration on every paint layer, so a slower master
+   inline alias never reaches the FAB; reduced motion below still zeroes them. */
+.genux-fab :is(.genux-fab-trigger-button, .genux-fab-action-button) .genux-button-lip::before,
+.genux-fab :is(.genux-fab-trigger-button, .genux-fab-action-button) .genux-button-lip::after,
+.genux-fab .genux-fab-trigger .genux-fab-trigger-button::before {
+  transition-duration: var(--motion-duration-button-feedback) !important;
+}
+.genux-fab :is(.genux-fab-trigger-button, .genux-fab-icon) svg {
+  width: var(--fab-icon-size);
+  height: var(--fab-icon-size);
+}
+/* Action glyphs follow their own 20/24/24 role, never the 20/24/28 trigger size. */
+.genux-fab .genux-fab-action .genux-fab-action-button svg {
+  width: var(--fab-action-icon);
+  height: var(--fab-action-icon);
+}
+.genux-fab[data-fab-icon-position='top']
+  :is(.genux-fab-trigger-button, .genux-fab-action-button)
+  .genux-button-content {
+  flex-direction: column;
+}
+.genux-fab[data-fab-icon-position='bottom']
+  :is(.genux-fab-trigger-button, .genux-fab-action-button)
+  .genux-button-content {
+  flex-direction: column-reverse;
+}
+
+/* Appearances: master inline vars win over stylesheet redefinitions, so surfaces set FAB-owned
+   shadow roles and real paint properties. Filled keeps the master face, lip and shadow; face and
+   text state colours stay master-owned. */
+.genux-fab[data-fab-appearance='semi-flat']
+  :is(.genux-fab-trigger-button, .genux-fab-action-button) {
+  --fab-face-shadow: inset 0 0 0 1px color-mix(in srgb, var(--button-edge) 45%, transparent);
+  --fab-press-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--button-edge) 45%, transparent),
+    inset 0 2px 4px var(--overlay-scrim);
+}
+.genux-fab[data-fab-appearance='elevated']
+  :is(.genux-fab-trigger-button, .genux-fab-action-button) {
+  --fab-face-shadow: var(--shadow-ambient);
+}
+.genux-fab[data-fab-appearance='branded'] :is(.genux-fab-trigger-button, .genux-fab-action-button) {
+  --fab-face-shadow: inset 0 0 0 2px var(--button-edge), var(--shadow-ambient);
+}
+.genux-fab[data-fab-appearance='inset-press']
+  :is(.genux-fab-trigger-button, .genux-fab-action-button) {
+  --fab-face-shadow: none;
+  --fab-press-shadow: inset 0 2px 4px var(--overlay-scrim);
+}
+.genux-fab:is([data-fab-appearance='inset-press'], [data-fab-appearance='semi-flat'])
+  .genux-fab-trigger
+  .genux-fab-trigger-button:is(:active, [data-pressed='true']) {
+  --fab-face-shadow: var(--fab-press-shadow);
+}
+.genux-fab:is(
+    [data-fab-appearance='tonal'],
+    [data-fab-appearance='flat'],
+    [data-fab-appearance='translucent']
+  )
+  :is(.genux-fab-trigger-button, .genux-fab-action-button) {
+  --fab-face-shadow: none;
+}
+.genux-fab[data-fab-appearance='outlined'] .genux-fab-trigger .genux-fab-trigger-button {
+  --fab-face-shadow: none;
+  border-style: solid;
+  border-width: var(--button-outline-border-width, 1px);
+  border-color: var(--button-edge);
+}
+.genux-fab[data-fab-appearance='soft-outlined'] .genux-fab-trigger .genux-fab-trigger-button {
+  --fab-face-shadow: none;
+  border-style: solid;
+  border-width: 1px;
+  border-color: color-mix(in srgb, var(--button-edge) 55%, transparent);
+}
+.genux-fab[data-fab-appearance='outlined'] .genux-fab-action .genux-fab-action-button {
+  --fab-face-shadow: inset 0 0 0 var(--button-outline-border-width, 1px) var(--button-edge);
+  --fab-press-shadow: var(--fab-face-shadow);
+}
+.genux-fab[data-fab-appearance='soft-outlined'] .genux-fab-action .genux-fab-action-button {
+  --fab-face-shadow: inset 0 0 0 1px color-mix(in srgb, var(--button-edge) 55%, transparent);
+  --fab-press-shadow: var(--fab-face-shadow);
+}
+.genux-fab[data-fab-appearance='flat']
+  :is(.genux-fab-trigger-button, .genux-fab-action-button)
+  .genux-button-lip {
+  display: none;
+}
+.genux-fab[data-fab-appearance='translucent']
+  :is(.genux-fab-trigger-button, .genux-fab-action-button)::before {
+  background: color-mix(in srgb, var(--button-face) 80%, transparent);
+}
+.genux-fab:not([data-fab-appearance='filled']) .genux-fab-trigger .genux-fab-trigger-button {
+  box-shadow: none;
+}
+.genux-fab:not([data-fab-appearance='filled'])
+  .genux-fab-trigger
+  .genux-fab-trigger-button::before {
+  box-shadow: var(--fab-face-shadow, var(--button-shadow, none));
+}
+.genux-fab:is(
+  [data-fab-appearance='outlined'],
+  [data-fab-appearance='soft-outlined'],
+  [data-fab-appearance='tonal']
+) {
+  --fab-icon-ink: var(--docs-brand-action-ink, var(--ink));
+}
+
+/* Trigger: host div placed by geometry; the master button keeps its slot size. */
+.genux-fab-trigger {
+  position: absolute;
+  left: var(--fab-x);
+  top: var(--fab-y);
+  z-index: 2;
+  width: var(--fab-trigger-width);
+  height: var(--fab-trigger-height);
+  pointer-events: auto;
+}
+.genux-fab-tooltip-anchor {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+}
+.genux-fab .genux-fab-trigger .genux-fab-trigger-button {
+  width: var(--slot-size);
+  height: var(--slot-size);
+  min-width: var(--fab-target-min);
+  min-height: var(--fab-target-min);
+}
+.genux-fab .genux-fab-trigger .genux-fab-trigger-button:not(.genux-icon-button) {
+  width: max-content;
+  min-width: max(var(--slot-size), var(--fab-target-min));
+  max-width: var(--fab-label-measure);
+  height: auto;
+  min-height: max(var(--slot-size), var(--fab-target-min));
+  padding-inline: 1em;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+.genux-fab-trigger > .genux-fab-icon {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  line-height: 0;
+  color: var(--fab-icon-ink, var(--docs-brand-on-primary, var(--ink)));
+  pointer-events: none;
+}
+:is(.genux-fab-icon-overlay-active, .genux-fab-trigger-icon-overlay)
+  .genux-fab-trigger-button
+  .genux-button-content
+  > svg {
+  visibility: hidden;
+}
+/* The overlay is a sibling of the master button: it sits at the measured icon box relative to the host,
+   above the face, and never takes pointer input. Disabled dimming follows the native button. An expanded
+   menu trigger lifts the native button to the shared trigger role; the overlay shares that role and, later
+   in DOM, still paints above the face inside the trigger's own stacking context. */
+.genux-fab-trigger > .genux-fab-trigger-icon-overlay {
+  position: absolute;
+  left: var(--fab-trigger-icon-x, 0px);
+  top: var(--fab-trigger-icon-y, 0px);
+  z-index: var(--overlay-trigger-z, 1);
+  display: grid;
+  place-items: center;
+  width: var(--fab-trigger-icon-width, 100%);
+  height: var(--fab-trigger-icon-height, 100%);
+  line-height: 0;
+  pointer-events: none;
+  /* The copied master ink follows the button-feedback role, so theme, fill and state switches ease with the face. */
+  transition: color var(--motion-duration-button-feedback) var(--motion-easing) var(--motion-delay);
+}
+.genux-fab-trigger:has(.genux-fab-trigger-button:disabled)
+  > :is(.genux-fab-icon, .genux-fab-trigger-icon-overlay) {
+  opacity: var(--button-disabled-opacity);
+}
+
+/* FabIcon layers: decorative transforms only, timed by the FAB motion roles. data-open lives on
+   the FabIcon root; old/new overlap in one icon-sized cell. */
+.genux-fab-icon[data-fab-icon-transition] {
+  display: inline-grid;
+  place-items: center;
+  width: var(--fab-icon-size);
+  height: var(--fab-icon-size);
+}
+.genux-fab-icon[data-fab-icon-transition] > *,
+.genux-fab-icon-turn > * {
+  grid-area: 1 / 1;
+}
+.genux-fab-icon-turn,
+.genux-fab-icon-old,
+.genux-fab-icon-new {
+  display: inline-grid;
+  place-items: center;
+  transform-origin: center;
+  transition-property: opacity, transform;
+  transition-duration: var(--fab-duration);
+  transition-timing-function: var(--fab-easing);
+}
+svg .genux-fab-icon-turn {
+  transform-box: fill-box;
+}
+.genux-fab-icon[data-open='true'] .genux-fab-icon-turn {
+  transform: rotate(45deg);
+}
+.genux-fab-icon[data-open='true'] .genux-fab-icon-old,
+.genux-fab-icon[data-open='false'] .genux-fab-icon-new {
+  opacity: 0;
+  transform: scale(0.6);
+}
+
+/* Actions: wrappers place; native buttons keep a 48/56 hit and paint the visual size. */
+.genux-fab-actions,
+.genux-fab-dialog {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+.genux-fab:is(
+    [data-fab-phase='closed'],
+    [data-fab-expanded='false']:not([data-fab-phase='closing'])
+  )
+  .genux-fab-actions {
+  visibility: hidden;
+}
+.genux-fab[data-fab-phase='closing'] :is(.genux-fab-actions, .genux-fab-action-button) {
+  pointer-events: none;
+}
+.genux-fab-action {
+  --fab-origin-x: calc(
+    50% + var(--fab-x) + var(--fab-trigger-width) / 2 - var(--fab-action-x) -
+      var(--fab-action-width) / 2
+  );
+  --fab-origin-y: calc(
+    50% + var(--fab-y) + var(--fab-trigger-height) / 2 - var(--fab-action-y) -
+      var(--fab-action-height) / 2
+  );
+  position: absolute;
+  left: var(--fab-action-x);
+  top: var(--fab-action-y);
+  width: var(--fab-action-width);
+  height: var(--fab-action-height);
+  display: grid;
+  place-items: center;
+  opacity: var(--fab-o);
+  transition: opacity var(--fab-duration) var(--fab-easing);
+  transition-delay: var(--fab-delay);
+}
+.genux-fab[data-fab-sequence='staggered'] .genux-fab-action {
+  --fab-delay: calc(var(--fab-stagger) * var(--fab-order-index, 0));
+}
+/* Native buttons sit inside .genux-fab-control-slot with any nested master badge; the slot only places them. */
+.genux-fab-action > .genux-fab-control-slot {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+.genux-fab .genux-fab-action .genux-fab-action-button {
+  --fab-paint-inset: max(0px, calc((100% - var(--fab-action-visual)) / 2));
+  width: var(--slot-size);
+  height: var(--slot-size);
+  min-width: var(--fab-action-hit);
+  min-height: var(--fab-action-hit);
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none;
+}
+.genux-fab .genux-fab-action .genux-fab-action-button::before {
+  inset: var(--fab-paint-inset) var(--fab-paint-inset)
+    calc(var(--fab-paint-inset) + var(--lip, 0px));
+  box-shadow: var(--fab-face-shadow, var(--button-shadow, none));
+  transition:
+    inset var(--motion-duration-button-feedback) var(--motion-easing),
+    transform var(--fab-duration) var(--fab-easing) var(--fab-delay);
+}
+.genux-fab .genux-fab-action .genux-fab-action-button:is(:active, [data-pressed='true'])::before {
+  inset: calc(var(--fab-paint-inset) + var(--top-lip, 0px)) var(--fab-paint-inset)
+    var(--fab-paint-inset);
+  box-shadow: var(--fab-press-shadow, none);
+  transition-duration: var(--motion-duration-button-feedback), var(--fab-duration);
+}
+.genux-fab .genux-fab-action .genux-fab-action-button .genux-button-lip {
+  inset: var(--fab-paint-inset);
+}
+.genux-fab .genux-fab-action .genux-fab-action-button :is(.genux-button-lip, .genux-button-content),
+.genux-fab .genux-fab-action .genux-fab-action-button::before {
+  transform: translate(var(--fab-tx), var(--fab-ty)) scale(var(--fab-s));
+  transform-origin: var(--fab-origin-x) var(--fab-origin-y);
+}
+.genux-fab
+  .genux-fab-action
+  .genux-fab-action-button
+  :is(.genux-button-lip, .genux-button-content) {
+  transition: transform var(--fab-duration) var(--fab-easing) var(--fab-delay);
+}
+/* Dial geometry: the wrapper is the reserved union; the control slot (or a bare native hit) sits at its control
+   offset. Only trigger-center origin follows that offset; edge and custom keep their own origin rules. */
+.genux-fab:not([data-fab-origin='edge'], [data-fab-origin='custom'])
+  .genux-fab-action[data-fab-mode='dial'][data-fab-control-geometry] {
+  --fab-origin-x: calc(
+    50% + var(--fab-x) + var(--fab-trigger-width) / 2 - var(--fab-action-x) - var(--fab-control-x) -
+      var(--fab-control-width) / 2
+  );
+  --fab-origin-y: calc(
+    50% + var(--fab-y) + var(--fab-trigger-height) / 2 - var(--fab-action-y) -
+      var(--fab-control-y) - var(--fab-control-height) / 2
+  );
+}
+.genux-fab
+  .genux-fab-action[data-fab-mode='dial'][data-fab-control-geometry]
+  > :is(.genux-fab-control-slot, .genux-fab-action-button) {
+  position: absolute;
+  left: var(--fab-control-x);
+  top: var(--fab-control-y);
+}
+/* Inside-text dial controls size to their label and wrap within the usable measure; the hit never drops below
+   the action target and the painted face keeps the visual size inset from the hit. */
+.genux-fab
+  .genux-fab-action[data-fab-mode='dial']
+  .genux-fab-action-button:not(.genux-icon-button) {
+  --fab-paint-inset: max(0px, calc((var(--fab-action-hit) - var(--fab-action-visual)) / 2));
+  width: max-content;
+  max-width: var(--fab-label-measure);
+  height: auto;
+  padding-inline: 1em;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+/* A named group wraps one run of actions: rows flow it as one unshrinking block, a dial keeps it static so its
+   actions keep their absolute geometry. */
+.genux-fab-group {
+  position: static;
+  flex: none;
+}
+.genux-fab-group-name {
+  display: block;
+  color: var(--muted, GrayText);
+  font-size: max(14px, 1em);
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+.genux-fab-action > .genux-fab-group-name {
+  padding: 0.5em 1em 0;
+}
+.genux-fab-action-reason,
+.genux-fab-action-description,
+.genux-fab-action-shortcut {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Labels: trigger label from root geometry, action labels from their wrapper. */
+.genux-fab > .genux-fab-label,
+.genux-fab-action > .genux-fab-label {
+  position: absolute;
+  z-index: 2;
+  padding: 0.25em 0.5em;
+  border-radius: var(--radius);
+  background-color: var(--panel, Canvas);
+  color: var(--ink, CanvasText);
+  box-shadow: 0 1px 3px var(--overlay-scrim);
+  font-size: max(14px, 1em);
+  line-height: var(--line-height, 1.25);
+  /* Natural wrap inside a bounded measure; the measured rect is the whole wrapped box. */
+  box-sizing: border-box;
+  width: max-content;
+  max-width: min(20em, var(--fab-label-measure));
+  white-space: normal;
+  overflow-wrap: break-word;
+  pointer-events: none;
+  transition: opacity var(--fab-duration) var(--fab-easing);
+}
+.genux-fab > .genux-fab-label {
+  left: var(--fab-x);
+  top: calc(var(--fab-y) + var(--fab-trigger-height) / 2);
+  translate: calc(-100% - 0.5em) -50%;
+  /* Beside the trigger the label shares the usable measure with the trigger and its gap. */
+  max-width: min(
+    20em,
+    calc(var(--fab-label-measure) - var(--fab-trigger-width) - var(--fab-label-gap, 0.5em))
+  );
+  opacity: var(--fab-trigger-label-on);
+}
+.genux-fab[data-fab-label-placement='end'] > .genux-fab-label {
+  left: calc(var(--fab-x) + var(--fab-trigger-width) + 0.5em);
+  translate: 0 -50%;
+}
+.genux-fab[data-fab-label-placement='above'] > .genux-fab-label {
+  left: calc(var(--fab-x) + var(--fab-trigger-width) / 2);
+  top: calc(var(--fab-y) - 0.25em);
+  translate: -50% -100%;
+  max-width: min(20em, var(--fab-label-measure));
+}
+.genux-fab[data-fab-label-placement='below'] > .genux-fab-label {
+  left: calc(var(--fab-x) + var(--fab-trigger-width) / 2);
+  top: calc(var(--fab-y) + var(--fab-trigger-height) + 0.25em);
+  translate: -50% 0;
+  max-width: min(20em, var(--fab-label-measure));
+}
+.genux-fab:dir(rtl):not(
+    [data-fab-label-placement='end'],
+    [data-fab-label-placement='above'],
+    [data-fab-label-placement='below']
+  )
+  > .genux-fab-label {
+  left: calc(var(--fab-x) + var(--fab-trigger-width) + 0.5em);
+  translate: 0 -50%;
+}
+.genux-fab:dir(rtl)[data-fab-label-placement='end'] > .genux-fab-label {
+  left: var(--fab-x);
+  translate: calc(-100% - 0.5em) -50%;
+}
+/* Resolved trigger label: the position hook's side and rect replace every legacy placement and translate. */
+.genux-fab[data-fab-trigger-label-side][data-fab-label-placement] > .genux-fab-label {
+  left: var(--fab-trigger-label-x);
+  top: var(--fab-trigger-label-y);
+  max-width: min(var(--fab-trigger-label-width), var(--fab-label-measure));
+  min-height: var(--fab-trigger-label-height);
+  translate: none;
+}
+.genux-fab-action > .genux-fab-label {
+  top: 50%;
+  inset-inline-end: calc(100% + 0.5em);
+  translate: 0 -50%;
+  /* Intrinsic width keeps the measured box independent of the union it is placed in, so layout never feeds back. */
+  width: max-content;
+  max-width: min(
+    20em,
+    calc(var(--fab-label-measure) - var(--fab-action-hit) - var(--fab-label-gap, 0.5em))
+  );
+  opacity: var(--fab-label-on);
+}
+.genux-fab[data-fab-label-placement='end'] .genux-fab-action > .genux-fab-label {
+  inset-inline-end: auto;
+  inset-inline-start: calc(100% + 0.5em);
+}
+.genux-fab:is(
+    [data-fab-label-placement='above'],
+    [data-fab-label-placement='outside']:is(
+      [data-fab-direction='start'],
+      [data-fab-direction='end']
+    )
+  )
+  .genux-fab-action
+  > .genux-fab-label {
+  inset-inline: auto;
+  left: 50%;
+  top: auto;
+  bottom: calc(100% + 0.25em);
+  translate: -50% 0;
+  max-width: min(20em, var(--fab-label-measure));
+}
+.genux-fab[data-fab-label-placement='below'] .genux-fab-action > .genux-fab-label {
+  inset-inline: auto;
+  left: 50%;
+  top: calc(100% + 0.25em);
+  translate: -50% 0;
+  max-width: min(20em, var(--fab-label-measure));
+}
+/* Dial geometry: the measured label container sits at its offset inside the union, replacing the outside placement. */
+.genux-fab
+  .genux-fab-action[data-fab-mode='dial'][data-fab-label-geometry][data-fab-action-id]
+  > .genux-fab-label {
+  inset: auto;
+  left: var(--fab-label-x);
+  top: var(--fab-label-y);
+  translate: none;
+}
+.genux-fab-action[data-fab-mode='dial']
+  > .genux-fab-label
+  > :is(.genux-fab-action-reason, .genux-fab-action-description, .genux-fab-action-shortcut) {
+  position: static;
+  display: block;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip-path: none;
+  font-size: max(14px, 1em);
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+.genux-fab-action[data-fab-mode='dial'] > .genux-fab-label > .genux-fab-action-reason {
+  color: var(--muted, GrayText);
+}
+.genux-fab-action[data-fab-mode='dial'] > .genux-fab-label > .genux-fab-action-shortcut {
+  font-family: ui-monospace, monospace;
+}
+.genux-fab:is([data-fab-label-visibility='hover'], [data-fab-label-visibility='focus']) {
+  --fab-label-on: 0;
+  --fab-trigger-label-on: 0;
+}
+.genux-fab[data-fab-label-visibility='expanded-only']:not([data-fab-expanded='true']) {
+  --fab-label-on: 0;
+  --fab-trigger-label-on: 0;
+}
+.genux-fab:is([data-fab-label-visibility='hover'], [data-fab-label-visibility='focus'])
+  .genux-fab-action:has(.genux-fab-action-button:focus-visible) {
+  --fab-label-on: 1;
+}
+.genux-fab:is([data-fab-label-visibility='hover'], [data-fab-label-visibility='focus']):has(
+    .genux-fab-trigger-button:focus-visible
+  ) {
+  --fab-trigger-label-on: 1;
+}
+@media (hover: hover) {
+  .genux-fab[data-fab-label-visibility='hover'] .genux-fab-action:hover {
+    --fab-label-on: 1;
+  }
+  .genux-fab[data-fab-label-visibility='hover']:has(.genux-fab-trigger:hover) {
+    --fab-trigger-label-on: 1;
+  }
+}
+@media (hover: none) {
+  .genux-fab[data-fab-label-visibility='hover'] {
+    --fab-label-on: 1;
+    --fab-trigger-label-on: 1;
+  }
+}
+
+/* Menu / sheet: one bounded scroll panel at the explicit panel rect (border box, inset included); rows flow, no global coords. */
+.genux-fab:is(
+    [data-fab-layout='floating-menu'],
+    [data-fab-layout='sheet'],
+    [data-fab-adaptation='sheet']
+  )
+  .genux-fab-actions {
+  inset: auto;
+  left: var(--fab-menu-x);
+  top: var(--fab-menu-y);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: var(--fab-menu-width);
+  height: var(--fab-menu-height, auto);
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding-block: var(--fab-panel-inset, 0px);
+  padding-inline: 0;
+  border-radius: var(--radius);
+  background-color: var(--panel, Canvas);
+  color: var(--ink, CanvasText);
+  box-shadow: 0 2px 8px var(--overlay-scrim);
+  pointer-events: auto;
+}
+/* The sheet keeps the explicit panel rect, already trimmed to the safe areas; only its square bottom corners differ. */
+.genux-fab:is([data-fab-layout='sheet'], [data-fab-adaptation='sheet']) .genux-fab-actions {
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
+}
+.genux-fab:is(
+    [data-fab-layout='floating-menu'],
+    [data-fab-layout='sheet'],
+    [data-fab-adaptation='sheet']
+  )
+  .genux-fab-action {
+  position: relative;
+  left: auto;
+  top: auto;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: stretch;
+  width: auto;
+  height: auto;
+}
+.genux-fab:is(
+    [data-fab-layout='floating-menu'],
+    [data-fab-layout='sheet'],
+    [data-fab-adaptation='sheet']
+  )
+  .genux-fab-action
+  > .genux-fab-control-slot {
+  display: block;
+  width: 100%;
+}
+.genux-fab:is(
+    [data-fab-layout='floating-menu'],
+    [data-fab-layout='sheet'],
+    [data-fab-adaptation='sheet']
+  )
+  .genux-fab-action
+  .genux-fab-action-button {
+  --fab-paint-inset: 0px;
+  width: 100%;
+  height: auto;
+  min-height: var(--fab-target-min);
+  justify-content: flex-start;
+  padding: 0.5em 1em;
+  border-radius: 0;
+  color: inherit !important;
+  text-align: start;
+}
+.genux-fab:is(
+    [data-fab-layout='floating-menu'],
+    [data-fab-layout='sheet'],
+    [data-fab-adaptation='sheet']
+  )
+  .genux-fab-action
+  .genux-fab-action-button::before {
+  background: transparent;
+  box-shadow: none;
+}
+.genux-fab:is(
+    [data-fab-layout='floating-menu'],
+    [data-fab-layout='sheet'],
+    [data-fab-adaptation='sheet']
+  )
+  .genux-fab-action
+  .genux-fab-action-button
+  .genux-button-lip {
+  display: none;
+}
+.genux-fab:is(
+    [data-fab-layout='floating-menu'],
+    [data-fab-layout='sheet'],
+    [data-fab-adaptation='sheet']
+  )
+  .genux-fab-action
+  > :is(
+    .genux-fab-label,
+    .genux-fab-action-reason,
+    .genux-fab-action-description,
+    .genux-fab-action-shortcut
+  ) {
+  position: static;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip-path: none;
+  translate: none;
+  padding: 0 1em 0.5em;
+  background: none;
+  box-shadow: none;
+  color: inherit;
+  font-size: max(14px, 1em);
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+.genux-fab:is(
+    [data-fab-layout='floating-menu'],
+    [data-fab-layout='sheet'],
+    [data-fab-adaptation='sheet']
+  )
+  .genux-fab-action-reason {
+  color: var(--muted, GrayText);
+}
+.genux-fab:is(
+    [data-fab-layout='floating-menu'],
+    [data-fab-layout='sheet'],
+    [data-fab-adaptation='sheet']
+  )
+  .genux-fab-action-shortcut {
+  font-family: ui-monospace, monospace;
+}
+
+/* Entrance / exit tokens map to hidden-state vars; hit areas never move. */
+.genux-fab[data-fab-expanded='true']:not([data-fab-phase='closing']) {
+  --fab-o: 1;
+  --fab-s: 1;
+  --fab-tx: 0px;
+  --fab-ty: 0px;
+}
+.genux-fab[data-fab-direction|='up'] {
+  --fab-slide-y: var(--fab-shift);
+}
+.genux-fab[data-fab-direction|='down'] {
+  --fab-slide-y: calc(-1 * var(--fab-shift));
+}
+.genux-fab[data-fab-direction$='start'] {
+  --fab-slide-x: calc(var(--fab-shift) * var(--fab-inline-sign));
+}
+.genux-fab[data-fab-direction$='end'] {
+  --fab-slide-x: calc(-1 * var(--fab-shift) * var(--fab-inline-sign));
+}
+.genux-fab:not([data-fab-entrance]) {
+  --fab-hide-o: 0;
+  --fab-hide-s: 0.6;
+}
+.genux-fab[data-fab-entrance~='fade'] {
+  --fab-hide-o: 0;
+}
+.genux-fab[data-fab-entrance~='scale'] {
+  --fab-hide-s: 0.6;
+}
+.genux-fab[data-fab-entrance~='pop'] {
+  --fab-hide-s: 0.2;
+}
+.genux-fab[data-fab-entrance~='slide'] {
+  --fab-hide-tx: var(--fab-slide-x);
+  --fab-hide-ty: var(--fab-slide-y);
+}
+.genux-fab[data-fab-phase='closing'] {
+  --fab-hide-o: 1;
+  --fab-hide-s: 1;
+  --fab-hide-tx: 0px;
+  --fab-hide-ty: 0px;
+}
+.genux-fab[data-fab-phase='closing']:not([data-fab-exit]) {
+  --fab-hide-o: 0;
+  --fab-hide-s: 0.6;
+}
+.genux-fab[data-fab-phase='closing'][data-fab-exit~='fade'] {
+  --fab-hide-o: 0;
+}
+.genux-fab[data-fab-phase='closing'][data-fab-exit~='scale'] {
+  --fab-hide-s: 0.6;
+}
+.genux-fab[data-fab-phase='closing'][data-fab-exit~='slide'] {
+  --fab-hide-tx: var(--fab-slide-x);
+  --fab-hide-ty: var(--fab-slide-y);
+}
+.genux-fab[data-fab-origin='edge'] .genux-fab-action {
+  --fab-origin-x: 50%;
+  --fab-origin-y: 50%;
+}
+.genux-fab[data-fab-origin='edge'][data-fab-direction|='up'] .genux-fab-action {
+  --fab-origin-y: 100%;
+}
+.genux-fab[data-fab-origin='edge'][data-fab-direction|='down'] .genux-fab-action {
+  --fab-origin-y: 0%;
+}
+.genux-fab[data-fab-origin='edge'][data-fab-direction$='start'] .genux-fab-action {
+  --fab-origin-x: calc(50% + 50% * var(--fab-inline-sign));
+}
+.genux-fab[data-fab-origin='edge'][data-fab-direction$='end'] .genux-fab-action {
+  --fab-origin-x: calc(50% - 50% * var(--fab-inline-sign));
+}
+.genux-fab[data-fab-origin='custom'] .genux-fab-action {
+  --fab-origin-x: var(--fab-custom-origin-x, 50%);
+  --fab-origin-y: var(--fab-custom-origin-y, 50%);
+}
+
+/* Backdrop: every non-none value shares one scrim and blur role until the human
+   backdrop policy lands; previews keep it inside the stage. */
+.genux-fab-backdrop {
+  /* Owner-relative: covers its own FAB layer, whether that layer is fixed to the viewport or inside a stage. */
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-color: var(--overlay-scrim);
+  backdrop-filter: blur(var(--overlay-backdrop-blur));
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity var(--fab-duration) var(--fab-easing);
+}
+.genux-fab[data-fab-expanded='true']:not([data-fab-phase='closing']) .genux-fab-backdrop {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+.genux-fab[data-fab-phase='closing'] .genux-fab-backdrop {
+  visibility: visible;
+}
+
+/* Status: live regions stay mounted; the card is visually hidden while both are empty. */
+.genux-fab-status {
+  position: absolute;
+  left: var(--fab-x);
+  bottom: calc(100% - var(--fab-y) + 0.5em);
+  z-index: 3;
+  max-width: min(20em, 100%);
+  padding: 0.5em 0.75em;
+  border-radius: var(--radius);
+  background-color: var(--panel, Canvas);
+  color: var(--ink, CanvasText);
+  font-size: max(14px, 1em);
+  overflow-wrap: break-word;
+  /* The live status is non-interactive: it stays visible but never intercepts presses on the actions below it. */
+  pointer-events: none;
+}
+.genux-fab-status > p {
+  margin: 0;
+}
+/* Placed status: the position hook's measured rect inside the usable bounds, clear of the trigger, actions and
+   obstacles; oversized content scrolls inside it. The empty card rule below still wins at equal specificity. */
+.genux-fab[data-fab-status-placed] > .genux-fab-status {
+  left: var(--fab-status-x);
+  top: var(--fab-status-y);
+  bottom: auto;
+  box-sizing: border-box;
+  width: var(--fab-status-width);
+  max-width: none;
+  max-height: var(--fab-status-height);
+  overflow: auto;
+  overscroll-behavior: contain;
+  pointer-events: auto;
+}
+/* An open modal menu's card flows inside its native dialog below the menu, so the dialog's own stacking and focus
+   containment cover it; it scrolls inside its share of the dialog height. */
+.genux-fab-modal-status > .genux-fab-status {
+  position: relative;
+  inset: auto;
+  z-index: auto;
+  box-sizing: border-box;
+  width: auto;
+  max-width: none;
+  max-height: var(--fab-modal-status-max, none);
+  margin-block-start: var(--fab-label-gap, 0.5em);
+  overflow: auto;
+  overscroll-behavior: contain;
+  pointer-events: auto;
+}
+/* A clipped card, placed or in the modal dialog, is a keyboard-reachable scroll region. Its cue follows the one
+   central input modality state and paints one inline bar from the central focus roles, never a ring; pointer
+   focus paints nothing. */
+.genux-fab .genux-fab-status[tabindex]:focus-visible {
+  outline: none;
+}
+:root[data-input-modality='keyboard'] .genux-fab .genux-fab-status[tabindex]:focus-visible {
+  box-shadow: inset var(--focus-indicator-width) 0 0 0 var(--focus-indicator-color);
+}
+@media (forced-colors: active) {
+  :root[data-input-modality='keyboard'] .genux-fab .genux-fab-status[tabindex]:focus-visible {
+    outline: 2px solid CanvasText;
+    box-shadow: none;
+  }
+}
+.genux-fab-status:not(:has([role='alert']:not(:empty), [role='status']:not(:empty))) {
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  pointer-events: none;
+}
+
+/* Drag: handle plus visible button alternatives, all with full touch targets. */
+.genux-fab-drag {
+  position: absolute;
+  /* The root box is already trimmed to the safe areas, so the drag row sits at its edge. */
+  inset-block-start: 0;
+  inset-inline-end: 0;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-xs, 0.25em);
+  max-width: 100%;
+  pointer-events: auto;
+}
+.genux-fab-drag-alternatives {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs, 0.25em);
+}
+.genux-fab-drag-handle {
+  display: grid;
+  place-items: center;
+  min-width: var(--fab-target-min);
+  min-height: var(--fab-target-min);
+  cursor: grab;
+  touch-action: none;
+}
+.genux-fab-drag-handle:active {
+  cursor: grabbing;
+}
+.genux-fab .genux-fab-drag-button,
+.genux-fab .genux-fab-drag-alternatives .genux-button {
+  min-width: var(--fab-target-min);
+  min-height: var(--fab-target-min);
+  font-size: max(14px, 1em);
+}
+
+/* Reduced motion: the same roles drop to 0s with !important so inline factory values cannot win;
+   only decorative layers also lose their transition timing. */
+@media (prefers-reduced-motion: reduce) {
+  .genux-fab,
+  .genux-fab .genux-fab-action {
+    --fab-open-duration: 0s !important;
+    --fab-close-duration: 0s !important;
+    --fab-duration: 0s !important;
+    --fab-stagger: 0s !important;
+    --fab-delay: 0s !important;
+  }
+  .genux-fab :is(.genux-motion-layer, .genux-fab-action, .genux-fab-label, .genux-fab-backdrop),
+  .genux-fab .genux-fab-action .genux-fab-action-button::before,
+  .genux-fab
+    .genux-fab-action
+    .genux-fab-action-button
+    :is(.genux-button-lip, .genux-button-content),
+  .genux-fab :is(.genux-fab-trigger-button, .genux-fab-action-button) .genux-button-lip::before,
+  .genux-fab :is(.genux-fab-trigger-button, .genux-fab-action-button) .genux-button-lip::after,
+  .genux-fab .genux-fab-trigger .genux-fab-trigger-button::before,
+  .genux-fab .genux-fab-trigger > .genux-fab-trigger-icon-overlay {
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+}

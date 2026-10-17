@@ -1,11 +1,11 @@
-import type { AtlasCardModel, CardFact, CardIntent, CardPurpose } from './card-model';
+import type { GenUXCardModel, CardFact, CardIntent, CardPurpose } from './card-model';
 
 export interface CardRecipe {
   id: string;
   label: string;
   category: string;
   description: string;
-  model: AtlasCardModel;
+  model: GenUXCardModel;
 }
 
 const fact = (
@@ -27,7 +27,7 @@ function recipe(
   category: string,
   description: string,
   kind: CardPurpose,
-  model: Omit<AtlasCardModel, 'id' | 'kind' | 'source'>,
+  model: Omit<GenUXCardModel, 'id' | 'kind' | 'source'>,
 ): CardRecipe {
   return {
     id,
@@ -257,7 +257,7 @@ export const CARD_RECIPES: readonly CardRecipe[] = [
       title: 'Prepare an invoice',
       description:
         'Start with a customer and approved order lines. Nothing is submitted by opening this action.',
-      facts: [fact('mode', 'Initial state', 'Draft'), fact('scope', 'Workspace', 'Atlas Studio')],
+      facts: [fact('mode', 'Initial state', 'Draft'), fact('scope', 'Workspace', 'GenUX Studio')],
       primaryAction: action('invoice-action', 'Create invoice draft', 'create'),
     },
   ),
@@ -470,7 +470,7 @@ export const CARD_RECIPES: readonly CardRecipe[] = [
       description: 'How clear hierarchy helps teams focus on the next useful action.',
       media: { kind: 'symbol', symbol: 'document', label: 'Article preview' },
       facts: [
-        fact('author', 'Author', 'Atlas editorial'),
+        fact('author', 'Author', 'GenUX editorial'),
         fact('time', 'Reading time', '6 minutes'),
         fact('published', 'Published', '2026-10-12', 'date'),
       ],
@@ -537,11 +537,11 @@ export const CARD_RECIPES: readonly CardRecipe[] = [
     'A post carries author, timestamp and concise content context.',
     'content',
     {
-      title: 'Atlas community update',
+      title: 'GenUX community update',
       description: 'This week we tested simpler review flows with our community.',
       media: { kind: 'monogram', label: 'AC' },
       facts: [
-        fact('author', 'Author', 'Atlas community'),
+        fact('author', 'Author', 'GenUX community'),
         fact('published', 'Published', '2026-10-14', 'date'),
         fact('replies', 'Replies', 7, 'number'),
       ],
@@ -577,7 +577,7 @@ export const CARD_RECIPES: readonly CardRecipe[] = [
       title: 'Workspace settings',
       description: 'Edit this local draft; changes are reported to the host.',
       fields: [
-        { key: 'name', label: 'Workspace name', value: 'Atlas Studio', required: true },
+        { key: 'name', label: 'Workspace name', value: 'GenUX Studio', required: true },
         { key: 'code', label: 'Workspace code', value: 'AT-01', readOnly: true },
       ],
       primaryAction: action('account-form', 'Review changes', 'review'),

@@ -134,20 +134,20 @@ test('MacBook preview geometry holds from 320 Fit to 2160 Actual', async ({ page
   // A form draft and a node expando survive only while the same input element stays mounted.
   const workspace = content.getByRole('textbox', { name: /workspace name/i });
   await expect(workspace).toBeEditable();
-  await workspace.fill('Atlas operations');
+  await workspace.fill('GenUX operations');
   const workspaceNode = await workspace.elementHandle();
   if (!workspaceNode) throw new Error('The Workspace name field is missing.');
   await workspaceNode.evaluate(el => {
-    (el as Element & { atlasGeometryProof?: string }).atlasGeometryProof = 'kept';
+    (el as Element & { genuxGeometryProof?: string }).genuxGeometryProof = 'kept';
   });
   const expectDraftKept = async () => {
-    await expect(workspace).toHaveValue('Atlas operations');
+    await expect(workspace).toHaveValue('GenUX operations');
     const current = await workspace.elementHandle();
     const kept = await page.evaluate(
       ([before, now]) =>
         Boolean(before?.isConnected) &&
         before === now &&
-        (before as Element & { atlasGeometryProof?: string }).atlasGeometryProof === 'kept',
+        (before as Element & { genuxGeometryProof?: string }).genuxGeometryProof === 'kept',
       [workspaceNode, current],
     );
     expect(kept).toBe(true);

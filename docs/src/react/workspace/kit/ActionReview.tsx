@@ -1,5 +1,5 @@
 import { useRef, type ReactNode } from 'react';
-import AtlasButton from '../../AtlasButton';
+import GenUXButton from '../../GenUXButton';
 import { useI18n } from '../../useI18n';
 import { RecordForm } from './RecordForm';
 import type {
@@ -177,7 +177,7 @@ export function ChangeReview({
                   </p>
                 )}
                 {onRetry && result.retryable && (
-                  <AtlasButton
+                  <GenUXButton
                     fill="text"
                     text={t('Retry {id}', { id: target.id })}
                     disabled={
@@ -205,7 +205,7 @@ export function ChangeReview({
       {operation?.message && <p role="status">{t(operation.message)}</p>}
       <div className="kit-action-row">
         {onApply && (
-          <AtlasButton
+          <GenUXButton
             text={t('Apply prepared changes')}
             disabled={
               actionable.length === 0 ||
@@ -216,7 +216,7 @@ export function ChangeReview({
           />
         )}
         {onCancel && (
-          <AtlasButton
+          <GenUXButton
             fill="text"
             text={t('Cancel prepared changes')}
             disabled={operation?.kind === 'pending' || operation?.kind === 'unknown'}
@@ -256,12 +256,12 @@ export function BulkActionBar({
         })}
       </p>
       <div className="kit-action-row">
-        <AtlasButton
+        <GenUXButton
           text={t('Prepare checked records')}
           disabled={checked.length === 0 || capability?.allowed === false}
           onClick={() => onPrepare([...checked])}
         />
-        <AtlasButton
+        <GenUXButton
           fill="text"
           text={t('Clear prepared targets')}
           disabled={prepared.length === 0}
@@ -384,13 +384,13 @@ export function ReviewQueue({
         )}
       </p>
       <div className="kit-action-row">
-        <AtlasButton
+        <GenUXButton
           fill="text"
           text={t('Previous queued record')}
           disabled={index <= 0}
           onClick={() => onNavigate(remaining[index - 1]!.id)}
         />
-        <AtlasButton
+        <GenUXButton
           fill="text"
           text={t('Next queued record')}
           disabled={remaining.length === 0 || index >= remaining.length - 1}
@@ -399,14 +399,14 @@ export function ReviewQueue({
       </div>
       {decisionParameters}
       <div className="kit-action-row">
-        <AtlasButton
+        <GenUXButton
           text={t('Approve record')}
           disabled={!actionable}
           onClick={() => {
             if (activeId !== null) onDecision(activeId, 'approve');
           }}
         />
-        <AtlasButton
+        <GenUXButton
           fill="text"
           text={t('Defer record')}
           disabled={!actionable}
@@ -479,7 +479,7 @@ export function SourceComparedEntry<R extends RecordIdentity = RecordIdentity>({
             </div>
           </dl>
           <div className="kit-action-row">
-            <AtlasButton
+            <GenUXButton
               fill="text"
               text={t('Use source for {field}', { field: t(field.label) })}
               disabled={disabled}
@@ -488,7 +488,7 @@ export function SourceComparedEntry<R extends RecordIdentity = RecordIdentity>({
               }}
             />
             {onKeepCurrent && (
-              <AtlasButton
+              <GenUXButton
                 fill="text"
                 text={t('Keep current {field}', { field: t(field.label) })}
                 disabled={disabled}
@@ -556,7 +556,7 @@ export function ImportCorrectionQueue<R extends RecordIdentity = RecordIdentity>
       )}
       {items.length > 0 && !item && <p role="status">{t('Choose a correction item.')}</p>}
       <div className="kit-action-row">
-        <AtlasButton
+        <GenUXButton
           fill="text"
           text={t('Previous correction')}
           disabled={index <= 0}
@@ -564,7 +564,7 @@ export function ImportCorrectionQueue<R extends RecordIdentity = RecordIdentity>
             if (index > 0) onNavigate(items[index - 1]!.id);
           }}
         />
-        <AtlasButton
+        <GenUXButton
           fill="text"
           text={t('Next correction')}
           disabled={!items.length || index >= items.length - 1}
@@ -599,7 +599,7 @@ export function ImportCorrectionQueue<R extends RecordIdentity = RecordIdentity>
           )}
           {item.operation?.message && <p role="status">{t(item.operation.message)}</p>}
           {reviewed.has(item.id) && <p role="status">{t('This correction item was reviewed.')}</p>}
-          <AtlasButton
+          <GenUXButton
             text={t('Mark correction reviewed')}
             disabled={blocked || errors.length > 0 || reviewed.has(item.id)}
             onClick={() => {
@@ -668,7 +668,7 @@ export function ConflictResolver<R extends RecordIdentity = RecordIdentity>({
         </fieldset>
       ))}
       {onConfirm && (
-        <AtlasButton
+        <GenUXButton
           text={t('Confirm conflict choices')}
           disabled={conflicts.length === 0 || conflicts.some(conflict => !decisions[conflict.key])}
           onClick={() => onConfirm(decisions)}

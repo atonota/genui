@@ -1,5 +1,5 @@
 /* One native Slider adapter: geometry stays fixed in every pointer/focus state. */
-.atlas-slider.ant-slider {
+.genux-slider.ant-slider {
   --slider-visible-thumb-size: var(--radio-size, max(32px, 2rem));
   --slider-hit-size: max(var(--target-min), var(--slider-visible-thumb-size), 2.75rem);
   --slider-rail-size: 0.5rem;
@@ -17,20 +17,20 @@
   font-size: var(--text);
 }
 
-.atlas-slider.ant-slider-horizontal {
+.genux-slider.ant-slider-horizontal {
   height: var(--slider-hit-size);
   margin-inline: calc(var(--slider-hit-size) / 2);
   margin-block: var(--space-xs);
 }
-.atlas-slider.ant-slider-horizontal.ant-slider-with-marks {
+.genux-slider.ant-slider-horizontal.ant-slider-with-marks {
   margin-block-end: calc(var(--slider-hit-size) + var(--space-md));
 }
-.atlas-slider.ant-slider-vertical {
+.genux-slider.ant-slider-vertical {
   width: var(--slider-hit-size);
   height: 100%;
   margin: 0;
 }
-.atlas-slider.ant-slider :is(.ant-slider-rail, .ant-slider-track, .ant-slider-tracks) {
+.genux-slider.ant-slider :is(.ant-slider-rail, .ant-slider-track, .ant-slider-tracks) {
   border-radius: var(--radius-round);
   transition:
     left var(--motion-duration-fast) var(--motion-easing),
@@ -41,27 +41,27 @@
     height var(--motion-duration-fast) var(--motion-easing),
     background-color var(--motion-duration-feedback) var(--motion-easing);
 }
-.atlas-slider.ant-slider .ant-slider-rail {
+.genux-slider.ant-slider .ant-slider-rail {
   background-color: var(--slider-rail-color);
 }
-.atlas-slider.ant-slider .ant-slider-track {
+.genux-slider.ant-slider .ant-slider-track {
   background-color: var(--slider-track-color);
 }
-.atlas-slider.ant-slider:hover .ant-slider-rail {
+.genux-slider.ant-slider:hover .ant-slider-rail {
   background-color: var(--slider-rail-color);
 }
-.atlas-slider.ant-slider:hover .ant-slider-track {
+.genux-slider.ant-slider:hover .ant-slider-track {
   background-color: var(--slider-track-color);
 }
-.atlas-slider.ant-slider-horizontal :is(.ant-slider-rail, .ant-slider-track, .ant-slider-tracks) {
+.genux-slider.ant-slider-horizontal :is(.ant-slider-rail, .ant-slider-track, .ant-slider-tracks) {
   height: var(--slider-rail-size);
   inset-block-start: calc((var(--slider-hit-size) - var(--slider-rail-size)) / 2);
 }
-.atlas-slider.ant-slider-vertical :is(.ant-slider-rail, .ant-slider-track, .ant-slider-tracks) {
+.genux-slider.ant-slider-vertical :is(.ant-slider-rail, .ant-slider-track, .ant-slider-tracks) {
   width: var(--slider-rail-size);
   inset-inline-start: calc((var(--slider-hit-size) - var(--slider-rail-size)) / 2);
 }
-.atlas-slider.ant-slider .ant-slider-handle {
+.genux-slider.ant-slider .ant-slider-handle {
   width: var(--slider-hit-size);
   height: var(--slider-hit-size);
   outline: none;
@@ -72,15 +72,15 @@
     bottom var(--motion-duration-fast) var(--motion-easing),
     opacity var(--motion-duration-feedback) var(--motion-easing);
 }
-.atlas-slider.ant-slider-horizontal .ant-slider-handle {
+.genux-slider.ant-slider-horizontal .ant-slider-handle {
   inset-block-start: 0;
 }
-.atlas-slider.ant-slider-vertical .ant-slider-handle {
+.genux-slider.ant-slider-vertical .ant-slider-handle {
   inset-inline-start: 0;
 }
 
 /* Native hover/active/focus grows these pseudos. Reserve the same geometry instead. */
-.atlas-slider.ant-slider .ant-slider-handle::before {
+.genux-slider.ant-slider .ant-slider-handle::before {
   box-sizing: border-box;
   width: var(--slider-hit-size) !important;
   height: var(--slider-hit-size) !important;
@@ -90,7 +90,7 @@
   background-color: transparent;
   transition: opacity var(--motion-duration-feedback) var(--motion-easing) !important;
 }
-.atlas-slider.ant-slider .ant-slider-handle::after {
+.genux-slider.ant-slider .ant-slider-handle::after {
   box-sizing: border-box;
   width: var(--slider-visible-thumb-size) !important;
   height: var(--slider-visible-thumb-size) !important;
@@ -106,15 +106,15 @@
     border-color var(--motion-duration-feedback) var(--motion-easing),
     opacity var(--motion-duration-feedback) var(--motion-easing) !important;
 }
-.atlas-slider.ant-slider .ant-slider-handle:not(.ant-slider-handle-disabled):hover::after,
-.atlas-slider.ant-slider .ant-slider-handle:not(.ant-slider-handle-disabled):active::after {
+.genux-slider.ant-slider .ant-slider-handle:not(.ant-slider-handle-disabled):hover::after,
+.genux-slider.ant-slider .ant-slider-handle:not(.ant-slider-handle-disabled):active::after {
   background-color: var(--surface);
 }
-.atlas-slider.ant-slider .ant-slider-handle:focus-visible::before {
+.genux-slider.ant-slider .ant-slider-handle:focus-visible::before {
   border-block-end-color: var(--focus-color);
 }
 
-.atlas-slider.ant-slider .ant-slider-dot {
+.genux-slider.ant-slider .ant-slider-dot {
   width: var(--slider-dot-size);
   height: var(--slider-dot-size);
   background-color: var(--panel);
@@ -123,47 +123,47 @@
     background-color var(--motion-duration-feedback) var(--motion-easing),
     border-color var(--motion-duration-feedback) var(--motion-easing);
 }
-.atlas-slider.ant-slider .ant-slider-dot-active {
+.genux-slider.ant-slider .ant-slider-dot-active {
   border-color: var(--slider-track-color);
 }
-.atlas-slider.ant-slider-horizontal .ant-slider-step {
+.genux-slider.ant-slider-horizontal .ant-slider-step {
   height: var(--slider-rail-size);
   inset-block-start: calc((var(--slider-hit-size) - var(--slider-rail-size)) / 2);
 }
-.atlas-slider.ant-slider-vertical .ant-slider-step {
+.genux-slider.ant-slider-vertical .ant-slider-step {
   width: var(--slider-rail-size);
   inset-inline-start: calc((var(--slider-hit-size) - var(--slider-rail-size)) / 2);
 }
-.atlas-slider.ant-slider-horizontal .ant-slider-dot {
+.genux-slider.ant-slider-horizontal .ant-slider-dot {
   inset-block-start: calc((var(--slider-rail-size) - var(--slider-dot-size)) / 2);
 }
-.atlas-slider.ant-slider-vertical .ant-slider-dot {
+.genux-slider.ant-slider-vertical .ant-slider-dot {
   inset-inline-start: calc((var(--slider-rail-size) - var(--slider-dot-size)) / 2);
 }
-.atlas-slider.ant-slider .ant-slider-mark-text {
+.genux-slider.ant-slider .ant-slider-mark-text {
   color: var(--muted);
   font-size: var(--text);
   line-height: var(--line-height);
   white-space: nowrap;
   transition: color var(--motion-duration-feedback) var(--motion-easing);
 }
-.atlas-slider.ant-slider .ant-slider-mark-text-active {
+.genux-slider.ant-slider .ant-slider-mark-text-active {
   color: var(--ink);
 }
-.atlas-slider.ant-slider-horizontal .ant-slider-mark {
+.genux-slider.ant-slider-horizontal .ant-slider-mark {
   inset-block-start: calc(var(--slider-hit-size) + var(--space-xs));
 }
-.atlas-slider.ant-slider-vertical .ant-slider-mark {
+.genux-slider.ant-slider-vertical .ant-slider-mark {
   inset-inline-start: calc(var(--slider-hit-size) + var(--space-xs));
   top: 0;
 }
-.atlas-slider.ant-slider-disabled .ant-slider-rail {
+.genux-slider.ant-slider-disabled .ant-slider-rail {
   background-color: var(--slider-rail-color) !important;
 }
-.atlas-slider.ant-slider-disabled .ant-slider-track {
+.genux-slider.ant-slider-disabled .ant-slider-track {
   background-color: var(--slider-disabled-color) !important;
 }
-.atlas-slider.ant-slider .ant-slider-handle-disabled::after {
+.genux-slider.ant-slider .ant-slider-handle-disabled::after {
   background-color: var(--surface);
   border-color: var(--slider-disabled-color);
   cursor: not-allowed;
@@ -217,7 +217,7 @@
   }
 }
 @media (any-pointer: coarse) {
-  .atlas-slider.ant-slider {
+  .genux-slider.ant-slider {
     --slider-visible-thumb-size: max(44px, var(--radio-size, 2.75rem));
     --slider-hit-size: max(var(--target-min), var(--slider-visible-thumb-size), 3rem);
   }
@@ -226,12 +226,12 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .atlas-slider.ant-slider :is(.ant-slider-rail, .ant-slider-track, .ant-slider-tracks),
-  .atlas-slider.ant-slider .ant-slider-handle,
-  .atlas-slider.ant-slider .ant-slider-handle::before,
-  .atlas-slider.ant-slider .ant-slider-handle::after,
-  .atlas-slider.ant-slider .ant-slider-dot,
-  .atlas-slider.ant-slider .ant-slider-mark-text {
+  .genux-slider.ant-slider :is(.ant-slider-rail, .ant-slider-track, .ant-slider-tracks),
+  .genux-slider.ant-slider .ant-slider-handle,
+  .genux-slider.ant-slider .ant-slider-handle::before,
+  .genux-slider.ant-slider .ant-slider-handle::after,
+  .genux-slider.ant-slider .ant-slider-dot,
+  .genux-slider.ant-slider .ant-slider-mark-text {
     transition: none !important;
   }
 }

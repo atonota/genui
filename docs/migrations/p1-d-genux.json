@@ -1,0 +1,30 @@
+{
+  "id": "p1-d-genux",
+  "kind": "page-source-mapping",
+  "route": "/genux/",
+  "page": "docs/src/pages/genux.astro",
+  "locales": {
+    "tr": "docs/src/locales/tr/foundations-genux.json"
+  },
+  "navigation": {
+    "group": "Foundations",
+    "label": "GenUX"
+  },
+  "derivedFrom": {
+    "registeredNames": "docs/src/genux/contracts.ts#GENUX_COMPONENT_NAMES",
+    "nativeNames": "docs/src/genux/contracts.ts#GENUX_NATIVE_COMPONENT_NAMES",
+    "catalogIds": "docs/src/genux/contracts.ts#GENUX_CARD_CATALOG_ID,GENUX_PUBLIC_CATALOG_ID",
+    "policySummary": "docs/src/genux/policy.ts",
+    "rendererSummary": "docs/src/react/genux/GenUXSurface.tsx"
+  },
+  "sources": [
+    "docs/src/genux/contracts.ts",
+    "docs/src/genux/policy.ts",
+    "docs/src/genux/native-registry.ts",
+    "docs/src/genux/native-action-readiness.ts",
+    "docs/src/react/genux/GenUXSurface.tsx"
+  ],
+  "admission": "/documentation/#admission",
+  "addsRuntimeComponents": false,
+  "liveModel": "absent; endpoint and authentication await an explicit user decision"
+}

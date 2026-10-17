@@ -77,7 +77,7 @@ test('Read-only cursor excludes enabled native selection triggers and keeps true
     h = await mountPattern('ReadonlyCursorFixture', entry, {
       onSelectChange: value => values.push(value),
     });
-    h.document.body.setAttribute('data-atlas-surface', 'docs');
+    h.document.body.setAttribute('data-genux-surface', 'docs');
     const byId = id => {
       const element = h.document.getElementById(id);
       assert.ok(element, `${id} is rendered`);
@@ -166,7 +166,7 @@ test('Read-only cursor excludes enabled native selection triggers and keeps true
 
 test('Explicit aria-readonly comboboxes lock while disabled read-only fields do not', t => {
   const dom = new JSDOM(
-    `<!doctype html><html><body data-atlas-surface="docs"><main>
+    `<!doctype html><html><body data-genux-surface="docs"><main>
     <div class="ant-select"><div class="ant-select-selector">
       <input id="readonly-combobox" role="combobox" readonly aria-readonly="true" aria-expanded="false">
     </div></div>

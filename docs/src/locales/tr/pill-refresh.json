@@ -59,7 +59,7 @@
   "Controlled": "Kontrollü",
   "Native checkbox semantics with click and Space activation. Selection and removal are separate patterns.": "Tıklama ve Boşluk tuşuyla yerel onay kutusu davranışı. Seçim ve kaldırma ayrı örüntülerdir.",
   "Optional stable palette assignment. Explicit color takes precedence; without either, filled inherits the current color scheme.": "İsteğe bağlı sabit palet ataması. Açık renk seçimi önceliklidir; ikisi de yoksa dolgulu yüzey geçerli renk düzenini devralır.",
-  "AtlasPill uses native Ant Design Tag. AtlasCheckablePill uses fully controlled native CheckableTag; Select composes the same master.": "AtlasPill yerel Ant Design Tag kullanır. AtlasCheckablePill tamamen kontrollü yerel CheckableTag kullanır; Select aynı ana bileşeni birleştirir.",
+  "GenUXPill uses native Ant Design Tag. GenUXCheckablePill uses fully controlled native CheckableTag; Select composes the same master.": "GenUXPill yerel Ant Design Tag kullanır. GenUXCheckablePill tamamen kontrollü yerel CheckableTag kullanır; Select aynı ana bileşeni birleştirir.",
   "The filled palette retains 75% white and 5% black. Solid and outlined use the same 17 chromatic families, with contrast-selected ink. Neutral presets and the duplicate red endpoint are excluded.": "Dolgulu palet %75 beyaz ve %5 siyah değerlerini korur. Yoğun dolgu ve çerçeveli yüzeyler aynı 17 kromatik aileyi, kontrastla seçilmiş metin rengiyle kullanır. Nötr renkler ve yinelenen kırmızı uç hariçtir.",
   "A semantic color works independently with all three native Tag variants.": "Semantik renk, üç yerel Tag yüzeyiyle bağımsız çalışır.",
   "A fully controlled selection with native checkbox semantics.": "Yerel onay kutusu davranışıyla tamamen kontrollü seçim.",

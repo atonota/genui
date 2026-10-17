@@ -47,7 +47,7 @@
 @media (width < 54.6875rem) {
   [data-docs-shell]:not([data-docs-component-page]) .docs-main:has([data-tweaker-trigger]) {
     padding-inline-end: calc(
-      var(--inset-container-sm, 16px) + var(--atlas-tweaker-trigger-size, var(--target-min, 48px)) +
+      var(--inset-container-sm, 16px) + var(--genux-tweaker-trigger-size, var(--target-min, 48px)) +
         env(safe-area-inset-right, 0px)
     );
   }

@@ -24,7 +24,7 @@ test('live families include distinct Buttons/Pills, fields and selection handles
     families.every(
       f =>
         f.querySelectorAll('.color-preview-button').length >= 1 &&
-        f.querySelectorAll('.atlas-pill').length >= 2,
+        f.querySelectorAll('.genux-pill').length >= 2,
     ),
   );
   assert.equal(new Set(families.map(f => f.dataset.seedHex)).size, 6);

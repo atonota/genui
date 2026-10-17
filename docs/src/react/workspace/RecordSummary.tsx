@@ -1,7 +1,7 @@
 import type { WorkspaceRecord } from '../../data/workspace';
 import { ORDER_FIELDS } from '../../data/workspace-kit';
 import { FieldValue } from './kit/Fields';
-import AtlasPill from '../AtlasPill';
+import GenUXPill from '../GenUXPill';
 import { workspacePillColorIndex } from '../../data/workspace-pill-colors';
 import { useI18n } from '../useI18n';
 
@@ -32,9 +32,9 @@ export default function RecordSummary({
         <div>
           <dt>{t('Status')}</dt>
           <dd>
-            <AtlasPill colorIndex={workspacePillColorIndex.status[record.status]}>
+            <GenUXPill colorIndex={workspacePillColorIndex.status[record.status]}>
               {value('status')}
-            </AtlasPill>
+            </GenUXPill>
           </dd>
         </div>
         <div>

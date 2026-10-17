@@ -1,0 +1,196 @@
+/* Shared by the route-owned Splitter and Data workspace consumers. */
+.genux-demo .genux-splitter {
+  --splitter-gutter: var(--splitter-handle-size);
+  --splitter-rail-size: 2px;
+  --splitter-grip-mark-size: 16px;
+  --splitter-grip-mark-gap: 4px;
+  --splitter-stage-height: var(--splitter-stack-height);
+  display: grid;
+  gap: var(--space-md);
+  min-width: 0;
+  max-width: 100%;
+}
+.genux-demo .genux-splitter[data-splitter-orientation='horizontal'] {
+  --splitter-stage-height: var(--splitter-wide-height);
+}
+.genux-demo .genux-splitter-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-xs) var(--space-lg);
+  min-width: 0;
+}
+.genux-demo .genux-splitter-label {
+  color: var(--ink);
+  font-size: var(--text-large);
+}
+.genux-demo .genux-splitter-summary,
+.genux-demo .genux-splitter-help {
+  color: var(--muted);
+  font-size: var(--text);
+  overflow-wrap: anywhere;
+}
+.genux-demo .genux-splitter-help {
+  margin: 0;
+}
+.genux-demo .genux-splitter > .genux-splitter-native {
+  min-width: 0;
+  height: var(--splitter-stage-height);
+  color: var(--ink);
+}
+.genux-demo .genux-splitter-native > .ant-splitter-panel {
+  min-width: 0;
+  min-height: 0;
+  flex-shrink: 1;
+  scrollbar-gutter: stable;
+  border-inline-start: var(--focus-marker) solid transparent;
+  outline: none;
+  box-shadow: none;
+  transition-property: flex-basis;
+  transition-duration: var(--motion-duration-standard);
+  transition-timing-function: var(--motion-easing);
+  transition-delay: var(--motion-delay);
+}
+/* A reserved single edge stays visible at the scroll viewport, without a ring
+   or focus-dependent geometry. Focus paint is immediate, outside motion. */
+.genux-demo .genux-splitter-native > .ant-splitter-panel:focus-visible {
+  border-inline-start-color: var(--focus-color);
+}
+/* Direct manipulation follows the pointer; programmatic resizing eases both ways. */
+.genux-demo
+  .genux-splitter[data-splitter-resizing='true']
+  > .genux-splitter-native
+  > .ant-splitter-panel {
+  transition-property: var(--control-transition-properties);
+}
+.genux-demo .genux-splitter-pane {
+  min-width: 0;
+  min-height: 100%;
+  padding: var(--space-sm);
+  background: var(--panel);
+}
+.genux-demo .genux-splitter-native.ant-splitter-horizontal > .ant-splitter-bar {
+  width: var(--splitter-gutter);
+}
+.genux-demo .genux-splitter-native.ant-splitter-vertical > .ant-splitter-bar {
+  height: var(--splitter-gutter);
+}
+.genux-demo .genux-splitter-native > .ant-splitter-bar > .ant-splitter-bar-dragger {
+  touch-action: none;
+  outline: none;
+  box-shadow: none;
+  transition-property: var(--control-transition-properties);
+  transition-duration: var(--motion-duration-standard);
+  transition-timing-function: var(--motion-easing);
+  transition-delay: var(--motion-delay);
+}
+.genux-demo
+  .genux-splitter-native.ant-splitter-horizontal
+  > .ant-splitter-bar
+  > .ant-splitter-bar-dragger {
+  width: var(--splitter-gutter);
+}
+.genux-demo
+  .genux-splitter-native.ant-splitter-vertical
+  > .ant-splitter-bar
+  > .ant-splitter-bar-dragger {
+  height: var(--splitter-gutter);
+}
+.genux-demo .genux-splitter-native > .ant-splitter-bar > .ant-splitter-bar-dragger::before {
+  background: var(--line);
+  transition-property: var(--control-transition-properties);
+  transition-duration: var(--motion-duration-standard);
+  transition-timing-function: var(--motion-easing);
+  transition-delay: var(--motion-delay);
+}
+.genux-demo
+  .genux-splitter-native.ant-splitter-horizontal
+  > .ant-splitter-bar
+  > .ant-splitter-bar-dragger::before {
+  width: var(--splitter-rail-size);
+}
+.genux-demo
+  .genux-splitter-native.ant-splitter-vertical
+  > .ant-splitter-bar
+  > .ant-splitter-bar-dragger::before {
+  height: var(--splitter-rail-size);
+}
+.genux-demo .genux-splitter-grip {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--splitter-handle-size);
+  height: var(--splitter-handle-size);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--muted);
+  transition-property: var(--control-transition-properties);
+  transition-duration: var(--motion-duration-standard);
+  transition-timing-function: var(--motion-easing);
+  transition-delay: var(--motion-delay);
+}
+.genux-demo .genux-splitter-grip > span {
+  width: var(--splitter-grip-mark-size);
+  height: var(--splitter-grip-mark-gap);
+  border-block: var(--splitter-rail-size) solid currentColor;
+}
+.genux-demo
+  .genux-splitter-native.ant-splitter-horizontal
+  > .ant-splitter-bar
+  .genux-splitter-grip
+  > span {
+  width: var(--splitter-grip-mark-gap);
+  height: var(--splitter-grip-mark-size);
+  border-block: 0;
+  border-inline: var(--splitter-rail-size) solid currentColor;
+}
+.genux-demo
+  .genux-splitter-native
+  > .ant-splitter-bar
+  > .ant-splitter-bar-dragger:is(:hover, :active)
+  .genux-splitter-grip,
+.genux-demo
+  .genux-splitter[data-splitter-resizing='true']
+  > .genux-splitter-native
+  > .ant-splitter-bar
+  .genux-splitter-grip {
+  background: var(--soft);
+  color: var(--ink);
+}
+.genux-demo
+  .genux-splitter-native
+  > .ant-splitter-bar
+  > .ant-splitter-bar-dragger:focus-visible
+  .genux-splitter-grip::after {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block: var(--space-xs);
+  width: var(--focus-marker);
+  background: var(--focus-color);
+  pointer-events: none;
+}
+.genux-demo .genux-splitter-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+.genux-demo .genux-splitter-actions .genux-button {
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+}
+@media (any-pointer: coarse) {
+  .genux-demo .genux-splitter {
+    --splitter-gutter: max(var(--splitter-handle-size), var(--splitter-coarse-target));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .genux-demo .genux-splitter-native > .ant-splitter-panel,
+  .genux-demo .genux-splitter-native > .ant-splitter-bar > .ant-splitter-bar-dragger,
+  .genux-demo .genux-splitter-native > .ant-splitter-bar > .ant-splitter-bar-dragger::before,
+  .genux-demo .genux-splitter-grip {
+    transition-duration: 0ms;
+  }
+}

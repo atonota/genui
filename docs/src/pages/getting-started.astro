@@ -2,14 +2,14 @@
 import DocsLayout from '../layouts/DocsLayout.astro';
 import CodeExample from '../components/CodeExample.astro';
 import DocumentationNav from '../components/DocumentationNav.astro';
-const example = `import AtlasButton from './AtlasButton';
-import AtlasProvider from './AtlasProvider';
+const example = `import GenUXButton from './GenUXButton';
+import GenUXProvider from './GenUXProvider';
 
 export default function SaveAction() {
   return (
-    <AtlasProvider appearance="docs">
-      <AtlasButton text="Save" />
-    </AtlasProvider>
+    <GenUXProvider appearance="docs">
+      <GenUXButton text="Save" />
+    </GenUXProvider>
   );
 }`;
 // #astro-integration is the single shared guide target linked by every component page.
@@ -79,8 +79,8 @@ const sections = [
       <span data-i18n="Using components">Using components</span>
     </h2>
     <p>
-      <span data-i18n="AtlasProvider shares the theme, English by default, optional Turkish locale, native CSS pixel measurements and disabled wave effect. Documentation uses Outfit (default weight 400, minimum 300), a 14px/22px body baseline and minimum 14px readable text. Project styles live in docs/src/styles/components.css.">
-        AtlasProvider shares the theme, English by default, optional Turkish locale, native CSS
+      <span data-i18n="GenUXProvider shares the theme, English by default, optional Turkish locale, native CSS pixel measurements and disabled wave effect. Documentation uses Outfit (default weight 400, minimum 300), a 14px/22px body baseline and minimum 14px readable text. Project styles live in docs/src/styles/components.css.">
+        GenUXProvider shares the theme, English by default, optional Turkish locale, native CSS
         pixel measurements and disabled wave effect. Documentation uses Outfit (default weight 400,
         minimum 300), a 14px/22px body baseline and minimum 14px readable text. Project styles live
         in docs/src/styles/components.css.
@@ -168,8 +168,8 @@ const sections = [
     </h2>
     <ul>
       <li>
-        <span data-i18n="The existing single-file HTML atlas is maintained under src/.">
-          The existing single-file HTML atlas is maintained under src/.
+        <span data-i18n="The existing single-file HTML genux is maintained under src/.">
+          The existing single-file HTML genux is maintained under src/.
         </span>
       </li>
       <li>

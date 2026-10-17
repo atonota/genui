@@ -1,11 +1,11 @@
 {
-  "package": "atlas-feature-20261014-button-depth-core-08",
+  "package": "genux-feature-20261014-button-depth-core-08",
   "scope": "Foundations tools: Decision log, Color system and Theme Builder pages",
   "date": "2026-10-15",
   "verification": {
     "red": "ia-RED.log: 3 foundations-navigation cases failed before this proposal.",
     "green": "not_run",
-    "note": "This package changes page titles, sections, links and one Turkish dictionary. Menu grouping, the /standards/ and /genui/ routes and the /token-standards/ redirect belong to parallel packages, so the three cases cannot pass from this package alone."
+    "note": "This package changes page titles, sections, links and one Turkish dictionary. Menu grouping, the /standards/ and /genux/ routes and the /token-standards/ redirect belong to parallel packages, so the three cases cannot pass from this package alone."
   },
   "pages": [
     {
@@ -13,15 +13,39 @@
       "file": "docs/src/pages/decisions.astro",
       "title": { "before": "Current decisions", "after": "Decision log" },
       "sections": [
-        { "before": null, "after": "decision-log", "change": "Added: one row per dated user decision (2026-10-08, 2026-10-13, 2026-10-14, 2026-10-15) with date, scope, one-line summary and a link to the section that owns the full rule or values." },
-        { "before": "buttons", "after": "buttons", "change": "Kept: table still generated from atlas.json decisions.buttons; values unchanged; live examples link to the Button page." },
-        { "before": "experiments", "after": "experiments", "change": "Kept separate and labelled not approved; names now generated from atlas.json experiments." }
+        {
+          "before": null,
+          "after": "decision-log",
+          "change": "Added: one row per dated user decision (2026-10-08, 2026-10-13, 2026-10-14, 2026-10-15) with date, scope, one-line summary and a link to the section that owns the full rule or values."
+        },
+        {
+          "before": "buttons",
+          "after": "buttons",
+          "change": "Kept: table still generated from genux.json decisions.buttons; values unchanged; live examples link to the Button page."
+        },
+        {
+          "before": "experiments",
+          "after": "experiments",
+          "change": "Kept separate and labelled not approved; names now generated from genux.json experiments."
+        }
       ],
       "removed": [
-        { "content": "Paragraph: The eight states share one component...", "reason": "Outdated duplicate: it names Saving, Syncing and Queued, which the 2026-10-13 decision retired; the States row is generated from state_variants and the Button page shows the live states." },
-        { "content": "Paragraph: Size and width are independent...", "reason": "Duplicates the generated Size and Width rows and the Button page dimension examples; the link to those examples is kept." },
-        { "content": "Hand-written experiments sentence naming Narrow, Magenta and unapproved shadows", "reason": "Replaced by lists generated from atlas.json experiments so names cannot drift; icon, accordion, form and drawer examples keep one sentence because they are not in that model." },
-        { "content": "Heading Finalized decisions. and eyebrow FOUNDATIONS / DECISIONS", "reason": "Renamed to Decision log under the Project group." }
+        {
+          "content": "Paragraph: The eight states share one component...",
+          "reason": "Outdated duplicate: it names Saving, Syncing and Queued, which the 2026-10-13 decision retired; the States row is generated from state_variants and the Button page shows the live states."
+        },
+        {
+          "content": "Paragraph: Size and width are independent...",
+          "reason": "Duplicates the generated Size and Width rows and the Button page dimension examples; the link to those examples is kept."
+        },
+        {
+          "content": "Hand-written experiments sentence naming Narrow, Magenta and unapproved shadows",
+          "reason": "Replaced by lists generated from genux.json experiments so names cannot drift; icon, accordion, form and drawer examples keep one sentence because they are not in that model."
+        },
+        {
+          "content": "Heading Finalized decisions. and eyebrow FOUNDATIONS / DECISIONS",
+          "reason": "Renamed to Decision log under the Project group."
+        }
       ]
     },
     {
@@ -29,9 +53,17 @@
       "file": "docs/src/pages/color-system.astro",
       "title": { "before": "Color system and palette", "after": "Color system" },
       "sections": [
-        { "before": "color-lab", "after": "color-lab", "change": "Kept; the React color tool is unchanged." },
+        {
+          "before": "color-lab",
+          "after": "color-lab",
+          "change": "Kept; the React color tool is unchanged."
+        },
         { "before": "color-rules", "after": "color-rules", "change": "Kept unchanged." },
-        { "before": "/tokens/#colors (other page)", "after": "approved-color-families", "change": "Added: generated from tokenColorPresets in docs/src/data/button-palette.ts, the same model the Design tokens page reads; no manual hex list." }
+        {
+          "before": "/tokens/#colors (other page)",
+          "after": "approved-color-families",
+          "change": "Added: generated from tokenColorPresets in docs/src/data/button-palette.ts, the same model the Design tokens page reads; no manual hex list."
+        }
       ],
       "links": ["/theme-builder/", "/tokens/"],
       "removed": []
@@ -41,7 +73,11 @@
       "file": "docs/src/pages/theme-builder.astro",
       "title": { "before": "Theme Builder", "after": "Theme Builder" },
       "sections": [
-        { "before": "theme-editor", "after": "theme-editor", "change": "Kept; ThemeBuilder React tool, provider and stored custom recipes are untouched." }
+        {
+          "before": "theme-editor",
+          "after": "theme-editor",
+          "change": "Kept; ThemeBuilder React tool, provider and stored custom recipes are untouched."
+        }
       ],
       "links": ["/color-system/", "/tokens/"],
       "removed": []
@@ -57,9 +93,9 @@
     "Navigation labels are owned by the shell package; the expected labels Decision log and Color system match the new page titles."
   ],
   "openDiscrepancies": [
-    "atlas.json decisions.buttons.palette_variants still lists 8 Ant families, while Approved color families shows the 24 active presets used by Buttons since 2026-10-13. Not reconciled; needs a human decision.",
-    "The GenUI typography row (12 px minimum) is scoped to GenUI; documentation pages keep the 14 CSS px minimum. No CSS changed.",
-    "Radius, size and GenUI typography rows are dated 2026-10-15 from the conductor packet; their normative pages are owned by other packages.",
-    "atlas.json implementation.shared_styles still says 1rem minimum text; it is not rendered on these pages and was not changed."
+    "genux.json decisions.buttons.palette_variants still lists 8 Ant families, while Approved color families shows the 24 active presets used by Buttons since 2026-10-13. Not reconciled; needs a human decision.",
+    "The GenUX typography row (12 px minimum) is scoped to GenUX; documentation pages keep the 14 CSS px minimum. No CSS changed.",
+    "Radius, size and GenUX typography rows are dated 2026-10-15 from the conductor packet; their normative pages are owned by other packages.",
+    "genux.json implementation.shared_styles still says 1rem minimum text; it is not rendered on these pages and was not changed."
   ]
 }

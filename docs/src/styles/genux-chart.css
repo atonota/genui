@@ -1,0 +1,184 @@
+/* Chart: grouped bars on one zero-based scale, a patterned legend and the full data table. */
+.genux-demo .genux-chart-demo {
+  display: grid;
+  gap: var(--space-md);
+  min-width: 0;
+}
+.genux-demo .genux-chart-demo > h3 {
+  margin: 0;
+}
+.genux-demo .genux-chart {
+  display: grid;
+  gap: var(--space-md);
+  min-width: 0;
+  margin: 0;
+  color: var(--ink);
+  font-size: var(--text);
+}
+.genux-demo .genux-chart-caption {
+  display: grid;
+  gap: var(--space-sm);
+}
+.genux-demo .genux-chart-title {
+  margin: 0;
+  font-weight: var(--font-weight-label, 600);
+  overflow-wrap: break-word;
+}
+.genux-demo .genux-chart-description {
+  margin: 0;
+  color: var(--muted);
+  overflow-wrap: break-word;
+}
+.genux-demo .genux-chart-unavailable {
+  display: grid;
+  gap: var(--space-sm);
+}
+.genux-demo .genux-chart-unavailable > p {
+  margin: 0;
+}
+.genux-demo .genux-chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm) var(--space-md);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.genux-demo .genux-chart-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-width: 0;
+}
+/* Swatch proportions follow the label text so the pattern stays legible at every size. */
+.genux-demo .genux-chart-swatch {
+  flex: none;
+  width: 1.5em;
+  height: 1em;
+  overflow: visible;
+}
+.genux-demo .genux-chart-plot-scroll,
+.genux-demo .genux-chart-table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  border: 0 solid transparent;
+  border-bottom-width: var(--focus-marker);
+  outline: none;
+  box-shadow: none;
+  /* Focus paint (border, outline, shadow) stays immediate; ordinary paint keeps the central motion. */
+  transition-property: color, background-color, opacity;
+}
+/* Keyboard cue: one bottom edge, never an enclosing ring; the transparent rest border reserves its geometry. */
+.genux-demo .genux-chart-plot-scroll:focus-visible,
+.genux-demo .genux-chart-table-scroll:focus-visible {
+  border-bottom-color: var(--focus-color);
+  outline: none;
+  box-shadow: none;
+}
+/* Each bar keeps room for its value label; narrow layouts scroll inside the plot. */
+.genux-demo .genux-chart-plot {
+  display: grid;
+  gap: var(--space-sm);
+  min-width: calc(var(--genux-chart-bars) * 2.75em);
+  padding-top: 1.5em;
+}
+.genux-demo .genux-chart-svg {
+  display: block;
+  width: 100%;
+  height: 12em;
+  overflow: visible;
+}
+.genux-demo .genux-chart-gridline {
+  stroke: var(--soft);
+  stroke-width: 1;
+}
+.genux-demo .genux-chart-baseline {
+  stroke: var(--ink);
+  stroke-width: 1;
+}
+.genux-demo .genux-chart-value {
+  fill: var(--ink);
+  font-family: inherit;
+  font-size: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+/* Series differ by fill and pattern, so meaning never depends on color alone. */
+.genux-demo .genux-chart [data-series-style='0'] {
+  --genux-chart-fill: var(--accent);
+  --genux-chart-mark: var(--accent);
+  --genux-chart-stroke: var(--accent);
+}
+.genux-demo .genux-chart [data-series-style='1'] {
+  --genux-chart-fill: var(--soft);
+  --genux-chart-mark: var(--ink);
+  --genux-chart-stroke: var(--ink);
+}
+.genux-demo .genux-chart [data-series-style='2'] {
+  --genux-chart-fill: var(--panel);
+  --genux-chart-mark: var(--accent);
+  --genux-chart-stroke: var(--accent);
+}
+.genux-demo .genux-chart [data-series-style='3'] {
+  --genux-chart-fill: var(--soft);
+  --genux-chart-mark: var(--muted);
+  --genux-chart-stroke: var(--muted);
+}
+.genux-demo .genux-chart-bar {
+  stroke: var(--genux-chart-stroke);
+  stroke-width: 1.5;
+}
+.genux-demo .genux-chart-pattern-base {
+  fill: var(--genux-chart-fill);
+}
+.genux-demo .genux-chart-pattern-line {
+  fill: none;
+  stroke: var(--genux-chart-mark);
+  stroke-width: 1.5;
+}
+.genux-demo .genux-chart-pattern-dot {
+  fill: var(--genux-chart-mark);
+}
+.genux-demo .genux-chart-categories {
+  display: grid;
+  grid-template-columns: repeat(var(--genux-chart-categories), minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-align: center;
+}
+.genux-demo .genux-chart-categories > li {
+  padding-inline: var(--space-sm);
+  overflow-wrap: break-word;
+}
+.genux-demo .genux-chart-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text);
+}
+.genux-demo .genux-chart-table caption {
+  padding-bottom: var(--space-sm);
+  font-weight: var(--font-weight-label, 600);
+  text-align: start;
+  overflow-wrap: break-word;
+}
+.genux-demo .genux-chart-table th,
+.genux-demo .genux-chart-table td {
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--soft);
+  text-align: start;
+  vertical-align: bottom;
+}
+.genux-demo .genux-chart-table thead th {
+  font-weight: var(--font-weight-label, 600);
+}
+.genux-demo .genux-chart-table tbody th {
+  font-weight: inherit;
+}
+.genux-demo .genux-chart-table .genux-chart-numeric {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+.genux-demo .genux-chart-table td.genux-chart-numeric {
+  white-space: nowrap;
+}

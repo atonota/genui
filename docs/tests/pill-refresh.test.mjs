@@ -3,14 +3,14 @@ import test from 'node:test';
 import { mountPattern } from './harness.mjs';
 
 test('Pill surfaces honor native variant and explicit semantic color without forcing palette red', async t => {
-  const h = await mountPattern('default', 'docs/src/react/AtlasPill.tsx', {
+  const h = await mountPattern('default', 'docs/src/react/GenUXPill.tsx', {
     children: 'Success',
     variant: 'outlined',
     color: 'success',
     colorIndex: 0,
   });
   t.after(() => h.dispose());
-  const pill = h.document.querySelector('.atlas-pill');
+  const pill = h.document.querySelector('.genux-pill');
   assert.ok(pill.classList.contains('ant-tag-outlined'));
   assert.ok(pill.classList.contains('ant-tag-success'));
   assert.equal(
@@ -26,25 +26,25 @@ test('Pill catalog exposes distinct surface/status/preset/icon/interaction combi
   for (const surface of ['filled', 'solid', 'outlined']) {
     const status = h.document.querySelector(`[data-pill-status="${surface}"]`);
     assert.ok(status, surface);
-    assert.equal(status.querySelectorAll('.atlas-pill').length, 5);
+    assert.equal(status.querySelectorAll('.genux-pill').length, 5);
     assert.ok(
-      [...status.querySelectorAll('.atlas-pill')].every(p => p.dataset.pillVariant === surface),
+      [...status.querySelectorAll('.genux-pill')].every(p => p.dataset.pillVariant === surface),
     );
     assert.equal(
-      h.document.querySelector(`[data-pill-presets="${surface}"]`).querySelectorAll('.atlas-pill')
+      h.document.querySelector(`[data-pill-presets="${surface}"]`).querySelectorAll('.genux-pill')
         .length,
       17,
     );
   }
   assert.ok(h.document.querySelector('[data-pill-icons] svg'));
-  const preview = h.document.querySelector('.pill-playground .atlas-pill');
+  const preview = h.document.querySelector('.pill-playground .genux-pill');
   assert.equal(preview.dataset.pillColor, undefined);
   assert.notEqual(
     preview.style.getPropertyValue('--pill-bg'),
     '#F2BFBF',
     'unassigned filled inherits theme rather than palette red',
   );
-  const semantic = [...h.document.querySelectorAll('.pill-semantic-group .atlas-pill-label')].map(
+  const semantic = [...h.document.querySelectorAll('.pill-semantic-group .genux-pill-label')].map(
     node => node.parentElement,
   );
   assert.equal(semantic.length, 2);

@@ -1,22 +1,22 @@
-import '../styles/atlas-feedback.css';
+import '../styles/genux-feedback.css';
 import { useId, useState, type ReactElement } from 'react';
 import { Select, Switch } from 'antd';
-import AtlasProvider from './AtlasProvider';
-import AtlasButton from './AtlasButton';
-import { TweakerSettings } from './AtlasTweaker';
-import { AtlasCard } from './cards/AtlasCard';
+import GenUXProvider from './GenUXProvider';
+import GenUXButton from './GenUXButton';
+import { TweakerSettings } from './GenUXTweaker';
+import { GenUXCard } from './cards/GenUXCard';
 import { useI18n } from './useI18n';
 import ExamplePreview from './ExamplePreview';
 import {
-  AtlasAlert,
-  AtlasFeedbackScope,
-  AtlasModal,
-  AtlasPopconfirm,
-  useAtlasNotification,
-  useAtlasToast,
-  type AtlasFeedbackStatus,
-  type AtlasToastPlacement,
-} from './AtlasFeedback';
+  GenUXAlert,
+  GenUXFeedbackScope,
+  GenUXModal,
+  GenUXPopconfirm,
+  useGenUXNotification,
+  useGenUXToast,
+  type GenUXFeedbackStatus,
+  type GenUXToastPlacement,
+} from './GenUXFeedback';
 
 export type FeedbackKind = 'toast' | 'alert' | 'notification' | 'modal' | 'popconfirm';
 export interface FeedbackDemoProps {
@@ -25,13 +25,13 @@ export interface FeedbackDemoProps {
 }
 export type FeedbackExampleProps = Pick<FeedbackDemoProps, 'documentation'>;
 
-const toastTriggers: { placement: AtlasToastPlacement; label: string }[] = [
+const toastTriggers: { placement: GenUXToastPlacement; label: string }[] = [
   { placement: 'top-center', label: 'Toast · top center' },
   { placement: 'top-right-top', label: 'Toast · top right from top' },
   { placement: 'top-right-right', label: 'Toast · top right from right' },
 ];
 
-const statusLabels: Record<AtlasFeedbackStatus, string> = {
+const statusLabels: Record<GenUXFeedbackStatus, string> = {
   info: 'Info',
   success: 'Success',
   warning: 'Warning',
@@ -53,7 +53,7 @@ function SettingSelect<T extends string>({
   const { t } = useI18n();
   const id = useId();
   return (
-    <div className="atlas-tweaker-token">
+    <div className="genux-tweaker-token">
       <label htmlFor={id}>{t(label)}</label>
       <Select
         id={id}
@@ -81,7 +81,7 @@ function SettingSwitch({
   const { t } = useI18n();
   const id = useId();
   return (
-    <div className="atlas-tweaker-token">
+    <div className="genux-tweaker-token">
       <label htmlFor={id}>{t(label)}</label>
       <Switch id={id} checked={checked} onChange={next => onChange(next)} />
     </div>
@@ -89,7 +89,7 @@ function SettingSwitch({
 }
 
 // Each status reuses the matching alert title, so a toast never claims a save it did not make.
-const toastMessages: Record<AtlasFeedbackStatus, string> = {
+const toastMessages: Record<GenUXFeedbackStatus, string> = {
   info: 'Changes stay in this browser.',
   success: 'Saved locally.',
   warning: 'Two fields need review.',
@@ -98,18 +98,18 @@ const toastMessages: Record<AtlasFeedbackStatus, string> = {
 
 function ToastExample() {
   const { t } = useI18n();
-  const [toast, toastHolder] = useAtlasToast();
-  const [status, setStatus] = useState<AtlasFeedbackStatus>('success');
-  const [shown, setShown] = useState<AtlasFeedbackStatus | null>(null);
+  const [toast, toastHolder] = useGenUXToast();
+  const [status, setStatus] = useState<GenUXFeedbackStatus>('success');
+  const [shown, setShown] = useState<GenUXFeedbackStatus | null>(null);
   return (
     <>
       {toastHolder}
       <ExamplePreview id="toast-placements" title={t('Toast')}>
-        <AtlasCard
+        <GenUXCard
           title={t('Toast')}
           description={t('Short confirmation that appears briefly and does not take focus.')}
           actions={toastTriggers.map(({ placement, label }) => (
-            <AtlasButton
+            <GenUXButton
               key={placement}
               text={t(label)}
               onClick={() => {
@@ -120,7 +120,7 @@ function ToastExample() {
           ))}
         >
           <p
-            className="atlas-feedback-result"
+            className="genux-feedback-result"
             data-feedback-result={shown === 'success' ? 'saved' : shown ? 'shown' : 'idle'}
           >
             {shown ? t(toastMessages[shown]) : t('Nothing saved yet.')}
@@ -133,13 +133,13 @@ function ToastExample() {
               onChange={setStatus}
             />
           </TweakerSettings>
-        </AtlasCard>
+        </GenUXCard>
       </ExamplePreview>
     </>
   );
 }
 
-const alerts: { status: AtlasFeedbackStatus; title: string; description: string }[] = [
+const alerts: { status: GenUXFeedbackStatus; title: string; description: string }[] = [
   {
     status: 'info',
     title: 'Changes stay in this browser.',
@@ -167,13 +167,13 @@ function AlertExample() {
   const [descriptions, setDescriptions] = useState(true);
   return (
     <ExamplePreview id="alert-statuses" title={t('Alert')}>
-      <AtlasCard
+      <GenUXCard
         title={t('Alert')}
         description={t('Persistent message that stays in the page until the situation changes.')}
       >
-        <div className="atlas-feedback-stack">
+        <div className="genux-feedback-stack">
           {alerts.map(alert => (
-            <AtlasAlert
+            <GenUXAlert
               key={alert.status}
               status={alert.status}
               title={t(alert.title)}
@@ -189,26 +189,26 @@ function AlertExample() {
             onChange={setDescriptions}
           />
         </TweakerSettings>
-      </AtlasCard>
+      </GenUXCard>
     </ExamplePreview>
   );
 }
 
-const draftNotification = 'atlas-feedback-draft';
+const draftNotification = 'genux-feedback-draft';
 
 function NotificationExample() {
   const { t } = useI18n();
-  const [notify, notificationHolder] = useAtlasNotification();
-  const [status, setStatus] = useState<AtlasFeedbackStatus>('info');
+  const [notify, notificationHolder] = useGenUXNotification();
+  const [status, setStatus] = useState<GenUXFeedbackStatus>('info');
   return (
     <>
       {notificationHolder}
       <ExamplePreview id="notification-draft" title={t('Notification')}>
-        <AtlasCard
+        <GenUXCard
           title={t('Notification')}
           description={t('Richer message with a title, description and actions.')}
           actions={
-            <AtlasButton
+            <GenUXButton
               text={t('Show notification')}
               onClick={() =>
                 notify.open({
@@ -217,7 +217,7 @@ function NotificationExample() {
                   title: t('Draft kept in this browser'),
                   description: t('Nothing was sent. Keep editing or close this message.'),
                   actions: (
-                    <AtlasButton
+                    <GenUXButton
                       fill="text"
                       text={t('Keep editing')}
                       onClick={() => notify.destroy(draftNotification)}
@@ -236,7 +236,7 @@ function NotificationExample() {
               onChange={setStatus}
             />
           </TweakerSettings>
-        </AtlasCard>
+        </GenUXCard>
       </ExamplePreview>
     </>
   );
@@ -252,28 +252,28 @@ function ModalExample() {
   return (
     <>
       <ExamplePreview id="modal-review-changes" title={t('Modal')}>
-        <AtlasCard
+        <GenUXCard
           title={t('Modal')}
           description={t('Focused review step that keeps the page behind it unchanged.')}
-          actions={<AtlasButton text={t('Review changes')} onClick={() => setOpen(true)} />}
+          actions={<GenUXButton text={t('Review changes')} onClick={() => setOpen(true)} />}
         >
-          <p className="atlas-feedback-result" data-feedback-result={applied ? 'applied' : 'idle'}>
+          <p className="genux-feedback-result" data-feedback-result={applied ? 'applied' : 'idle'}>
             {applied ? t('Changes applied locally.') : t('2 changes waiting for review.')}
           </p>
           <TweakerSettings title="Modal settings">
             <SettingSwitch label="Center dialog" checked={centered} onChange={setCentered} />
           </TweakerSettings>
-        </AtlasCard>
+        </GenUXCard>
       </ExamplePreview>
-      <AtlasModal
+      <GenUXModal
         open={open}
         title={t('Review local changes')}
         centered={centered}
         onCancel={() => setOpen(false)}
         footer={
-          <div className="atlas-feedback-modal-actions">
-            <AtlasButton fill="text" text={t('Cancel')} onClick={() => setOpen(false)} />
-            <AtlasButton
+          <div className="genux-feedback-modal-actions">
+            <GenUXButton fill="text" text={t('Cancel')} onClick={() => setOpen(false)} />
+            <GenUXButton
               text={t('Apply changes')}
               onClick={() => {
                 setApplied(true);
@@ -283,15 +283,15 @@ function ModalExample() {
           </div>
         }
       >
-        <ul className="atlas-feedback-list">
+        <ul className="genux-feedback-list">
           {reviewChanges.map(change => (
             <li key={change}>{t(change)}</li>
           ))}
         </ul>
-        <p className="atlas-feedback-result">
+        <p className="genux-feedback-result">
           {t('Applying updates this example only. Nothing is sent to a server.')}
         </p>
-      </AtlasModal>
+      </GenUXModal>
     </>
   );
 }
@@ -302,11 +302,11 @@ function PopconfirmExample() {
   const [showDescription, setShowDescription] = useState(true);
   return (
     <ExamplePreview id="popconfirm-archive-sample" title={t('Popconfirm')}>
-      <AtlasCard
+      <GenUXCard
         title={t('Popconfirm')}
         description={t('Small confirmation next to the action it protects.')}
         actions={
-          <AtlasPopconfirm
+          <GenUXPopconfirm
             title={t('Archive this sample?')}
             description={
               showDescription ? t('It moves to the local archive in this browser.') : undefined
@@ -316,12 +316,12 @@ function PopconfirmExample() {
             disabled={archived}
             onConfirm={() => setArchived(true)}
           >
-            <AtlasButton text={t('Archive sample')} disabled={archived} />
-          </AtlasPopconfirm>
+            <GenUXButton text={t('Archive sample')} disabled={archived} />
+          </GenUXPopconfirm>
         }
       >
         <p
-          className="atlas-feedback-result"
+          className="genux-feedback-result"
           data-feedback-result={archived ? 'archived' : 'active'}
         >
           {t('Status')}:{' '}
@@ -336,7 +336,7 @@ function PopconfirmExample() {
             onChange={setShowDescription}
           />
         </TweakerSettings>
-      </AtlasCard>
+      </GenUXCard>
     </ExamplePreview>
   );
 }
@@ -352,13 +352,13 @@ const examples: Record<FeedbackKind, () => ReactElement> = {
 export default function FeedbackDemo({ documentation = false, kind = 'toast' }: FeedbackDemoProps) {
   const Example = examples[kind] ?? examples.toast;
   return (
-    <AtlasProvider appearance={documentation ? 'docs' : undefined}>
-      <div className="atlas-feedback-demo" data-demo={kind}>
-        <AtlasFeedbackScope>
+    <GenUXProvider appearance={documentation ? 'docs' : undefined}>
+      <div className="genux-feedback-demo" data-demo={kind}>
+        <GenUXFeedbackScope>
           <Example />
-        </AtlasFeedbackScope>
+        </GenUXFeedbackScope>
       </div>
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }
 

@@ -40,7 +40,7 @@ test('media frame reserves a captioned figure and an unavailable fallback', asyn
   await page.setViewportSize({ width: 320, height: 800 });
   const screenshot = demo(page)
     .getByRole('figure')
-    .filter({ has: page.locator('figcaption', { hasText: 'Recorded Atlas Avatar example' }) })
+    .filter({ has: page.locator('figcaption', { hasText: 'Recorded GenUX Avatar example' }) })
     .first();
   const shot = screenshot.locator('img').first();
   await shot.scrollIntoViewIfNeeded();
@@ -49,8 +49,8 @@ test('media frame reserves a captioned figure and an unavailable fallback', asyn
   await expect
     .poll(() => shot.evaluate(node => (node as HTMLImageElement).naturalWidth))
     .toBe(1440);
-  const shotScroll = screenshot.getByRole('region', { name: /Recorded Atlas Avatar example/ });
-  await expect(shotScroll).toHaveClass(/(^|\s)atlas-screenshot-scroll(\s|$)/);
+  const shotScroll = screenshot.getByRole('region', { name: /Recorded GenUX Avatar example/ });
+  await expect(shotScroll).toHaveClass(/(^|\s)genux-screenshot-scroll(\s|$)/);
   await expect(shotScroll.locator('img')).toHaveCount(1);
   const shotFit = await shotScroll.evaluate(node => {
     const img = node.querySelector('img') as HTMLImageElement;
@@ -252,7 +252,7 @@ test('upload lists only valid local files and removes them', async ({ page }) =>
   await input.setInputFiles({
     name: 'notes.txt',
     mimeType: 'text/plain',
-    buffer: Buffer.from('Atlas local note'),
+    buffer: Buffer.from('GenUX local note'),
   });
   await expect(demo(page).getByText('notes.txt').first()).toBeVisible();
   await remove.click();
@@ -342,8 +342,8 @@ test('chart pairs labelled bars and a legend with an aligned numeric table', asy
       };
     });
   const scrollers = [
-    figure.locator('.atlas-chart-plot-scroll'),
-    figure.locator('.atlas-chart-table-scroll'),
+    figure.locator('.genux-chart-plot-scroll'),
+    figure.locator('.genux-chart-table-scroll'),
   ];
   const resting = await Promise.all(scrollers.map(focusCue));
   const expectCue = async (index: number) => {

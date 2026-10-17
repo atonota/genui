@@ -28,12 +28,12 @@ for (const width of [320, 1280]) {
         // Layout-only fixture: alter text nodes, never business state or control
         // structure. This proves long-content reflow, not a React update contract.
         await catalog
-          .locator('#breadcrumb-quick .atlas-breadcrumb-link > span')
+          .locator('#breadcrumb-quick .genux-breadcrumb-link > span')
           .nth(1)
           .evaluate(el => {
             el.textContent = 'Müşteri sözleşmeleri ve uyumluluk belgeleri çalışma alanı';
           });
-        await catalog.locator('#breadcrumb-quick .atlas-breadcrumb-current > span').evaluate(el => {
+        await catalog.locator('#breadcrumb-quick .genux-breadcrumb-current > span').evaluate(el => {
           el.textContent = 'Customer onboarding documentation and approval history';
         });
       }
@@ -101,25 +101,25 @@ for (const width of [320, 1280]) {
           return {
             viewport: innerWidth,
             page: document.documentElement.scrollWidth,
-            rows: [...root.querySelectorAll('.atlas-breadcrumb-nav')].map(nav => ({
+            rows: [...root.querySelectorAll('.genux-breadcrumb-nav')].map(nav => ({
               gap: getComputedStyle(nav.querySelector('ol')!).rowGap,
               owners: [...nav.querySelectorAll('ol > li')].map(el => ({
                 rect: rect(el),
                 margin: getComputedStyle(el).margin,
                 separators: [...el.querySelectorAll('.ant-breadcrumb-separator')].map(rect),
                 destination: rect(
-                  el.querySelector('.atlas-breadcrumb-link,.atlas-breadcrumb-current')!,
+                  el.querySelector('.genux-breadcrumb-link,.genux-breadcrumb-current')!,
                 ),
                 parts: [
                   ...el.querySelectorAll(
-                    '.ant-breadcrumb-separator,.atlas-breadcrumb-link,.atlas-breadcrumb-current,.atlas-breadcrumb-trigger',
+                    '.ant-breadcrumb-separator,.genux-breadcrumb-link,.genux-breadcrumb-current,.genux-breadcrumb-trigger',
                   ),
                 ].map(rect),
               })),
             })),
             labels: [
               ...root.querySelectorAll(
-                '.atlas-breadcrumb-link > span,.atlas-breadcrumb-current > span',
+                '.genux-breadcrumb-link > span,.genux-breadcrumb-current > span',
               ),
             ].map(el => {
               const range = document.createRange();
@@ -127,7 +127,7 @@ for (const width of [320, 1280]) {
               return {
                 text: el.textContent,
                 rect: rect(el),
-                destination: rect(el.closest('.atlas-breadcrumb-link,.atlas-breadcrumb-current')!),
+                destination: rect(el.closest('.genux-breadcrumb-link,.genux-breadcrumb-current')!),
                 owner: rect(el.closest('li')!),
                 clips: (() => {
                   const clips = [];
@@ -157,15 +157,15 @@ for (const width of [320, 1280]) {
                 clientHeight: el.clientHeight,
               };
             }),
-            links: [...root.querySelectorAll('.atlas-breadcrumb-link')].map(el => ({
+            links: [...root.querySelectorAll('.genux-breadcrumb-link')].map(el => ({
               rect: rect(el),
               owner: rect(el.closest('li')!),
               clips: clipsFor(el),
-              heightMinimum: length(el, 'max(var(--atlas-component-height),var(--target-min))'),
+              heightMinimum: length(el, 'max(var(--genux-component-height),var(--target-min))'),
               iconOnly: !!el.querySelector('svg:only-child'),
               widthMinimum: length(el, 'var(--target-min)'),
             })),
-            triggers: [...root.querySelectorAll('.atlas-breadcrumb-trigger')].map(trigger => ({
+            triggers: [...root.querySelectorAll('.genux-breadcrumb-trigger')].map(trigger => ({
               rect: rect(trigger),
               owner: rect(trigger.closest('li')!),
               clips: clipsFor(trigger),
@@ -271,10 +271,10 @@ for (const width of [320, 1280]) {
       }
       if (syntheticLongLabels) {
         await catalog
-          .locator('#breadcrumb-quick .atlas-breadcrumb-part')
-          .filter({ has: page.locator('.atlas-breadcrumb-trigger') })
+          .locator('#breadcrumb-quick .genux-breadcrumb-part')
+          .filter({ has: page.locator('.genux-breadcrumb-trigger') })
           .evaluate(part => {
-            const label = part.querySelector<HTMLElement>('.atlas-breadcrumb-link')!;
+            const label = part.querySelector<HTMLElement>('.genux-breadcrumb-link')!;
             label.style.flexShrink = '0';
             Object.assign((part as HTMLElement).style, {
               maxWidth: label.getBoundingClientRect().width + 'px',

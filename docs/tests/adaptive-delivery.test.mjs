@@ -62,6 +62,7 @@ const CATALOG_SLUGS = Object.freeze([
   'chart',
   'listy',
   'badge',
+  'fab',
 ]);
 
 const pick = (source, keys) => Object.fromEntries(keys.map(key => [key, source?.[key]]));
@@ -94,7 +95,7 @@ const runtimeImports = {
 };
 
 async function bundleAndImport(label, contents) {
-  const directory = await mkdtemp(path.join(tmpdir(), `atlas-adaptive-${label}-`));
+  const directory = await mkdtemp(path.join(tmpdir(), `genux-adaptive-${label}-`));
   const outfile = path.join(directory, 'bundle.mjs');
   try {
     await build({
@@ -134,7 +135,7 @@ function deferred() {
 }
 
 const layoutModule = profile =>
-  Object.freeze({ profile, className: `atlas-layout-${profile}`, navigation: 'drawer' });
+  Object.freeze({ profile, className: `genux-layout-${profile}`, navigation: 'drawer' });
 
 // One literal loader per profile; each call records itself and waits for the test to settle it.
 function recordingLoaders() {
@@ -164,22 +165,22 @@ const snap = (status, requested, active, loaded, extra = {}) => ({
 });
 const settle = () => new Promise(resolve => setImmediate(resolve));
 
-function atlasNames(value) {
+function genuxNames(value) {
   let list = [];
   if (value instanceof Map) list = [...value.keys()];
   else if (value instanceof Set) list = [...value];
   else if (Array.isArray(value))
     list = value.map(item => (typeof item === 'string' ? item : item?.name));
   else if (value && typeof value === 'object') list = Object.keys(value);
-  return list.length > 0 && list.every(item => typeof item === 'string' && /^Atlas[A-Z]/.test(item))
+  return list.length > 0 && list.every(item => typeof item === 'string' && /^GenUX[A-Z]/.test(item))
     ? list
     : undefined;
 }
 
-// The runtime GenUI names are the largest Atlas-only collection the contracts module exports.
-const genuiNamesFrom = contracts =>
+// The runtime GenUX names are the largest GenUX-only collection the contracts module exports.
+const genuxNamesFrom = contracts =>
   Object.values(contracts)
-    .map(atlasNames)
+    .map(genuxNames)
     .filter(Boolean)
     .sort((a, b) => b.length - a.length)[0];
 
@@ -411,15 +412,15 @@ test('delivery controller imports only on select, lets the newest choice win and
   }
 });
 
-test('server hints fall back to the SSR baseline and every GenUI component and catalog slug keeps a contract', async () => {
+test('server hints fall back to the SSR baseline and every GenUX component and catalog slug keeps a contract', async () => {
   assert.equal(typeof globalThis.window, 'undefined', 'the server test must start without window');
-  const { server, policy, coverage, genuiContracts } = await bundleAndImport(
+  const { server, policy, coverage, genuxContracts } = await bundleAndImport(
     'server',
     [
       `export * as server from '${ADAPTIVE_DIRECTORY}/server.ts';`,
       `export * as policy from '${ADAPTIVE_DIRECTORY}/policy.ts';`,
       `export * as coverage from '${ADAPTIVE_DIRECTORY}/component-coverage.ts';`,
-      `export * as genuiContracts from './docs/src/genui/contracts';`,
+      `export * as genuxContracts from './docs/src/genux/contracts';`,
     ].join(' '),
   );
   assert.equal(
@@ -616,46 +617,46 @@ test('server hints fall back to the SSR baseline and every GenUI component and c
   expect(Object.isFrozen(once.resolution), 'the server resolution is frozen');
   assert.deepStrictEqual(failures, [], `server hint regressions: ${failures.join(' ; ')}`);
 
-  // Coverage fails closed against the runtime GenUI names and the documented catalog slugs.
+  // Coverage fails closed against the runtime GenUX names and the documented catalog slugs.
   const {
     ADAPTIVE_COMPONENT_COVERAGE,
     DOC_SLUG_COVERAGE,
     assertAdaptiveCoverage,
     adaptiveContractFor,
   } = coverage;
-  const names = genuiNamesFrom(genuiContracts);
+  const names = genuxNamesFrom(genuxContracts);
   assert.ok(
     names,
-    `docs/src/genui/contracts must export the runtime GenUI component names; exports: ${Object.keys(genuiContracts).join(', ')}`,
+    `docs/src/genux/contracts must export the runtime GenUX component names; exports: ${Object.keys(genuxContracts).join(', ')}`,
   );
-  assert.equal(names.length, 61, `expected the 61 current GenUI components; got ${names.length}`);
+  assert.equal(names.length, 61, `expected the 61 current GenUX components; got ${names.length}`);
   assert.equal(
     Object.keys(ADAPTIVE_COMPONENT_COVERAGE).length,
     61,
-    'every current GenUI component keeps an adaptive contract',
+    'every current GenUX component keeps an adaptive contract',
   );
   assert.deepStrictEqual(
     Object.keys(DOC_SLUG_COVERAGE).sort(),
     [...CATALOG_SLUGS].sort(),
-    'all 40 documented catalog slugs keep coverage',
+    'all 41 documented catalog slugs keep coverage',
   );
   assert.doesNotThrow(
     () => assertAdaptiveCoverage(names, CATALOG_SLUGS),
     'the runtime names and catalog slugs are fully covered',
   );
   assert.throws(
-    () => assertAdaptiveCoverage([...names, 'AtlasFutureWidget'], CATALOG_SLUGS),
-    /missing GenUI component: AtlasFutureWidget/,
-    'a new GenUI component without a contract must fail',
+    () => assertAdaptiveCoverage([...names, 'GenUXFutureWidget'], CATALOG_SLUGS),
+    /missing GenUX component: GenUXFutureWidget/,
+    'a new GenUX component without a contract must fail',
   );
   assert.throws(
     () => assertAdaptiveCoverage(names.slice(1), CATALOG_SLUGS),
-    /extra GenUI component/,
+    /extra GenUX component/,
     'a contract for a removed component must fail',
   );
   assert.throws(
     () => assertAdaptiveCoverage([...names, names[0]], CATALOG_SLUGS),
-    /duplicate GenUI component/,
+    /duplicate GenUX component/,
     'a duplicated component name must fail',
   );
   assert.throws(
@@ -664,13 +665,13 @@ test('server hints fall back to the SSR baseline and every GenUI component and c
     'a new catalog slug without coverage must fail',
   );
   assert.throws(
-    () => adaptiveContractFor('AtlasFutureWidget'),
+    () => adaptiveContractFor('GenUXFutureWidget'),
     /No adaptive contract/,
     'unknown names never fall back',
   );
 
   // The generic choice renders the registered AntD Select, so its contract is a fluid combobox.
-  const choice = adaptiveContractFor('AtlasChoice');
+  const choice = adaptiveContractFor('GenUXChoice');
   assert.deepStrictEqual(
     {
       family: choice.family,
@@ -678,7 +679,7 @@ test('server hints fall back to the SSR baseline and every GenUI component and c
       composite: choice.inputContract.composite,
     },
     { family: 'choice', containerBehavior: 'fluid-fill', composite: 'combobox' },
-    'AtlasChoice renders the registered AntD Select: a fluid-fill combobox, not a wrap-flow group',
+    'GenUXChoice renders the registered AntD Select: a fluid-fill combobox, not a wrap-flow group',
   );
 
   // Coarse hit regions follow the trusted runtime root's input layer in the compiled stylesheet,
@@ -712,7 +713,7 @@ test('server hints fall back to the SSR baseline and every GenUI component and c
         .map(rule => rule.selectorText);
     const runtimeRoot = layers => {
       const root = document.createElement('div');
-      root.className = 'atlas-genui-runtime';
+      root.className = 'genux-genux-runtime';
       root.dataset.adaptiveInputLayers = layers;
       root.innerHTML = [
         '<form class="ant-form">',
@@ -729,7 +730,7 @@ test('server hints fall back to the SSR baseline and every GenUI component and c
     for (const name of ['ant-checkbox-wrapper', 'ant-radio-wrapper', 'ant-list-item']) {
       expect(
         sizedBy(coarse.querySelector(`.${name}`)).length > 0,
-        `.${name} under a coarse .atlas-genui-runtime root gets no coarse min-block-size`,
+        `.${name} under a coarse .genux-genux-runtime root gets no coarse min-block-size`,
       );
       const matched = sizedBy(precision.querySelector(`.${name}`));
       expect(

@@ -107,7 +107,7 @@ for (const [slug, entry, sections, inputs] of pages) {
     assertCurrentOwners();
     await h.act(() => {
       h.document.documentElement.dataset.theme = 'dark';
-      h.window.dispatchEvent(new h.window.Event('atlas-theme-change'));
+      h.window.dispatchEvent(new h.window.Event('genux-theme-change'));
     });
     assertCurrentOwners();
   });

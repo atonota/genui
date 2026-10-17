@@ -1,54 +1,54 @@
-/* FOCUS-01 action focus for Atlas and Ant Design buttons, imported by focus-01.css.
+/* FOCUS-01 action focus for GenUX and Ant Design buttons, imported by focus-01.css.
    Every cue is gated on html[data-input-modality='keyboard'] AND :focus-visible and is one
    non-surrounding fill or text change from central roles; geometry, 3D depth and content
-   never change. Field slot actions (.atlas-slot-button, .ant-input-search-btn) keep their
+   never change. Field slot actions (.genux-slot-button, .ant-input-search-btn) keep their
    cue from focus-fields.css. Forced colors keep the single CanvasText outline (focus-01.css). */
 
 /* Ant Design paints its own focus outline; it gives way outside forced colors. */
 @media (forced-colors: none) {
-  :root .ant-btn:not(.atlas-slot-button, .ant-input-search-btn):focus-visible {
+  :root .ant-btn:not(.genux-slot-button, .ant-input-search-btn):focus-visible {
     outline: none;
   }
 }
 
-/* AtlasButton solid and tint, and native buttons that carry only .atlas-button (no
+/* GenUXButton solid and tint, and native buttons that carry only .genux-button (no
    data-fill): the accessible face/text pair inverts. The host paints the inverted fill
-   itself, so flat, lipless or face-less presentations still step; inside .atlas-demo the
+   itself, so flat, lipless or face-less presentations still step; inside .genux-demo the
    top face (::before) repeats it while geometry, depth and radius stay. Where no button
    pair is declared, the central action roles carry the step. */
 :root[data-input-modality='keyboard']
-  .atlas-button:is([data-fill='solid'], [data-fill='tint'], :not([data-fill])):not(
-    .atlas-slot-button
+  .genux-button:is([data-fill='solid'], [data-fill='tint'], :not([data-fill])):not(
+    .genux-slot-button
   ):focus-visible {
   background-color: var(--button-text, var(--focus-button-bg)) !important;
   color: var(--button-face, var(--focus-button-ink)) !important;
 }
 :root[data-input-modality='keyboard']
-  .atlas-demo
-  .atlas-button:is([data-fill='solid'], [data-fill='tint'], :not([data-fill])):not(
-    .atlas-slot-button
+  .genux-demo
+  .genux-button:is([data-fill='solid'], [data-fill='tint'], :not([data-fill])):not(
+    .genux-slot-button
   ):focus-visible::before {
   background: var(--button-text, var(--focus-button-bg));
 }
 
-/* Outline actions take the central action fill on the host; inside .atlas-demo the top face
+/* Outline actions take the central action fill on the host; inside .genux-demo the top face
    repeats it. The fixed border and lip edges keep their rest paint. */
 :root[data-input-modality='keyboard']
-  .atlas-button[data-fill='outline']:not(.atlas-slot-button):focus-visible {
+  .genux-button[data-fill='outline']:not(.genux-slot-button):focus-visible {
   background-color: var(--focus-button-bg) !important;
   color: var(--focus-button-ink) !important;
 }
 :root[data-input-modality='keyboard']
-  .atlas-demo
-  .atlas-button[data-fill='outline']:not(.atlas-slot-button):focus-visible::before {
+  .genux-demo
+  .genux-button[data-fill='outline']:not(.genux-slot-button):focus-visible::before {
   background: var(--focus-button-bg);
 }
 
 /* Icon-only text and link actions have no text to underline: the central action fill. It
-   paints the host, so it needs no .atlas-demo top face. */
+   paints the host, so it needs no .genux-demo top face. */
 :root[data-input-modality='keyboard']
-  .atlas-button.atlas-icon-button:is([data-fill='text'], [data-fill='link']):not(
-    .atlas-slot-button
+  .genux-button.genux-icon-button:is([data-fill='text'], [data-fill='link']):not(
+    .genux-slot-button
   ):focus-visible {
   background: var(--focus-button-bg) !important;
   color: var(--focus-button-ink) !important;
@@ -56,11 +56,11 @@
 
 /* Visible text and link actions: an underline plus a color step, no fill. Text decorations
    are not inherited, so the host carries the underline itself; the label span repeats it so a
-   link's rest underline takes the same paint. Both paint the host, outside .atlas-demo too. */
+   link's rest underline takes the same paint. Both paint the host, outside .genux-demo too. */
 :root[data-input-modality='keyboard']
-  .atlas-button:is([data-fill='text'], [data-fill='link']):not(
-    .atlas-icon-button,
-    .atlas-slot-button
+  .genux-button:is([data-fill='text'], [data-fill='link']):not(
+    .genux-icon-button,
+    .genux-slot-button
   ):focus-visible {
   color: var(--focus-link-ink) !important;
   text-decoration-line: underline;
@@ -70,11 +70,11 @@
   text-decoration-skip-ink: none;
 }
 :root[data-input-modality='keyboard']
-  .atlas-button:is([data-fill='text'], [data-fill='link']):not(
-    .atlas-icon-button,
-    .atlas-slot-button
+  .genux-button:is([data-fill='text'], [data-fill='link']):not(
+    .genux-icon-button,
+    .genux-slot-button
   ):focus-visible
-  .atlas-button-content
+  .genux-button-content
   > span {
   text-decoration-line: underline;
   text-decoration-color: var(--focus-link-ink);
@@ -84,11 +84,11 @@
 }
 
 /* Ant Design solid primary buttons: the brand pair inverts, accessible on-primary fill with
-   brand-primary ink. Inside .atlas-demo the top face (::before) carries the same fill. */
+   brand-primary ink. Inside .genux-demo the top face (::before) carries the same fill. */
 :root[data-input-modality='keyboard']
   .ant-btn:is(.ant-btn-primary, .ant-btn-color-primary.ant-btn-variant-solid):not(
-    .atlas-button,
-    .atlas-slot-button,
+    .genux-button,
+    .genux-slot-button,
     .ant-input-search-btn
   ):focus-visible {
   background-color: var(--docs-brand-on-primary, var(--focus-button-bg)) !important;
@@ -96,8 +96,8 @@
 }
 :root[data-input-modality='keyboard']
   .ant-btn:is(.ant-btn-primary, .ant-btn-color-primary.ant-btn-variant-solid):not(
-    .atlas-button,
-    .atlas-slot-button,
+    .genux-button,
+    .genux-slot-button,
     .ant-input-search-btn
   ):focus-visible::before {
   background: var(--docs-brand-on-primary, var(--focus-button-bg));
@@ -109,8 +109,8 @@
   .ant-btn.ant-btn-variant-solid:not(
     .ant-btn-primary,
     .ant-btn-color-primary,
-    .atlas-button,
-    .atlas-slot-button,
+    .genux-button,
+    .genux-slot-button,
     .ant-input-search-btn
   ):focus-visible {
   background-color: var(--panel) !important;
@@ -122,8 +122,8 @@
   .ant-btn:not(
     .ant-btn-primary,
     .ant-btn-variant-solid,
-    .atlas-button,
-    .atlas-slot-button,
+    .genux-button,
+    .genux-slot-button,
     .ant-input-search-btn
   ):focus-visible {
   background-color: var(--ink) !important;
@@ -141,11 +141,11 @@
 
 /* Buttons that carry role='tab' keep their list role over button presentation: the focus
    surface, --ink text and the one start-edge bar from focus-01.css. The body step outranks
-   every inverted button fill above; inside .atlas-demo the top face (::before), which would
+   every inverted button fill above; inside .genux-demo the top face (::before), which would
    cover the host bar, repeats the surface and bar while the lip, depth and radius stay. */
 :root[data-input-modality='keyboard']
   body
-  :is(.ant-btn, .atlas-button)[role='tab']:not(.atlas-slot-button):not(
+  :is(.ant-btn, .genux-button)[role='tab']:not(.genux-slot-button):not(
     .ant-input-search-btn
   ):focus-visible {
   background-color: var(--focus-bg) !important;
@@ -155,8 +155,8 @@
 }
 :root[data-input-modality='keyboard']
   body
-  .atlas-demo
-  :is(.ant-btn, .atlas-button)[role='tab']:not(.atlas-slot-button):not(
+  .genux-demo
+  :is(.ant-btn, .genux-button)[role='tab']:not(.genux-slot-button):not(
     .ant-input-search-btn
   ):focus-visible::before {
   background: var(--focus-bg);
@@ -164,11 +164,11 @@
 }
 :root[data-input-modality='keyboard']
   body
-  :is(.ant-btn, .atlas-button)[role='tab']:not(.atlas-slot-button):not(
+  :is(.ant-btn, .genux-button)[role='tab']:not(.genux-slot-button):not(
     .ant-input-search-btn,
     [data-fill='link']
   ):focus-visible
-  .atlas-button-content
+  .genux-button-content
   > span {
   text-decoration-line: none;
 }

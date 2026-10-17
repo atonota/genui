@@ -71,7 +71,7 @@
   justify-content: space-between;
   gap: var(--space-sm);
 }
-.kit-record-heading:has(> :is(input[type='checkbox'], .ant-checkbox-wrapper, .atlas-avatar)) {
+.kit-record-heading:has(> :is(input[type='checkbox'], .ant-checkbox-wrapper, .genux-avatar)) {
   align-items: center;
 }
 .kit-caption {
@@ -348,7 +348,7 @@ pre.kit-contained-scroll {
   overflow-wrap: anywhere;
   word-break: normal;
 }
-.kit-display-fields dd .atlas-button {
+.kit-display-fields dd .genux-button {
   max-width: 100%;
   white-space: normal;
   overflow-wrap: anywhere;

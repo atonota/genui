@@ -1,9 +1,9 @@
 import { useId, useState } from 'react';
 import { Select } from 'antd';
-import AtlasProvider from './AtlasProvider';
-import AtlasChart from './AtlasChart';
+import GenUXProvider from './GenUXProvider';
+import GenUXChart from './GenUXChart';
 import ExamplePreview from './ExamplePreview';
-import { TweakerSettings } from './AtlasTweaker';
+import { TweakerSettings } from './GenUXTweaker';
 import { useI18n } from './useI18n';
 
 type SeriesChoice = 'both' | 'planned' | 'completed';
@@ -19,10 +19,10 @@ function WeeklyActivity() {
   ].filter(item => visible === 'both' || item.id === visible);
   return (
     <ExamplePreview id="chart-weekly-activity" title={t('Planned and completed work')}>
-      <section className="atlas-chart-demo">
+      <section className="genux-chart-demo">
         <h3>{t('Planned and completed work')}</h3>
         <TweakerSettings title="Chart settings">
-          <div className="atlas-tweaker-option">
+          <div className="genux-tweaker-option">
             <label htmlFor={seriesId}>{t('Series shown')}</label>
             <Select
               id={seriesId}
@@ -36,7 +36,7 @@ function WeeklyActivity() {
             />
           </div>
         </TweakerSettings>
-        <AtlasChart
+        <GenUXChart
           title={t('Weekly activity')}
           description={
             visible === 'both'
@@ -56,8 +56,8 @@ function WeeklyActivity() {
 /** Weekly activity as grouped bars with a legend and the complete value table. */
 export default function ChartDemo({ documentation = false }: { documentation?: boolean }) {
   return (
-    <AtlasProvider appearance={documentation ? 'docs' : undefined}>
+    <GenUXProvider appearance={documentation ? 'docs' : undefined}>
       <WeeklyActivity />
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }

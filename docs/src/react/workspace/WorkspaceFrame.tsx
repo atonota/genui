@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
-import AtlasButton from '../AtlasButton';
-import { TweakerSettings } from '../AtlasTweaker';
+import GenUXButton from '../GenUXButton';
+import { TweakerSettings } from '../GenUXTweaker';
 import { useI18n } from '../useI18n';
 
 export type WorkspaceProfile = 'mobile' | 'desktop';
@@ -23,7 +23,7 @@ export default function WorkspaceFrame({
       <TweakerSettings title="Example layout">
         <div className="control-row" role="group" aria-label={t('Example layout')}>
           {(['mobile', 'desktop'] as const).map(value => (
-            <AtlasButton
+            <GenUXButton
               key={value}
               id={`${kind}-${value}`}
               fill={profile === value ? 'solid' : 'ghost'}

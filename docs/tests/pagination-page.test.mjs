@@ -58,7 +58,7 @@ test('five canonical Button variants own independent pages and use the shared ma
     new Set(['solid', 'outline', 'tint', 'text', 'link']),
   );
   for (const variant of variants) {
-    assert.equal(variant.querySelectorAll('.atlas-pagination').length, 1);
+    assert.equal(variant.querySelectorAll('.genux-pagination').length, 1);
     await h.click(buttonByText(variant, 'Next page'));
     assert.equal(variant.querySelector('[aria-current="page"]').textContent, '5');
     assert.ok(
@@ -98,5 +98,5 @@ test('note and jump drafts survive navigation, Tweaker size/surface changes and 
   await h.act(() => h.setLocale('tr'));
   assert.equal(note.value, 'Keep review context');
   assert.equal(jump.value, '12');
-  assert.equal(primary.querySelector('.atlas-pagination').dataset.paginationCurrent, '50');
+  assert.equal(primary.querySelector('.genux-pagination').dataset.paginationCurrent, '50');
 });

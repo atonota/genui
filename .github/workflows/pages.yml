@@ -15,7 +15,13 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # The whole Adaptive UI workflow gates this same revision before any Pages build.
+  verify:
+    permissions:
+      contents: read
+    uses: ./.github/workflows/adaptive-ui.yml
   build:
+    needs: verify
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -27,10 +33,12 @@ jobs:
           cache: npm
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b
       - run: npm ci
-      - name: Build documentation for /genui/
+      - name: FAB contract and motion gates
+        run: node --test docs/tests/fab.test.mjs docs/tests/component-motion.test.mjs docs/tests/interaction-stability.test.mjs
+      - name: Build GenUX documentation for /genux/
         run: npm run docs:build
         env:
-          GENUI_DOCS_PAGES: '1'
+          GENUX_DOCS_PAGES: '1'
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa
         with:
           path: docs/pages/dist

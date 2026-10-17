@@ -13,13 +13,13 @@ test('documentation uses native 14px Outfit 400 tokens without changing the appr
     file,
     `
 import {theme} from 'antd';
-import AtlasProvider,{atlasDocsTheme,atlasDocsDarkTheme,atlasTheme} from '../src/react/AtlasProvider';
-import AtlasButton from '../src/react/AtlasButton';
+import GenUXProvider,{genuxDocsTheme,genuxDocsDarkTheme,genuxTheme} from '../src/react/GenUXProvider';
+import GenUXButton from '../src/react/GenUXButton';
 function Probe(){const {token}=theme.useToken();return <output data-nested-tokens>{JSON.stringify({fontSize:token.fontSize,lineHeight:token.lineHeight,fontWeightStrong:token.fontWeightStrong})}</output>}
 export default function Fixture(){return <>
-<output data-docs-tokens>{JSON.stringify([atlasDocsTheme,atlasDocsDarkTheme].map(config=>theme.getDesignToken(config)))}</output>
-<output data-approved-tokens>{JSON.stringify(theme.getDesignToken(atlasTheme))}</output>
-<AtlasProvider><AtlasProvider appearance="docs"><AtlasButton text="Documentation action"/><AtlasProvider appearance="approved"><Probe/><AtlasButton text="Reset approved action"/></AtlasProvider></AtlasProvider><AtlasButton text="Approved action"/></AtlasProvider>
+<output data-docs-tokens>{JSON.stringify([genuxDocsTheme,genuxDocsDarkTheme].map(config=>theme.getDesignToken(config)))}</output>
+<output data-approved-tokens>{JSON.stringify(theme.getDesignToken(genuxTheme))}</output>
+<GenUXProvider><GenUXProvider appearance="docs"><GenUXButton text="Documentation action"/><GenUXProvider appearance="approved"><Probe/><GenUXButton text="Reset approved action"/></GenUXProvider></GenUXProvider><GenUXButton text="Approved action"/></GenUXProvider>
 </>}`,
   );
   let h;
@@ -46,8 +46,8 @@ export default function Fixture(){return <>
     JSON.parse(h.document.querySelector('[data-approved-tokens]').textContent).fontSize,
     16,
   );
-  const doc = h.document.querySelector('[data-atlas-appearance="docs"]');
-  assert.equal(doc.style.getPropertyValue('--atlas-component-height'), '56px');
+  const doc = h.document.querySelector('[data-genux-appearance="docs"]');
+  assert.equal(doc.style.getPropertyValue('--genux-component-height'), '56px');
   assert.equal(doc.style.getPropertyValue('--text'), '14px');
   assert.equal(doc.style.getPropertyValue('--font-weight-label'), '400');
   assert.equal(doc.style.getPropertyValue('--font-weight-min'), '300');
@@ -57,13 +57,13 @@ export default function Fixture(){return <>
     String(22 / 14),
     'caption calc needs a unitless line-height multiplier',
   );
-  assert.equal(doc.querySelector('.atlas-button').style.minHeight, '56px');
+  assert.equal(doc.querySelector('.genux-button').style.minHeight, '56px');
   assert.equal(
-    h.document.querySelector('.atlas-demo:not([data-atlas-appearance]) > .atlas-button').style
+    h.document.querySelector('.genux-demo:not([data-genux-appearance]) > .genux-button').style
       .minHeight,
     '3.5rem',
   );
-  const approvedChild = doc.querySelector('.atlas-demo:not([data-atlas-appearance])');
+  const approvedChild = doc.querySelector('.genux-demo:not([data-genux-appearance])');
   assert.equal(approvedChild.style.getPropertyValue('--text'), '1rem');
   assert.equal(approvedChild.style.getPropertyValue('--font-weight-label'), 'initial');
   assert.equal(approvedChild.style.getPropertyValue('--font-weight-min'), 'initial');
@@ -74,7 +74,7 @@ export default function Fixture(){return <>
   const declarations = [];
   for (const style of h.document.querySelectorAll('style'))
     postcss.parse(style.textContent).walkDecls('--ant-font-size', declaration => {
-      if (declaration.parent.selector?.includes('.css-var-atlas-docs'))
+      if (declaration.parent.selector?.includes('.css-var-genux-docs'))
         declarations.push(declaration.value);
     });
   assert.ok(declarations.includes('14px'), 'documentation CSS-in-JS must emit native pixels');

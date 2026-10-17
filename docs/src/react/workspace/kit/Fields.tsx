@@ -1,7 +1,7 @@
 import { useEffect, useId, useState, type ReactNode } from 'react';
 import { DatePicker, Select } from 'antd';
-import Input from '../../AtlasInput';
-import InputNumber from '../../AtlasInputNumber';
+import Input from '../../GenUXInput';
+import InputNumber from '../../GenUXInputNumber';
 import dayjs, { type Dayjs } from 'dayjs';
 import utc from 'dayjs/plugin/utc.js';
 import {
@@ -14,7 +14,7 @@ import {
 } from '../../../data/field-kit';
 import { normalizeSearch } from '../../../i18n';
 import { useI18n } from '../../useI18n';
-import AtlasIcon from '../../AtlasIcon';
+import GenUXIcon from '../../GenUXIcon';
 import type { FieldDefinition, FieldScalar, RecordIdentity } from './contracts';
 
 dayjs.extend(utc);
@@ -37,7 +37,7 @@ export function DateField({ value, onChange, ...props }: DateFieldProps) {
       {...props}
       className="kit-date-field"
       variant="filled"
-      classNames={{ popup: { root: 'atlas-select-popup kit-date-popup' } }}
+      classNames={{ popup: { root: 'genux-select-popup kit-date-popup' } }}
       value={value && validDateOnly(value) ? dayjs(value) : null}
       format="YYYY-MM-DD"
       onChange={next => onChange?.(next ? next.format('YYYY-MM-DD') : null)}
@@ -50,7 +50,7 @@ export function InstantField({ value, onChange, ...props }: DateFieldProps) {
       {...props}
       className="kit-date-field"
       variant="filled"
-      classNames={{ popup: { root: 'atlas-select-popup kit-date-popup' } }}
+      classNames={{ popup: { root: 'genux-select-popup kit-date-popup' } }}
       value={value && validInstant(value) ? dayjs.utc(value) : null}
       showTime
       format="YYYY-MM-DD HH:mm:ss [UTC]"
@@ -235,7 +235,7 @@ export function FieldEditor<R extends RecordIdentity>({
       >
         {!unavailable && readonlyValue && (
           <span className="kit-readonly-lock" aria-hidden="true">
-            <AtlasIcon name="lock-simple" />
+            <GenUXIcon name="lock-simple" />
           </span>
         )}
         <FieldValue record={record} field={field} showReason={false} />

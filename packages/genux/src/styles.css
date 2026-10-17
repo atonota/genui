@@ -1,0 +1,32 @@
+/* Static GenUX stylesheet: consumers import 'genux/styles.css'. Canonical sheets only, in docs.css
+   cascade order: motion, the generated foundation (docs.css :root and @font-face blocks), base
+   components, inputs, focus, the native control families in NativeStyles.tsx order, then adaptive
+   components. Docs shell, sidebar, catalog, preview and web.css styles are intentionally absent. */
+@import '../../../docs/src/styles/genux-motion.css';
+@import 'genux:foundation';
+@import '../../../docs/src/styles/components.css';
+@import '../../../docs/src/styles/genux-input.css';
+@import '../../../docs/src/styles/focus-01.css';
+@import '../../../docs/src/styles/genux-feedback.css';
+@import '../../../docs/src/styles/genux-autocomplete.css';
+@import '../../../docs/src/styles/genux-avatar.css';
+@import '../../../docs/src/styles/genux-content-patterns.css';
+@import '../../../docs/src/styles/genux-breadcrumb.css';
+@import '../../../docs/src/styles/genux-media.css';
+@import '../../../docs/src/styles/genux-carousel.css';
+@import '../../../docs/src/styles/genux-selection-variants.css';
+@import '../../../docs/src/styles/workspace-kit.css';
+@import '../../../docs/src/styles/kit-records.css';
+@import '../../../docs/src/styles/genux-drawer-extensions.css';
+@import '../../../docs/src/styles/genux-dropdown.css';
+@import '../../../docs/src/styles/genux-pagination.css';
+@import '../../../docs/src/styles/genux-rich-menu.css';
+@import '../../../docs/src/styles/genux-screenshot.css';
+@import '../../../docs/src/styles/genux-chart.css';
+@import '../../../docs/src/styles/slider.css';
+@import '../../../docs/src/styles/genux-splitter.css';
+@import '../../../docs/src/styles/genux-steps.css';
+@import '../../../docs/src/styles/genux-upload.css';
+@import '../../../docs/src/styles/genux-badge.css';
+@import '../../../docs/src/styles/genux-fab.css';
+@import '../../../docs/src/styles/adaptive-components.scss';

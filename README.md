@@ -1,15 +1,16 @@
-# GenUI
+# GenUX
 
-GenUI (formerly Button Atlas) is a local Flat 2.0 component atlas with a standalone HTML studio, Astro documentation
+GenUX is a local Flat 2.0 component library with a standalone HTML studio, Astro documentation
 and Storybook. English is the default language and canonical message source;
 Turkish is the secondary locale. Existing component decisions, stable values,
 identifiers, fonts and vendor provenance are preserved.
 
 ## Run and verify
 
-The canonical local checkout directory is `genui`. A temporary `button-atlas`
-compatibility symlink may point to it so existing local services and workflows
-keep running; new scripts should use the `genui` path. Agent orchestration
+The canonical local checkout is `/Users/w6x/Developer/genux`; new scripts should
+use the `genux` path. The local move is complete: `/Users/w6x/Developer/genui` is
+only a temporary compatibility symlink to the same checkout, not a duplicate, so
+existing local services and workflows keep running. Agent orchestration
 (workflow workers, run evidence and reports) lives in a separate local project
 and is not part of this repository.
 
@@ -39,7 +40,7 @@ strict TypeScript/AntD contracts, dropdown provenance and Node/JSDOM regressions
 asset boundaries and browser test type/discovery contracts. Test discovery is not
 browser execution. `storybook:verify` checks types, a static build and story index.
 
-`build` writes `dist/buton-atlasi.html` without changing the user's copy. `sync`
+`build` writes `dist/buton-genuxi.html` without changing the user's copy. `sync`
 updates the existing Downloads file using the machine-specific target and known
 hash in ignored `evidence/sync-state.json`. It refuses external changes, uses an
 exclusive lock and unique staging files, and can recover a replacement whose final
@@ -55,7 +56,7 @@ not claim perfect filesystem compare-and-swap with unrelated editors.
 | `src/shared/`                | Normalization, color/contrast and preview measurement helpers               |
 | `src/button/`                | Button DOM, states and icons                                                |
 | `src/compat/`                | AntD recipes and public type contracts                                      |
-| `src/atlas/`                 | Navigation, catalog, studio, saved items, math and export flows             |
+| `src/genux/`                 | Navigation, catalog, studio, saved items, math and export flows             |
 | `src/forms/`                 | Form demo model, rendering and interactions                                 |
 | `src/workspace/`             | Experimental local listing/details/form examples, separate preview profiles |
 | `src/i18n/`                  | Offline locale runtime and Turkish messages                                 |
@@ -91,14 +92,14 @@ embeds the small shared additions, builds their DOM lazily, and does not claim
 profile-specific network delivery. The new examples are not added to Storybook or
 approved component decisions. Promote them only after an explicit user decision.
 
-## Atlas controlled record workspace
+## GenUX controlled record workspace
 
 The Astro documentation adds `/color-system/` for the supplied HWB color model,
-official Ant Design palette derivation and local import/export. It uses the Atlas
+official Ant Design palette derivation and local import/export. It uses the GenUX
 visual identity without changing approved palettes or Storybook.
 
 Documentation uses the exact `#0080CC` brand through the explicit
-`AtlasProvider appearance="docs"` contract. Its readable foreground, link and
+`GenUXProvider appearance="docs"` contract. Its readable foreground, link and
 state roles are centralized in `docs/src/data/docs-brand.ts`; unopted shared
 providers and explicit component palette choices retain their existing identity.
 
@@ -118,8 +119,8 @@ DOM, production, strict snippet and browser-contract discovery checks.
 English phrases are canonical translation keys. Documentation uses leaf
 `data-i18n` markers and attribute markers; React uses `useI18n().t()`. Custom Turkish
 messages are separate JSON data loaded only when requested. AntD locale modules
-are included in the shared component runtime. The standalone atlas
-embeds its Turkish dictionary so it works offline. `atlas-locale` stores an explicit
+are included in the shared component runtime. The standalone genux
+embeds its Turkish dictionary so it works offline. `genux-locale` stores an explicit
 choice; a fresh visit defaults to English. AntD receives the selected locale.
 
 Translate visible text and accessibility labels, never option values, IDs, routes,
@@ -158,30 +159,33 @@ older styling gap.
 
 ## GitHub Pages publication
 
-The documentation is configured for publication at https://atonota.github.io/genui/.
+The documentation is configured for publication at https://atonota.github.io/genux/.
 Local development and plain `npm run docs:build` keep the root base and write `docs/dist`.
 The Pages artifact uses the same pinned build command with one environment flag:
 
 ```sh
-GENUI_DOCS_PAGES=1 npm run docs:build
+GENUX_DOCS_PAGES=1 npm run docs:build
 ```
 
-The flag sets the Astro site and `/genui` base and writes a fresh `docs/pages/dist`; it
+The flag sets the Astro site and `/genux` base and writes a fresh `docs/pages/dist`; it
 never copies `docs/dist` or local review material. The existing presentation gate checks
 canonical root paths first. `tools/docs-pages.mjs` then prefixes authored root-absolute
 HTML, island, refresh, inline script, JavaScript chunk and CSS URLs exactly once, adds
-`.nojekyll`, and fails on private files or missing linked assets. `/` and `/genui/` strings
-in JavaScript or island props change only in explicit URL positions; other uses stay
-unchanged.
+`.nojekyll`, and fails on private files or missing linked assets. Already based `/genux`
+and `/genux/` name the Pages homepage and stay unchanged, so GenUX product links use
+`genuxPageHref(import.meta.env.BASE_URL)`: `/genux/` locally and `/genux/genux/` on Pages.
+`/` strings in JavaScript or island props change only in explicit URL positions; other uses
+stay unchanged.
 
 `.github/workflows/pages.yml` runs only on pushes to `main` and manual dispatch with Node
 24.21.0, `npm ci`, the flagged `docs:build` and commit-pinned official Pages actions. It
-runs no test suite or browser matrix. Publication is pending until a deployment receipt
+also retains the FAB, motion and interaction `node --test` gates and calls the reusable
+adaptive workflow. Publication is pending until a deployment receipt
 exists; this README claims no workflow run, deployment or Pages setting.
 
 ## License
 
-GenUI is released under the MIT License; see [LICENSE](LICENSE). Embedded Outfit
+GenUX is released under the MIT License; see [LICENSE](LICENSE). Embedded Outfit
 OFL and third-party MIT license texts remain intact under their own terms. The
-public source repository is https://github.com/atonota/genui. This README makes
+public source repository is https://github.com/atonota/genux. This README makes
 no claim about pushed commits, CI runs or published releases.

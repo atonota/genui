@@ -1,6 +1,6 @@
 import { useId } from 'react';
 import { Select } from 'antd';
-import AtlasButton from '../../AtlasButton';
+import GenUXButton from '../../GenUXButton';
 import { useI18n } from '../../useI18n';
 import { StateSurface } from './StateSurface';
 import type { SurfaceState } from './contracts';
@@ -90,7 +90,7 @@ export function EntityPicker({
       />
       <div className="kit-action-row">
         {onOpen && (
-          <AtlasButton
+          <GenUXButton
             fill="text"
             text={t('Open related record')}
             disabled={value === null || blocked}
@@ -100,7 +100,7 @@ export function EntityPicker({
           />
         )}
         {onCreate && (
-          <AtlasButton
+          <GenUXButton
             fill="text"
             text={t('Create related record')}
             disabled={blocked}

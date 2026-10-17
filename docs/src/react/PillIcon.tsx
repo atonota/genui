@@ -86,7 +86,7 @@ export default function PillIcon({ name }: { name: keyof typeof icons }) {
   const icon = icons[name];
   return (
     <svg
-      className="atlas-icon"
+      className="genux-icon"
       viewBox={icon.viewBox}
       width="20"
       height="20"

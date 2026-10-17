@@ -1,24 +1,24 @@
 /* Theme Builder island. Loaded last by DocsLayout; every rule is scoped to
-   .theme-builder except the narrow body[data-atlas-builder] primitive bridge
+   .theme-builder except the narrow body[data-genux-builder] primitive bridge
    and the prefixed preset label/swatch that AntD renders in its Select popup.
    Colors, radii, spacing and shadows come from central/resolver variables only. */
 
 /* Global bridge: the active builder recipe reaches native primitives through the
    inherited variables written by the store. No component-level overrides here. */
-body[data-atlas-builder='active'] {
+body[data-genux-builder='active'] {
   font-family: Outfit, system-ui, sans-serif;
   color: var(--ink);
-  --atlas-input-bg: var(--field-bg);
-  --atlas-input-text: var(--ink);
+  --genux-input-bg: var(--field-bg);
+  --genux-input-text: var(--ink);
 }
 /* Native Form labels, Table cells and code follow the model font roles. */
-body[data-atlas-builder='active'] .ant-form-item-label > label {
+body[data-genux-builder='active'] .ant-form-item-label > label {
   font-size: max(14px, var(--text-label, 1em));
 }
-body[data-atlas-builder='active'] .ant-table-cell {
+body[data-genux-builder='active'] .ant-table-cell {
   font-size: max(14px, var(--text-table, 1em));
 }
-body[data-atlas-builder='active'] code {
+body[data-genux-builder='active'] code {
   font-size: max(14px, var(--text-code, 1em));
 }
 
@@ -240,7 +240,7 @@ body[data-atlas-builder='active'] code {
   background-size: 100% var(--theme-builder-focus-width);
   background-repeat: no-repeat;
   /* One base well shadow for every state; focus never replaces it. */
-  box-shadow: var(--atlas-input-inner-shadow) !important;
+  box-shadow: var(--genux-input-inner-shadow) !important;
   outline: none;
   transition: var(--theme-builder-field-transition);
 }
@@ -272,14 +272,14 @@ body[data-atlas-builder='active'] code {
 .theme-builder [data-theme-preview] {
   --theme-builder-text: max(14px, var(--text, 1rem));
   display: grid;
-  gap: var(--atlas-gap-md, var(--space-md));
+  gap: var(--genux-gap-md, var(--space-md));
   align-content: start;
   min-width: 0;
   padding: min(var(--inset-container-md, var(--space-lg)), var(--space-md));
-  border: var(--atlas-surface-border-width, 0px) solid var(--control-boundary);
+  border: var(--genux-surface-border-width, 0px) solid var(--control-boundary);
   border-radius: var(--radius-md, var(--radius));
   background-color: var(--panel, transparent);
-  box-shadow: var(--atlas-surface-shadow, none);
+  box-shadow: var(--genux-surface-shadow, none);
   color: var(--ink);
   font-size: var(--theme-builder-text);
   outline: none;
@@ -323,7 +323,7 @@ body[data-atlas-builder='active'] code {
   background-position: bottom !important;
   background-size: 100% var(--theme-builder-focus-width) !important;
   background-repeat: no-repeat !important;
-  box-shadow: var(--atlas-input-inner-shadow) !important;
+  box-shadow: var(--genux-input-inner-shadow) !important;
   color: var(--ink);
   font-size: var(--theme-builder-text);
   outline: none !important;

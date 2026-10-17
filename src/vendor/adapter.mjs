@@ -5,7 +5,7 @@ import { VanillaMachine, normalizeProps, spreadProps } from '@zag-js/vanilla';
 export const versions = Object.freeze({ select: '1.46.0', combobox: '1.46.0', vanilla: '1.46.0' });
 
 /**
- * Offline headless dropdown adapter for the standalone Atlas preview.
+ * Offline headless dropdown adapter for the standalone GenUX preview.
  * Styling belongs to the host's semantic tokens. No React or remote module is used.
  * State transitions, ARIA, navigation, and dismissal are provided by pinned Zag.
  * Append `root` to the document; start is deferred until it is connected.
@@ -51,7 +51,7 @@ export function create(config) {
   const spreadCleanups = new Map();
   const ownListeners = [];
   const uniqueId = config.id;
-  const propsId = `atlas-dropdown:${uniqueId}`;
+  const propsId = `genux-dropdown:${uniqueId}`;
   const node = (tag, className, text) => {
     const result = doc.createElement(tag);
     if (className) result.className = className;

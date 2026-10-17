@@ -1,4 +1,4 @@
-// Adaptive lab layout only. Colors, type, focus and controls come from the shared Atlas roles;
+// Adaptive lab layout only. Colors, type, focus and controls come from the shared GenUX roles;
 // gaps are font-relative so they follow the user's root size.
 .adaptive-lab {
   --adaptive-gap-xs: 0.25em;
@@ -28,7 +28,7 @@
 .adaptive-lab-controls,
 .adaptive-journey,
 .adaptive-telemetry,
-.adaptive-genui,
+.adaptive-genux,
 .adaptive-coverage,
 .adaptive-examples {
   display: grid;
@@ -64,7 +64,7 @@
 .adaptive-journey,
 .adaptive-lab-controls > p,
 .adaptive-telemetry > p,
-.adaptive-genui > p,
+.adaptive-genux > p,
 .adaptive-coverage > p {
   max-inline-size: 70ch;
 }

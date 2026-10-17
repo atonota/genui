@@ -1,7 +1,7 @@
 import { useId, useLayoutEffect, useRef, useState, type DragEvent } from 'react';
 import { Radio } from 'antd';
-import AtlasButton from './AtlasButton';
-import AtlasListy, { type AtlasListyEntry } from './AtlasListy';
+import GenUXButton from './GenUXButton';
+import GenUXListy, { type GenUXListyEntry } from './GenUXListy';
 import ExamplePreview from './ExamplePreview';
 import { useI18n } from './useI18n';
 
@@ -13,7 +13,7 @@ const rows = [
   { key: 'engineering', label: 'Engineering' },
 ] as const;
 // Private payload type: only rows dragged from this list are accepted as drop sources.
-const dragType = 'application/x-atlas-listy-key';
+const dragType = 'application/x-genux-listy-key';
 
 /**
  * Reorderable Listy. Each row holds a named themed radio that selects it by click, Space or the
@@ -35,7 +35,7 @@ export default function ListyReorderPattern() {
   const upBlocked = blocked(-1);
   const downBlocked = blocked(1);
 
-  // A natively disabled AtlasButton drops keyboard focus, so bounds use aria-disabled and the
+  // A natively disabled GenUXButton drops keyboard focus, so bounds use aria-disabled and the
   // keyboard user keeps their place in the toolbar once a move reaches the first or last slot.
   useLayoutEffect(() => {
     const buttons = toolbar.current?.querySelectorAll<HTMLElement>('[data-listy-move]');
@@ -80,7 +80,7 @@ export default function ListyReorderPattern() {
     }
   };
 
-  const items: AtlasListyEntry[] = order.map((key, position) => {
+  const items: GenUXListyEntry[] = order.map((key, position) => {
     const label = nameOf(key);
     const active = key === selected;
     const params = { label, position: String(position + 1), total: String(order.length) };
@@ -126,34 +126,34 @@ export default function ListyReorderPattern() {
 
   return (
     <section
-      className="atlas-listy-pattern"
+      className="genux-listy-pattern"
       data-listy-pattern="draggable"
       aria-labelledby={headingId}
     >
       <h3 id={headingId}>{t('Draggable')}</h3>
       <p>{t('Drag a row with a mouse, or select a row and use Move up or Move down.')}</p>
       <ExamplePreview id="listy-draggable" title={t('Draggable')}>
-        <AtlasListy label={t('Reorderable teams')} items={items} />
+        <GenUXListy label={t('Reorderable teams')} items={items} />
         <div
           ref={toolbar}
-          className="atlas-listy-pattern-toolbar"
+          className="genux-listy-pattern-toolbar"
           role="group"
           aria-label={t('Move selected row')}
         >
-          <AtlasButton
+          <GenUXButton
             text={t('Move up')}
             fill="outline"
             data-listy-move="up"
             onClick={() => shift(-1)}
           />
-          <AtlasButton
+          <GenUXButton
             text={t('Move down')}
             fill="outline"
             data-listy-move="down"
             onClick={() => shift(1)}
           />
         </div>
-        <p className="atlas-listy-pattern-status" role="status">
+        <p className="genux-listy-pattern-status" role="status">
           {message}
         </p>
       </ExamplePreview>

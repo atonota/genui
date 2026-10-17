@@ -1,0 +1,63 @@
+/* Recorded screenshot at its original CSS size. The region scrolls in both
+   directions instead of scaling the image, so recorded text stays readable. */
+.genux-demo .genux-screenshot {
+  display: grid;
+  gap: var(--space-sm);
+  min-inline-size: 0;
+  margin: 0;
+}
+
+.genux-demo .genux-screenshot-scroll {
+  /* Inline-size containment keeps the original image width out of every ancestor's sizing. */
+  contain: inline-size;
+  inline-size: 100%;
+  max-block-size: 70vh;
+  max-block-size: 70svh;
+  overflow: auto;
+  overscroll-behavior: contain;
+  background: var(--soft);
+  border-block-end: var(--focus-marker) solid transparent;
+  outline: none;
+  /* Only paint eases; the focus edge appears immediately and no geometry animates. */
+  transition-property: color, background-color, opacity;
+}
+
+/* Keyboard focus is a single bottom edge that appears immediately; nothing encloses the region. */
+.genux-demo .genux-screenshot-scroll:focus-visible {
+  border-block-end-color: var(--focus-color);
+}
+
+/* The caller's width and height stay authoritative; nothing shrinks the image to fit. */
+.genux-demo .genux-screenshot-scroll img {
+  display: block;
+  max-width: none;
+  max-height: none;
+}
+
+.genux-demo .genux-screenshot figcaption,
+.genux-demo .genux-screenshot-fallback {
+  max-inline-size: var(--prose-measure, 65ch);
+}
+
+.genux-demo .genux-screenshot figcaption {
+  display: grid;
+  gap: var(--space-xs);
+  color: var(--ink);
+}
+
+.genux-demo .genux-screenshot-help {
+  color: var(--muted);
+}
+
+.genux-demo .genux-screenshot-fallback {
+  display: grid;
+  gap: var(--space-xs);
+  padding: var(--space-md);
+  background: var(--soft);
+  color: var(--ink);
+  overflow-wrap: break-word;
+}
+
+.genux-demo .genux-screenshot-fallback p {
+  margin: 0;
+}

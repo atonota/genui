@@ -1,12 +1,12 @@
 import { useI18n } from './useI18n';
 import { useId, useState } from 'react';
 import { Switch } from 'antd';
-import AtlasProvider from './AtlasProvider';
-import AtlasSelectionVariants from './AtlasSelectionVariants';
-import AtlasIcon from './AtlasIcon';
+import GenUXProvider from './GenUXProvider';
+import GenUXSelectionVariants from './GenUXSelectionVariants';
+import GenUXIcon from './GenUXIcon';
 import DataEntryCatalog from './DataEntryCatalog';
 import ExamplePreview from './ExamplePreview';
-import { TweakerSettings } from './AtlasTweaker';
+import { TweakerSettings } from './GenUXTweaker';
 import { selectionSizeProfiles } from '../data/selection-sizes';
 
 function SwitchContentExamples({ documentation = false }: { documentation?: boolean } = {}) {
@@ -17,21 +17,21 @@ function SwitchContentExamples({ documentation = false }: { documentation?: bool
     {
       id: 'icon',
       title: t('Icon'),
-      on: <AtlasIcon name="check" />,
-      off: <AtlasIcon name="x" />,
+      on: <GenUXIcon name="check" />,
+      off: <GenUXIcon name="x" />,
     },
     {
       id: 'text-icon',
       title: t('Text and icon'),
       on: (
         <>
-          <AtlasIcon name="smiley" />
+          <GenUXIcon name="smiley" />
           {t('Happy')}
         </>
       ),
       off: (
         <>
-          <AtlasIcon name="smiley-sad" />
+          <GenUXIcon name="smiley-sad" />
           {t('Sad')}
         </>
       ),
@@ -61,18 +61,18 @@ function SwitchContentExamples({ documentation = false }: { documentation?: bool
                 <label className="control-row" htmlFor={id} key={id}>
                   <Switch
                     id={id}
-                    className="atlas-switch-with-content"
+                    className="genux-switch-with-content"
                     data-switch-content={variant.id}
-                    classNames={{ content: 'atlas-switch-state-layer' }}
+                    classNames={{ content: 'genux-switch-state-layer' }}
                     aria-labelledby={`switch-content-${variant.id}-title ${id}-label`}
                     defaultChecked={initiallyOn}
                     checkedChildren={
-                      <span className="atlas-switch-state" aria-hidden="true">
+                      <span className="genux-switch-state" aria-hidden="true">
                         {variant.on}
                       </span>
                     }
                     unCheckedChildren={
-                      <span className="atlas-switch-state" aria-hidden="true">
+                      <span className="genux-switch-state" aria-hidden="true">
                         {variant.off}
                       </span>
                     }
@@ -177,7 +177,7 @@ export default function SwitchDemo({
   );
 
   return (
-    <AtlasProvider
+    <GenUXProvider
       appearance={documentation ? 'docs' : undefined}
       sizeFamily={documentation ? 'selection' : 'component'}
     >
@@ -259,8 +259,8 @@ export default function SwitchDemo({
                 id: 'selection-variants',
                 title: t('Selection layouts and cards'),
                 description: t('Turn each workspace on or off.'),
-                // Each layout owns its workbench inside AtlasSelectionVariants.
-                content: <AtlasSelectionVariants kind="switch" />,
+                // Each layout owns its workbench inside GenUXSelectionVariants.
+                content: <GenUXSelectionVariants kind="switch" />,
               },
             ]}
           />
@@ -277,11 +277,11 @@ export default function SwitchDemo({
             {appearanceControls && <SwitchContentExamples />}
             <section className="example-block">
               <h3 className="variant-heading">{t('Selection layouts and cards')}</h3>
-              <AtlasSelectionVariants kind="switch" />
+              <GenUXSelectionVariants kind="switch" />
             </section>
           </>
         )}
       </div>
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }

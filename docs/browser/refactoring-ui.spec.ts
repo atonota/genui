@@ -96,7 +96,7 @@ test('first-use empty state creates a real local record from the keyboard', asyn
   ).toEqual(['underline', 'none']);
   await expect(empty).toHaveCount(0);
   await expect(
-    firstUse.getByRole('listitem').filter({ hasText: 'Atlas research brief' }),
+    firstUse.getByRole('listitem').filter({ hasText: 'GenUX research brief' }),
   ).toBeVisible();
   // The created collection keeps its owning styles: closed settings collapse, records lay out.
   const tools = firstUse.locator('.kit-tools-disclosure');
@@ -119,7 +119,7 @@ test('filtered, unavailable and order collections recover real records', async (
 
   const filtered = region(page, 'Filtered collection');
   const query = filtered.getByLabel('Search example records', { exact: true });
-  const brief = filtered.getByText('Atlas research brief', { exact: true });
+  const brief = filtered.getByText('GenUX research brief', { exact: true });
   await expect(brief).toBeVisible();
   await query.fill('zz-no-such-record');
   const noMatch = filtered.getByRole('status').and(filtered.locator('[data-empty-state=no-match]'));
@@ -140,7 +140,7 @@ test('filtered, unavailable and order collections recover real records', async (
   await expect(unavailable.getByText('Local records restored', { exact: true })).toBeVisible();
   await expect(failure).toHaveCount(0);
   await expect(
-    unavailable.getByRole('listitem').filter({ hasText: 'Atlas research brief' }),
+    unavailable.getByRole('listitem').filter({ hasText: 'GenUX research brief' }),
   ).toBeVisible();
   await expectNoPageOverflow(page);
 
@@ -167,14 +167,14 @@ test('avatars keep fixed boxes, decorative pairs and readable fallbacks', async 
   const imageGate = new Promise<void>(resolve => {
     releaseImage = resolve;
   });
-  await page.route('**/atlas-avatar-missing-example.png', async route => {
+  await page.route('**/genux-avatar-missing-example.png', async route => {
     await imageGate;
     await route.fulfill({ status: 404, body: '' });
   });
   await open(page, avatarRoute, 'domcontentloaded');
   // Paired avatars are decorative; the adjacent visible name is the accessible text.
   const person = (name: string) => page.getByRole('listitem').filter({ hasText: name });
-  const paired = (name: string) => person(name).locator('.atlas-avatar');
+  const paired = (name: string) => person(name).locator('.genux-avatar');
   const ada = paired('Ada Lovelace');
   const sam = paired('Sam Lee');
   const unknown = paired('Unknown person');

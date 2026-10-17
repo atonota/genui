@@ -28,7 +28,7 @@ async function setup(config = {}) {
   win.HTMLElement.prototype.scrollTo = () => {};
   win.eval(bundle);
   const changes = [];
-  const dropdown = win.AtlasDropdowns.create({
+  const dropdown = win.GenUXDropdowns.create({
     id: 'demo',
     label: 'Renk',
     options,
@@ -259,7 +259,7 @@ test('mount can be delayed and pre-mount values survive; create rejects invalid 
   });
   const win = dom.window;
   win.eval(bundle);
-  const dropdown = win.AtlasDropdowns.create({ id: 'late', label: 'Renk', options, value: [] });
+  const dropdown = win.GenUXDropdowns.create({ id: 'late', label: 'Renk', options, value: [] });
   try {
     dropdown.setValue(['blue']);
     await new Promise(resolve => win.setTimeout(resolve, 20));
@@ -268,14 +268,14 @@ test('mount can be delayed and pre-mount values survive; create rejects invalid 
     assert.deepEqual([...dropdown.getValue()], ['blue']);
     assert.equal(dropdown.root.querySelector('.ff-choice-text').textContent, 'Mavi');
     assert.throws(() =>
-      win.AtlasDropdowns.create({
+      win.GenUXDropdowns.create({
         id: 'bad',
         label: 'Renk',
         options: [{ value: '', label: 'Boş' }],
       }),
     );
     assert.throws(() =>
-      win.AtlasDropdowns.create({ id: 'bad', label: 'Renk', options: [options[0], options[0]] }),
+      win.GenUXDropdowns.create({ id: 'bad', label: 'Renk', options: [options[0], options[0]] }),
     );
   } finally {
     dropdown.destroy();

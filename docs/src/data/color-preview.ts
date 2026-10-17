@@ -16,7 +16,7 @@ import {
 
 export const previewHueOffsets = [0, 60, 120, 180, 240, 300] as const;
 export const colorFamilyVariableKeys = previewHueOffsets.map(
-  offset => `css-var-atlas-color-family-offset-${offset}`,
+  offset => `css-var-genux-color-family-offset-${offset}`,
 );
 export function colorPreviewFamilies(selection: ColorSelection) {
   const selected = convertColorSelection(selection);

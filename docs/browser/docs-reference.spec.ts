@@ -4,13 +4,13 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 
 // Actual evidence screenshots, written only when the conductor provides a stage directory.
 async function saveShot(page: Page, name: string) {
-  const stage = process.env.ATLAS_SOURCE_STAGE;
+  const stage = process.env.GENUX_SOURCE_STAGE;
   if (stage) await page.screenshot({ path: path.join(stage, name), fullPage: true });
 }
 
 // Viewport-only evidence of the mounted page, written to the same private stage directory.
 async function saveViewportShot(page: Page, name: string) {
-  const stage = process.env.ATLAS_SOURCE_STAGE;
+  const stage = process.env.GENUX_SOURCE_STAGE;
   if (stage) await page.screenshot({ path: path.join(stage, name), fullPage: false });
 }
 
@@ -157,7 +157,7 @@ test('320 drawer keeps nav scroll; desktop tabs, sidebar and TOC fit', async ({ 
   // The baseline is the list scroll at the actual click, reported through a test-only binding
   // by a one-shot capture listener on the link before the browser navigates away.
   const clickScrolls: number[] = [];
-  await page.exposeBinding('atlasRecordNavClickScroll', (_source, scroll: number) => {
+  await page.exposeBinding('genuxRecordNavClickScroll', (_source, scroll: number) => {
     clickScrolls.push(scroll);
   });
   await alertLink.evaluate(link => {
@@ -172,10 +172,10 @@ test('320 drawer keeps nav scroll; desktop tabs, sidebar and TOC fit', async ({ 
             break;
           }
         }
-        const view = window as Window & { atlasRecordNavClickScroll?: (value: number) => void };
-        if (typeof view.atlasRecordNavClickScroll !== 'function')
-          throw new Error('The atlasRecordNavClickScroll binding is missing.');
-        view.atlasRecordNavClickScroll(scroll);
+        const view = window as Window & { genuxRecordNavClickScroll?: (value: number) => void };
+        if (typeof view.genuxRecordNavClickScroll !== 'function')
+          throw new Error('The genuxRecordNavClickScroll binding is missing.');
+        view.genuxRecordNavClickScroll(scroll);
       },
       { capture: true, once: true },
     );
@@ -269,7 +269,7 @@ test('Input preview renders inline with kept node, state, profile and delivery',
   // Every iframe ever inserted is counted, so a transient embed fails as well as a kept one.
   await page.addInitScript(() => {
     const seen = { count: 0 };
-    (window as Window & { atlasIframesSeen?: typeof seen }).atlasIframesSeen = seen;
+    (window as Window & { genuxIframesSeen?: typeof seen }).genuxIframesSeen = seen;
     new MutationObserver(records => {
       for (const record of records)
         for (const node of Array.from(record.addedNodes))
@@ -283,7 +283,7 @@ test('Input preview renders inline with kept node, state, profile and delivery',
   const expectNoIframes = async () => {
     await expect(page.locator('iframe')).toHaveCount(0);
     const seen = await page.evaluate(
-      () => (window as Window & { atlasIframesSeen?: { count: number } }).atlasIframesSeen?.count,
+      () => (window as Window & { genuxIframesSeen?: { count: number } }).genuxIframesSeen?.count,
     );
     expect(seen).toBe(0);
   };
@@ -316,14 +316,14 @@ test('Input preview renders inline with kept node, state, profile and delivery',
   // Before any preview radio, control or form focus, the Inspector's Component settings opens
   // the first example's Tweaker: a 3px corner edit lands on that preview's screen only, while
   // the shell, its saved recipe and the sibling preview keep theirs, and reset restores it.
-  const builderKey = 'atlas-theme-builder-v1';
+  const builderKey = 'genux-theme-builder-v1';
   const parentRecipe = () => page.evaluate(key => localStorage.getItem(key), builderKey);
   // Shell inline declarations on html and body compared as sorted name/value/priority entries.
   // Excluded are exactly the two transient overlay roles the existing overlay runtime writes
-  // while the native Tweaker is open: --atlas-overlay-clip (overlay clip geometry) and
-  // --atlas-overlay-active-z (active overlay stacking). They measure overlay placement, not
+  // while the native Tweaker is open: --genux-overlay-clip (overlay clip geometry) and
+  // --genux-overlay-active-z (active overlay stacking). They measure overlay placement, not
   // theme; every other declaration (theme, radius, color, font, header) must stay identical.
-  const transientOverlayRoles = ['--atlas-overlay-clip', '--atlas-overlay-active-z'];
+  const transientOverlayRoles = ['--genux-overlay-clip', '--genux-overlay-active-z'];
   const shellTheme = () =>
     page.evaluate(
       excluded =>
@@ -432,7 +432,7 @@ test('Input preview renders inline with kept node, state, profile and delivery',
   const mountedWorkspace = content.locator(`[id=${JSON.stringify(workspaceId)}]`);
   await expect(mountedWorkspace).toHaveCount(1);
   await workspaceNode.evaluate(el => {
-    (el as Element & { atlasNodeProof?: string }).atlasNodeProof = 'kept';
+    (el as Element & { genuxNodeProof?: string }).genuxNodeProof = 'kept';
   });
   const sameNode = async () => {
     const current = await mountedWorkspace.elementHandle();
@@ -440,7 +440,7 @@ test('Input preview renders inline with kept node, state, profile and delivery',
       ([kept, now]) =>
         Boolean(kept?.isConnected) &&
         kept === now &&
-        (kept as Element & { atlasNodeProof?: string }).atlasNodeProof === 'kept',
+        (kept as Element & { genuxNodeProof?: string }).genuxNodeProof === 'kept',
       [workspaceNode, current],
     );
   };
@@ -455,7 +455,7 @@ test('Input preview renders inline with kept node, state, profile and delivery',
   const fieldFocus = () =>
     workspace.evaluate(el => {
       const style = getComputedStyle(el);
-      const owner = getComputedStyle(el.closest('.atlas-input-frame[data-atlas-input]') ?? el);
+      const owner = getComputedStyle(el.closest('.genux-input-frame[data-genux-input]') ?? el);
       const labelledBy = el.getAttribute('aria-labelledby')?.split(/\s+/)[0];
       const label =
         (el as HTMLInputElement).labels?.[0] ??
@@ -567,7 +567,7 @@ test('Input preview renders inline with kept node, state, profile and delivery',
   // Dark field labels read on the dark panel the screen actually paints, not light-mode ink.
   await expect.poll(() => labelContrast(workspace)).toBeGreaterThanOrEqual(4.5);
   // The shared web controls apply inside the screen: the stepper is one three-track row.
-  const stepper = content.locator('.atlas-number-stepper').first();
+  const stepper = content.locator('.genux-number-stepper').first();
   const stepperLayout = await stepper.evaluate(el => {
     const style = getComputedStyle(el);
     return { display: style.display, tracks: style.gridTemplateColumns.trim().split(/\s+/).length };
@@ -1051,7 +1051,7 @@ test('Input preview renders inline with kept node, state, profile and delivery',
       await expect(coldPage.locator(`[data-profile=${name}]`).first()).toBeAttached();
       let adaptive: { surface: string | null; shortHeight: string | null } | null = null;
       if (name === 'tv') {
-        const adaptiveRoot = coldPage.locator('.atlas-demo[data-adaptive-short-height]').first();
+        const adaptiveRoot = coldPage.locator('.genux-demo[data-adaptive-short-height]').first();
         await expect(adaptiveRoot).toHaveAttribute('data-adaptive-surface', 'living-room');
         await expect(adaptiveRoot).toHaveAttribute('data-adaptive-short-height', 'false');
         adaptive = {
@@ -1247,7 +1247,7 @@ test('Input preview renders inline with kept node, state, profile and delivery',
     // globals and stored builder state. The two overlay roles are host overlay plumbing.
     const readHostTheme = () =>
       hostPage.evaluate(() => {
-        const overlayRoles = new Set(['--atlas-overlay-clip', '--atlas-overlay-active-z']);
+        const overlayRoles = new Set(['--genux-overlay-clip', '--genux-overlay-active-z']);
         const declarations = (element: HTMLElement) =>
           Array.from(element.style)
             .filter(name => !overlayRoles.has(name))
@@ -1260,7 +1260,7 @@ test('Input preview renders inline with kept node, state, profile and delivery',
         return {
           html: declarations(document.documentElement),
           body: declarations(document.body),
-          stored: localStorage.getItem('atlas-theme-builder-v1'),
+          stored: localStorage.getItem('genux-theme-builder-v1'),
         };
       });
     const readOwnRadius = () =>
@@ -1283,7 +1283,7 @@ test('Input preview renders inline with kept node, state, profile and delivery',
       const radius = await readOwnRadius();
       return ownRadiusRoles.map(name => radius[name]);
     };
-    const trigger = hostPage.locator('.atlas-tweaker-trigger');
+    const trigger = hostPage.locator('.genux-tweaker-trigger');
     await expect(trigger).toHaveCount(1);
     await trigger.click();
     const editors = hostPage.locator('[data-theme-token-editors]');

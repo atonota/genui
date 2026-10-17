@@ -12,7 +12,7 @@ postcss.parse(result.css);
 const baseline = await readFile(resolve(root, 'tests/fixtures/before.html'), 'utf8');
 if (sha256(baseline) !== result.manifest.baseline_sha256)
   throw new Error('Baseline changed without review.');
-const beforeCss = baseline.match(/<style id="atlas-styles">([\s\S]*?)<\/style>/)[1];
+const beforeCss = baseline.match(/<style id="genux-styles">([\s\S]*?)<\/style>/)[1];
 if (originalLegacyCss(result.css) !== beforeCss)
   throw new Error('Visual CSS contract changed; independent rendered review is required.');
 new vm.Script(result.script);

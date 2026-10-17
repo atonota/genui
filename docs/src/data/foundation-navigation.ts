@@ -25,7 +25,7 @@ export const foundationGroups: readonly FoundationGroup[] = [
       { slug: 'standards', href: '/standards/', label: 'UX standards' },
       { slug: 'color-system', href: '/color-system/', label: 'Color system' },
       { slug: 'theme-builder', href: '/theme-builder/', label: 'Theme Builder' },
-      { slug: 'genui', href: '/genui/', label: 'GenUI' },
+      { slug: 'genux', href: '/genux/', label: 'GenUX' },
       { slug: 'adaptive', href: '/adaptive/', label: 'Adaptive UI' },
     ],
   },
@@ -51,4 +51,10 @@ export function findFoundation(
     if (link) return { group, link };
   }
   return undefined;
+}
+
+/** Href of the GenUX product route under a trusted Astro base: '/genux/' at the local root and
+    '/genux/genux/' under the Pages base, so it never collides with the bare hosting base. */
+export function genuxPageHref(base = '/'): string {
+  return `${base.replace(/\/+$/, '')}/genux/`;
 }

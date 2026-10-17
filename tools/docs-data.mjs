@@ -34,9 +34,9 @@ const fontComment = fontSource.match(/\/\*([\s\S]*?)\*\//)?.[1];
 if (!fontComment?.includes('SIL OPEN FONT LICENSE')) throw new Error('Outfit license missing');
 data.outfitLicense = fontComment.trim();
 await mkdir(dir, { recursive: true });
-await writeFile(resolve(dir, 'atlas.json'), JSON.stringify(data, null, 2) + '\n');
+await writeFile(resolve(dir, 'genux.json'), JSON.stringify(data, null, 2) + '\n');
 const shadowTokens = new Map();
-postcss.parse(await readFile(resolve(root, 'src/styles/atlas.css'), 'utf8')).walkRules(rule => {
+postcss.parse(await readFile(resolve(root, 'src/styles/genux.css'), 'utf8')).walkRules(rule => {
   if (rule.selector === ':root' || rule.selector === '.btx,.shadow-swatch')
     rule.walkDecls(decl => {
       if (decl.prop.startsWith('--shadow-')) shadowTokens.set(decl.prop, decl.value);
@@ -44,17 +44,17 @@ postcss.parse(await readFile(resolve(root, 'src/styles/atlas.css'), 'utf8')).wal
 });
 await mkdir(resolve(root, 'docs/src/styles'), { recursive: true });
 await writeFile(
-  resolve(root, 'docs/src/styles/atlas-shadows.css'),
+  resolve(root, 'docs/src/styles/genux-shadows.css'),
   await format(
     ':root {\n' +
       [...shadowTokens].map(([name, value]) => `  ${name}: ${value};`).join('\n') +
       '\n}\n',
-    { ...(await resolveConfig(resolve(root, 'docs/src/styles/atlas-shadows.css'))), parser: 'css' },
+    { ...(await resolveConfig(resolve(root, 'docs/src/styles/genux-shadows.css'))), parser: 'css' },
   ),
 );
 const motion = JSON.parse(await readFile(resolve(dir, 'motion.json'), 'utf8'));
 await writeFile(
-  resolve(root, 'docs/src/styles/atlas-motion.css'),
+  resolve(root, 'docs/src/styles/genux-motion.css'),
   await format(
     ':root {\n' +
       `  --motion-easing: ${motion.easing};\n` +
@@ -62,7 +62,7 @@ await writeFile(
         .map(([name, value]) => `  --motion-duration-${name}: ${value}ms;`)
         .join('\n') +
       `\n  --motion-delay: ${motion.delayMs}ms;\n}\n`,
-    { ...(await resolveConfig(resolve(root, 'docs/src/styles/atlas-motion.css'))), parser: 'css' },
+    { ...(await resolveConfig(resolve(root, 'docs/src/styles/genux-motion.css'))), parser: 'css' },
   ),
 );
-console.log('Documentation data derived from the canonical atlas model.');
+console.log('Documentation data derived from the canonical genux model.');

@@ -9,18 +9,18 @@ import {
   type ReactNode,
 } from 'react';
 import { Select, Switch } from 'antd';
-import AtlasProvider from './AtlasProvider';
+import GenUXProvider from './GenUXProvider';
 import ExamplePreview from './ExamplePreview';
-import AtlasButton from './AtlasButton';
-import { Modal } from './AtlasOverlay';
-import { TweakerSettings } from './AtlasTweaker';
-import { useAtlasSize } from './AtlasSizeProfile';
+import GenUXButton from './GenUXButton';
+import { Modal } from './GenUXOverlay';
+import { TweakerSettings } from './GenUXTweaker';
+import { useGenUXSize } from './GenUXSizeProfile';
 import { useI18n } from './useI18n';
 import { EntityCard, MetricCard, PurposeCard } from './cards';
-import type { CardRadius } from './cards/AtlasCard';
+import type { CardRadius } from './cards/GenUXCard';
 import {
   CARD_PURPOSES,
-  type AtlasCardModel,
+  type GenUXCardModel,
   type CardDataState,
   type CardPurpose,
 } from '../data/card-model';
@@ -39,23 +39,23 @@ const loadStylesheet = (href: string) => {
     link.onerror = () => {
       labStylesheets.delete(href);
       link.remove();
-      reject(new Error(`GenUI lab stylesheet failed to load: ${href}`));
+      reject(new Error(`GenUX lab stylesheet failed to load: ${href}`));
     };
   });
   labStylesheets.set(href, loaded);
   document.head.append(link);
   return loaded;
 };
-const loadGenUICardLab = async () => {
+const loadGenUXCardLab = async () => {
   const [lab, labStyles, runtimeStyles] = await Promise.all([
-    import('./genui/GenUICardLab'),
-    import('../styles/genui-card-lab.css?url'),
-    import('../styles/genui-runtime.css?url'),
+    import('./genux/GenUXCardLab'),
+    import('../styles/genux-card-lab.css?url'),
+    import('../styles/genux-runtime.css?url'),
   ]);
   await Promise.all([loadStylesheet(labStyles.default), loadStylesheet(runtimeStyles.default)]);
   return lab;
 };
-const LazyGenUICardLab = lazy(loadGenUICardLab);
+const LazyGenUXCardLab = lazy(loadGenUXCardLab);
 const purposes: Record<CardPurpose, string> = {
   entity: 'Entity',
   metric: 'Metric',
@@ -83,15 +83,15 @@ const purposes: Record<CardPurpose, string> = {
 };
 const source = {
   label: 'Local documentation fixture',
-  sourceId: 'atlas-card-demo',
+  sourceId: 'genux-card-demo',
   observedAt: '2026-10-14T09:00:00Z',
   mode: 'recorded',
 } as const;
-const entity: AtlasCardModel = {
-  id: 'atlas-studio',
+const entity: GenUXCardModel = {
+  id: 'genux-studio',
   kind: 'entity',
   eyebrow: 'Team workspace',
-  title: 'Atlas Studio',
+  title: 'GenUX Studio',
   description: 'A shared place for plans, decisions and the work that follows.',
   status: { label: 'Active', tone: 'success' },
   media: { kind: 'monogram', label: 'AT' },
@@ -107,7 +107,7 @@ const entity: AtlasCardModel = {
     body: 'Plans, decisions and a shared note for the next team review.',
   },
 };
-const metric: AtlasCardModel = {
+const metric: GenUXCardModel = {
   id: 'open-work',
   kind: 'metric',
   title: 'Open work',
@@ -126,14 +126,14 @@ const metric: AtlasCardModel = {
     body: '24 tasks remain in this local example, 6 fewer than last week.',
   },
 };
-const selection: AtlasCardModel = {
+const selection: GenUXCardModel = {
   id: 'selection-design',
   kind: 'selection',
   title: 'Design review',
   description: 'Include this review in the local workset.',
   selection: { mode: 'multiple', selected: false, group: 'card-review-workset' },
 };
-const task: AtlasCardModel = {
+const task: GenUXCardModel = {
   id: 'task-review',
   kind: 'task',
   title: 'Prepare the workspace review',
@@ -141,7 +141,7 @@ const task: AtlasCardModel = {
   task: { lane: 'planned', priority: 'normal', completed: 1, total: 3 },
   primaryAction: { id: 'inspect', label: 'View task details', intent: 'inspect' },
 };
-const form: AtlasCardModel = {
+const form: GenUXCardModel = {
   id: 'form-review',
   kind: 'form',
   title: 'Review draft',
@@ -188,7 +188,7 @@ class LabBoundary extends Component<
     return this.state.failed ? (
       <div role="alert">
         <p>{this.props.message}</p>
-        <AtlasButton text={this.props.retryLabel} onClick={this.props.onRetry} />
+        <GenUXButton text={this.props.retryLabel} onClick={this.props.onRetry} />
       </div>
     ) : (
       this.props.children
@@ -199,7 +199,7 @@ class LabBoundary extends Component<
 function CardExamples({ documentation }: { documentation: boolean }) {
   const { t } = useI18n();
   const id = useId();
-  const profile = useAtlasSize();
+  const profile = useGenUXSize();
   // 'inherit' leaves the corner to the general radius role until a local corner is chosen.
   const [radius, setRadius] = useState<CardRadius | 'inherit'>('inherit');
   const [outlined, setOutlined] = useState(false);
@@ -210,17 +210,17 @@ function CardExamples({ documentation }: { documentation: boolean }) {
   const [category, setCategory] = useState('all');
   const [purpose, setPurpose] = useState<CardPurpose | 'all'>('all');
   const [recipeId, setRecipeId] = useState(CARD_RECIPES[0].id);
-  const [overrides, setOverrides] = useState<Record<string, Partial<AtlasCardModel>>>({});
+  const [overrides, setOverrides] = useState<Record<string, Partial<GenUXCardModel>>>({});
   const [selected, setSelected] = useState(false);
   const [taskLane, setTaskLane] = useState<(typeof lanes)[number]>('planned');
   const [draft, setDraft] = useState('Workspace review');
   const [savedDraft, setSavedDraft] = useState<string | null>(null);
   const [draftError, setDraftError] = useState(false);
-  const [detail, setDetail] = useState<AtlasCardModel | null>(null);
+  const [detail, setDetail] = useState<GenUXCardModel | null>(null);
   const [feedback, setFeedback] = useState('Actions update this preview locally.');
   const [labOpen, setLabOpen] = useState(false);
   const [labLoaded, setLabLoaded] = useState(false);
-  const [Lab, setLab] = useState(() => LazyGenUICardLab);
+  const [Lab, setLab] = useState(() => LazyGenUXCardLab);
   const [labRevision, setLabRevision] = useState(0);
   const board = useRef<HTMLDivElement>(null);
   const pointer = useRef<number | null>(null);
@@ -233,9 +233,9 @@ function CardExamples({ documentation }: { documentation: boolean }) {
   );
   const chosen = filtered.find(recipe => recipe.id === recipeId) ?? filtered[0];
   const chosenModel = chosen ? { ...chosen.model, ...overrides[chosen.model.id] } : null;
-  const changeModel = (model: AtlasCardModel, patch: Partial<AtlasCardModel>) =>
+  const changeModel = (model: GenUXCardModel, patch: Partial<GenUXCardModel>) =>
     setOverrides(current => ({ ...current, [model.id]: { ...current[model.id], ...patch } }));
-  const inspect = (_action: unknown, model: AtlasCardModel) => {
+  const inspect = (_action: unknown, model: GenUXCardModel) => {
     setDetail(model);
     setFeedback(t('Opened local details for {title}.', { title: t(model.title) }));
   };
@@ -301,7 +301,7 @@ function CardExamples({ documentation }: { documentation: boolean }) {
       id: 'catalog',
       title: 'Purpose and domain catalog',
       description:
-        'Choose a purpose or a domain, then inspect one recipe. All recipes share the same serializable model and trusted Atlas renderer.',
+        'Choose a purpose or a domain, then inspect one recipe. All recipes share the same serializable model and trusted GenUX renderer.',
       content: (
         <ExamplePreview id="card-purpose-catalog" title={t('Purpose and domain catalog')}>
           <div className="card-recipe-pickers">
@@ -402,7 +402,7 @@ function CardExamples({ documentation }: { documentation: boolean }) {
                     <h5>{t(laneLabels[lane])}</h5>
                     {taskLane === lane ? (
                       <div className="card-task-item">
-                        <AtlasButton
+                        <GenUXButton
                           text={t('Drag task')}
                           fill="text"
                           aria-label={t('Drag review task')}
@@ -501,22 +501,22 @@ function CardExamples({ documentation }: { documentation: boolean }) {
       ),
     },
     {
-      id: 'genui',
-      title: 'GenUI lab',
+      id: 'genux',
+      title: 'GenUX lab',
       description:
         'Validated intents can generate any card purpose or a task workspace; generation mode is independent from purpose. Open the lab to load the optional Ant Design X Hybrid UI, X Cards and X SDK examples.',
       content: (
-        <ExamplePreview id="card-genui-lab" title={t('GenUI lab')}>
-          <div className="card-genui-intro">
+        <ExamplePreview id="card-genux-lab" title={t('GenUX lab')}>
+          <div className="card-genux-intro">
             <p>
               {t(
-                'The basic catalog renders without loading the GenUI packages. The lab uses explicit local examples and host-controlled actions.',
+                'The basic catalog renders without loading the GenUX packages. The lab uses explicit local examples and host-controlled actions.',
               )}
             </p>
-            <AtlasButton
-              text={t(labOpen ? 'Close GenUI lab' : 'Open GenUI lab')}
+            <GenUXButton
+              text={t(labOpen ? 'Close GenUX lab' : 'Open GenUX lab')}
               aria-expanded={labOpen}
-              aria-controls={`${id}-genui-lab`}
+              aria-controls={`${id}-genux-lab`}
               onClick={() => {
                 setLabOpen(value => !value);
                 setLabLoaded(true);
@@ -524,8 +524,8 @@ function CardExamples({ documentation }: { documentation: boolean }) {
             />
           </div>
           <div
-            id={`${id}-genui-lab`}
-            className="card-genui-disclosure"
+            id={`${id}-genux-lab`}
+            className="card-genux-disclosure"
             data-open={labOpen}
             inert={!labOpen}
             aria-hidden={!labOpen}
@@ -534,14 +534,14 @@ function CardExamples({ documentation }: { documentation: boolean }) {
               {labLoaded && (
                 <LabBoundary
                   key={labRevision}
-                  message={t('The GenUI lab could not load. The card catalog remains available.')}
-                  retryLabel={t('Retry GenUI lab')}
+                  message={t('The GenUX lab could not load. The card catalog remains available.')}
+                  retryLabel={t('Retry GenUX lab')}
                   onRetry={() => {
-                    setLab(() => lazy(loadGenUICardLab));
+                    setLab(() => lazy(loadGenUXCardLab));
                     setLabRevision(value => value + 1);
                   }}
                 >
-                  <Suspense fallback={<p role="status">{t('Loading the optional GenUI lab…')}</p>}>
+                  <Suspense fallback={<p role="status">{t('Loading the optional GenUX lab…')}</p>}>
                     <Lab />
                   </Suspense>
                 </LabBoundary>
@@ -650,7 +650,7 @@ function CardExamples({ documentation }: { documentation: boolean }) {
         open={detail !== null}
         title={detail ? t(detail.details?.heading ?? detail.title) : undefined}
         onCancel={() => setDetail(null)}
-        footer={<AtlasButton text={t('Done')} onClick={() => setDetail(null)} />}
+        footer={<GenUXButton text={t('Done')} onClick={() => setDetail(null)} />}
       >
         <div className="card-detail-content" data-card-details-id={detail?.id}>
           {detail && (
@@ -698,8 +698,8 @@ function CardExamples({ documentation }: { documentation: boolean }) {
 }
 export default function CardDemo({ documentation = false }: { documentation?: boolean } = {}) {
   return (
-    <AtlasProvider appearance={documentation ? 'docs' : undefined}>
+    <GenUXProvider appearance={documentation ? 'docs' : undefined}>
       <CardExamples documentation={documentation} />
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }

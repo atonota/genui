@@ -9,7 +9,7 @@ const entry = 'docs/src/react/cards/index.ts';
 const model = (kind = 'entity', extra = {}) => ({
   id: 'record-1',
   kind,
-  title: 'Atlas Studio',
+  title: 'GenUX Studio',
   description: 'A shared workspace.',
   primaryAction: { id: 'inspect-1', label: 'Open workspace', intent: 'inspect' },
   ...extra,
@@ -57,13 +57,13 @@ test('EntityCard has one named native surface and one host-owned primary action'
   });
   t.after(() => h.dispose());
   const card = h.document.querySelector(
-    'article[data-atlas-card], [role="article"][data-atlas-card]',
+    'article[data-genux-card], [role="article"][data-genux-card]',
   );
   assert.ok(card?.classList.contains('ant-card'));
   assert.equal(card.classList.contains('ant-card-bordered'), false);
   assert.equal(
     h.document.getElementById(card.getAttribute('aria-labelledby')).textContent,
-    'Atlas Studio',
+    'GenUX Studio',
   );
   assert.equal(card.querySelector('dd').textContent, '0', 'zero is an actual value');
   assert.equal(card.querySelectorAll('[data-card-primary]').length, 1);
@@ -103,13 +103,13 @@ test('an explicit status palette index takes priority over semantic tone while t
   const path = new URL(fixture, import.meta.url);
   await writeFile(
     path,
-    `import {PurposeCard} from '../src/react/cards/index'; import {AtlasAppearanceContext} from '../src/react/AtlasAppearance'; export default function Palette(){ return <AtlasAppearanceContext.Provider value="docs"><PurposeCard model={{id:'indexed',kind:'entity',title:'Indexed status',status:{label:'Draft',tone:'success',colorIndex:0}}}/><PurposeCard model={{id:'semantic',kind:'entity',title:'Semantic status',status:{label:'Needs review',tone:'warning'}}}/></AtlasAppearanceContext.Provider>; }`,
+    `import {PurposeCard} from '../src/react/cards/index'; import {GenUXAppearanceContext} from '../src/react/GenUXAppearance'; export default function Palette(){ return <GenUXAppearanceContext.Provider value="docs"><PurposeCard model={{id:'indexed',kind:'entity',title:'Indexed status',status:{label:'Draft',tone:'success',colorIndex:0}}}/><PurposeCard model={{id:'semantic',kind:'entity',title:'Semantic status',status:{label:'Needs review',tone:'warning'}}}/></GenUXAppearanceContext.Provider>; }`,
   );
   t.after(() => unlink(path));
   const h = await mountPattern('default', 'docs/tests/' + fixture);
   t.after(() => h.dispose());
-  const indexed = h.document.querySelector('[data-card-id="indexed"] .atlas-pill');
-  const semantic = h.document.querySelector('[data-card-id="semantic"] .atlas-pill');
+  const indexed = h.document.querySelector('[data-card-id="indexed"] .genux-pill');
+  const semantic = h.document.querySelector('[data-card-id="semantic"] .genux-pill');
   assert.equal(indexed.dataset.pillColor, 'red');
   assert.equal(
     indexed.classList.contains('ant-tag-success'),
@@ -132,7 +132,7 @@ test('selection, movement and fields remain controlled and report exactly one im
     model: model('selection', {
       selection: { mode: 'multiple', selected: false, group: 'plan' },
       task: { lane: 'planned', priority: 'high', completed: 3, total: 5 },
-      fields: [{ key: 'name', label: 'Workspace name', value: 'Atlas' }],
+      fields: [{ key: 'name', label: 'Workspace name', value: 'GenUX' }],
     }),
     onSelectionChange: value => selected.push(value),
     onMove: value => moved.push(value),
@@ -150,7 +150,7 @@ test('selection, movement and fields remain controlled and report exactly one im
   await h.type(field, 'New draft');
   assert.equal(edited.length, 1);
   assert.deepEqual(edited[0].slice(0, 2), ['name', 'New draft']);
-  assert.equal(field.value, 'Atlas', 'consumer owns the draft');
+  assert.equal(field.value, 'GenUX', 'consumer owns the draft');
 });
 
 test('loading Cards block all mutations while retaining their controls', async t => {
@@ -158,7 +158,7 @@ test('loading Cards block all mutations while retaining their controls', async t
   const h = await mountPattern('PurposeCard', entry, {
     model: model('form', {
       state: 'loading',
-      fields: [{ key: 'name', label: 'Workspace name', value: 'Atlas' }],
+      fields: [{ key: 'name', label: 'Workspace name', value: 'GenUX' }],
       selection: { mode: 'single', selected: true, group: 'plan' },
       task: { lane: 'active', priority: 'normal', completed: 1, total: 3 },
     }),
@@ -168,7 +168,7 @@ test('loading Cards block all mutations while retaining their controls', async t
     onFieldChange: () => calls++,
   });
   t.after(() => h.dispose());
-  assert.equal(h.document.querySelector('[data-atlas-card]').getAttribute('aria-busy'), 'true');
+  assert.equal(h.document.querySelector('[data-genux-card]').getAttribute('aria-busy'), 'true');
   assert.ok(h.document.querySelector('input[type="text"]'));
   for (const control of h.document.querySelectorAll('button, input'))
     assert.equal(control.disabled, true);
@@ -187,7 +187,7 @@ test('single selection uses a controlled native Radio and reports one selection'
   t.after(() => h.dispose());
   const radio = h.document.querySelector('input[type="radio"]');
   assert.equal(radio.name, 'workspace-plan');
-  assert.equal(radio.getAttribute('aria-label'), 'Select Atlas Studio (record-1)');
+  assert.equal(radio.getAttribute('aria-label'), 'Select GenUX Studio (record-1)');
   assert.equal(radio.closest('label').textContent.trim(), 'Select');
   await h.click(radio);
   assert.deepEqual(calls, [true]);
@@ -205,7 +205,7 @@ test('disabled Cards expose their state and preserve read-only information witho
     onAction: () => calls++,
   });
   t.after(() => h.dispose());
-  const card = h.document.querySelector('[data-atlas-card]');
+  const card = h.document.querySelector('[data-genux-card]');
   assert.equal(card.getAttribute('aria-disabled'), 'true');
   assert.match(card.querySelector('[role="status"]').textContent, /archived/);
   assert.equal(card.querySelector('dd').textContent, '$0.00');
@@ -218,7 +218,7 @@ test('nested primitives reject the second native Card and keep the outer title r
   const path = new URL(fixture, import.meta.url);
   await writeFile(
     path,
-    `import {AtlasCard} from '../src/react/cards/index'; export default function Nested(){ return <AtlasCard title="Outer"><AtlasCard title="Inner">Hidden nested payload</AtlasCard></AtlasCard>; }`,
+    `import {GenUXCard} from '../src/react/cards/index'; export default function Nested(){ return <GenUXCard title="Outer"><GenUXCard title="Inner">Hidden nested payload</GenUXCard></GenUXCard>; }`,
   );
   t.after(() => unlink(path));
   const h = await mountPattern('default', 'docs/tests/' + fixture);
@@ -280,14 +280,14 @@ test('a task workspace accepts native tables and several trusted actions within 
   const path = new URL(fixture, import.meta.url);
   await writeFile(
     path,
-    `import {AtlasCard} from '../src/react/cards/index'; import {Table,Button} from 'antd'; export default function Task(){ return <AtlasCard title="Compare suppliers" body={<Table pagination={false} rowKey="id" dataSource={[{id:'one',name:'Aster',price:120}]} columns={[{title:'Supplier',dataIndex:'name'},{title:'Price',dataIndex:'price'}]}/>} actions={<><Button>Review selection</Button><Button>Cancel</Button></>}/>; }`,
+    `import {GenUXCard} from '../src/react/cards/index'; import {Table,Button} from 'antd'; export default function Task(){ return <GenUXCard title="Compare suppliers" body={<Table pagination={false} rowKey="id" dataSource={[{id:'one',name:'Aster',price:120}]} columns={[{title:'Supplier',dataIndex:'name'},{title:'Price',dataIndex:'price'}]}/>} actions={<><Button>Review selection</Button><Button>Cancel</Button></>}/>; }`,
   );
   t.after(() => unlink(path));
   const h = await mountPattern('default', 'docs/tests/' + fixture);
   t.after(() => h.dispose());
   assert.equal(h.document.querySelectorAll('.ant-card').length, 1);
   assert.equal(h.document.querySelectorAll('table tbody tr').length, 1);
-  assert.equal(h.document.querySelectorAll('.atlas-card-actions button').length, 2);
+  assert.equal(h.document.querySelectorAll('.genux-card-actions button').length, 2);
   assert.match(h.document.querySelector('h4').textContent, /Compare suppliers/);
 });
 
@@ -358,7 +358,7 @@ test('read-only fields remain selectable and reject a dispatched edit without a 
   const input = h.document.querySelector('input[type="text"]');
   assert.equal(input.readOnly, true);
   assert.equal(input.disabled, false);
-  assert.ok(input.closest('.ant-input-affix-wrapper').querySelector('.atlas-icon'));
+  assert.ok(input.closest('.ant-input-affix-wrapper').querySelector('.genux-icon'));
   await h.type(input, 'Bypass');
   assert.equal(calls, 0);
   assert.match(
@@ -390,14 +390,14 @@ test('field errors associate native invalid controls with unique helpers and ret
     onFieldChange: () => {},
   });
   t.after(() => h.dispose());
-  const inputs = [...h.document.querySelectorAll('.atlas-card-fields input')];
+  const inputs = [...h.document.querySelectorAll('.genux-card-fields input')];
   const errorIds = [];
   for (const input of inputs) {
     assert.equal(input.getAttribute('aria-invalid'), 'true');
     const helperIds = input.getAttribute('aria-describedby').split(/\s+/);
     const error = helperIds
       .map(id => h.document.getElementById(id))
-      .find(node => node?.classList.contains('atlas-card-field-error'));
+      .find(node => node?.classList.contains('genux-card-field-error'));
     assert.ok(error?.textContent);
     assert.equal(error.getAttribute('role'), 'alert');
     assert.ok(
@@ -417,12 +417,12 @@ test('adding and clearing validation errors preserves exact field nodes and owne
   const path = new URL(fixture, import.meta.url);
   await writeFile(
     path,
-    `import {useState} from 'react'; import {PurposeCard} from '../src/react/cards/index'; export default function Validation(){ const [error,setError]=useState(false); const [value,setValue]=useState('Atlas draft'); return <><button id="validate" onClick={()=>setError(current=>!current)}>Validate fields</button><PurposeCard model={{id:'validation',kind:'form',title:'Workspace settings',fields:[{key:'name',label:'Workspace name',value,error:error?'Enter a workspace name.':undefined},{key:'code',label:'Workspace code',value:'AT-01',readOnly:true,error:error?'This workspace code needs review.':undefined}]}} onFieldChange={(_,next)=>setValue(next)}/></>; }`,
+    `import {useState} from 'react'; import {PurposeCard} from '../src/react/cards/index'; export default function Validation(){ const [error,setError]=useState(false); const [value,setValue]=useState('GenUX draft'); return <><button id="validate" onClick={()=>setError(current=>!current)}>Validate fields</button><PurposeCard model={{id:'validation',kind:'form',title:'Workspace settings',fields:[{key:'name',label:'Workspace name',value,error:error?'Enter a workspace name.':undefined},{key:'code',label:'Workspace code',value:'AT-01',readOnly:true,error:error?'This workspace code needs review.':undefined}]}} onFieldChange={(_,next)=>setValue(next)}/></>; }`,
   );
   t.after(() => unlink(path));
   const h = await mountPattern('default', 'docs/tests/' + fixture);
   t.after(() => h.dispose());
-  const [editable, readonly] = [...h.document.querySelectorAll('.atlas-card-fields input')];
+  const [editable, readonly] = [...h.document.querySelectorAll('.genux-card-fields input')];
   await h.type(editable, 'Keep this draft');
   await h.act(() => {
     editable.focus();
@@ -430,7 +430,7 @@ test('adding and clearing validation errors preserves exact field nodes and owne
   });
   await h.click(h.document.getElementById('validate'));
   assert.deepEqual(
-    [...h.document.querySelectorAll('.atlas-card-fields input')],
+    [...h.document.querySelectorAll('.genux-card-fields input')],
     [editable, readonly],
   );
   assert.equal(editable.value, 'Keep this draft');
@@ -439,13 +439,13 @@ test('adding and clearing validation errors preserves exact field nodes and owne
   assert.equal(readonly.disabled, false);
   await h.click(h.document.getElementById('validate'));
   assert.deepEqual(
-    [...h.document.querySelectorAll('.atlas-card-fields input')],
+    [...h.document.querySelectorAll('.genux-card-fields input')],
     [editable, readonly],
   );
   assert.equal(editable.getAttribute('aria-invalid'), null);
   assert.equal(editable.getAttribute('aria-describedby'), null);
   assert.equal(readonly.getAttribute('aria-describedby').split(/\s+/).length, 1);
-  assert.equal(h.document.querySelectorAll('.atlas-card-field-error').length, 0);
+  assert.equal(h.document.querySelectorAll('.genux-card-field-error').length, 0);
 });
 
 test('size, language and loading changes preserve controlled drafts, focused nodes and expansion', async t => {
@@ -453,12 +453,12 @@ test('size, language and loading changes preserve controlled drafts, focused nod
   const path = new URL(fixture, import.meta.url);
   await writeFile(
     path,
-    `import {useState} from 'react'; import {PurposeCard} from '../src/react/cards/index'; import AtlasProvider from '../src/react/AtlasProvider'; import {AtlasSizeContext} from '../src/react/AtlasSizeProfile'; export default function Stable(){ const [size,setSize]=useState('md'); const [value,setValue]=useState('Initial draft'); const [loading,setLoading]=useState(false); return <AtlasProvider appearance="docs"><button id="large" onClick={()=>setSize('lg')}>Large profile</button><button id="small" onClick={()=>setSize('sm')}>Small profile</button><button id="loading" onClick={()=>setLoading(v=>!v)}>Toggle loading</button><AtlasSizeContext.Provider value={size}><PurposeCard model={{id:'stable',kind:'form',title:'Workspace settings',state:loading?'loading':'ready',fields:[{key:'name',label:'Workspace name',value}],details:{heading:'Evidence and limitations',body:'A persistent explanation.'}}} onFieldChange={(_,next)=>setValue(next)}/></AtlasSizeContext.Provider></AtlasProvider>; }`,
+    `import {useState} from 'react'; import {PurposeCard} from '../src/react/cards/index'; import GenUXProvider from '../src/react/GenUXProvider'; import {GenUXSizeContext} from '../src/react/GenUXSizeProfile'; export default function Stable(){ const [size,setSize]=useState('md'); const [value,setValue]=useState('Initial draft'); const [loading,setLoading]=useState(false); return <GenUXProvider appearance="docs"><button id="large" onClick={()=>setSize('lg')}>Large profile</button><button id="small" onClick={()=>setSize('sm')}>Small profile</button><button id="loading" onClick={()=>setLoading(v=>!v)}>Toggle loading</button><GenUXSizeContext.Provider value={size}><PurposeCard model={{id:'stable',kind:'form',title:'Workspace settings',state:loading?'loading':'ready',fields:[{key:'name',label:'Workspace name',value}],details:{heading:'Evidence and limitations',body:'A persistent explanation.'}}} onFieldChange={(_,next)=>setValue(next)}/></GenUXSizeContext.Provider></GenUXProvider>; }`,
   );
   t.after(() => unlink(path));
   const h = await mountPattern('default', 'docs/tests/' + fixture);
   t.after(() => h.dispose());
-  const input = h.document.querySelector('.atlas-card-fields input');
+  const input = h.document.querySelector('.genux-card-fields input');
   await h.type(input, 'Keep this draft');
   const expand = h.document.querySelector('button[aria-controls][aria-expanded]');
   await h.click(expand);
@@ -469,16 +469,16 @@ test('size, language and loading changes preserve controlled drafts, focused nod
     input.setSelectionRange(2, 5);
   });
   await h.click(h.document.getElementById('large'));
-  assert.equal(h.document.querySelector('[data-atlas-card]').dataset.cardProfile, 'lg');
+  assert.equal(h.document.querySelector('[data-genux-card]').dataset.cardProfile, 'lg');
   assert.equal(input.value, 'Keep this draft');
   assert.equal(h.document.activeElement, input);
   assert.equal(input.selectionStart, 2);
   await h.act(() => h.setLocale('tr'));
   await h.click(h.document.getElementById('small'));
-  assert.equal(h.document.querySelector('[data-atlas-card]').dataset.cardProfile, 'sm');
-  assert.ok(h.document.querySelector('[data-atlas-card]').classList.contains('ant-card-small'));
+  assert.equal(h.document.querySelector('[data-genux-card]').dataset.cardProfile, 'sm');
+  assert.ok(h.document.querySelector('[data-genux-card]').classList.contains('ant-card-small'));
   await h.click(h.document.getElementById('loading'));
-  assert.equal(h.document.querySelector('.atlas-card-fields input'), input);
+  assert.equal(h.document.querySelector('.genux-card-fields input'), input);
   assert.equal(input.value, 'Keep this draft');
   assert.equal(input.disabled, true);
   await h.click(h.document.getElementById('loading'));
@@ -516,7 +516,7 @@ test('all domain recipes render as independent named Cards with unique field and
   const h = await mountPattern('default', 'docs/tests/' + fixture);
   t.after(() => h.dispose());
   const { CARD_RECIPES } = await importData('../src/data/card-recipes.ts');
-  const cards = [...h.document.querySelectorAll('[data-atlas-card]')];
+  const cards = [...h.document.querySelectorAll('[data-genux-card]')];
   assert.equal(cards.length, CARD_RECIPES.length);
   assert.equal(h.document.querySelectorAll('.ant-card .ant-card').length, 0);
   assert.equal(new Set(cards.map(card => card.getAttribute('aria-labelledby'))).size, cards.length);

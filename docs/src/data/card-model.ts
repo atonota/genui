@@ -86,7 +86,7 @@ export interface CardField {
   readOnly?: boolean;
   error?: string;
 }
-export interface AtlasCardModel {
+export interface GenUXCardModel {
   id: string;
   kind: CardPurpose;
   title: string;
@@ -118,9 +118,9 @@ export interface AtlasCardModel {
   connection?: 'available' | 'connected' | 'unavailable';
   details?: { heading: string; body: string };
 }
-export interface AtlasCardCallbacks {
-  onAction?: (action: CardAction, model: AtlasCardModel) => void;
-  onSelectionChange?: (selected: boolean, model: AtlasCardModel) => void;
-  onMove?: (lane: NonNullable<AtlasCardModel['task']>['lane'], model: AtlasCardModel) => void;
-  onFieldChange?: (key: string, value: string, model: AtlasCardModel) => void;
+export interface GenUXCardCallbacks {
+  onAction?: (action: CardAction, model: GenUXCardModel) => void;
+  onSelectionChange?: (selected: boolean, model: GenUXCardModel) => void;
+  onMove?: (lane: NonNullable<GenUXCardModel['task']>['lane'], model: GenUXCardModel) => void;
+  onFieldChange?: (key: string, value: string, model: GenUXCardModel) => void;
 }

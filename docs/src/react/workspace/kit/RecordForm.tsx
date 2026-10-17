@@ -8,7 +8,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import AtlasButton from '../../AtlasButton';
+import GenUXButton from '../../GenUXButton';
 import { useI18n } from '../../useI18n';
 import { FieldEditor } from './Fields';
 import {
@@ -54,7 +54,7 @@ export function ErrorSummary({
           return (
             <li key={key}>
               {label ? (
-                <AtlasButton
+                <GenUXButton
                   fill="text"
                   text={t('Go to {field}', { field: t(label) })}
                   onClick={() => onReveal(key)}
@@ -107,7 +107,7 @@ export function SectionNavigator({
       aria-label={t(label)}
     >
       {sections.map((section, index) => (
-        <AtlasButton
+        <GenUXButton
           key={section}
           id={`${prefix}-section-${index}`}
           role={tabs ? 'tab' : undefined}
@@ -438,12 +438,12 @@ export function RecordForm<R extends RecordIdentity>({
           }
           actions={
             <div className="kit-action-row">
-              <AtlasButton
+              <GenUXButton
                 htmlType="submit"
                 disabled={locked}
                 text={t(operation?.kind === 'pending' ? 'Commit pending' : 'Commit draft')}
               />
-              <AtlasButton
+              <GenUXButton
                 fill="text"
                 text={t('Cancel draft')}
                 onClick={() => {
@@ -466,13 +466,13 @@ export function RecordForm<R extends RecordIdentity>({
                 {t('This draft has unsaved changes. Keep editing or explicitly discard the draft.')}
               </p>
               <div className="kit-action-row">
-                <AtlasButton
+                <GenUXButton
                   fill="text"
                   text={t('Keep editing')}
                   onClick={() => setCancelRequested(false)}
                   disabled={outcomeLocked}
                 />
-                <AtlasButton
+                <GenUXButton
                   text={t('Discard draft')}
                   disabled={outcomeLocked}
                   onClick={() => {
@@ -519,7 +519,7 @@ export function RecordForm<R extends RecordIdentity>({
             return (
               <section key={section} className="kit-form-section">
                 {organization === 'accordion' && (
-                  <AtlasButton
+                  <GenUXButton
                     id={`${id}-accordion-${sectionIndex}`}
                     fill="text"
                     aria-expanded={open}
@@ -614,13 +614,13 @@ export function RecordForm<R extends RecordIdentity>({
           })}
           {organization === 'steps' && (
             <div className="kit-action-row">
-              <AtlasButton
+              <GenUXButton
                 fill="text"
                 text={t('Previous section')}
                 disabled={index <= 0}
                 onClick={() => setActive(sections[index - 1]!)}
               />
-              <AtlasButton
+              <GenUXButton
                 fill="text"
                 text={t('Next section')}
                 disabled={index >= sections.length - 1}

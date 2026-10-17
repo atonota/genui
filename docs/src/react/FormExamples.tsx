@@ -2,9 +2,9 @@ import { selectedLabel } from './selectedLabel';
 import { useI18n } from './useI18n';
 import { useEffect, useId, useState } from 'react';
 import { Checkbox, Form, Select, type FormProps } from 'antd';
-import Input from './AtlasInput';
-import AtlasButton from './AtlasButton';
-import { TweakerSettings } from './AtlasTweaker';
+import Input from './GenUXInput';
+import GenUXButton from './GenUXButton';
+import { TweakerSettings } from './GenUXTweaker';
 import DataEntryCatalog from './DataEntryCatalog';
 import ExamplePreview from './ExamplePreview';
 
@@ -62,7 +62,7 @@ export function FormExamples({ documentation = false }: { documentation?: boolea
         </div>
       </TweakerSettings>
       <Form<ProfileValues>
-        className={`atlas-form-demo atlas-form-${layout}`}
+        className={`genux-form-demo genux-form-${layout}`}
         name="profile-example"
         form={form}
         noValidate
@@ -82,8 +82,8 @@ export function FormExamples({ documentation = false }: { documentation?: boolea
         onFinish={values => setResult(values.fullName.trim())}
         preserve
       >
-        <fieldset className="atlas-form-section">
-          <legend className="atlas-form-section-legend">{t('Profile details')}</legend>
+        <fieldset className="genux-form-section">
+          <legend className="genux-form-section-legend">{t('Profile details')}</legend>
           <Form.Item
             label={t('Full name')}
             name="fullName"
@@ -108,8 +108,8 @@ export function FormExamples({ documentation = false }: { documentation?: boolea
             <Input type="email" autoComplete="email" placeholder={t('name@example.com')} />
           </Form.Item>
         </fieldset>
-        <fieldset className="atlas-form-section">
-          <legend className="atlas-form-section-legend">{t('Workspace preferences')}</legend>
+        <fieldset className="genux-form-section">
+          <legend className="genux-form-section-legend">{t('Workspace preferences')}</legend>
           <Form.Item
             label={t('Team')}
             name="team"
@@ -128,8 +128,8 @@ export function FormExamples({ documentation = false }: { documentation?: boolea
         </fieldset>
         <Form.Item>
           <div className="control-row">
-            <AtlasButton text={t('Validate')} htmlType="submit" />
-            <AtlasButton
+            <GenUXButton text={t('Validate')} htmlType="submit" />
+            <GenUXButton
               fill="outline"
               text={t('Reset')}
               onClick={() => {
@@ -159,7 +159,7 @@ export function FormExamples({ documentation = false }: { documentation?: boolea
           {t('Show pending state')}
         </Checkbox>
       </TweakerSettings>
-      <AtlasButton
+      <GenUXButton
         text={pendingPreview ? t('Pending-state example') : t('Disabled example')}
         state={pendingPreview ? 'loading' : 'disabled'}
       />

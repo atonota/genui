@@ -18,7 +18,7 @@ import {
   Switch,
   theme,
 } from 'antd';
-import AtlasProvider from './AtlasProvider';
+import GenUXProvider from './GenUXProvider';
 import { useI18n } from './useI18n';
 import { getThemeSnapshot, subscribeTheme, type ThemeMode } from '../theme';
 import { buttonColorPresets } from '../data/button-palette';
@@ -138,7 +138,7 @@ export default function ThemeBuilder() {
     });
     const components = resolved.components;
     return {
-      cssVar: { key: 'css-var-atlas-theme-preview' },
+      cssVar: { key: 'css-var-genux-theme-preview' },
       algorithm: [baseAlgorithm, exactSeed],
       token: resolved.token,
       components: {
@@ -324,7 +324,7 @@ export default function ThemeBuilder() {
   }
 
   return (
-    <AtlasProvider appearance="docs">
+    <GenUXProvider appearance="docs">
       <div className="theme-builder">
         <p className="theme-builder-mode">
           {mode === 'dark' ? t('Editing dark mode') : t('Editing light mode')}
@@ -504,7 +504,7 @@ export default function ThemeBuilder() {
             ))}
           </dl>
           <h4>{t('Measurement policy')}</h4>
-          <p>{t('Values show the Atlas defaults, not the current draft.')}</p>
+          <p>{t('Values show the GenUX defaults, not the current draft.')}</p>
           <dl>
             {measurementPolicy.map(item => (
               <div key={item.label}>
@@ -534,6 +534,6 @@ export default function ThemeBuilder() {
           </dl>
         </section>
       </div>
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }

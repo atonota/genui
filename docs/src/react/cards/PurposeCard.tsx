@@ -1,21 +1,21 @@
 import { useId, useState } from 'react';
 import { Checkbox, Radio } from 'antd';
-import Input from '../AtlasInput';
-import type { AtlasCardCallbacks, AtlasCardModel, CardMetric } from '../../data/card-model';
+import Input from '../GenUXInput';
+import type { GenUXCardCallbacks, GenUXCardModel, CardMetric } from '../../data/card-model';
 import {
   formatCardBytes,
   formatCardDelta,
   formatCardFact,
   formatCardMetric,
 } from '../../data/card-projection';
-import AtlasButton from '../AtlasButton';
-import AtlasPill from '../AtlasPill';
-import AtlasIcon from '../AtlasIcon';
+import GenUXButton from '../GenUXButton';
+import GenUXPill from '../GenUXPill';
+import GenUXIcon from '../GenUXIcon';
 import { useI18n } from '../useI18n';
-import { AtlasCard, type CardAppearanceProps } from './AtlasCard';
+import { GenUXCard, type CardAppearanceProps } from './GenUXCard';
 
-export interface PurposeCardProps extends AtlasCardCallbacks, CardAppearanceProps {
-  model: AtlasCardModel;
+export interface PurposeCardProps extends GenUXCardCallbacks, CardAppearanceProps {
+  model: GenUXCardModel;
   /** Trusted host DOM identity for returning focus from a separate inspector. */
   primaryActionId?: string;
 }
@@ -28,17 +28,17 @@ function MetricValue({ metric }: { metric: CardMetric }) {
     neutral: 'Neutral change',
   };
   return (
-    <div className="atlas-card-metric">
-      <p className="atlas-card-metric-label">{t(metric.label)}</p>
-      <p className="atlas-card-metric-value" data-card-metric-value>
+    <div className="genux-card-metric">
+      <p className="genux-card-metric-label">{t(metric.label)}</p>
+      <p className="genux-card-metric-value" data-card-metric-value>
         {t(formatCardMetric(metric, locale))}
       </p>
-      <p className="atlas-card-metric-period">{t(metric.period)}</p>
+      <p className="genux-card-metric-period">{t(metric.period)}</p>
       {metric.delta !== undefined && metric.delta !== null && (
-        <p className="atlas-card-delta" data-card-delta-meaning={metric.meaning ?? 'neutral'}>
+        <p className="genux-card-delta" data-card-delta-meaning={metric.meaning ?? 'neutral'}>
           <span>{formatCardDelta(metric.delta, locale)}</span>
           {metric.comparison && <span>{t(metric.comparison)}</span>}
-          <span className="atlas-card-change-meaning">
+          <span className="genux-card-change-meaning">
             {t(meanings[metric.meaning ?? 'neutral'])}
           </span>
         </p>
@@ -52,8 +52,8 @@ function CardDetails({ heading, body }: { heading: string; body: string }) {
   const id = useId();
   const { t } = useI18n();
   return (
-    <div className="atlas-card-details">
-      <AtlasButton
+    <div className="genux-card-details">
+      <GenUXButton
         text={t(heading)}
         fill="text"
         aria-expanded={open}
@@ -62,7 +62,7 @@ function CardDetails({ heading, body }: { heading: string; body: string }) {
       />
       <div
         id={id}
-        className="atlas-card-details-panel"
+        className="genux-card-details-panel"
         data-open={open}
         aria-hidden={!open}
         inert={!open}
@@ -130,7 +130,7 @@ export function PurposeCard({
     )
   ) : undefined;
   return (
-    <AtlasCard
+    <GenUXCard
       {...appearance}
       title={t(model.title)}
       eyebrow={model.eyebrow ? t(model.eyebrow) : undefined}
@@ -146,12 +146,12 @@ export function PurposeCard({
         (model.status || selection) && (
           <>
             {model.status && (
-              <AtlasPill
+              <GenUXPill
                 colorIndex={model.status.colorIndex}
                 color={model.status.colorIndex === undefined ? model.status.tone : undefined}
               >
                 {t(model.status.label)}
-              </AtlasPill>
+              </GenUXPill>
             )}
             {selection}
           </>
@@ -162,7 +162,7 @@ export function PurposeCard({
           <div
             role="img"
             aria-label={t(model.media.label)}
-            className="atlas-card-visual"
+            className="genux-card-visual"
             data-card-media={model.media.kind}
           >
             <span aria-hidden="true">
@@ -171,7 +171,7 @@ export function PurposeCard({
                 : mediaSymbols[model.media.symbol ?? 'document']}
             </span>
             {model.media.kind === 'symbol' && (
-              <span aria-hidden="true" className="atlas-card-visual-caption">
+              <span aria-hidden="true" className="genux-card-visual-caption">
                 {t(model.media.label)}
               </span>
             )}
@@ -182,7 +182,7 @@ export function PurposeCard({
         <>
           {model.metric && <MetricValue metric={model.metric} />}
           {model.metrics && (
-            <ul className="atlas-card-metrics" aria-label={t('Metrics')}>
+            <ul className="genux-card-metrics" aria-label={t('Metrics')}>
               {model.metrics.map(metric => (
                 <li key={metric.id}>
                   <MetricValue metric={metric} />
@@ -191,7 +191,7 @@ export function PurposeCard({
             </ul>
           )}
           {model.facts && (
-            <dl className="atlas-card-facts">
+            <dl className="genux-card-facts">
               {model.facts.map(fact => (
                 <div key={fact.key}>
                   <dt>{t(fact.label)}</dt>
@@ -201,8 +201,8 @@ export function PurposeCard({
             </dl>
           )}
           {model.pricing && (
-            <div className="atlas-card-pricing">
-              <p className="atlas-card-metric-value">
+            <div className="genux-card-pricing">
+              <p className="genux-card-metric-value">
                 {formatCardMetric(
                   {
                     value: model.pricing.amount,
@@ -212,7 +212,7 @@ export function PurposeCard({
                   },
                   locale,
                 )}{' '}
-                <span className="atlas-card-price-interval">{t(model.pricing.interval)}</span>
+                <span className="genux-card-price-interval">{t(model.pricing.interval)}</span>
               </p>
               <ul>
                 {model.pricing.features.map(feature => (
@@ -223,7 +223,7 @@ export function PurposeCard({
           )}
           {model.task && (
             <section
-              className="atlas-card-task"
+              className="genux-card-task"
               aria-label={t('Task progress')}
               data-card-task={model.task.lane}
             >
@@ -243,9 +243,9 @@ export function PurposeCard({
                 max={Math.max(1, model.task.total)}
                 value={Math.min(model.task.completed, model.task.total)}
               />
-              <div className="atlas-card-task-moves">
+              <div className="genux-card-task-moves">
                 {(['planned', 'active', 'done'] as const).map(lane => (
-                  <AtlasButton
+                  <GenUXButton
                     key={lane}
                     fill="text"
                     text={t('Move to {lane}', { lane: t(laneLabels[lane]) })}
@@ -257,12 +257,12 @@ export function PurposeCard({
             </section>
           )}
           {model.items && (
-            <ol className="atlas-card-items">
+            <ol className="genux-card-items">
               {model.items.map(item => (
                 <li key={item.id} data-card-item-state={item.state}>
                   <div>
                     <p>{t(item.title)}</p>
-                    {item.detail && <p className="atlas-card-item-detail">{t(item.detail)}</p>}
+                    {item.detail && <p className="genux-card-item-detail">{t(item.detail)}</p>}
                   </div>
                   {item.state && (
                     <span>
@@ -278,7 +278,7 @@ export function PurposeCard({
             </ol>
           )}
           {model.fields && (
-            <div className="atlas-card-fields" role="group" aria-label={t(model.title)}>
+            <div className="genux-card-fields" role="group" aria-label={t(model.title)}>
               {model.fields.map(field => (
                 <div key={field.key}>
                   <label htmlFor={`${localId}-${field.key}`}>
@@ -306,17 +306,17 @@ export function PurposeCard({
                       if (!blocked && !field.readOnly)
                         onFieldChange?.(field.key, event.target.value, model);
                     }}
-                    suffix={field.readOnly ? <AtlasIcon name="lock-simple" /> : undefined}
+                    suffix={field.readOnly ? <GenUXIcon name="lock-simple" /> : undefined}
                   />
                   {field.readOnly && (
-                    <p id={`${localId}-${field.key}-help`} className="atlas-card-item-detail">
+                    <p id={`${localId}-${field.key}-help`} className="genux-card-item-detail">
                       {t('Read-only. You can select and copy this value.')}
                     </p>
                   )}
                   {field.error && (
                     <p
                       id={`${localId}-${field.key}-error`}
-                      className="atlas-card-field-error"
+                      className="genux-card-field-error"
                       role="alert"
                     >
                       {t(field.error)}
@@ -327,7 +327,7 @@ export function PurposeCard({
             </div>
           )}
           {model.file && (
-            <dl className="atlas-card-facts">
+            <dl className="genux-card-facts">
               <div>
                 <dt>{t('File')}</dt>
                 <dd>{model.file.name}</dd>
@@ -349,7 +349,7 @@ export function PurposeCard({
             </dl>
           )}
           {model.connection && (
-            <p className="atlas-card-connection">
+            <p className="genux-card-connection">
               {t('Connection')}:{' '}
               {t(
                 {
@@ -369,7 +369,7 @@ export function PurposeCard({
           secondary.some(action => action.disabled && action.reason)) && (
           <>
             {model.source && (
-              <div className="atlas-card-source" data-card-source>
+              <div className="genux-card-source" data-card-source>
                 <p>
                   {t('Source')}: {t(model.source.label)}
                 </p>
@@ -396,7 +396,7 @@ export function PurposeCard({
               </div>
             )}
             {primary && actionBlocked && (
-              <p className="atlas-card-action-reason" id={`${localId}-primary-reason`}>
+              <p className="genux-card-action-reason" id={`${localId}-primary-reason`}>
                 {t(
                   primary.reason ??
                     (blocked || model.state === 'error'
@@ -413,7 +413,7 @@ export function PurposeCard({
                 <p
                   key={action.id}
                   id={`${localId}-${action.id}-reason`}
-                  className="atlas-card-action-reason"
+                  className="genux-card-action-reason"
                 >
                   {t(action.reason!)}
                 </p>
@@ -425,7 +425,7 @@ export function PurposeCard({
         (primary || secondary.length > 0) && (
           <>
             {primary && (
-              <AtlasButton
+              <GenUXButton
                 id={primaryActionId}
                 data-card-primary
                 text={t(primary.label)}
@@ -435,7 +435,7 @@ export function PurposeCard({
               />
             )}
             {secondary.map(action => (
-              <AtlasButton
+              <GenUXButton
                 key={action.id}
                 data-card-secondary
                 text={t(action.label)}

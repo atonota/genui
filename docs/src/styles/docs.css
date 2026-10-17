@@ -1,4 +1,4 @@
-@import './atlas-motion.css';
+@import './genux-motion.css';
 
 @font-face {
   font-family: Outfit;
@@ -64,8 +64,8 @@
   --release-duration: var(--motion-duration-feedback);
   --transition-duration: var(--motion-duration-standard);
   --control-transition-properties: background-color, border-color, color, opacity, box-shadow;
-  --atlas-drawer-inline-size: 28rem;
-  --atlas-drawer-block-size: 28rem;
+  --genux-drawer-inline-size: 28rem;
+  --genux-drawer-block-size: 28rem;
   font-family: var(--font-body);
   color: var(--ink);
   color-scheme: light;
@@ -75,7 +75,7 @@
 }
 /* New surfaces inherit eased paint changes; moving layers opt in explicitly. */
 :where(body, body *, body::before, body::after, body *::before, body *::after),
-.atlas-control {
+.genux-control {
   transition-property: var(--control-transition-properties);
   transition-duration: var(--transition-duration);
   transition-timing-function: var(--motion-easing);

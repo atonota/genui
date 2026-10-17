@@ -117,10 +117,10 @@ test('component-owned Pill scope changes new colors without recoloring existing 
       ),
     );
     await h.waitFor(
-      () => owner.querySelectorAll('.atlas-pill[data-pill-color]').length === i + 1,
+      () => owner.querySelectorAll('.genux-pill[data-pill-color]').length === i + 1,
       `component color assigned: ${i}; ${owner.textContent}`,
     );
-    const pills = [...owner.querySelectorAll('.atlas-pill')];
+    const pills = [...owner.querySelectorAll('.genux-pill')];
     const color = pills.at(-1).dataset.pillColor;
     if (i > 0) assert.notEqual(color, colors.at(-1));
     if (i < 17) assert.equal(colors.includes(color), false);
@@ -130,9 +130,9 @@ test('component-owned Pill scope changes new colors without recoloring existing 
       colors,
     );
   }
-  const retained = [...owner.querySelectorAll('.atlas-pill')].at(-1);
-  await h.click(owner.querySelector('.atlas-pill-close'));
-  assert.equal([...owner.querySelectorAll('.atlas-pill')].at(-1), retained);
+  const retained = [...owner.querySelectorAll('.genux-pill')].at(-1);
+  await h.click(owner.querySelector('.genux-pill-close'));
+  assert.equal([...owner.querySelectorAll('.genux-pill')].at(-1), retained);
   assert.equal(retained.dataset.pillColor, colors.at(-1));
   await h.act(() => h.setLocale('tr'));
   assert.equal(retained.dataset.pillColor, colors.at(-1));
@@ -162,36 +162,36 @@ test('automatic Pill colors work without an input and survive theme, size and lo
   const h = await mountPattern('default', 'docs/src/react/PillDemo.tsx', { documentation: true });
   t.after(() => h.dispose());
   const group = h.document.querySelector('[data-pill-automatic]');
-  const initial = [...group.querySelectorAll('.atlas-pill')];
+  const initial = [...group.querySelectorAll('.genux-pill')];
   const colors = initial.map(p => p.dataset.pillColor);
   assert.equal(new Set(colors).size, 3);
   assert.equal(group.querySelectorAll('input').length, 0);
   const add = [...group.querySelectorAll('button')].find(b => b.textContent === 'Add tag');
   await h.click(add);
-  const fourth = [...group.querySelectorAll('.atlas-pill')].at(-1);
+  const fourth = [...group.querySelectorAll('.genux-pill')].at(-1);
   assert.ok(!colors.includes(fourth.dataset.pillColor));
   for (const mode of ['dark', 'light']) {
     await h.act(() => {
       h.document.documentElement.dataset.theme = mode;
-      h.window.dispatchEvent(new h.window.Event('atlas-theme-change'));
+      h.window.dispatchEvent(new h.window.Event('genux-theme-change'));
     });
-    assert.equal(group.querySelector('.atlas-pill'), initial[0]);
+    assert.equal(group.querySelector('.genux-pill'), initial[0]);
     assert.deepEqual(
-      [...group.querySelectorAll('.atlas-pill')].slice(0, 3).map(p => p.dataset.pillColor),
+      [...group.querySelectorAll('.genux-pill')].slice(0, 3).map(p => p.dataset.pillColor),
       colors,
     );
   }
   await h.act(() => h.setLocale('tr'));
-  assert.equal(group.querySelector('.atlas-pill'), initial[0]);
+  assert.equal(group.querySelector('.genux-pill'), initial[0]);
   assert.deepEqual(
-    [...group.querySelectorAll('.atlas-pill')].slice(0, 3).map(p => p.dataset.pillColor),
+    [...group.querySelectorAll('.genux-pill')].slice(0, 3).map(p => p.dataset.pillColor),
     colors,
   );
-  const close = initial[0].querySelector('.atlas-pill-close');
+  const close = initial[0].querySelector('.genux-pill-close');
   await h.act(() => close.focus());
   await h.click(close);
-  assert.equal(h.document.activeElement, initial[1].querySelector('.atlas-pill-close'));
-  assert.equal(group.querySelector('.atlas-pill'), initial[1]);
+  assert.equal(h.document.activeElement, initial[1].querySelector('.genux-pill-close'));
+  assert.equal(group.querySelector('.genux-pill'), initial[1]);
   assert.equal(initial[1].dataset.pillColor, colors[1]);
 });
 

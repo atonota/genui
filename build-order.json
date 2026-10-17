@@ -1,12 +1,13 @@
 {
   "css": [
     "src/styles/fonts.css",
-    "src/styles/atlas.css",
+    "src/styles/genux.css",
     "src/styles/forms.css",
     "src/styles/workspace.css"
   ],
   "js": [
-    "src/atlas/snapshot.js",
+    "src/shared/storage-migration.js",
+    "src/genux/snapshot.js",
     "src/i18n/runtime.js",
     "src/model/decisions.js",
     "src/model/icons.js",
@@ -16,13 +17,13 @@
     "src/shared/core.js",
     "src/button/render.js",
     "src/compat/button.js",
-    "src/atlas/state.js",
-    "src/atlas/navigation.js",
-    "src/atlas/catalog.js",
-    "src/atlas/studio.js",
+    "src/genux/state.js",
+    "src/genux/navigation.js",
+    "src/genux/catalog.js",
+    "src/genux/studio.js",
     "src/shared/readout.js",
-    "src/atlas/collections.js",
-    "src/atlas/export.js",
+    "src/genux/collections.js",
+    "src/genux/export.js",
     "src/vendor/dropdowns.js",
     "src/forms/model.js",
     "src/forms/primitives.js",
@@ -32,7 +33,7 @@
     "src/forms/choices.js",
     "src/forms/controller.js",
     "src/workspace/examples.js",
-    "src/atlas/bootstrap.js"
+    "src/genux/bootstrap.js"
   ],
   "assets": [
     {
@@ -46,7 +47,7 @@
   ],
   "vendor": {
     "path": "src/vendor/dropdowns.js",
-    "sha256": "32d1e34d817d874c32c7e09cdfa5d089c7f5558f95c37460b4c041063d891461"
+    "sha256": "14838a52c4694fb49474c5437f0e65ac75887ace67ab7212e8889c2c769840fb"
   },
-  "baseline_sha256": "08d3bf8b41bf49c8e3c1a09a6be5e32d3dec3bb5772f17ae12bc04cda33e6470"
+  "baseline_sha256": "6c237808c0a86c6ecb4ff7bf5c5f0d054e2478583f6725c1167031a9117fc51f"
 }

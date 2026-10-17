@@ -1,8 +1,8 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
-const origin = process.env.ATLAS_DOCS_URL ?? 'http://127.0.0.1:4324';
+const origin = process.env.GENUX_DOCS_URL ?? 'http://127.0.0.1:4324';
 // RED and GREEN runs keep separate evidence; the conductor supplies the stage label.
-const stage = (process.env.ATLAS_TDD_STAGE ?? 'unlabelled').replace(/[^a-z0-9-]/gi, '-');
+const stage = (process.env.GENUX_TDD_STAGE ?? 'unlabelled').replace(/[^a-z0-9-]/gi, '-');
 const sizes = ['sm', 'md', 'lg'] as const;
 type Size = (typeof sizes)[number];
 const regular: Record<Size, number> = { sm: 48, md: 56, lg: 64 };
@@ -43,8 +43,8 @@ const surfaces: Surface[] = [
     family: regular,
     fit: 'exact',
     // ButtonDemo's playground preview inherits the shared size profile; #continue-action exists only in a catalog snippet.
-    island: '.playground-preview .atlas-button',
-    target: inDemo('.playground-preview .atlas-button'),
+    island: '.playground-preview .genux-button',
+    target: inDemo('.playground-preview .genux-button'),
   },
   {
     name: 'Input',
@@ -53,7 +53,7 @@ const surfaces: Surface[] = [
     fit: 'exact',
     // InputDemo names the Workspace name field through Form.Item htmlFor; the outer frame owns the height.
     island: '#input-filled',
-    target: inDemo('.atlas-input-frame:has(#input-filled)'),
+    target: inDemo('.genux-input-frame:has(#input-filled)'),
   },
   // NumberStepper frames its slot buttons and the unframed InputNumber together.
   {
@@ -62,16 +62,16 @@ const surfaces: Surface[] = [
     family: regular,
     fit: 'exact',
     island: '#input-number',
-    target: inDemo('.atlas-number-stepper:has(#input-number)'),
+    target: inDemo('.genux-number-stepper:has(#input-number)'),
   },
   {
     name: 'Avatar',
     route: /^avatars?$/i,
     family: regular,
     fit: 'exact',
-    island: '.atlas-avatar-people',
+    island: '.genux-avatar-people',
     // AvatarDemo passes no size prop, so every listed avatar inherits the profile.
-    target: inDemo('.atlas-avatar-person .atlas-avatar'),
+    target: inDemo('.genux-avatar-person .genux-avatar'),
   },
   {
     name: 'Select items',
@@ -101,10 +101,10 @@ const surfaces: Surface[] = [
     route: /^rich menus?$/i,
     family: regular,
     fit: 'min',
-    island: '.atlas-rich-menu-demo',
-    open: clickIn(`.atlas-rich-menu-demo ${menuTrigger}`),
+    island: '.genux-rich-menu-demo',
+    open: clickIn(`.genux-rich-menu-demo ${menuTrigger}`),
     dismiss: true,
-    target: shown('.atlas-rich-menu-popup [role="menuitem"]'),
+    target: shown('.genux-rich-menu-popup [role="menuitem"]'),
   },
   {
     name: 'Toast',
@@ -114,14 +114,14 @@ const surfaces: Surface[] = [
     island: '[data-demo="toast"]',
     open: async (page, demo) => {
       // Let earlier notices expire so the measured notice is the one opened at this size.
-      await expect(page.locator('.atlas-toast-content')).toHaveCount(0, { timeout: 10_000 });
+      await expect(page.locator('.genux-toast-content')).toHaveCount(0, { timeout: 10_000 });
       await demo
         .locator('[data-demo="toast"] button:not([disabled]):not([data-tweaker-trigger])')
         .first()
         .click();
     },
-    // AtlasFeedback marks each native message notice with classNames.wrapper atlas-toast-content.
-    target: page => page.locator('.atlas-toast-content:visible').last(),
+    // GenUXFeedback marks each native message notice with classNames.wrapper genux-toast-content.
+    target: page => page.locator('.genux-toast-content:visible').last(),
   },
   {
     name: 'Alert',
@@ -201,7 +201,7 @@ const surfaces: Surface[] = [
     island: '.ant-tag',
     target: inDemo('.ant-tag'),
   },
-  // No standalone Chips/Tag page: AtlasCheckablePill on the Pill page is the native Ant Design CheckableTag.
+  // No standalone Chips/Tag page: GenUXCheckablePill on the Pill page is the native Ant Design CheckableTag.
   {
     name: 'Chips/Tag',
     route: 'pill',
@@ -210,7 +210,7 @@ const surfaces: Surface[] = [
     island: '[data-pill-checkable] .ant-tag',
     target: inDemo('[data-pill-checkable] .ant-tag'),
   },
-  // AtlasSlider paints the visible thumb in handle::after at --radio-size; the handle box keeps the 48px hit area.
+  // GenUXSlider paints the visible thumb in handle::after at --radio-size; the handle box keeps the 48px hit area.
   {
     name: 'Slider thumb',
     route: 'slider',
@@ -249,7 +249,7 @@ const surfaces: Surface[] = [
     name: 'Cascader items',
     route: 'cascader',
     family: compact,
-    // AtlasCascader optionRender adds a description line to first-column branches, so rows start at the base and grow.
+    // GenUXCascader optionRender adds a description line to first-column branches, so rows start at the base and grow.
     fit: 'min',
     island: '[role="combobox"]',
     open: clickIn('[role="combobox"]'),
@@ -263,8 +263,8 @@ const surfaces: Surface[] = [
     route: 'listy',
     family: compact,
     fit: 'min',
-    island: '[data-atlas-listy-item]',
-    target: inDemo('[data-atlas-listy-item]'),
+    island: '[data-genux-listy-item]',
+    target: inDemo('[data-genux-listy-item]'),
   },
 ];
 
@@ -304,9 +304,9 @@ async function chooseSize(demo: Locator, size: Size) {
   const trigger = demo.locator('[data-tweaker-trigger]').first();
   await awaitHydration(demo);
   await trigger.press('Enter');
-  const panel = demo.locator('.atlas-tweaker-panel').first();
+  const panel = demo.locator('.genux-tweaker-panel').first();
   await expect(panel, 'Tweaker panel opens from the keyboard').toBeVisible();
-  await panel.locator('.atlas-size-control .ant-segmented-item').nth(sizes.indexOf(size)).click();
+  await panel.locator('.genux-size-control .ant-segmented-item').nth(sizes.indexOf(size)).click();
   await expect(demo).toHaveAttribute('data-size-profile', size);
   await demo.page().keyboard.press('Escape');
   await expect(trigger).toHaveAttribute('aria-expanded', 'false');
@@ -337,7 +337,7 @@ test('Component size profiles reach every named surface', async ({ page }, testI
     }
     await page.goto(new URL(path, origin).href);
     const demo = page
-      .locator('.atlas-demo[data-size-profile]')
+      .locator('.genux-demo[data-size-profile]')
       .filter({ has: page.locator('[data-tweaker-trigger]') })
       .filter({ has: page.locator(surface.island) })
       .first();

@@ -1,8 +1,8 @@
 import { useId, useState } from 'react';
 import { Select } from 'antd';
-import AtlasProvider from './AtlasProvider';
-import AtlasAutoComplete, { type AtlasSuggestion } from './AtlasAutoComplete';
-import { TweakerSettings } from './AtlasTweaker';
+import GenUXProvider from './GenUXProvider';
+import GenUXAutoComplete, { type GenUXSuggestion } from './GenUXAutoComplete';
+import { TweakerSettings } from './GenUXTweaker';
 import ExamplePreview from './ExamplePreview';
 import { useI18n } from './useI18n';
 
@@ -91,7 +91,7 @@ function AutoCompleteExamples() {
   const [warningValue, setWarningValue] = useState('');
   const [errorValue, setErrorValue] = useState('team@');
   const selected = knowledge.find(item => item.key === selectedKey);
-  const knowledgeItems: AtlasSuggestion[] = knowledge.map(item => ({
+  const knowledgeItems: GenUXSuggestion[] = knowledge.map(item => ({
     key: item.key,
     value: t(item.title),
     title: t(item.title),
@@ -100,18 +100,18 @@ function AutoCompleteExamples() {
     meta: t(item.meta),
     keywords: [...item.keywords, item.title],
   }));
-  const companyItems: AtlasSuggestion[] = [
+  const companyItems: GenUXSuggestion[] = [
     {
-      key: 'atlas-studio',
-      value: 'Atlas Studio',
-      title: 'Atlas Studio',
+      key: 'genux-studio',
+      value: 'GenUX Studio',
+      title: 'GenUX Studio',
       description: t('Design and product team'),
       meta: t('Sample team'),
     },
     {
-      key: 'atlas-operations',
-      value: 'Atlas Operations',
-      title: 'Atlas Operations',
+      key: 'genux-operations',
+      value: 'GenUX Operations',
+      title: 'GenUX Operations',
       description: t('Operations and delivery team'),
       meta: t('Sample team'),
     },
@@ -124,7 +124,7 @@ function AutoCompleteExamples() {
     },
   ];
   const localPart = email.trim().split('@')[0] ?? '';
-  const emailItems: AtlasSuggestion[] = localPart
+  const emailItems: GenUXSuggestion[] = localPart
     ? ['example.com', 'example.org', 'example.net'].map(domain => ({
         key: domain,
         value: `${localPart}@${domain}`,
@@ -188,7 +188,7 @@ function AutoCompleteExamples() {
         <ExamplePreview id="autocomplete-find-with-context" title={t('Find with context')}>
           <div className="autocomplete-discovery-grid" data-autocomplete-primary>
             <div className="autocomplete-primary-field">
-              <AtlasAutoComplete
+              <GenUXAutoComplete
                 id={`${id}-knowledge`}
                 label={t('Find in the documentation')}
                 value={query}
@@ -258,19 +258,19 @@ function AutoCompleteExamples() {
           <div className="autocomplete-example-grid">
             <div className="autocomplete-example" data-autocomplete-example="company">
               <h4>{t('Team name')}</h4>
-              <AtlasAutoComplete
+              <GenUXAutoComplete
                 id={`${id}-team`}
                 label={t('Find or enter a team')}
                 value={company}
                 onChange={setCompany}
                 items={companyItems}
-                placeholder={t('Try Atlas or enter your own team')}
+                placeholder={t('Try GenUX or enter your own team')}
                 help={t('These are sample teams. A new name remains valid free text.')}
               />
             </div>
             <div className="autocomplete-example" data-autocomplete-example="email">
               <h4>{t('Email completion')}</h4>
-              <AtlasAutoComplete
+              <GenUXAutoComplete
                 id={`${id}-email`}
                 label={t('Contact email')}
                 value={email}
@@ -309,7 +309,7 @@ function AutoCompleteExamples() {
             data-autocomplete-recovery
             data-availability={availability}
           >
-            <AtlasAutoComplete
+            <GenUXAutoComplete
               id={`${id}-recovery`}
               label={t('Documentation suggestions')}
               value={recoveryValue}
@@ -355,7 +355,7 @@ function AutoCompleteExamples() {
           <div className="autocomplete-example-grid">
             <div className="autocomplete-example" data-autocomplete-example="warning">
               <h4>{t('Review suggested')}</h4>
-              <AtlasAutoComplete
+              <GenUXAutoComplete
                 id={`${id}-warning`}
                 label={t('Team to review')}
                 value={warningValue}
@@ -368,7 +368,7 @@ function AutoCompleteExamples() {
             </div>
             <div className="autocomplete-example" data-autocomplete-example="error">
               <h4>{t('Correction needed')}</h4>
-              <AtlasAutoComplete
+              <GenUXAutoComplete
                 id={`${id}-error`}
                 label={t('Email to correct')}
                 value={errorValue}
@@ -387,10 +387,10 @@ function AutoCompleteExamples() {
             </div>
             <div className="autocomplete-example" data-autocomplete-example="disabled">
               <h4>{t('Unavailable field')}</h4>
-              <AtlasAutoComplete
+              <GenUXAutoComplete
                 id={`${id}-disabled`}
                 label={t('Assigned team')}
-                value="Atlas Studio"
+                value="GenUX Studio"
                 onChange={() => {}}
                 items={companyItems}
                 disabled
@@ -408,8 +408,8 @@ export default function AutoCompleteDemo({
   documentation = false,
 }: { documentation?: boolean } = {}) {
   return (
-    <AtlasProvider appearance={documentation ? 'docs' : 'approved'}>
+    <GenUXProvider appearance={documentation ? 'docs' : 'approved'}>
       <AutoCompleteExamples />
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }

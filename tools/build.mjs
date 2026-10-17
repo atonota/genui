@@ -24,7 +24,7 @@ export async function render() {
     );
   }
   const script = (await Promise.all(manifest.js.map(read))).join('');
-  new vm.Script(script, { filename: 'atlas.generated.js' });
+  new vm.Script(script, { filename: 'genux.generated.js' });
   if (/<\/script\s*>/i.test(script) || /<\/style\s*>/i.test(css))
     throw new Error('Unsafe inline closing tag');
   const template = await read('src/document.html');
@@ -32,22 +32,22 @@ export async function render() {
     .replace(/</g, '\\u003c')
     .replace(/\u2028/g, '\\u2028')
     .replace(/\u2029/g, '\\u2029');
-  for (const token of ['@@ATLAS:CSS@@', '@@ATLAS:JS@@', '@@ATLAS:I18N@@']) {
+  for (const token of ['@@GENUX:CSS@@', '@@GENUX:JS@@', '@@GENUX:I18N@@']) {
     if (template.split(token).length !== 2) throw new Error(`Expected exactly one ${token}`);
   }
   // Function replacements preserve literal $& / $` / $' inside vendored JS.
   const html = template
-    .replace('@@ATLAS:CSS@@', () => css)
-    .replace('@@ATLAS:JS@@', () => script)
-    .replace('@@ATLAS:I18N@@', () => translations);
-  if (/@@(?:ATLAS|FONT):/.test(html)) throw new Error('Unresolved build token');
+    .replace('@@GENUX:CSS@@', () => css)
+    .replace('@@GENUX:JS@@', () => script)
+    .replace('@@GENUX:I18N@@', () => translations);
+  if (/@@(?:GENUX|FONT):/.test(html)) throw new Error('Unresolved build token');
   return { html, css, script, manifest };
 }
 
 export async function build() {
   const result = await render();
   await mkdir(resolve(root, 'dist'), { recursive: true });
-  await writeFile(resolve(root, 'dist/buton-atlasi.html'), result.html);
+  await writeFile(resolve(root, 'dist/buton-genuxi.html'), result.html);
   return { bytes: Buffer.byteLength(result.html), sha256: sha256(result.html) };
 }
 

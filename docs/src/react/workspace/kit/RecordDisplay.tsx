@@ -1,5 +1,5 @@
 import { useId, useState, type ReactNode } from 'react';
-import AtlasButton from '../../AtlasButton';
+import GenUXButton from '../../GenUXButton';
 import { useI18n } from '../../useI18n';
 import { fieldAvailability, presentFieldValue } from '../../../data/field-kit';
 import { FieldValue } from './Fields';
@@ -34,7 +34,7 @@ export function DetailSectionShell({
         </div>
       )}
       {returnContext && (
-        <AtlasButton
+        <GenUXButton
           fill="text"
           text={t('Back to {context}', { context: t(returnContext.label) })}
           onClick={returnContext.onReturn}
@@ -99,7 +99,7 @@ export function RecordDisplay<R extends RecordIdentity>({
             <dd>
               {record &&
                 (relation && typeof entityId === 'string' ? (
-                  <AtlasButton
+                  <GenUXButton
                     fill="text"
                     text={relation.text}
                     data-open-relation={field.key}
@@ -136,14 +136,14 @@ export function RecordDisplay<R extends RecordIdentity>({
         actions={
           <div className="kit-action-row">
             {onEdit && contentAllowed && (
-              <AtlasButton
+              <GenUXButton
                 text={t('Edit record')}
                 disabled={capability?.allowed === false}
                 aria-describedby={capability?.allowed === false ? id + '-edit-reason' : undefined}
                 onClick={() => onEdit(record!.id)}
               />
             )}
-            {onClose && <AtlasButton fill="text" text={t('Close record')} onClick={onClose} />}
+            {onClose && <GenUXButton fill="text" text={t('Close record')} onClick={onClose} />}
           </div>
         }
       >
@@ -166,13 +166,13 @@ export function RecordDisplay<R extends RecordIdentity>({
                     total: navigation.total,
                   })}
                 </span>
-                <AtlasButton
+                <GenUXButton
                   fill="text"
                   text={t('Previous record')}
                   disabled={!navigation.onPrevious || navigation.position <= 1}
                   onClick={navigation.onPrevious}
                 />
-                <AtlasButton
+                <GenUXButton
                   fill="text"
                   text={t('Next record')}
                   disabled={!navigation.onNext || navigation.position >= navigation.total}
@@ -202,7 +202,7 @@ export function RecordDisplay<R extends RecordIdentity>({
                     <section key={section} className="kit-form-section">
                       {presentation === 'accordion' && (
                         <SectionHeading>
-                          <AtlasButton
+                          <GenUXButton
                             id={id + '-accordion-' + index}
                             fill="text"
                             aria-expanded={open}

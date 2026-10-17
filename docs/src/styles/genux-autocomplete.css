@@ -1,0 +1,124 @@
+/* One native editable combobox; page composition is route-owned separately. */
+.genux-autocomplete {
+  position: relative;
+  display: grid;
+  gap: var(--space-xs);
+  min-width: 0;
+  max-width: 100%;
+}
+.genux-autocomplete .genux-autocomplete-control {
+  width: 100%;
+  min-width: 0;
+  height: var(--genux-component-height);
+  padding-block: 0;
+}
+.genux-autocomplete :is(p, label) {
+  margin: 0;
+  font: inherit;
+}
+.genux-autocomplete-help,
+.genux-autocomplete-feedback {
+  color: var(--muted);
+}
+.genux-autocomplete-error {
+  color: var(--error);
+}
+.genux-autocomplete > .genux-button {
+  justify-self: start;
+}
+.genux-autocomplete-popup {
+  max-width: min(100%, calc(100vw - 2 * var(--space-sm)));
+  max-height: calc(100dvh - 2 * var(--space-sm));
+  color: var(--ink);
+}
+.genux-autocomplete-popup .ant-select-dropdown-list-holder {
+  /* The native inline 320px list must fit inside the viewport-limited popup.
+     Limit the actual scroll owner so keyboard-active rows remain reachable. */
+  max-height: min(320px, calc(100dvh - 2 * var(--space-sm) - 2 * var(--space-xs))) !important;
+}
+.genux-autocomplete-popup .ant-select-item {
+  min-height: max(var(--target-min), var(--genux-component-height));
+  padding: var(--space-sm);
+  color: var(--ink);
+  font-size: var(--text);
+  font-weight: var(--font-weight-body);
+  line-height: var(--line-height);
+  transition-property: color, background-color, opacity;
+  transition-duration: var(--motion-duration-standard);
+  transition-timing-function: var(--motion-easing);
+  transition-delay: var(--motion-delay);
+}
+.genux-autocomplete-popup .ant-select-item-group {
+  min-height: var(--target-min);
+  padding-block: var(--space-xs);
+  color: var(--muted);
+  background: var(--panel);
+}
+.genux-autocomplete-popup .ant-select-item-option-content {
+  min-width: 0;
+  white-space: normal;
+  text-overflow: clip;
+  overflow: visible;
+}
+.genux-autocomplete-result {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-xs) var(--space-sm);
+  width: 100%;
+  min-width: 0;
+  white-space: normal;
+}
+.genux-autocomplete-result-title {
+  color: var(--ink);
+  overflow-wrap: break-word;
+}
+.genux-autocomplete-result-meta,
+.genux-autocomplete-result-description {
+  color: var(--muted);
+}
+.genux-autocomplete-result-meta {
+  align-self: start;
+  white-space: normal;
+}
+.genux-autocomplete-result-description {
+  grid-column: 1 / -1;
+  overflow-wrap: break-word;
+}
+.genux-autocomplete-result mark {
+  color: inherit;
+  background: var(--soft);
+  border-radius: var(--radius);
+}
+.genux-autocomplete-popup .ant-select-item-option-active:not(.ant-select-item-option-disabled) {
+  background: var(--surface);
+  box-shadow: inset var(--focus-marker) 0 0 var(--accent);
+}
+.genux-autocomplete-popup .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+  background: var(--soft);
+}
+.genux-autocomplete-popup .ant-select-item-option-disabled {
+  color: var(--muted);
+}
+.genux-autocomplete-popup .ant-select-item-option-disabled .genux-autocomplete-result-title {
+  color: var(--muted);
+}
+.genux-autocomplete-empty {
+  display: grid;
+  gap: var(--space-xs);
+  padding: var(--space-sm);
+  min-width: 0;
+  text-align: start;
+  color: var(--ink);
+}
+.genux-autocomplete-empty p {
+  margin: 0;
+  font: inherit;
+}
+.genux-autocomplete-empty p + p {
+  color: var(--muted);
+}
+@media (prefers-reduced-motion: reduce) {
+  .genux-autocomplete-popup .ant-select-item {
+    transition-duration: 0ms;
+  }
+}

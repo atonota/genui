@@ -9,16 +9,16 @@ before acceptance.
 - Normal visual state changes use the shared symmetric curve for both entry and
   exit. The default is easeInOutCubic: `cubic-bezier(0.65, 0, 0.35, 1)`.
 - The single source is `docs/src/data/motion.json`. `docs:data` generates CSS
-  tokens; `AtlasProvider` applies the same source to every Ant Design motion
-  easing slot. Do not edit generated `atlas-motion.css` manually.
+  tokens; `GenUXProvider` applies the same source to every Ant Design motion
+  easing slot. Do not edit generated `genux-motion.css` manually.
 - Fast press uses 80 ms, feedback 140 ms, normal surfaces 200 ms, selection 320 ms
   and the compatibility deliberate transition 500 ms. Documentation Button feedback
   is 116.667 ms; finite click waves use 400 ms. Initial delay is0ms.
   Use semantic tokens instead of repeating durations, curves or delays in components.
-- Custom controls use the shared `.atlas-control` base. The normal outer body
+- Custom controls use the shared `.genux-control` base. The normal outer body
   transitions only explicitly listed paint properties; `transition: all` is
   prohibited. Intentional movement belongs to a thumb or a separate
-  `.atlas-motion-layer`.
+  `.genux-motion-layer`.
 - Treat hover, press, selection, opening and closing together. Rapid pointer entry
   and exit redirect the transition from its current visual state. The root, label
   and hit area stay fixed. Preserve the library exit lifecycle before removing a

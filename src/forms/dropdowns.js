@@ -87,7 +87,7 @@ function buildFormDropdowns() {
     const sample = formSample(spec.title),
       helpId = spec.id + '-help';
     if (surface) sample.dataset.surface = surface;
-    const controller = AtlasDropdowns.create({
+    const controller = GenUXDropdowns.create({
       ...spec,
       descriptionId: helpId,
       options: spec.options || (spec.grouped ? options : options.map(({ group, ...item }) => item)),

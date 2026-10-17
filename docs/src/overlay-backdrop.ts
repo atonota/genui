@@ -1,13 +1,13 @@
 /**
- * Atlas overlay backdrop controller (paint only).
+ * GenUX overlay backdrop controller (paint only).
  *
  * Tracks visible non-modal popups (Select/Cascader/AutoComplete, Picker,
  * Dropdown, Popover/Popconfirm, Tooltip) and publishes the shared paint contract:
- *   body[data-atlas-overlay-open]  set to true while any popup is visible
- *   --atlas-overlay-clip           clip-path for the body scrim pseudo element:
+ *   body[data-genux-overlay-open]  set to true while any popup is visible
+ *   --genux-overlay-clip           clip-path for the body scrim pseudo element:
  *                                  outer scope rect with evenodd holes for every
  *                                  active popup rect and bound trigger paint rect
- *   --atlas-overlay-active-z       derived scrim z, base --overlay-scrim-z
+ *   --genux-overlay-active-z       derived scrim z, base --overlay-scrim-z
  * On close only the attribute drops: clip and z stay frozen until the body::before fade
  * really ends, so the fading scrim keeps the trigger hole and never doubles a native mask.
  * Colour, opacity and blur live in the stylesheet tokens. This module never
@@ -16,18 +16,18 @@
 
 const POPUP_SELECTOR =
   '.ant-select-dropdown, .ant-cascader-dropdown, .ant-picker-dropdown, .ant-dropdown, .ant-popover, .ant-tooltip';
-const EXCLUDE_SELECTOR = '.ant-message, .atlas-toast, .ant-notification, .atlas-notification';
+const EXCLUDE_SELECTOR = '.ant-message, .genux-toast, .ant-notification, .genux-notification';
 const TRIGGER_ID_ATTRS = ['aria-controls', 'aria-describedby', 'aria-owns'] as const;
 const TRIGGER_FALLBACK =
   '.ant-dropdown-open, .ant-popover-open, .ant-select-open, .ant-picker-focused, [aria-haspopup][aria-expanded=true]';
-const PICKER_CONTROL = '.atlas-date-time-control';
+const PICKER_CONTROL = '.genux-date-time-control';
 const TRIGGER_PAINT_ROOT =
   '.ant-select, .ant-picker, .ant-input-affix-wrapper, .ant-input-number, .ant-btn, .ant-dropdown-trigger, .ant-dropdown-open, .ant-popover-open';
 const DIALOG_CONTENT = '.ant-modal-content, .ant-drawer-content, .ant-drawer-section'; // AntD 6 Drawer paints its dialog as .ant-drawer-section
 const DIALOG_ROOT = '.ant-modal-wrap, .ant-drawer';
-const OPEN_ATTR = 'data-atlas-overlay-open';
-const CLIP_VAR = '--atlas-overlay-clip';
-const Z_VAR = '--atlas-overlay-active-z';
+const OPEN_ATTR = 'data-genux-overlay-open';
+const CLIP_VAR = '--genux-overlay-clip';
+const Z_VAR = '--genux-overlay-active-z';
 const BASE_Z_VAR = '--overlay-scrim-z';
 const OBSERVED_ATTRS = [
   'class',

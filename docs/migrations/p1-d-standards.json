@@ -84,7 +84,7 @@
     {
       "rule": "typography",
       "before": "Minimum readable text 14 CSS px.",
-      "after": "Latest direct human GenUI decision for this project: minimum 12, standard 14, reading 16 CSS px, weight at least 300. Global instruction files are unchanged."
+      "after": "Latest direct human GenUX decision for this project: minimum 12, standard 14, reading 16 CSS px, weight at least 300. Global instruction files are unchanged."
     },
     {
       "rule": "radius",

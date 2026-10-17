@@ -5,7 +5,7 @@ import { createHash } from 'node:crypto';
 import test from 'node:test';
 import ts from 'typescript';
 
-const file = new URL('../../dist/buton-atlasi.html', import.meta.url);
+const file = new URL('../../dist/buton-genuxi.html', import.meta.url);
 const html = readFileSync(file, 'utf8');
 const beforeHtml = readFileSync(new URL('./before-refined-shadows.html', import.meta.url), 'utf8');
 const beforeModel = name => JSON.parse(beforeHtml.split('const '+name+' = ')[1].split(name==='COMPONENT_DECISIONS'?';\nconst BUTTON_DECISIONS':';\nconst PRESETS')[0]);
@@ -16,7 +16,7 @@ const script = html.match(/<script>([\s\S]*?)<\/script>/)[1];
 const css = html.match(/<style(?: [^>]*)?>([\s\S]*?)<\/style>/)[1].replace(/\/\*[\s\S]*?\*\//g,'');
 new vm.Script(script);
 // Retain all legacy assertions; use syntax boundaries rather than minified whitespace.
-const parsed = ts.createSourceFile('atlas.js', script, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
+const parsed = ts.createSourceFile('genux.js', script, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
 const currentStart = parsed.statements.find(node => ts.isVariableStatement(node) && node.declarationList.declarations.some(d => d.name.getText(parsed) === 'current')).getStart(parsed);
 const bootstrapStart = parsed.statements.find(node => ts.isExpressionStatement(node) && node.getText(parsed).startsWith("document.querySelectorAll('.tab').forEach")).getStart(parsed);
 const sourceFunction = name => parsed.statements.find(node => ts.isFunctionDeclaration(node) && node.name?.text === name).getText(parsed);
@@ -35,8 +35,8 @@ class TestNode {
   querySelector(selector){return this.querySelectorAll(selector)[0]||null;}
 }
 const roots=new Map(),timers=new Map();let timerSequence=0;
-const stylesheet=new TestNode('style');stylesheet.id='atlas-styles';stylesheet.textContent=css;
-const context = vm.createContext({ ATLAS_TR: translations, t: value => value, getLocale: () => 'en', normalizeSearch: value => value, formatNumber: (value, options) => value.toLocaleString('en-US', options), document: {
+const stylesheet=new TestNode('style');stylesheet.id='genux-styles';stylesheet.textContent=css;
+const context = vm.createContext({ GENUX_TR: translations, t: value => value, getLocale: () => 'en', normalizeSearch: value => value, formatNumber: (value, options) => value.toLocaleString('en-US', options), document: {
   getElementById(id){if(!roots.has(id))roots.set(id,new TestNode());return roots.get(id);},
   querySelectorAll(){return [];},
   createElement(tag){return new TestNode(tag);},
@@ -164,7 +164,7 @@ test('shared opacity and visible keyboard focus preserve the flat button states'
   }
   assert.match(html,/SIL OPEN FONT LICENSE Version 1.1/,'the embedded stylesheet retains the redistribution license');
   assert.equal(BASE.type,'system');assert.equal(PRESETS[0].config.type,'system','default preset selects the Outfit option');
-  assert.equal(context.catalog.buildAntdRecipe(BASE).font_loading_required.stylesheet_id,'atlas-styles');
+  assert.equal(context.catalog.buildAntdRecipe(BASE).font_loading_required.stylesheet_id,'genux-styles');
   assert.match(script,/const css\s*=\s*document.querySelector\('style'\)\.textContent/,'standalone export copies the embedded font stylesheet');
 
   assert.match(css, /--opacity-rest\s*:\s*\.9\s*;/);

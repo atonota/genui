@@ -33,7 +33,7 @@ const compiled = await build({
 let instance = 0;
 async function shell(t, content = '') {
   const dom = new JSDOM(`<!doctype html><html lang="en"><body>${header}${content}</body></html>`, {
-    url: 'https://atlas.test/',
+    url: 'https://genux.test/',
   });
   const { window } = dom;
   const matchMedia = query => ({
@@ -137,7 +137,7 @@ test('navigation search placeholder consumes readable docs colors outside the li
       });
     return value;
   };
-  window.document.body.dataset.atlasSurface = 'docs';
+  window.document.body.dataset.genuxSurface = 'docs';
   for (const mode of ['light', 'dark']) {
     window.document.documentElement.dataset.theme = mode;
     const colors = module.testThemeColors[mode];
@@ -165,23 +165,23 @@ test('navigation search placeholder consumes readable docs colors outside the li
       assert.ok(ratio >= 4.5, `${mode}/${focused ? 'focus' : 'rest'}: ${ratio.toFixed(4)} <4.5`);
     }
   }
-  window.document.body.removeAttribute('data-atlas-surface');
+  window.document.body.removeAttribute('data-genux-surface');
   assert.equal(matchingValue('color', true), undefined, 'approved consumers keep their styling');
   assert.equal(matchingValue('opacity', true), undefined);
 });
 
 test('documentation hint and tab styles follow native ownership across nested approved controls and portals', async t => {
   const dom =
-    new JSDOM(`<body data-atlas-surface="docs"><div class="live-preview"><div class="atlas-demo" data-atlas-appearance="docs">
-    <input id="docs-input" class="ant-input css-var-atlas-docs"/>
-    <span class="ant-input-affix-wrapper css-var-atlas-docs"><input id="docs-inner" class="ant-input"/></span>
-    <div class="atlas-demo" data-atlas-appearance="approved">
-      <input id="approved-input" class="ant-input css-var-atlas"/>
-      <span class="ant-input-affix-wrapper css-var-atlas"><input id="approved-inner" class="ant-input"/></span>
-      <div class="ant-tabs css-var-atlas"><span id="approved-bar" class="ant-tabs-ink-bar"></span></div>
+    new JSDOM(`<body data-genux-surface="docs"><div class="live-preview"><div class="genux-demo" data-genux-appearance="docs">
+    <input id="docs-input" class="ant-input css-var-genux-docs"/>
+    <span class="ant-input-affix-wrapper css-var-genux-docs"><input id="docs-inner" class="ant-input"/></span>
+    <div class="genux-demo" data-genux-appearance="approved">
+      <input id="approved-input" class="ant-input css-var-genux"/>
+      <span class="ant-input-affix-wrapper css-var-genux"><input id="approved-inner" class="ant-input"/></span>
+      <div class="ant-tabs css-var-genux"><span id="approved-bar" class="ant-tabs-ink-bar"></span></div>
     </div>
-    <div class="ant-tabs css-var-atlas-docs"><span id="docs-bar" class="ant-tabs-ink-bar"></span></div>
-  </div></div><div class="atlas-demo atlas-tweaker-panel"><input id="portal-input" class="ant-input css-var-atlas-docs"/></div></body>`);
+    <div class="ant-tabs css-var-genux-docs"><span id="docs-bar" class="ant-tabs-ink-bar"></span></div>
+  </div></div><div class="genux-demo genux-tweaker-panel"><input id="portal-input" class="ant-input css-var-genux-docs"/></div></body>`);
   t.after(() => dom.window.close());
   const sheet = postcss.parse(
     await readFile(resolve(root, 'docs/src/styles/docs-accessibility.css'), 'utf8'),
@@ -232,9 +232,9 @@ test('open searchable native Select values stay opaque without obscuring typed s
   const file = `docs/tests/.a11y-select-opacity-${randomUUID()}.tsx`;
   await writeFile(
     resolve(root, file),
-    `import {useState} from 'react';import {ConfigProvider,Select} from 'antd';import AtlasProvider from '../src/react/AtlasProvider';
+    `import {useState} from 'react';import {ConfigProvider,Select} from 'antd';import GenUXProvider from '../src/react/GenUXProvider';
 const options=[{value:'design',label:'Design'},{value:'engineering',label:'Engineering'}];
-export default function Probe(){const[search,setSearch]=useState('');return <AtlasProvider appearance="docs"><Select id="opaque-docs" open showSearch value="design" searchValue={search} onSearch={setSearch} options={options}/><Select id="opaque-nonsearch" open showSearch={false} value="design" options={options}/><Select id="opaque-disabled" open showSearch disabled value="design" options={options}/><ConfigProvider theme={{cssVar:{key:'css-var-atlas-color-preview'}}}><Select id="opaque-preview" open showSearch value="design" options={options}/></ConfigProvider><AtlasProvider appearance="approved"><Select id="opaque-approved" open showSearch value="design" options={options}/></AtlasProvider></AtlasProvider>}`,
+export default function Probe(){const[search,setSearch]=useState('');return <GenUXProvider appearance="docs"><Select id="opaque-docs" open showSearch value="design" searchValue={search} onSearch={setSearch} options={options}/><Select id="opaque-nonsearch" open showSearch={false} value="design" options={options}/><Select id="opaque-disabled" open showSearch disabled value="design" options={options}/><ConfigProvider theme={{cssVar:{key:'css-var-genux-color-preview'}}}><Select id="opaque-preview" open showSearch value="design" options={options}/></ConfigProvider><GenUXProvider appearance="approved"><Select id="opaque-approved" open showSearch value="design" options={options}/></GenUXProvider></GenUXProvider>}`,
   );
   let h;
   try {
@@ -247,7 +247,7 @@ export default function Probe(){const[search,setSearch]=useState('');return <Atl
     await h.dispose();
     await unlink(resolve(root, file));
   });
-  h.document.body.dataset.atlasSurface = 'docs';
+  h.document.body.dataset.genuxSurface = 'docs';
   const css = postcss.parse(
     await readFile(resolve(root, 'docs/src/styles/docs-accessibility.css'), 'utf8'),
   );
@@ -268,7 +268,7 @@ export default function Probe(){const[search,setSearch]=useState('');return <Atl
   for (const mode of ['light', 'dark']) {
     await h.act(async () => {
       h.document.documentElement.dataset.theme = mode;
-      h.window.dispatchEvent(new h.window.Event('atlas-theme-change'));
+      h.window.dispatchEvent(new h.window.Event('genux-theme-change'));
     });
     for (const id of ['opaque-docs', 'opaque-preview', 'opaque-nonsearch']) {
       const selected = content(id);
@@ -287,7 +287,7 @@ export default function Probe(){const[search,setSearch]=useState('');return <Atl
   assert.ok(searched.classList.contains('ant-select-content-has-search-value'));
   assert.equal(resolvedOpacity(searched), 1, 'the search input keeps its opaque parent');
   assert.equal(Number(h.window.getComputedStyle(search).opacity || 1), 1);
-  h.document.body.removeAttribute('data-atlas-surface');
+  h.document.body.removeAttribute('data-genux-surface');
   assert.equal(authoredOpacity(content('opaque-docs')), undefined, 'the rule stays docs-only');
 });
 

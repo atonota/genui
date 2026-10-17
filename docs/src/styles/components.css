@@ -1,4 +1,4 @@
-.atlas-demo {
+.genux-demo {
   font-family: var(--font-body);
   font-size: var(--text);
   color: var(--ink);
@@ -33,17 +33,17 @@
     3px 7px 0 rgba(var(--shadow-ink), 0.03), 4px 8px 0 rgba(var(--shadow-ink), 0.02);
   --shadow-layered-pressed-8: 0 1px 0 rgba(var(--shadow-ink), 0.04);
   /* Mode space toggles of the nearest owner: the active mode is empty and the other invalid,
-     so `var(--atlas-mode-dark, light) var(--atlas-mode-light, dark)` resolves one value. */
-  --atlas-mode-light: ;
-  --atlas-mode-dark: initial;
+     so `var(--genux-mode-dark, light) var(--genux-mode-light, dark)` resolves one value. */
+  --genux-mode-light: ;
+  --genux-mode-dark: initial;
 }
-.atlas-demo[data-theme-mode='dark'] {
-  --atlas-mode-light: initial;
-  --atlas-mode-dark: ;
+.genux-demo[data-theme-mode='dark'] {
+  --genux-mode-light: initial;
+  --genux-mode-dark: ;
 }
 /* Native transition:all must not animate the outer geometry of controls. */
 :root[data-theme]
-  .atlas-demo
+  .genux-demo
   :is(
     button,
     input,
@@ -58,68 +58,68 @@
     .ant-switch,
     .ant-segmented,
     .ant-picker,
-    .atlas-control
+    .genux-control
   ) {
   transition-property: var(--control-transition-properties);
 }
-.atlas-demo .pattern-stack {
+.genux-demo .pattern-stack {
   display: grid;
   gap: var(--space-xl);
 }
-.atlas-demo .example-block {
+.genux-demo .example-block {
   display: grid;
   gap: var(--space-md);
   min-width: 0;
 }
-.atlas-demo .variant-heading {
+.genux-demo .variant-heading {
   font-size: var(--text-large, 1.125rem);
   font-weight: var(--font-weight-label, 550);
 }
-.atlas-demo .control-row {
+.genux-demo .control-row {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: var(--space-md);
 }
-.atlas-demo .form-layout-control {
+.genux-demo .form-layout-control {
   display: grid;
   gap: var(--space-xs);
   max-width: 20rem;
 }
-.atlas-demo .form-result {
+.genux-demo .form-result {
   padding: var(--space-md);
   background: var(--soft);
   border-radius: var(--radius);
   word-break: normal;
   overflow-wrap: anywhere;
 }
-.atlas-demo .form-result:empty {
+.genux-demo .form-result:empty {
   padding: 0;
   background: transparent;
 }
-.atlas-demo .ant-form {
+.genux-demo .ant-form {
   max-width: 100%;
   min-width: 0;
 }
-.atlas-demo .ant-form-item-label > label {
+.genux-demo .ant-form-item-label > label {
   font-size: var(--text);
   height: auto;
   white-space: normal;
   line-height: var(--line-height);
 }
-.atlas-demo .ant-form-item-explain,
-.atlas-demo .ant-form-item-extra {
+.genux-demo .ant-form-item-explain,
+.genux-demo .ant-form-item-extra {
   font-size: var(--text);
 }
-.atlas-demo .ant-form-inline {
+.genux-demo .ant-form-inline {
   gap: var(--space-sm);
 }
-.atlas-demo .ant-form-inline .ant-form-item {
+.genux-demo .ant-form-inline .ant-form-item {
   min-width: 0;
   margin-inline-end: 0;
   flex: 1 1 14rem;
 }
-.atlas-demo .atlas-form-section {
+.genux-demo .genux-form-section {
   min-inline-size: 0;
   margin: 0;
   padding: 0;
@@ -127,10 +127,10 @@
   background: transparent;
   box-shadow: none;
 }
-.atlas-demo .atlas-form-section + .atlas-form-section {
+.genux-demo .genux-form-section + .genux-form-section {
   margin-block-start: var(--section-gap, var(--space-xl));
 }
-.atlas-demo .atlas-form-section-legend {
+.genux-demo .genux-form-section-legend {
   width: auto;
   margin: 0 0 var(--space-md);
   padding: 0;
@@ -140,22 +140,22 @@
   font-weight: var(--font-weight-label, 650);
   line-height: var(--line-height);
 }
-.atlas-demo .ant-form-inline .atlas-form-section {
+.genux-demo .ant-form-inline .genux-form-section {
   display: flex;
   flex: 1 1 100%;
   flex-wrap: wrap;
   gap: var(--space-sm);
   max-width: 100%;
 }
-.atlas-demo .ant-input,
-.atlas-demo .ant-input-affix-wrapper,
-.atlas-demo .ant-input-number,
-.atlas-demo .ant-select {
+.genux-demo .ant-input,
+.genux-demo .ant-input-affix-wrapper,
+.genux-demo .ant-input-number,
+.genux-demo .ant-select {
   width: 100%;
   min-width: 0;
   font-size: var(--text);
 }
-.atlas-demo .ant-select {
+.genux-demo .ant-select {
   max-width: 100%;
 }
 /* Filled fields share a lower surface; existing external shadow tokens are unchanged. */
@@ -164,36 +164,36 @@
   --field-shadow: var(--shadow-flat-layer);
 }
 /* Unframed legacy fields and native Select paint the same quiet well as
-   AtlasInputFrame: decorative inset edge at the shared width and the central inner
+   GenUXInputFrame: decorative inset edge at the shared width and the central inner
    shadow. focus-fields.css owns the reserved bottom edge and keyboard focus paint.
-   Provider --atlas-input-* roles win; root --field-* aliases are the fallback. */
-.atlas-demo :is(.ant-input, .ant-input-affix-wrapper, .ant-input-number, .ant-select) {
-  --field-underline: var(--atlas-input-inset-border, var(--field-inset-border, transparent));
+   Provider --genux-input-* roles win; root --field-* aliases are the fallback. */
+.genux-demo :is(.ant-input, .ant-input-affix-wrapper, .ant-input-number, .ant-select) {
+  --field-underline: var(--genux-input-inset-border, var(--field-inset-border, transparent));
   background-color: var(--field-bg) !important;
-  border-color: var(--atlas-input-inset-border, var(--field-inset-border, transparent)) !important;
+  border-color: var(--genux-input-inset-border, var(--field-inset-border, transparent)) !important;
 }
 /* One base well shadow for every state: native focus, open and status glows never
    replace it. Inner affix inputs and framed children paint no well of their own. */
-.atlas-demo
+.genux-demo
   :is(.ant-input, .ant-input-affix-wrapper, .ant-input-number, .ant-select):not(
     .ant-input-affix-wrapper > input,
-    .atlas-input-frame *
+    .genux-input-frame *
   ) {
-  box-shadow: var(--atlas-input-inner-shadow, var(--field-inner-shadow, none)) !important;
+  box-shadow: var(--genux-input-inner-shadow, var(--field-inner-shadow, none)) !important;
 }
-.atlas-demo :is(.ant-input, .ant-input-affix-wrapper, .ant-input-number, .ant-select):hover {
+.genux-demo :is(.ant-input, .ant-input-affix-wrapper, .ant-input-number, .ant-select):hover {
   background-color: var(--field-hover-bg) !important;
 }
 @media (any-hover: hover) {
-  .atlas-demo
+  .genux-demo
     :is(.ant-input, .ant-input-affix-wrapper, .ant-input-number, .ant-select):not(
       .ant-input-affix-wrapper > input,
-      .atlas-input-frame *
+      .genux-input-frame *
     ):hover {
-    box-shadow: var(--atlas-input-inner-hover, var(--field-inner-hover, none)) !important;
+    box-shadow: var(--genux-input-inner-hover, var(--field-inner-hover, none)) !important;
   }
 }
-.atlas-demo
+.genux-demo
   :is(
     .ant-input-status-error,
     .ant-input-affix-wrapper-status-error,
@@ -202,7 +202,7 @@
   ) {
   border-color: var(--error) !important;
 }
-.atlas-demo
+.genux-demo
   :is(
     .ant-input-status-warning,
     .ant-input-affix-wrapper-status-warning,
@@ -211,25 +211,25 @@
   ) {
   border-color: var(--warning) !important;
 }
-.atlas-demo .ant-input-affix-wrapper > input.ant-input {
+.genux-demo .ant-input-affix-wrapper > input.ant-input {
   background: transparent !important;
   box-shadow: none;
   border-bottom-width: 0 !important;
 }
-.atlas-demo .ant-input-search .ant-input-search-btn:not(.ant-btn-primary) {
+.genux-demo .ant-input-search .ant-input-search-btn:not(.ant-btn-primary) {
   background: var(--field-bg) !important;
   border-color: transparent !important;
 }
-.atlas-demo :where(.ant-input, .ant-input-affix-wrapper, .ant-select, .ant-input-number) {
+.genux-demo :where(.ant-input, .ant-input-affix-wrapper, .ant-select, .ant-input-number) {
   min-height: var(--field-height);
 }
-.atlas-demo :is(input.ant-input, .ant-input-affix-wrapper, .ant-input-number) {
+.genux-demo :is(input.ant-input, .ant-input-affix-wrapper, .ant-input-number) {
   height: var(--field-height);
 }
-.atlas-demo .ant-input-affix-wrapper {
+.genux-demo .ant-input-affix-wrapper {
   padding-block: 0;
 }
-.atlas-demo .ant-input-affix-wrapper > input.ant-input {
+.genux-demo .ant-input-affix-wrapper > input.ant-input {
   min-height: 0;
   height: auto;
   padding-block: 0;
@@ -237,11 +237,11 @@
 }
 /* Only the directly focused element resets its outline; owners keep their rest outline
    width, so pointer focus never changes outline geometry. */
-.atlas-demo :where(.ant-input, .ant-input-affix-wrapper, .ant-select, .ant-input-number):focus {
+.genux-demo :where(.ant-input, .ant-input-affix-wrapper, .ant-select, .ant-input-number):focus {
   outline: none;
 }
 :root[data-theme]
-  .atlas-demo
+  .genux-demo
   :is(.ant-input, .ant-input-affix-wrapper, .ant-input-number, .ant-select) {
   /* The bottom edge carries keyboard focus and changes immediately; the surface and
      other edges ease. */
@@ -249,7 +249,7 @@
     background-color, border-top-color, border-right-color, border-left-color, color, opacity,
     box-shadow;
 }
-.atlas-demo :is(.ant-input-password-icon, .ant-input-clear-icon) {
+.genux-demo :is(.ant-input-password-icon, .ant-input-clear-icon) {
   position: relative;
   min-width: var(--target-min);
   min-height: var(--target-min);
@@ -257,16 +257,16 @@
   align-items: center;
   justify-content: center;
 }
-.atlas-demo :is(.ant-input-password-icon, .ant-input-clear-icon):focus-visible {
+.genux-demo :is(.ant-input-password-icon, .ant-input-clear-icon):focus-visible {
   outline: none;
   box-shadow: none;
 }
-.atlas-demo .ant-select:has(> :is(.ant-select-clear, .ant-select-suffix)) {
+.genux-demo .ant-select:has(> :is(.ant-select-clear, .ant-select-suffix)) {
   padding-inline-end: calc(
     var(--control-affix-size) + var(--control-affix-inset) + var(--control-affix-gap)
   );
 }
-.atlas-demo .ant-select :is(.ant-select-clear, .ant-select-suffix) {
+.genux-demo .ant-select :is(.ant-select-clear, .ant-select-suffix) {
   position: absolute;
   top: 50%;
   width: var(--control-affix-size);
@@ -282,28 +282,28 @@
   transform: translateY(-50%) translateZ(0);
   transition-duration: var(--transition-duration);
 }
-.atlas-demo .ant-select-clear:focus-visible {
+.genux-demo .ant-select-clear:focus-visible {
   opacity: 1;
   outline: none;
   box-shadow: none;
 }
-.atlas-demo .ant-select:has(> .ant-select-clear:focus-visible) > .ant-select-suffix {
+.genux-demo .ant-select:has(> .ant-select-clear:focus-visible) > .ant-select-suffix {
   opacity: 0;
   pointer-events: none;
 }
-.atlas-demo .ant-select-multiple .ant-select-selection-item {
+.genux-demo .ant-select-multiple .ant-select-selection-item {
   height: auto;
   min-height: var(--target-min);
   align-items: center;
 }
-.atlas-demo .ant-select-selection-item-remove {
+.genux-demo .ant-select-selection-item-remove {
   min-width: var(--target-min);
   min-height: var(--target-min);
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
-.atlas-demo .ant-btn {
+.genux-demo .ant-btn {
   box-sizing: border-box;
   border-style: solid !important;
   border-width: var(--button-border-width) !important;
@@ -324,36 +324,36 @@
     box-shadow var(--release-duration) var(--motion-easing);
   box-shadow: none;
 }
-.atlas-demo .ant-btn-sm {
+.genux-demo .ant-btn-sm {
   min-height: 3rem;
 }
-.atlas-demo .ant-btn-lg {
+.genux-demo .ant-btn-lg {
   min-height: 3.5rem;
 }
-.atlas-demo .ant-btn:hover:not(:disabled) {
+.genux-demo .ant-btn:hover:not(:disabled) {
   opacity: var(--opacity-hover);
 }
-.atlas-demo .ant-btn:is(:active, [data-state='hover'], [data-pressed='true']):not(:disabled) {
+.genux-demo .ant-btn:is(:active, [data-state='hover'], [data-pressed='true']):not(:disabled) {
   opacity: var(--opacity-hover);
 }
-.atlas-demo .ant-btn:focus {
+.genux-demo .ant-btn:focus {
   outline: none;
 }
-.atlas-demo .ant-btn:focus-visible {
+.genux-demo .ant-btn:focus-visible {
   text-decoration: none;
 }
-.atlas-demo .ant-btn-icon-only .ant-btn-icon {
+.genux-demo .ant-btn-icon-only .ant-btn-icon {
   position: static;
 }
-.atlas-demo .atlas-icon-button:focus-visible {
+.genux-demo .genux-icon-button:focus-visible {
   text-decoration: none;
 }
 /* Field slot actions keep their marker (focus-fields.css owns slots); every other action
    takes one fill or text cue from focus-actions.css. */
 :root:not([data-input-modality='pointer'])
-  .atlas-demo
-  .atlas-icon-button.atlas-slot-button:focus-visible
-  .atlas-button-content::after {
+  .genux-demo
+  .genux-icon-button.genux-slot-button:focus-visible
+  .genux-button-content::after {
   content: '';
   position: absolute;
   inset: auto 0 calc(-1 * var(--space-xs));
@@ -361,9 +361,9 @@
   background: currentColor;
 }
 :root:not([data-input-modality='pointer'])
-  .atlas-demo
-  .atlas-slot-button:not(.atlas-icon-button):focus-visible
-  .atlas-button-content::after {
+  .genux-demo
+  .genux-slot-button:not(.genux-icon-button):focus-visible
+  .genux-button-content::after {
   content: '';
   position: absolute;
   inset-block: 10%;
@@ -371,14 +371,14 @@
   width: var(--focus-marker);
   background: currentColor;
 }
-.atlas-demo .ant-btn:not(.atlas-button-outlined) {
+.genux-demo .ant-btn:not(.genux-button-outlined) {
   border-color: transparent !important;
 }
-.atlas-demo[data-atlas-appearance='docs'] {
+.genux-demo[data-genux-appearance='docs'] {
   --button-border-width: 0px;
 }
-.atlas-demo .ant-btn-primary,
-.atlas-demo .atlas-button {
+.genux-demo .ant-btn-primary,
+.genux-demo .genux-button {
   --button-outlined-ink: var(--button-edge);
   --button-transparent-ink: var(--button-transparent-light-ink);
   --shadow-ambient: 0 2px 8px rgba(var(--shadow-accent-rgb), var(--shadow-ambient-alpha));
@@ -389,13 +389,13 @@
 }
 /* Outlined and transparent inks follow the nearest owner's mode, so a light preview on a dark
    host keeps its light inks; each button's inline roles stay the source values. */
-.atlas-demo .atlas-button {
-  --button-outlined-ink: var(--atlas-mode-dark, var(--button-edge))
-    var(--atlas-mode-light, var(--button-outline-ink));
-  --button-transparent-ink: var(--atlas-mode-dark, var(--button-transparent-light-ink))
-    var(--atlas-mode-light, var(--button-outline-ink));
+.genux-demo .genux-button {
+  --button-outlined-ink: var(--genux-mode-dark, var(--button-edge))
+    var(--genux-mode-light, var(--button-outline-ink));
+  --button-transparent-ink: var(--genux-mode-dark, var(--button-transparent-light-ink))
+    var(--genux-mode-light, var(--button-outline-ink));
 }
-.atlas-demo :is(.ant-btn-primary, .atlas-button)::before {
+.genux-demo :is(.ant-btn-primary, .genux-button)::before {
   content: '';
   position: absolute;
   inset: 0 0 var(--lip);
@@ -405,11 +405,11 @@
   transition: inset var(--release-duration) var(--motion-easing);
   pointer-events: none;
 }
-.atlas-demo :is(.ant-btn-primary, .atlas-button):is(:active, [data-pressed='true'])::before {
+.genux-demo :is(.ant-btn-primary, .genux-button):is(:active, [data-pressed='true'])::before {
   inset: var(--top-lip) 0 0;
   transition-duration: var(--press-duration);
 }
-.atlas-demo .atlas-button-lip {
+.genux-demo .genux-button-lip {
   position: absolute;
   inset: 0;
   overflow: hidden;
@@ -417,74 +417,74 @@
   pointer-events: none;
   z-index: -1;
 }
-.atlas-demo .atlas-button-lip::before,
-.atlas-demo .atlas-button-lip::after {
+.genux-demo .genux-button-lip::before,
+.genux-demo .genux-button-lip::after {
   content: '';
   position: absolute;
   inset-inline: 0;
   background: var(--button-edge);
   transition: height var(--release-duration) var(--motion-easing);
 }
-.atlas-demo .atlas-button-lip::before {
+.genux-demo .genux-button-lip::before {
   inset-block-start: 0;
   height: 0;
 }
-.atlas-demo .atlas-button-lip::after {
+.genux-demo .genux-button-lip::after {
   inset-block-end: 0;
   height: var(--lip);
 }
-.atlas-demo .atlas-button:is(:active, [data-pressed='true']) .atlas-button-lip::before {
+.genux-demo .genux-button:is(:active, [data-pressed='true']) .genux-button-lip::before {
   height: var(--top-lip);
   transition-duration: var(--press-duration);
 }
-.atlas-demo .atlas-button:is(:active, [data-pressed='true']) .atlas-button-lip::after {
+.genux-demo .genux-button:is(:active, [data-pressed='true']) .genux-button-lip::after {
   height: 0;
   transition-duration: var(--press-duration);
 }
-.atlas-demo :is(.ant-btn-primary, .atlas-button):is(:active, [data-pressed='true']) {
+.genux-demo :is(.ant-btn-primary, .genux-button):is(:active, [data-pressed='true']) {
   box-shadow: none;
   transition-duration: var(--press-duration);
 }
-.atlas-demo :is(.ant-btn-variant-outlined.atlas-button, .atlas-button-outlined) {
+.genux-demo :is(.ant-btn-variant-outlined.genux-button, .genux-button-outlined) {
   --button-border-width: var(--button-outline-border-width);
   border-color: var(--button-border-color, var(--button-edge)) !important;
 }
-.atlas-demo :is(.ant-btn-variant-outlined.atlas-button, .atlas-button-outlined)::before {
+.genux-demo :is(.ant-btn-variant-outlined.genux-button, .genux-button-outlined)::before {
   border-radius: max(0px, calc(var(--button-radius) - 1px));
 }
-.atlas-demo :is(.ant-btn-variant-text, .ant-btn-variant-link).atlas-button {
+.genux-demo :is(.ant-btn-variant-text, .ant-btn-variant-link).genux-button {
   background: transparent !important;
   color: var(--button-transparent-ink) !important;
   box-shadow: none;
 }
-.atlas-demo :is(.ant-btn-variant-text, .ant-btn-variant-link).atlas-button::before {
+.genux-demo :is(.ant-btn-variant-text, .ant-btn-variant-link).genux-button::before {
   content: none;
 }
-.atlas-demo .atlas-button[data-fill='link'] .atlas-button-content > span {
+.genux-demo .genux-button[data-fill='link'] .genux-button-content > span {
   text-decoration: underline;
   text-underline-offset: 0.2em;
 }
-.atlas-demo .ant-btn:disabled {
+.genux-demo .ant-btn:disabled {
   opacity: 0.42;
 }
-.atlas-demo .ant-btn-loading {
+.genux-demo .ant-btn-loading {
   opacity: 1;
 }
-.atlas-demo .atlas-button:disabled {
+.genux-demo .genux-button:disabled {
   opacity: var(--button-disabled-opacity);
   filter: grayscale(var(--button-disabled-grayscale));
   box-shadow: none;
 }
-.atlas-demo .atlas-button[aria-busy='true'] {
+.genux-demo .genux-button[aria-busy='true'] {
   opacity: var(--opacity-rest);
   /* AntD loading blocks activation; keep hit testing so the blocked cursor is visible. */
   pointer-events: auto;
 }
-.atlas-demo .atlas-button[data-color-preset]:not(:disabled) {
+.genux-demo .genux-button[data-color-preset]:not(:disabled) {
   /* Preserve the exact shared HWB seed and its verified foreground contrast. */
   opacity: 1;
 }
-.atlas-demo .atlas-button-progress {
+.genux-demo .genux-button-progress {
   position: absolute;
   inset: auto auto var(--button-progress-inset) 20%;
   width: 60%;
@@ -492,11 +492,11 @@
   background: currentColor;
   opacity: 0.7;
   transform-origin: left;
-  animation: atlas-button-progress var(--button-progress-duration) var(--motion-easing) infinite;
+  animation: genux-button-progress var(--button-progress-duration) var(--motion-easing) infinite;
   pointer-events: none;
 }
-.atlas-demo .ant-checkbox-wrapper,
-.atlas-demo .ant-radio-wrapper {
+.genux-demo .ant-checkbox-wrapper,
+.genux-demo .ant-radio-wrapper {
   min-height: var(--target-min);
   display: inline-flex;
   align-items: center;
@@ -505,22 +505,22 @@
   line-height: var(--line-height);
   opacity: var(--opacity-rest);
 }
-.atlas-demo .ant-checkbox-wrapper:hover,
-.atlas-demo .ant-radio-wrapper:hover {
+.genux-demo .ant-checkbox-wrapper:hover,
+.genux-demo .ant-radio-wrapper:hover {
   opacity: var(--opacity-hover);
 }
-.atlas-demo .ant-checkbox-group,
-.atlas-demo .ant-radio-group {
+.genux-demo .ant-checkbox-group,
+.genux-demo .ant-radio-group {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-md);
 }
-.atlas-demo .ant-checkbox-input:focus-visible + .ant-checkbox-inner,
-.atlas-demo .ant-radio-input:focus-visible + .ant-radio-inner {
+.genux-demo .ant-checkbox-input:focus-visible + .ant-checkbox-inner,
+.genux-demo .ant-radio-input:focus-visible + .ant-radio-inner {
   outline: none;
   box-shadow: none;
 }
-.atlas-demo .ant-radio-button-wrapper {
+.genux-demo .ant-radio-button-wrapper {
   height: auto;
   min-height: var(--target-min);
   line-height: var(--line-height);
@@ -529,26 +529,26 @@
   padding: 0.5rem 1rem;
   font-size: var(--text);
 }
-.atlas-demo .ant-radio-button-wrapper:focus-within {
+.genux-demo .ant-radio-button-wrapper:focus-within {
   box-shadow: none;
 }
-.atlas-demo .atlas-segmented {
+.genux-demo .genux-segmented {
   max-width: 100%;
   min-width: 0;
   overflow-x: auto;
   outline: none;
 }
-.atlas-demo .atlas-segmented .ant-segmented-group {
+.genux-demo .genux-segmented .ant-segmented-group {
   min-width: max-content;
   flex-wrap: nowrap;
   gap: 0;
 }
-.atlas-demo .atlas-segmented .ant-segmented-item {
+.genux-demo .genux-segmented .ant-segmented-item {
   min-width: max-content;
   outline: none;
   transition-duration: var(--segmented-motion-duration);
 }
-.atlas-demo .atlas-segmented .ant-segmented-item-label {
+.genux-demo .genux-segmented .ant-segmented-item-label {
   position: relative;
   display: flex;
   align-items: center;
@@ -561,88 +561,88 @@
   overflow: visible;
   text-overflow: clip;
 }
-.atlas-demo .atlas-segmented :is(.ant-segmented-item-selected, .ant-segmented-thumb) {
+.genux-demo .genux-segmented :is(.ant-segmented-item-selected, .ant-segmented-thumb) {
   box-shadow: var(--shadow-soft);
 }
-.atlas-demo .atlas-segmented .ant-segmented-thumb-motion-appear-active {
+.genux-demo .genux-segmented .ant-segmented-thumb-motion-appear-active {
   transition-duration: var(--segmented-motion-duration);
 }
-.atlas-demo .atlas-segmented .ant-segmented-item::after {
+.genux-demo .genux-segmented .ant-segmented-item::after {
   transition-duration: var(--segmented-motion-duration);
 }
-.atlas-demo .ant-switch {
+.genux-demo .ant-switch {
   min-width: 3rem;
   font-size: var(--text);
   margin-block: 0.75rem;
 }
-.atlas-demo label.control-row {
+.genux-demo label.control-row {
   min-height: var(--target-min);
 }
-.atlas-demo .ant-switch:focus {
+.genux-demo .ant-switch:focus {
   outline: none;
   box-shadow: none;
 }
-.atlas-demo .ant-switch .ant-switch-inner {
+.genux-demo .ant-switch .ant-switch-inner {
   font-size: var(--text);
 }
-.atlas-demo .ant-collapse {
+.genux-demo .ant-collapse {
   font-size: var(--text);
 }
-.atlas-demo .ant-collapse-header {
+.genux-demo .ant-collapse-header {
   min-height: var(--control-height);
   align-items: center !important;
 }
-.atlas-demo .ant-collapse-header:focus {
+.genux-demo .ant-collapse-header:focus {
   outline: none;
 }
-.atlas-demo .ant-collapse-header:focus-visible .ant-collapse-title {
+.genux-demo .ant-collapse-header:focus-visible .ant-collapse-title {
   text-decoration: underline;
   text-decoration-thickness: var(--focus-marker);
   text-underline-offset: 0.25em;
 }
-.atlas-demo .ant-collapse-content-box {
+.genux-demo .ant-collapse-content-box {
   line-height: var(--line-height);
 }
-.atlas-demo .ant-drawer-close {
+.genux-demo .ant-drawer-close {
   position: relative;
   min-height: var(--target-min);
   min-width: var(--target-min);
   outline: none;
 }
-.atlas-demo .ant-drawer-title {
+.genux-demo .ant-drawer-title {
   font-size: 1.25rem;
 }
-.atlas-demo .ant-drawer-body {
+.genux-demo .ant-drawer-body {
   font-size: var(--text);
   padding: var(--space-lg);
 }
-.atlas-demo .ant-drawer-content-wrapper {
+.genux-demo .ant-drawer-content-wrapper {
   max-width: 100vw;
   max-height: 100dvh;
   box-shadow: none;
 }
-.atlas-demo .ant-drawer-content {
+.genux-demo .ant-drawer-content {
   background: var(--panel);
 }
-.atlas-demo :where(.ant-spin, .ant-btn-loading-icon) * {
+.genux-demo :where(.ant-spin, .ant-btn-loading-icon) * {
   animation-timing-function: var(--motion-easing) !important;
 }
-.atlas-demo .anticon-spin,
-.atlas-select-popup .anticon-spin {
+.genux-demo .anticon-spin,
+.genux-select-popup .anticon-spin {
   animation-duration: var(--motion-duration-spin);
 }
-.atlas-demo,
-.atlas-demo *,
-.atlas-demo *::before,
-.atlas-demo *::after,
-.atlas-select-popup,
-.atlas-select-popup *,
-.atlas-select-popup *::before,
-.atlas-select-popup *::after {
+.genux-demo,
+.genux-demo *,
+.genux-demo *::before,
+.genux-demo *::after,
+.genux-select-popup,
+.genux-select-popup *,
+.genux-select-popup *::before,
+.genux-select-popup *::after {
   transition-timing-function: var(--motion-easing) !important;
   animation-timing-function: var(--motion-easing) !important;
 }
-.atlas-select-popup {
+.genux-select-popup {
   font-family: var(--font-body);
   font-size: var(--text);
   background: var(--panel);
@@ -650,9 +650,9 @@
   box-shadow: var(--shadow-soft), var(--shadow-flat-layer);
 }
 /* Shared non-modal backdrop. The overlay controller (docs/src/overlay-backdrop.ts) sets
-   data-atlas-overlay-open="true" while a user-opened layer is active and computes
-   --atlas-overlay-clip (clip-path holes for the bound popup + trigger) and
-   --atlas-overlay-active-z (modal-nested stacking). On close only the attribute drops; the
+   data-genux-overlay-open="true" while a user-opened layer is active and computes
+   --genux-overlay-clip (clip-path holes for the bound popup + trigger) and
+   --genux-overlay-active-z (modal-nested stacking). On close only the attribute drops; the
    clip and z stay until this fade really ends, so the fading scrim keeps the trigger hole.
    Outside pointer events still reach the native framework dismissal logic: the pseudo
    never receives pointer events. */
@@ -660,12 +660,12 @@ body::before {
   content: '';
   position: fixed;
   inset: 0;
-  z-index: var(--atlas-overlay-active-z, var(--overlay-scrim-z));
+  z-index: var(--genux-overlay-active-z, var(--overlay-scrim-z));
   pointer-events: none;
   background: transparent;
   -webkit-backdrop-filter: blur(0);
   backdrop-filter: blur(0);
-  clip-path: var(--atlas-overlay-clip, none);
+  clip-path: var(--genux-overlay-clip, none);
   /* Shared overlay motion roles: close duration at rest, open duration while a layer is
      active. Fallbacks keep the declaration valid where an alias is not declared. */
   transition:
@@ -676,20 +676,20 @@ body::before {
     backdrop-filter var(--overlay-close-duration, var(--release-duration))
       var(--overlay-easing, var(--motion-easing));
 }
-body[data-atlas-overlay-open='true']::before {
+body[data-genux-overlay-open='true']::before {
   background: var(--overlay-scrim);
   -webkit-backdrop-filter: blur(var(--overlay-backdrop-blur));
   backdrop-filter: blur(var(--overlay-backdrop-blur));
   transition-duration: var(--overlay-open-duration, var(--press-duration));
 }
 /* Open triggers stay above the scrim layer; only the control itself is lifted, never its Card. */
-.atlas-demo .ant-select-open {
+.genux-demo .ant-select-open {
   z-index: var(--overlay-trigger-z);
 }
-.atlas-demo .ant-picker-focused {
+.genux-demo .ant-picker-focused {
   z-index: var(--overlay-trigger-z);
 }
-.atlas-demo
+.genux-demo
   [aria-expanded='true']:is(.ant-dropdown-trigger, [aria-haspopup='menu'], [aria-haspopup='true']) {
   position: relative;
   z-index: var(--overlay-trigger-z);
@@ -757,19 +757,19 @@ body .ant-modal-root .ant-modal-mask.ant-fade-leave-active {
     pointer-events: none;
   }
 }
-.atlas-select-popup .ant-select-item {
+.genux-select-popup .ant-select-item {
   font-size: var(--text);
   min-height: var(--target-min);
   display: flex;
   align-items: center;
   white-space: normal;
 }
-.atlas-demo .button-playground {
+.genux-demo .button-playground {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--space-lg);
 }
-.atlas-demo .atlas-button-states {
+.genux-demo .genux-button-states {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   margin: 0;
@@ -781,7 +781,7 @@ body .ant-modal-root .ant-modal-mask.ant-fade-leave-active {
   border-radius: var(--radius);
   overflow: hidden;
 }
-.atlas-demo .atlas-button-states > li {
+.genux-demo .genux-button-states > li {
   display: grid;
   align-content: center;
   justify-items: center;
@@ -791,11 +791,11 @@ body .ant-modal-root .ant-modal-mask.ant-fade-leave-active {
   background: var(--panel);
   text-align: center;
 }
-.atlas-demo .atlas-button-states > li > p {
+.genux-demo .genux-button-states > li > p {
   margin: 0;
   color: var(--muted);
 }
-.atlas-demo .atlas-button-dimensions {
+.genux-demo .genux-button-dimensions {
   --button-dimension-min-width: 12rem;
   display: grid;
   grid-template-columns: repeat(
@@ -807,21 +807,21 @@ body .ant-modal-root .ant-modal-mask.ant-fade-leave-active {
   list-style: none;
   gap: var(--space-lg);
 }
-.atlas-demo .atlas-button-dimensions > li {
+.genux-demo .genux-button-dimensions > li {
   display: grid;
   gap: var(--space-sm);
   min-width: 0;
 }
-.atlas-demo .atlas-button-dimension-preview {
+.genux-demo .genux-button-dimension-preview {
   display: flex;
   align-items: center;
   min-width: 0;
 }
-.atlas-demo .atlas-button-dimensions > li > p {
+.genux-demo .genux-button-dimensions > li > p {
   margin: 0;
   color: var(--muted);
 }
-.atlas-demo .playground-preview {
+.genux-demo .playground-preview {
   min-width: 0;
   min-height: 10rem;
   display: flex;
@@ -833,75 +833,75 @@ body .ant-modal-root .ant-modal-mask.ant-fade-leave-active {
   padding: var(--space-lg);
   border-radius: var(--radius);
 }
-.atlas-demo .playground-controls {
+.genux-demo .playground-controls {
   /* Intrinsic columns follow the available panel width, not the viewport. */
   --playground-control-min: 14rem;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--playground-control-min)), 1fr));
   gap: var(--space-md);
 }
-.atlas-demo .playground-controls label,
-.atlas-demo .playground-control {
+.genux-demo .playground-controls label,
+.genux-demo .playground-control {
   display: grid;
   gap: var(--space-xs);
 }
-.atlas-demo .state-grid {
+.genux-demo .state-grid {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-lg);
 }
-.atlas-demo .state-grid > div {
+.genux-demo .state-grid > div {
   display: grid;
   gap: var(--space-xs);
 }
-.atlas-demo svg.atlas-icon {
+.genux-demo svg.genux-icon {
   width: var(--icon-optical-size, 1.25rem);
   height: var(--icon-optical-size, 1.25rem);
   fill: currentColor;
 }
-.atlas-demo [data-icon-motion='spin'] {
-  animation: atlas-spin var(--motion-duration-spin) var(--motion-easing) infinite;
+.genux-demo [data-icon-motion='spin'] {
+  animation: genux-spin var(--motion-duration-spin) var(--motion-easing) infinite;
 }
-.atlas-demo [data-icon-motion='pulse'] {
-  animation: atlas-pulse var(--motion-duration-pulse) var(--motion-easing) infinite;
+.genux-demo [data-icon-motion='pulse'] {
+  animation: genux-pulse var(--motion-duration-pulse) var(--motion-easing) infinite;
 }
-.atlas-demo [data-icon-position='top'] .atlas-button-content,
-.atlas-demo [data-icon-position='bottom'] .atlas-button-content {
+.genux-demo [data-icon-position='top'] .genux-button-content,
+.genux-demo [data-icon-position='bottom'] .genux-button-content {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.4rem;
 }
-.atlas-demo [data-icon-position='bottom'] .atlas-icon {
+.genux-demo [data-icon-position='bottom'] .genux-icon {
   order: 1;
 }
-.atlas-demo [data-icon-position='right'] .atlas-icon {
+.genux-demo [data-icon-position='right'] .genux-icon {
   order: 1;
 }
-.atlas-demo .atlas-button-content {
+.genux-demo .genux-button-content {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.625rem;
 }
-.atlas-demo .atlas-button:is(:active, [data-pressed='true']) {
+.genux-demo .genux-button:is(:active, [data-pressed='true']) {
   box-shadow: var(--button-pressed-shadow, none);
 }
-.atlas-demo .atlas-button-visuals {
+.genux-demo .genux-button-visuals {
   list-style: none;
   padding: 0;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
   gap: var(--space-lg);
 }
-.atlas-demo .atlas-button-visuals > li {
+.genux-demo .genux-button-visuals > li {
   min-width: 0;
   display: grid;
   justify-items: start;
   gap: var(--space-sm);
 }
-.atlas-demo .atlas-button-group {
+.genux-demo .genux-button-group {
   --button-group-padding: var(--space-xs);
   width: 100%;
   max-width: 100%;
@@ -911,16 +911,16 @@ body .ant-modal-root .ant-modal-mask.ant-fade-leave-active {
   border: 0;
   border-radius: var(--button-group-radius);
 }
-.atlas-demo .atlas-button-group .ant-segmented-group {
+.genux-demo .genux-button-group .ant-segmented-group {
   width: 100%;
   min-width: 0;
 }
-.atlas-demo .atlas-button-group .ant-segmented-item {
+.genux-demo .genux-button-group .ant-segmented-item {
   flex: 1 1 0;
   min-width: 0;
   border-radius: var(--button-group-radius);
 }
-.atlas-demo .atlas-button-group .ant-segmented-item-label {
+.genux-demo .genux-button-group .ant-segmented-item-label {
   min-width: 0;
   min-height: var(--button-group-height);
   padding: var(--space-xs);
@@ -928,21 +928,21 @@ body .ant-modal-root .ant-modal-mask.ant-fade-leave-active {
   overflow-wrap: normal;
   word-break: normal;
 }
-.atlas-demo .atlas-button-group :is(.ant-segmented-item-selected, .ant-segmented-thumb) {
+.genux-demo .genux-button-group :is(.ant-segmented-item-selected, .ant-segmented-thumb) {
   background: var(--panel);
   border-radius: var(--button-group-radius);
   box-shadow: var(--shadow-soft);
 }
-.atlas-demo .atlas-button-group.ant-segmented-disabled .ant-segmented-item-label,
-.atlas-demo .atlas-button-group .ant-segmented-item-disabled .ant-segmented-item-label {
+.genux-demo .genux-button-group.ant-segmented-disabled .ant-segmented-item-label,
+.genux-demo .genux-button-group .ant-segmented-item-disabled .ant-segmented-item-label {
   color: var(--muted);
 }
-.atlas-demo .atlas-pill-list {
+.genux-demo .genux-pill-list {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-xs);
 }
-.atlas-demo .atlas-pill {
+.genux-demo .genux-pill {
   display: inline-flex;
   align-items: center;
   gap: var(--space-xs);
@@ -957,30 +957,30 @@ body .ant-modal-root .ant-modal-mask.ant-fade-leave-active {
   border-radius: var(--pill-radius, var(--radius));
   white-space: normal;
 }
-.atlas-demo .atlas-pill[data-pill-legacy] {
+.genux-demo .genux-pill[data-pill-legacy] {
   color: var(--pill-ink, var(--ink));
   background: var(--pill-bg, var(--surface));
   border: 1px solid transparent;
 }
 /* Managed color roles apply only to docs; native semantic styles remain last. */
-.atlas-demo[data-atlas-appearance='docs'] .atlas-pill.ant-tag[data-pill-managed] {
+.genux-demo[data-genux-appearance='docs'] .genux-pill.ant-tag[data-pill-managed] {
   color: var(--pill-ink);
   background: var(--pill-bg);
   border-color: var(--pill-border);
 }
-.atlas-demo[data-atlas-appearance='docs']
-  .atlas-pill.ant-tag.atlas-pill-checkable[aria-checked='false'] {
+.genux-demo[data-genux-appearance='docs']
+  .genux-pill.ant-tag.genux-pill-checkable[aria-checked='false'] {
   color: var(--muted);
   background: transparent;
   border-color: var(--control-boundary);
 }
-.atlas-demo[data-atlas-appearance='docs']
-  .atlas-pill.ant-tag.atlas-pill-checkable[aria-checked='true'] {
+.genux-demo[data-genux-appearance='docs']
+  .genux-pill.ant-tag.genux-pill-checkable[aria-checked='true'] {
   border-color: var(--pill-ink);
 }
 /* Visible geometry follows the pill size profile (32/40/48); only the inline extent keeps
    the target minimum. */
-.atlas-demo .atlas-pill-checkable {
+.genux-demo .genux-pill-checkable {
   min-width: var(--target-min);
   min-height: var(--pill-height, var(--pill-min-height));
   position: relative;
@@ -990,7 +990,7 @@ body .ant-modal-root .ant-modal-mask.ant-fade-leave-active {
    target at least --target-min tall for every pointer type. Pseudo-element hits resolve to
    the pill itself, so native activation, tab order and key handling are unchanged; it has no
    fill, edge or outline. ::after stays the single focus marker. */
-.atlas-demo .atlas-pill-checkable::before {
+.genux-demo .genux-pill-checkable::before {
   content: '';
   position: absolute;
   inset-inline: 0;
@@ -1000,23 +1000,23 @@ body .ant-modal-root .ant-modal-mask.ant-fade-leave-active {
   background: transparent;
 }
 /* Wrapped rows leave room for the extended hit areas so adjacent targets never overlap. */
-.atlas-demo .atlas-pill-list:has(> .atlas-pill-checkable) {
+.genux-demo .genux-pill-list:has(> .genux-pill-checkable) {
   row-gap: max(var(--space-xs), calc(var(--target-min) - var(--pill-min-height)));
 }
-.atlas-demo .atlas-pill-checkable:has(.atlas-pill-label:empty) {
+.genux-demo .genux-pill-checkable:has(.genux-pill-label:empty) {
   justify-content: center;
   gap: 0;
 }
-.atlas-demo .atlas-pill-checkable:has(.atlas-pill-label:empty) > :last-child {
+.genux-demo .genux-pill-checkable:has(.genux-pill-label:empty) > :last-child {
   margin-inline-start: 0;
 }
-.atlas-demo .atlas-pill-checkable[aria-disabled='true'] {
+.genux-demo .genux-pill-checkable[aria-disabled='true'] {
   cursor: not-allowed;
 }
-.atlas-demo .atlas-pill-checkable:focus-visible {
+.genux-demo .genux-pill-checkable:focus-visible {
   outline: none;
 }
-.atlas-demo .atlas-pill-checkable:focus-visible::after {
+.genux-demo .genux-pill-checkable:focus-visible::after {
   content: '';
   position: absolute;
   inset-block: 25%;
@@ -1024,14 +1024,14 @@ body .ant-modal-root .ant-modal-mask.ant-fade-leave-active {
   width: var(--focus-marker);
   background: currentColor;
 }
-.atlas-demo .atlas-pill-label {
+.genux-demo .genux-pill-label {
   min-width: 0;
   overflow-wrap: break-word;
 }
-.atlas-demo .atlas-pill.ant-tag-hidden {
+.genux-demo .genux-pill.ant-tag-hidden {
   display: none;
 }
-.atlas-demo .atlas-pill .atlas-pill-close {
+.genux-demo .genux-pill .genux-pill-close {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1044,31 +1044,31 @@ body .ant-modal-root .ant-modal-mask.ant-fade-leave-active {
   /* Its single inset focus marker must appear and disappear immediately. */
   transition-property: background-color, border-color, color, opacity;
 }
-.atlas-demo .atlas-pill-close-icon {
+.genux-demo .genux-pill-close-icon {
   width: var(--pill-close-icon-size);
   height: var(--pill-close-icon-size);
 }
-.atlas-demo .atlas-pill .atlas-pill-close:focus-visible {
+.genux-demo .genux-pill .genux-pill-close:focus-visible {
   outline: none;
   text-decoration: none;
   box-shadow: inset 0 calc(-1 * var(--focus-marker)) 0 currentColor;
 }
 @media (any-pointer: coarse) {
-  .atlas-demo {
+  .genux-demo {
     --pill-close-size: 2.75rem;
   }
 }
-@keyframes atlas-spin {
+@keyframes genux-spin {
   to {
     rotate: 360deg;
   }
 }
-@keyframes atlas-pulse {
+@keyframes genux-pulse {
   50% {
     opacity: 0.65;
   }
 }
-@keyframes atlas-button-progress {
+@keyframes genux-button-progress {
   0%,
   100% {
     transform: scaleX(0.2);
@@ -1080,12 +1080,12 @@ body .ant-modal-root .ant-modal-mask.ant-fade-leave-active {
   }
 }
 @media (min-width: 30rem) {
-  .atlas-demo .atlas-button-states {
+  .genux-demo .genux-button-states {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 @media (min-width: 48rem) {
-  .atlas-demo .atlas-button-states {
+  .genux-demo .genux-button-states {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
@@ -1093,34 +1093,34 @@ body .ant-modal-root .ant-modal-mask.ant-fade-leave-active {
    preview and its shared workbench (.example-preview) are the preview, never the control
    panel; a Tweaker-hosted control panel leaves the preview on the full row. */
 @media (min-width: 48rem) {
-  .atlas-demo .button-playground:has(> :not(.playground-preview, .example-preview, p)) {
+  .genux-demo .button-playground:has(> :not(.playground-preview, .example-preview, p)) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: start;
   }
-  .atlas-demo .button-playground > :not(.playground-preview, .example-preview, p) {
+  .genux-demo .button-playground > :not(.playground-preview, .example-preview, p) {
     grid-column: 1;
     grid-row: 1;
   }
-  .atlas-demo
+  .genux-demo
     .button-playground:has(> :not(.playground-preview, .example-preview, p))
     > :is(.playground-preview, .example-preview) {
     grid-column: 2;
     grid-row: 1;
   }
-  .atlas-demo .button-playground > p {
+  .genux-demo .button-playground > p {
     grid-column: 1 / -1;
   }
 }
 @media (max-width: 39.999rem) {
-  .atlas-demo .ant-form-horizontal .ant-form-item-row {
+  .genux-demo .ant-form-horizontal .ant-form-item-row {
     display: block;
   }
-  .atlas-demo .ant-form-horizontal .ant-form-item-label {
+  .genux-demo .ant-form-horizontal .ant-form-item-label {
     text-align: start;
     padding-bottom: var(--space-xs);
   }
-  .atlas-demo .ant-form-horizontal .ant-form-item-label,
-  .atlas-demo .ant-form-horizontal .ant-form-item-control {
+  .genux-demo .ant-form-horizontal .ant-form-item-label,
+  .genux-demo .ant-form-horizontal .ant-form-item-control {
     max-width: 100%;
     flex: none;
   }
@@ -1172,31 +1172,31 @@ body .ant-modal-root .ant-modal-mask.ant-fade-leave-active {
       .ant-notification
     )
     *::after,
-  .atlas-demo,
-  .atlas-demo *,
-  .atlas-demo *::before,
-  .atlas-demo *::after,
-  .atlas-select-popup,
-  .atlas-select-popup *,
-  .atlas-select-popup *::before,
-  .atlas-select-popup *::after {
+  .genux-demo,
+  .genux-demo *,
+  .genux-demo *::before,
+  .genux-demo *::after,
+  .genux-select-popup,
+  .genux-select-popup *,
+  .genux-select-popup *::before,
+  .genux-select-popup *::after {
     transition-duration: 0s !important;
     animation: none !important;
   }
 }
 @media (any-pointer: coarse) {
-  .atlas-demo :is(.ant-btn-sm, .atlas-button[data-size='compact'])::after {
+  .genux-demo :is(.ant-btn-sm, .genux-button[data-size='compact'])::after {
     content: '';
     position: absolute;
     inset: -0.125rem 0;
   }
 }
 
-.atlas-demo .atlas-segmented .ant-segmented-item-label {
-  min-height: var(--atlas-segmented-height, var(--target-min));
+.genux-demo .genux-segmented .ant-segmented-item-label {
+  min-height: var(--genux-segmented-height, var(--target-min));
 }
 
-.atlas-demo .kit-date-field {
+.genux-demo .kit-date-field {
   width: 100%;
   min-width: 0;
   min-height: var(--field-height);
@@ -1204,44 +1204,43 @@ body .ant-modal-root .ant-modal-mask.ant-fade-leave-active {
   border-radius: var(--input-radius, var(--radius));
   font-size: var(--text);
 }
-.atlas-select-popup.kit-date-popup .ant-picker-cell-inner {
+.genux-select-popup.kit-date-popup .ant-picker-cell-inner {
   min-width: 2rem;
   min-height: 2rem;
   line-height: 2rem;
   font-size: var(--text);
 }
 
-.atlas-demo .kit-readonly-value {
+.genux-demo .kit-readonly-value {
   cursor: var(--readonly-cursor, text);
 }
 
 /* Empty states: native Empty on neutral tokens, a reading measure and no decorative frame. */
-.atlas-demo .atlas-content-examples {
+.genux-demo .genux-content-examples {
   display: grid;
   gap: var(--space-xl);
   min-width: 0;
 }
-.atlas-demo .atlas-content-examples > section {
+.genux-demo .genux-content-examples > section {
   display: grid;
   gap: var(--space-md);
   min-width: 0;
 }
-.atlas-demo .atlas-content-examples :is(h3, p, ul) {
+.genux-demo .genux-content-examples :is(h3, p, ul) {
   margin: 0;
 }
-.atlas-demo .atlas-content-examples ul {
+.genux-demo .genux-content-examples ul {
   padding-inline-start: var(--space-lg);
 }
 /* Programmatic result focus shows one immediate underline, never an enclosing ring. */
-.atlas-demo .atlas-empty-state-result:focus {
+.genux-demo .genux-empty-state-result:focus {
   outline: none;
   text-decoration: underline;
   text-decoration-color: var(--focus-color);
   text-decoration-thickness: var(--focus-marker);
   text-underline-offset: var(--space-xs);
-  transition: none;
 }
-.atlas-demo .atlas-empty-state {
+.genux-demo .genux-empty-state {
   max-inline-size: var(--reading-width, 40rem);
   margin: 0 auto;
   padding-block: var(--space-lg);
@@ -1253,7 +1252,7 @@ body .ant-modal-root .ant-modal-mask.ant-fade-leave-active {
   line-height: var(--line-height);
   text-align: center;
 }
-.atlas-demo .atlas-empty-state .ant-empty-image {
+.genux-demo .genux-empty-state .ant-empty-image {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1263,18 +1262,18 @@ body .ant-modal-root .ant-modal-mask.ant-fade-leave-active {
   opacity: 1;
 }
 /* The image slot keeps --control-height; the centred glyph uses an optical icon size. */
-.atlas-demo .atlas-empty-state svg.atlas-icon {
+.genux-demo .genux-empty-state svg.genux-icon {
   width: var(--icon-size, calc(var(--control-height) / 2));
   height: var(--icon-size, calc(var(--control-height) / 2));
 }
-.atlas-demo .atlas-empty-state .ant-empty-description {
+.genux-demo .genux-empty-state .ant-empty-description {
   color: var(--ink);
 }
-.atlas-demo .atlas-empty-state-text {
+.genux-demo .genux-empty-state-text {
   display: grid;
   gap: var(--space-xs);
 }
-.atlas-demo .atlas-empty-state-title {
+.genux-demo .genux-empty-state-title {
   margin: 0;
   font-size: var(--text-large, 1.125rem);
   font-weight: var(--font-weight-label, 550);
@@ -1282,7 +1281,7 @@ body .ant-modal-root .ant-modal-mask.ant-fade-leave-active {
   overflow-wrap: break-word;
 }
 /* Long descriptions wrap start-aligned within a bounded measure; short text stays visually centred. */
-.atlas-demo .atlas-empty-state-description {
+.genux-demo .genux-empty-state-description {
   justify-self: center;
   max-inline-size: var(--prose-measure, 65ch);
   margin: 0;
@@ -1290,7 +1289,7 @@ body .ant-modal-root .ant-modal-mask.ant-fade-leave-active {
   text-align: start;
   overflow-wrap: break-word;
 }
-.atlas-demo .atlas-empty-state .ant-empty-footer {
+.genux-demo .genux-empty-state .ant-empty-footer {
   display: flex;
   justify-content: center;
   margin-block-start: var(--space-md);

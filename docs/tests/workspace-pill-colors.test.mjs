@@ -6,7 +6,7 @@ const entry = 'docs/src/react/workspace/CollectionDemo.tsx';
 const pillColor = pill => pill.getAttribute('data-pill-color');
 function statusColors(document) {
   const colors = new Map();
-  const pills = [...document.querySelectorAll('[data-collection-view] .atlas-pill')];
+  const pills = [...document.querySelectorAll('[data-collection-view] .genux-pill')];
   for (const pill of pills) {
     const label = pill.textContent.trim();
     if (colors.has(label)) assert.equal(pillColor(pill), colors.get(label), label);
@@ -16,7 +16,7 @@ function statusColors(document) {
 }
 function totalColors(document) {
   return new Map(
-    [...document.querySelectorAll('.atlas-pill')]
+    [...document.querySelectorAll('.genux-pill')]
       .filter(pill => /^(USD|EUR):/.test(pill.textContent.trim()))
       .map(pill => [pill.textContent.trim().slice(0, 3), pillColor(pill)]),
   );
@@ -75,11 +75,11 @@ test('workspace status and currency labels have distinct shared-palette colors b
     currencies,
     'sorting changes total order, not color identity',
   );
-  const pending = [...h.document.querySelectorAll('.collection-col-status .atlas-pill')].find(
+  const pending = [...h.document.querySelectorAll('.collection-col-status .genux-pill')].find(
     pill => pill.textContent.trim() === 'Pending approval',
   );
   await h.click(h.document.querySelector('#collection-open-SP-26-0401'));
-  const detail = h.document.querySelector('[data-record-summary] .atlas-pill');
+  const detail = h.document.querySelector('[data-record-summary] .genux-pill');
   assert.equal(
     pillColor(detail),
     pillColor(pending),
@@ -88,7 +88,7 @@ test('workspace status and currency labels have distinct shared-palette colors b
   for (const mode of ['dark', 'light']) {
     await h.act(() => {
       h.document.documentElement.dataset.theme = mode;
-      h.window.dispatchEvent(new h.window.Event('atlas-theme-change'));
+      h.window.dispatchEvent(new h.window.Event('genux-theme-change'));
     });
     assert.deepEqual(statusColors(h.document), statuses);
   }

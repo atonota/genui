@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Collapse, Select } from 'antd';
-import Input from '../AtlasInput';
-import { Drawer, Modal } from '../AtlasOverlay';
+import Input from '../GenUXInput';
+import { Drawer, Modal } from '../GenUXOverlay';
 import { toggleCollapseOnSpace } from '../keyboard';
 import {
   dateText,
@@ -13,15 +13,15 @@ import {
   type WorkspaceRecord,
 } from '../../data/workspace';
 import { normalizeSearch } from '../../i18n';
-import AtlasButton from '../AtlasButton';
-import AtlasSplitter from '../AtlasSplitter';
-import AtlasIcon from '../AtlasIcon';
-import AtlasClearIcon from '../AtlasClearIcon';
-import AtlasProvider, { useAtlasAppearance } from '../AtlasProvider';
+import GenUXButton from '../GenUXButton';
+import GenUXSplitter from '../GenUXSplitter';
+import GenUXIcon from '../GenUXIcon';
+import GenUXClearIcon from '../GenUXClearIcon';
+import GenUXProvider, { useGenUXAppearance } from '../GenUXProvider';
 import ExamplePreview from '../ExamplePreview';
 import { selectedLabel } from '../selectedLabel';
 import { useI18n } from '../useI18n';
-import { TweakerSettings } from '../AtlasTweaker';
+import { TweakerSettings } from '../GenUXTweaker';
 import RecordSummary from './RecordSummary';
 import WorkspaceFrame, { type WorkspaceProfile } from './WorkspaceFrame';
 
@@ -211,7 +211,7 @@ function DetailContent({
           <ul className="workspace-details-related">
             {related.map(item => (
               <li key={item.id}>
-                <AtlasButton
+                <GenUXButton
                   fill="text"
                   text={`${item.id} · ${item.customer}`}
                   onClick={() => onOpenRelated(item.id)}
@@ -296,7 +296,7 @@ function DetailContent({
 
 export function RecordDetailsExamples() {
   const { t } = useI18n();
-  const appearance = useAtlasAppearance();
+  const appearance = useGenUXAppearance();
   const [records, setRecords] = useState(initialRecords);
   const [drafts, setDrafts] = useState<Record<string, Draft>>(() =>
     Object.fromEntries(records.map(record => [record.id, draftOf(record)])),
@@ -434,7 +434,7 @@ export function RecordDetailsExamples() {
           <p>{record.customer}</p>
         </div>
         <div className="control-row" role="group" aria-label={t('Record navigation')}>
-          <AtlasButton
+          <GenUXButton
             id="details-previous"
             fill="text"
             text={t('Previous record')}
@@ -449,7 +449,7 @@ export function RecordDetailsExamples() {
               ? t('Record is outside the current results.')
               : t('Record {current} of {total}', { current: position + 1, total: visible.length })}
           </span>
-          <AtlasButton
+          <GenUXButton
             id="details-next"
             fill="text"
             text={t('Next record')}
@@ -459,7 +459,7 @@ export function RecordDetailsExamples() {
               setActiveId(visible[position + 1]!.id);
             }}
           />
-          <AtlasButton
+          <GenUXButton
             id="details-close"
             fill="text"
             text={t(container === 'page' ? 'Back to results' : 'Close details')}
@@ -478,7 +478,7 @@ export function RecordDetailsExamples() {
                     <>
                       <div role="group" aria-label={t('Presentation')} className="control-row">
                         {presentations.map(item => (
-                          <AtlasButton
+                          <GenUXButton
                             key={item.value}
                             fill={presentation === item.value ? 'tint' : 'text'}
                             text={t(item.label)}
@@ -489,7 +489,7 @@ export function RecordDetailsExamples() {
                       </div>
                       <div role="group" aria-label={t('Detail content')} className="control-row">
                         {contents.map(item => (
-                          <AtlasButton
+                          <GenUXButton
                             key={item.value}
                             fill={content === item.value ? 'tint' : 'text'}
                             text={t(item.label)}
@@ -524,7 +524,7 @@ export function RecordDetailsExamples() {
               : t('No unsaved changes for this record.')}
           </p>
           {!editing[record.id] && (
-            <AtlasButton
+            <GenUXButton
               id="details-edit"
               fill="text"
               text={t('Edit locally')}
@@ -583,12 +583,12 @@ export function RecordDetailsExamples() {
                 />
               </div>
               <div className="control-row">
-                <AtlasButton
+                <GenUXButton
                   id="details-save"
                   text={t('Validate and save locally')}
                   htmlType="submit"
                 />
-                <AtlasButton
+                <GenUXButton
                   id="details-cancel"
                   fill="text"
                   text={t('Discard this draft')}
@@ -629,7 +629,7 @@ export function RecordDetailsExamples() {
         <ol className="workspace-details-list">
           {visible.map(item => (
             <li key={item.id} data-active={open && activeId === item.id}>
-              <AtlasButton
+              <GenUXButton
                 id={`details-open-${item.id}`}
                 data-record-open={item.id}
                 fill={open && activeId === item.id ? 'tint' : 'text'}
@@ -704,7 +704,7 @@ export function RecordDetailsExamples() {
               value={query}
               onChange={event => setQuery(event.target.value)}
               placeholder={t('Order ID, customer, owner or city')}
-              allowClear={appearance === 'docs' ? { clearIcon: <AtlasClearIcon /> } : true}
+              allowClear={appearance === 'docs' ? { clearIcon: <GenUXClearIcon /> } : true}
             />
           </div>
           <TweakerSettings title="Change presentation or content">
@@ -736,7 +736,7 @@ export function RecordDetailsExamples() {
           )}
         </p>
         {resizable ? (
-          <AtlasSplitter
+          <GenUXSplitter
             id="record-details-splitter"
             className="workspace-details-splitter"
             label={t('Record browser and details')}
@@ -767,7 +767,7 @@ export function RecordDetailsExamples() {
         )}
         {container === 'modal' && (
           <Modal
-            rootClassName="atlas-demo live-preview workspace-lab workspace-overlay workspace-details-overlay"
+            rootClassName="genux-demo live-preview workspace-lab workspace-overlay workspace-details-overlay"
             title={t('Record details')}
             open={open}
             onCancel={close}
@@ -775,7 +775,7 @@ export function RecordDetailsExamples() {
             keyboard
             focusable={{ trap: true, focusTriggerAfterClose: true }}
             mask={{ closable: true }}
-            closeIcon={<AtlasIcon name="x" />}
+            closeIcon={<GenUXIcon name="x" />}
             closable={{ 'aria-label': t('Close details') }}
             destroyOnHidden
             footer={null}
@@ -788,7 +788,7 @@ export function RecordDetailsExamples() {
           container === 'bottom-sheet' ||
           container === 'top-sheet') && (
           <Drawer
-            rootClassName="atlas-demo live-preview workspace-lab workspace-overlay workspace-details-overlay"
+            rootClassName="genux-demo live-preview workspace-lab workspace-overlay workspace-details-overlay"
             title={t('Record details')}
             open={open}
             placement={
@@ -808,7 +808,7 @@ export function RecordDetailsExamples() {
             keyboard
             focusable={{ trap: true, focusTriggerAfterClose: true }}
             mask={{ closable: true }}
-            closeIcon={<AtlasIcon name="x" />}
+            closeIcon={<GenUXIcon name="x" />}
             closable={{ 'aria-label': t('Close details') }}
             destroyOnHidden
           >
@@ -824,10 +824,10 @@ export default function RecordDetailsDemo({
   documentation = false,
 }: { documentation?: boolean } = {}) {
   return (
-    <AtlasProvider appearance={documentation ? 'docs' : undefined}>
+    <GenUXProvider appearance={documentation ? 'docs' : undefined}>
       <ExamplePreview id="record-details-workspace" title="Record detail presentations">
         <RecordDetailsExamples />
       </ExamplePreview>
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }

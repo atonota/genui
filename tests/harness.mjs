@@ -5,7 +5,7 @@ export function setup(html, { storage } = {}) {
   const dom = new JSDOM(html, {
     runScripts: 'outside-only',
     pretendToBeVisual: true,
-    url: 'https://atlas.test/',
+    url: 'https://genux.test/',
   });
   const { window } = dom;
   window.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {} });
@@ -52,7 +52,7 @@ export function setup(html, { storage } = {}) {
 // Explicitly no layout engine, resource loading, screenshots, or browser automation.
 export function record(h) {
   const clone = h.doc.body.cloneNode(true);
-  const localeDictionary = clone.querySelector('#atlas-i18n-tr');
+  const localeDictionary = clone.querySelector('#genux-i18n-tr');
   if (
     localeDictionary?.nextSibling?.nodeType === 3 &&
     localeDictionary.nextSibling.nodeValue === '\n'

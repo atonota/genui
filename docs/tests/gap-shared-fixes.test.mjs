@@ -13,7 +13,7 @@ test('native actions and label-less choices keep an immediate single-edge keyboa
   sheet.walkRules(rule => rules.push(rule));
   const action = rules.find(
     rule =>
-      rule.selector.includes('.ant-btn:not(:has(.atlas-button-content))') &&
+      rule.selector.includes('.ant-btn:not(:has(.genux-button-content))') &&
       rule.selector.includes(':focus-visible') &&
       rule.selector.includes('::before'),
   );

@@ -1,8 +1,10 @@
+import { readMigratedItem } from './storage-migration';
+
 export type Locale = 'en' | 'tr';
 export type MessageParams = Readonly<Record<string, string | number>>;
 export const DEFAULT_LOCALE: Locale = 'en';
-export const LOCALE_STORAGE_KEY = 'atlas-locale';
-const LOCALE_EVENT = 'atlas-locale-change';
+export const LOCALE_STORAGE_KEY = 'genux-locale';
+const LOCALE_EVENT = 'genux-locale-change';
 let turkishMessages: Readonly<Record<string, string>> | undefined;
 let turkishPromise: Promise<Readonly<Record<string, string>>> | undefined;
 let requestVersion = 0;
@@ -77,7 +79,7 @@ export async function restoreLocale(): Promise<void> {
   if (typeof window === 'undefined') return;
   let locale: Locale = DEFAULT_LOCALE;
   try {
-    if (window.localStorage.getItem(LOCALE_STORAGE_KEY) === 'tr') locale = 'tr';
+    if (readMigratedItem(window.localStorage, LOCALE_STORAGE_KEY) === 'tr') locale = 'tr';
   } catch {
     // English remains the default when preference storage is unavailable.
   }

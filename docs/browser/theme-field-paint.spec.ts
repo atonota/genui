@@ -25,10 +25,10 @@ const DIRECTIONS: readonly (readonly [ThemeMode, ThemeMode])[] = [
 const THEME_TOGGLE = '[data-theme-toggle]';
 /** Field paint owners on /components/input/: frame, filled Select, stepper, validation frame. */
 const FIELD_SELECTORS: readonly string[] = [
-  '.atlas-input-frame[data-atlas-input]',
+  '.genux-input-frame[data-genux-input]',
   '.ant-select .ant-select-selector',
-  '.atlas-number-stepper',
-  '.atlas-input-frame[data-atlas-input]:has([aria-invalid=true])',
+  '.genux-number-stepper',
+  '.genux-input-frame[data-genux-input]:has([aria-invalid=true])',
 ];
 const PAINT_KEYS = ['boxShadow', 'backgroundColor', 'color', 'borderBottomColor'] as const;
 
@@ -57,14 +57,14 @@ type Recorder = { frames: Frame[]; sample: () => Frame; stop: () => void };
 
 declare global {
   interface Window {
-    __atlasFieldPaint: Recorder;
+    __genuxFieldPaint: Recorder;
   }
 }
 
 /** Runs at document start in every page of the context; it cannot see the outer scope. */
 function installRecorder({ mode, selectors }: { mode: ThemeMode; selectors: readonly string[] }) {
   try {
-    window.localStorage.setItem('atlas-theme', mode);
+    window.localStorage.setItem('genux-theme', mode);
   } catch {
     // The page bootstrap falls back to prefers-color-scheme; the tests assert the root theme.
   }
@@ -94,7 +94,7 @@ function installRecorder({ mode, selectors }: { mode: ThemeMode; selectors: read
   const sample = (): Frame => {
     const root = document.documentElement as HTMLElement | null;
     const first = document.querySelector(selectors.join(','));
-    const demo = first?.closest<HTMLElement>('.atlas-demo') ?? null;
+    const demo = first?.closest<HTMLElement>('.genux-demo') ?? null;
     const frame: Frame = {
       index: frames.length,
       t: performance.now(),
@@ -103,7 +103,7 @@ function installRecorder({ mode, selectors }: { mode: ThemeMode; selectors: read
       rootPaint: root?.dataset.themePaint ?? null,
       ssrPending: document.querySelector('astro-island[ssr]') !== null,
       demoMode: demo?.dataset.themeMode ?? null,
-      inlineInnerShadow: demo?.style.getPropertyValue('--atlas-input-inner-shadow') || null,
+      inlineInnerShadow: demo?.style.getPropertyValue('--genux-input-inner-shadow') || null,
       first: first
         ? read(selectors.find(selector => first.matches(selector)) ?? 'unknown', first)
         : null,
@@ -121,7 +121,7 @@ function installRecorder({ mode, selectors }: { mode: ThemeMode; selectors: read
     window.requestAnimationFrame(loop);
   };
   window.requestAnimationFrame(loop);
-  window.__atlasFieldPaint = {
+  window.__genuxFieldPaint = {
     frames,
     sample,
     stop: () => {
@@ -185,10 +185,10 @@ test('reload: the first field paints its settled theme palette from the first rA
     await attachShot(testInfo, `reload-${mode}-early.png`, page);
     await waitForSettle(page);
     const settled = await page.evaluate(() => {
-      window.__atlasFieldPaint.stop();
-      return window.__atlasFieldPaint.sample();
+      window.__genuxFieldPaint.stop();
+      return window.__genuxFieldPaint.sample();
     });
-    const frames = await page.evaluate(() => window.__atlasFieldPaint.frames);
+    const frames = await page.evaluate(() => window.__genuxFieldPaint.frames);
     await attachShot(testInfo, `reload-${mode}-settled.png`, page);
     await attachJson(testInfo, `reload-${mode}-raf-sequence.json`, { settled, frames });
 
@@ -256,7 +256,7 @@ test('theme toggle: once the root is the target theme, the field well highlight 
   const settledAlpha: Partial<Record<ThemeMode, { selector: string; alpha: number }>> = {};
 
   for (const [from, to] of DIRECTIONS) {
-    const before = await page.evaluate(() => window.__atlasFieldPaint.sample());
+    const before = await page.evaluate(() => window.__genuxFieldPaint.sample());
     expect(before.rootTheme, `${from} to ${to}: starts on ${from}`).toBe(from);
     expect(before.rootPaint, `${from} to ${to}: no paint lock before the switch`).toBeNull();
     await attachShot(testInfo, `toggle-${from}-to-${to}-before.png`, page);
@@ -264,22 +264,22 @@ test('theme toggle: once the root is the target theme, the field well highlight 
     await toggle.click();
     await page.waitForFunction(
       ({ to, startIndex }) => {
-        const first = window.__atlasFieldPaint.frames.find(
+        const first = window.__genuxFieldPaint.frames.find(
           frame => frame.index > startIndex && frame.rootTheme === to,
         );
         return (
           first !== undefined &&
           document.documentElement.dataset.theme === to &&
           document.documentElement.dataset.themePaint === undefined &&
-          document.querySelector<HTMLElement>('.atlas-demo')?.dataset.themeMode === to &&
+          document.querySelector<HTMLElement>('.genux-demo')?.dataset.themeMode === to &&
           performance.now() - first.t >= 1000
         );
       },
       { to, startIndex },
       { timeout: 15_000 },
     );
-    const settled = await page.evaluate(() => window.__atlasFieldPaint.sample());
-    const frames = (await page.evaluate(() => window.__atlasFieldPaint.frames)).filter(
+    const settled = await page.evaluate(() => window.__genuxFieldPaint.sample());
+    const frames = (await page.evaluate(() => window.__genuxFieldPaint.frames)).filter(
       frame => frame.index > startIndex,
     );
     await attachShot(testInfo, `toggle-${from}-to-${to}-after.png`, page);

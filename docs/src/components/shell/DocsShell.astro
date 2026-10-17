@@ -16,8 +16,9 @@
  * - `button[data-docs-search]` and Cmd/Ctrl+K focus the canonical sidebar `#component-search`,
  *   opening the Drawer through the menu toggle when the sidebar lives there.
  */
-import AtlasIcon from '../../react/AtlasIcon';
+import GenUXIcon from '../../react/GenUXIcon';
 import DocsNav from './DocsNav.astro';
+import { genuxPageHref } from '../../data/foundation-navigation';
 import { repositoryUrl } from '../docs-page';
 import './shell.css';
 import './layout.css';
@@ -40,8 +41,8 @@ const componentPage = Boolean(slug) && Astro.routePattern === '/components/[slug
     >
       <span data-i18n="Menu">Menu</span>
     </button>
-    <a class="wordmark" href="/" aria-label="GenUI home" data-i18n-aria-label="GenUI home">
-      Gen<span>UI</span>
+    <a class="wordmark" href="/" aria-label="GenUX home" data-i18n-aria-label="GenUX home">
+      Gen<span>UX</span>
     </a>
     <button
       type="button"
@@ -86,12 +87,12 @@ const componentPage = Boolean(slug) && Astro.routePattern === '/components/[slug
       data-i18n-aria-label="Dark theme"
       aria-checked="false"
     >
-      <span class="theme-toggle-thumb atlas-motion-layer" aria-hidden="true"></span>
+      <span class="theme-toggle-thumb genux-motion-layer" aria-hidden="true"></span>
       <span class="theme-toggle-icon" aria-hidden="true">
-        <AtlasIcon name="sun" />
+        <GenUXIcon name="sun" />
       </span>
       <span class="theme-toggle-icon" aria-hidden="true">
-        <AtlasIcon name="moon" />
+        <GenUXIcon name="moon" />
       </span>
     </button>
     <script is:inline data-theme-control-bootstrap>
@@ -103,7 +104,7 @@ const componentPage = Boolean(slug) && Astro.routePattern === '/components/[slug
       <a href="/">
         <span data-i18n="Components">Components</span>
       </a>
-      <a href="/genui/">GenUI</a>
+      <a href={genuxPageHref(import.meta.env.BASE_URL)}>GenUX</a>
       <a href="/theme-builder/">
         <span data-i18n="Theme Builder">Theme Builder</span>
       </a>
@@ -145,8 +146,8 @@ const componentPage = Boolean(slug) && Astro.routePattern === '/components/[slug
   </div>
   {!componentPage && (
     <footer class="docs-footer">
-      <span data-i18n="GenUI · Technical component documentation">
-        GenUI · Technical component documentation
+      <span data-i18n="GenUX · Technical component documentation">
+        GenUX · Technical component documentation
       </span>
       <a href="/licenses/">
         <span data-i18n="Third-party licenses">Third-party licenses</span>

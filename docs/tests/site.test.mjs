@@ -12,7 +12,7 @@ import postcss from 'postcss';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const dist = resolve(root, 'docs/dist');
-const origin = 'https://atlas.invalid';
+const origin = 'https://genux.invalid';
 const demos = {
   button: ['ButtonDemo', 'WebButtonDemo'],
   input: ['InputDemo', 'WebInputDemo'],
@@ -143,7 +143,7 @@ test('Select reserves one stable affix slot without native hover content reflow'
   assert.ok(select.querySelector(':scope > .ant-select-clear'));
   assert.ok(select.querySelector(':scope > .ant-select-suffix'));
   const scoped = postcss.parse(
-    document.querySelector('style[data-atlas-theme-tokens]').textContent,
+    document.querySelector('style[data-genux-theme-tokens]').textContent,
   );
   const margins = [];
   scoped.walkDecls('--ant-select-show-arrow-padding-inline-end', node => margins.push(node.value));
@@ -159,7 +159,7 @@ test('Select reserves one stable affix slot without native hover content reflow'
   shared.walkRules(rule => {
     if (
       rule.selector.replace(/\s+/g, ' ') ===
-      '.atlas-demo .ant-select :is(.ant-select-clear, .ant-select-suffix)'
+      '.genux-demo .ant-select :is(.ant-select-clear, .ant-select-suffix)'
     )
       slot = rule;
   });
@@ -178,7 +178,7 @@ test('Select reserves one stable affix slot without native hover content reflow'
   shared.walkRules(rule => {
     if (
       rule.selector.replace(/\s+/g, ' ') ===
-      '.atlas-demo .ant-select:has(> .ant-select-clear:focus-visible) > .ant-select-suffix'
+      '.genux-demo .ant-select:has(> .ant-select-clear:focus-visible) > .ant-select-suffix'
     )
       keyboardSwap = rule;
   });
@@ -215,7 +215,7 @@ test('every page exposes an accessible theme switch and restores dark preference
       url: origin + route,
       runScripts: 'outside-only',
     });
-    dom.window.localStorage.setItem('atlas-theme', 'dark');
+    dom.window.localStorage.setItem('genux-theme', 'dark');
     vm.runInContext(bootstrap, dom.getInternalVMContext());
     assert.equal(dom.window.document.documentElement.dataset.theme, 'dark');
     assert.equal(dom.window.document.documentElement.style.colorScheme, 'dark');
@@ -459,7 +459,7 @@ test('copyable multiple and tags examples search visible labels', () => {
 test('web SSR quantity field ships shared trash and plus buttons before hydration', async () => {
   const { document } = pages.get('/components/input/');
   const input = document.querySelector('#input-number');
-  const owner = input.closest('.atlas-number-stepper');
+  const owner = input.closest('.genux-number-stepper');
   assert.ok(owner);
   const down = owner.querySelector('button[aria-label="Remove"]');
   const up = owner.querySelector('button[aria-label="Increase"]');
@@ -477,8 +477,8 @@ test('web SSR quantity field ships shared trash and plus buttons before hydratio
   );
   assert.ok(document.querySelector('[data-icon-button-examples]') === null);
   const buttons = pages.get('/components/button/').document;
-  assert.equal(buttons.querySelectorAll('[data-icon-button-examples] .atlas-button').length, 3);
-  assert.equal(buttons.querySelectorAll('[data-icon-radius-examples] .atlas-button').length, 8);
+  assert.equal(buttons.querySelectorAll('[data-icon-button-examples] .genux-button').length, 3);
+  assert.equal(buttons.querySelectorAll('[data-icon-radius-examples] .genux-button').length, 8);
   const shared = postcss.parse(
     await readFile(resolve(root, 'docs/src/styles/components.css'), 'utf8'),
   );
@@ -486,7 +486,7 @@ test('web SSR quantity field ships shared trash and plus buttons before hydratio
   shared.walkRules(rule => {
     const selector = rule.selector.replace(/\s+/g, ' ');
     if (
-      selector.endsWith('.atlas-demo .atlas-icon-button:focus-visible .atlas-button-content::after')
+      selector.endsWith('.genux-demo .genux-icon-button:focus-visible .genux-button-content::after')
     ) {
       assert.ok(
         selector.startsWith(":root:not([data-input-modality='pointer'])"),
@@ -559,7 +559,7 @@ test('web checkbox mark has a reversible, delay-free motion contract without cha
   shared.walkAtRules('media', media => {
     if (media.params !== '(prefers-reduced-motion: reduce)') return;
     media.walkRules(rule => {
-      if (!rule.selectors.includes('.atlas-demo *::after')) return;
+      if (!rule.selectors.includes('.genux-demo *::after')) return;
       reducedMark = rule.nodes.some(
         node => node.prop === 'transition-duration' && node.value === '0s' && node.important,
       );
@@ -568,11 +568,11 @@ test('web checkbox mark has a reversible, delay-free motion contract without cha
   assert.ok(reducedMark, 'reduced motion removes the mark transition');
   const story = await readFile(resolve(root, 'storybook/Checkbox.stories.tsx'), 'utf8');
   assert.match(story, /import CheckboxDemo from ['"]\.\.\/docs\/src\/react\/CheckboxDemo['"]/);
-  assert.doesNotMatch(story, /WebCheckboxDemo|atlasSharedPreview/);
+  assert.doesNotMatch(story, /WebCheckboxDemo|genuxSharedPreview/);
 });
 
 test('web checkbox box has a 32px floor, capability sizing and the canonical Phosphor SVG', async () => {
-  const data = JSON.parse(await readFile(resolve(root, 'docs/src/data/atlas.json'), 'utf8'));
+  const data = JSON.parse(await readFile(resolve(root, 'docs/src/data/genux.json'), 'utf8'));
   const svgSource = await readFile(resolve(root, 'docs/src/assets/phosphor/check.svg'), 'utf8');
   const svg = new JSDOM(svgSource, { contentType: 'image/svg+xml' });
   try {
@@ -597,7 +597,7 @@ test('web checkbox box has a 32px floor, capability sizing and the canonical Pho
   );
   assert.match(tokens['--checkbox-min-size'], /max\(32px,\s*2rem\)/);
   const owner = declarations(
-    rules.find(rule => rule.selector === '.live-preview .atlas-demo .ant-checkbox'),
+    rules.find(rule => rule.selector === '.live-preview .genux-demo .ant-checkbox'),
   );
   for (const dimension of ['width', 'height']) {
     assert.equal(owner[dimension], 'var(--checkbox-size)');
@@ -625,7 +625,7 @@ test('web checkbox box has a 32px floor, capability sizing and the canonical Pho
   const { document } = pages.get('/components/checkbox/');
   const tweaker = document.querySelector('[data-tweaker-trigger]');
   assert.equal(tweaker?.getAttribute('aria-expanded'), 'false');
-  assert.equal(document.querySelector('.atlas-size-options,#checkbox-size,#checkbox-radius'), null);
+  assert.equal(document.querySelector('.genux-size-options,#checkbox-size,#checkbox-radius'), null);
   assert.ok(document.querySelector('[data-checkbox-preview]'));
 });
 
@@ -634,7 +634,7 @@ test('web radio selection paints a token-colored underline and reserves a 32px v
   const rules = [];
   sheet.walkRules(rule => rules.push(rule));
   const declarations = rule => Object.fromEntries(rule.nodes.map(node => [node.prop, node.value]));
-  const owner = rules.find(rule => rule.selector === '.live-preview .atlas-demo .ant-radio');
+  const owner = rules.find(rule => rule.selector === '.live-preview .genux-demo .ant-radio');
   assert.ok(owner, 'visible radio circle requires sizing independent of hit area');
   const box = declarations(owner);
   for (const dimension of ['width', 'height']) {
@@ -655,17 +655,17 @@ test('web radio selection paints a token-colored underline and reserves a 32px v
   assert.equal(declarations(selected)['text-decoration-line'], 'underline');
   assert.equal(declarations(selected)['text-decoration-color'], 'var(--radio-selected-color)');
   const wrapper = declarations(
-    rules.find(rule => rule.selector === '.live-preview .atlas-demo .ant-radio-wrapper'),
+    rules.find(rule => rule.selector === '.live-preview .genux-demo .ant-radio-wrapper'),
   );
   assert.equal(wrapper['--radio-selected-color'], 'var(--ant-radio-radio-bg-color)');
   const hover = rules.find(
     rule =>
       rule.selector ===
-      '.live-preview .atlas-demo .ant-radio-wrapper:hover:not(.ant-radio-wrapper-disabled)',
+      '.live-preview .genux-demo .ant-radio-wrapper:hover:not(.ant-radio-wrapper-disabled)',
   );
   assert.equal(declarations(hover)['--radio-selected-color'], 'var(--ant-color-primary-hover)');
   const disabled = rules.find(
-    rule => rule.selector === '.live-preview .atlas-demo .ant-radio-wrapper-disabled',
+    rule => rule.selector === '.live-preview .genux-demo .ant-radio-wrapper-disabled',
   );
   assert.equal(
     declarations(disabled)['--radio-selected-color'],
@@ -687,7 +687,7 @@ test('web switch geometry overrides the actual first-paint theme variables', asy
   });
   const { document } = pages.get('/components/switch/');
   const themes = postcss.parse(
-    document.querySelector('style[data-atlas-theme-tokens]').textContent,
+    document.querySelector('style[data-genux-theme-tokens]').textContent,
   );
   let compared = 0;
   const specificity = selector => (selector.match(/\.|\[|:root\b/g) || []).length;
@@ -726,10 +726,10 @@ test('web switch track has a 32px floor and native geometry scales with capabili
   );
   const rootRules = rules.filter(
     rule =>
-      rule.selectors.includes('.live-preview .atlas-demo .ant-switch') ||
-      rule.selectors.includes(':root[data-theme] .live-preview .atlas-demo .ant-switch') ||
+      rule.selectors.includes('.live-preview .genux-demo .ant-switch') ||
+      rule.selectors.includes(':root[data-theme] .live-preview .genux-demo .ant-switch') ||
       rule.selectors.includes(
-        ':root[data-theme] .live-preview .atlas-demo .ant-switch.css-var-atlas-docs',
+        ':root[data-theme] .live-preview .genux-demo .ant-switch.css-var-genux-docs',
       ),
   );
   assert.ok(rootRules.length, 'visible track must be sized independently of label hit area');
@@ -788,7 +788,7 @@ test('web switch track has a 32px floor and native geometry scales with capabili
 test('production pages scope fast Button feedback to documentation, including portal actions', async () => {
   const motion = JSON.parse(await readFile(resolve(root, 'docs/src/data/motion.json'), 'utf8'));
   for (const [route, { document }] of pages)
-    assert.equal(document.body.dataset.atlasSurface, 'docs', route);
+    assert.equal(document.body.dataset.genuxSurface, 'docs', route);
   let token;
   let adapter;
   postcss.parse(css).walkRules(rule => {
@@ -796,8 +796,8 @@ test('production pages scope fast Button feedback to documentation, including po
       token = declaration.value;
     });
     if (
-      rule.selector.includes('data-atlas-surface') &&
-      rule.selector.includes('.atlas-button') &&
+      rule.selector.includes('data-genux-surface') &&
+      rule.selector.includes('.genux-button') &&
       rule.nodes.some(node => node.prop === '--button-duration')
     )
       adapter = rule;
@@ -832,7 +832,7 @@ test('web switch on and off share reversible motion and perceptible hover withou
   );
   assert.equal(tokens['--switch-hover-shadow'], 'var(--shadow-soft)');
   const darkHover = rules.find(rule =>
-    rule.selector.includes(":root[data-theme='dark'] .live-preview .atlas-demo .ant-switch"),
+    rule.selector.includes(":root[data-theme='dark'] .live-preview .genux-demo .ant-switch"),
   );
   assert.equal(
     declarations(darkHover)['--switch-on-hover-color'],
@@ -840,10 +840,10 @@ test('web switch on and off share reversible motion and perceptible hover withou
     'dark checked hover brightens instead of darkening toward the resting red',
   );
   const properties = new Map([
-    ['.live-preview .atlas-demo .ant-switch', 'background-color, opacity, box-shadow'],
-    ['.live-preview .atlas-demo .ant-switch .ant-switch-handle', 'inset-inline-start, transform'],
+    ['.live-preview .genux-demo .ant-switch', 'background-color, opacity, box-shadow'],
+    ['.live-preview .genux-demo .ant-switch .ant-switch-handle', 'inset-inline-start, transform'],
     [
-      '.live-preview .atlas-demo .ant-switch .ant-switch-handle::before',
+      '.live-preview .genux-demo .ant-switch .ant-switch-handle::before',
       'inset-inline-start, inset-inline-end, background-color, box-shadow',
     ],
   ]);
@@ -851,8 +851,8 @@ test('web switch on and off share reversible motion and perceptible hover withou
     const matched = rules.filter(
       rule =>
         rule.selectors.includes(selector) ||
-        (selector === '.live-preview .atlas-demo .ant-switch' &&
-          rule.selectors.includes(':root[data-theme] .live-preview .atlas-demo .ant-switch')),
+        (selector === '.live-preview .genux-demo .ant-switch' &&
+          rule.selectors.includes(':root[data-theme] .live-preview .genux-demo .ant-switch')),
     );
     assert.ok(matched.length, selector);
     const styles = Object.assign({}, ...matched.map(declarations));
@@ -927,7 +927,7 @@ test('web switch on and off share reversible motion and perceptible hover withou
   shared.walkAtRules('media', media => {
     if (media.params !== '(prefers-reduced-motion: reduce)') return;
     media.walkRules(rule => {
-      if (!rule.selectors.includes('.atlas-demo *::before')) return;
+      if (!rule.selectors.includes('.genux-demo *::before')) return;
       reducedDuration = rule.nodes.some(
         node => node.prop === 'transition-duration' && node.value === '0s' && node.important,
       );
@@ -936,7 +936,7 @@ test('web switch on and off share reversible motion and perceptible hover withou
   assert.ok(reducedDuration, 'reduced motion must suppress switch/handle transitions');
   const story = await readFile(resolve(root, 'storybook/Switch.stories.tsx'), 'utf8');
   assert.match(story, /import SwitchDemo from ['"]\.\.\/docs\/src\/react\/SwitchDemo['"]/);
-  assert.doesNotMatch(story, /WebSwitchDemo|atlasSharedPreview/);
+  assert.doesNotMatch(story, /WebSwitchDemo|genuxSharedPreview/);
 });
 
 test('web field box models reserve equal border space in normal, error and warning states', () => {
@@ -1083,7 +1083,7 @@ test('server-rendered component previews include their Ant Design theme CSS befo
     const themeCss = serverStyles.map(style => style.textContent).join('\n');
     assert.match(
       themeCss,
-      /\.css-var-atlas-docs\b/,
+      /\.css-var-genux-docs\b/,
       `${slug}: stable documentation theme selector missing`,
     );
     assert.match(
@@ -1092,7 +1092,7 @@ test('server-rendered component previews include their Ant Design theme CSS befo
       `${slug}: primary theme token missing`,
     );
     assert.ok(
-      document.querySelector('astro-island [data-atlas-appearance="docs"] .css-var-atlas-docs'),
+      document.querySelector('astro-island [data-genux-appearance="docs"] .css-var-genux-docs'),
       `${slug}: rendered controls do not use the extracted theme key`,
     );
   }
@@ -1128,14 +1128,14 @@ test('every component ships one initially closed Tweaker opener and its scoped s
     assert.equal(
       document
         .querySelector('[data-tweaker-trigger]')
-        .closest('[data-atlas-appearance="docs"]')
-        .style.getPropertyValue('--atlas-tweaker-width'),
+        .closest('[data-genux-appearance="docs"]')
+        .style.getPropertyValue('--genux-tweaker-width'),
       '400px',
       `${slug}: shared viewport-bounded panel token`,
     );
     assert.match(
       css,
-      /\.atlas-tweaker-trigger\{[^}]*position:fixed/,
+      /\.genux-tweaker-trigger\{[^}]*position:fixed/,
       `${slug}: stable edge opener`,
     );
     assert.match(css, /inset-block-start:50%/, `${slug}: middle of right edge`);
@@ -1145,7 +1145,7 @@ test('every component ships one initially closed Tweaker opener and its scoped s
 test('every component ships scoped light and dark AntD variables before hydration', () => {
   for (const slug of Object.keys(demos)) {
     const { document } = pages.get(`/components/${slug}/`);
-    const themeStyles = [...document.head.querySelectorAll('style[data-atlas-theme-tokens]')];
+    const themeStyles = [...document.head.querySelectorAll('style[data-genux-theme-tokens]')];
     assert.ok(themeStyles.length > 0, `${slug}: static two-theme token CSS missing`);
     const declarations = { light: [], dark: [] };
     for (const style of themeStyles) {
@@ -1188,8 +1188,8 @@ test('every component ships scoped light and dark AntD variables before hydratio
         declaration =>
           declaration.property === property &&
           (component
-            ? declaration.selector !== '.css-var-atlas-docs'
-            : declaration.selector === '.css-var-atlas-docs'),
+            ? declaration.selector !== '.css-var-genux-docs'
+            : declaration.selector === '.css-var-genux-docs'),
       );
       assert.ok(matching.length > 0, `${slug}: ${mode} ${property} missing`);
       for (const declaration of matching)
@@ -1217,7 +1217,7 @@ test('foundation pages keep only the bounded vanilla controller, without React h
     const { document } = pages.get(route);
     assert.equal(document.querySelectorAll('astro-island').length, 0, route);
     assert.equal(
-      document.querySelectorAll('style[data-atlas-theme-tokens]').length,
+      document.querySelectorAll('style[data-genux-theme-tokens]').length,
       0,
       `${route}: unnecessary component theme token CSS`,
     );
@@ -1286,16 +1286,16 @@ test('documentation shell ships exact blue brand roles independently of shared p
     assert.deepEqual(foreground, ['#000000', '#000000']);
   }
   const { document } = pages.get('/components/button/');
-  const defaultAction = document.querySelector('.atlas-button[data-docs-brand-default="true"]');
+  const defaultAction = document.querySelector('.genux-button[data-docs-brand-default="true"]');
   assert.ok(defaultAction, 'documentation must actually use its default brand');
   assert.match(defaultAction.getAttribute('style'), /--button-face:\s*#0099ff/i);
-  const explicitRed = document.querySelector('.atlas-button[data-color-preset="red"]');
+  const explicitRed = document.querySelector('.genux-button[data-color-preset="red"]');
   assert.ok(explicitRed, 'explicit Color-system sample must retain its own identity');
   assert.match(explicitRed.getAttribute('style'), /--button-face:\s*#E61A1A/i);
   const setup = pages.get('/getting-started/').document.querySelector('main').textContent;
-  assert.match(setup, /<AtlasProvider appearance="docs">/);
-  assert.match(setup, /<AtlasButton text="Save" \/>/);
-  assert.doesNotMatch(setup, /className="atlas-button"/);
+  assert.match(setup, /<GenUXProvider appearance="docs">/);
+  assert.match(setup, /<GenUXButton text="Save" \/>/);
+  assert.doesNotMatch(setup, /className="genux-button"/);
 });
 
 test('Color system ships its own island and keeps dynamic preview tokens out of static theme overrides', () => {
@@ -1305,17 +1305,17 @@ test('Color system ships its own island and keeps dynamic preview tokens out of 
   assert.match(islands[0].getAttribute('component-url'), /ColorSystemDemo/);
   assert.equal(islands[0].getAttribute('component-export'), 'default');
   assert.ok(document.querySelector('head style[data-css-hash]'));
-  assert.ok(document.querySelector('.css-var-atlas-color-preview'));
-  const staticTokens = document.querySelector('style[data-atlas-theme-tokens]')?.textContent;
-  assert.ok(staticTokens?.includes('.css-var-atlas'), 'outer brand still has first-paint tokens');
-  assert.doesNotMatch(staticTokens, /\.css-var-atlas-color-preview\b/);
-  assert.doesNotMatch(staticTokens, /\.css-var-atlas-color-family-/);
+  assert.ok(document.querySelector('.css-var-genux-color-preview'));
+  const staticTokens = document.querySelector('style[data-genux-theme-tokens]')?.textContent;
+  assert.ok(staticTokens?.includes('.css-var-genux'), 'outer brand still has first-paint tokens');
+  assert.doesNotMatch(staticTokens, /\.css-var-genux-color-preview\b/);
+  assert.doesNotMatch(staticTokens, /\.css-var-genux-color-family-/);
   assert.equal(document.querySelectorAll('[data-color-family-preview]').length, 6);
   const firstPaint = [...document.head.querySelectorAll('style[data-css-hash]')]
     .map(style => style.textContent)
     .join('\n');
-  assert.match(firstPaint, /\.css-var-atlas-color-preview\b/);
-  assert.match(firstPaint, /\.css-var-atlas-color-family-offset-0\b/);
+  assert.match(firstPaint, /\.css-var-genux-color-preview\b/);
+  assert.match(firstPaint, /\.css-var-genux-color-family-offset-0\b/);
   assert.ok(document.querySelector('a[aria-current="page"][href="/color-system/"]'));
 });
 
@@ -1399,7 +1399,7 @@ test('generated documentation decisions and experiments equal their canonical mo
       { timeout: 1000 },
     ),
   );
-  const generated = JSON.parse(await readFile(resolve(root, 'docs/src/data/atlas.json'), 'utf8'));
+  const generated = JSON.parse(await readFile(resolve(root, 'docs/src/data/genux.json'), 'utf8'));
   for (const [key, value] of Object.entries(canonical))
     assert.deepEqual(generated[key], value, key);
   const compiledPresets = await build({
@@ -1437,7 +1437,7 @@ test('generated documentation decisions and experiments equal their canonical mo
 });
 
 test('published licenses retain complete canonical font and icon notices', async () => {
-  const generated = JSON.parse(await readFile(resolve(root, 'docs/src/data/atlas.json'), 'utf8'));
+  const generated = JSON.parse(await readFile(resolve(root, 'docs/src/data/genux.json'), 'utf8'));
   const fontSource = await readFile(resolve(root, 'src/styles/fonts.css'), 'utf8');
   const fontLicense = fontSource.match(/\/\*([\s\S]*?)\*\//)?.[1].trim();
   assert.match(fontLicense ?? '', /SIL OPEN FONT LICENSE Version 1\.1/);
@@ -1480,7 +1480,7 @@ test('static documentation typography uses native pixels, 14px minimum and Outfi
     assert.ok(source, `${route}: typography must be available before hydration`);
     let tokens;
     postcss.parse(source).walkRules(rule => {
-      if (rule.selectors.includes("body[data-atlas-surface='docs']"))
+      if (rule.selectors.includes("body[data-genux-surface='docs']"))
         tokens = Object.fromEntries(
           rule.nodes.filter(node => node.type === 'decl').map(node => [node.prop, node.value]),
         );
@@ -1524,16 +1524,16 @@ test('workspace feature CSS is linked only by the owning documentation routes', 
   }
 });
 
-test('connected workspace ships one themed consumer and distinguishes Atlas props from native settings', () => {
+test('connected workspace ships one themed consumer and distinguishes GenUX props from native settings', () => {
   const { document } = pages.get('/components/record-workspace/');
-  assert.equal(document.querySelectorAll('.atlas-demo').length, 1);
+  assert.equal(document.querySelectorAll('.genux-demo').length, 1);
   assert.ok(document.querySelector('[data-workspace="connected-kit"]'));
   assert.ok(document.querySelector('[data-connected-schema="orders"]'));
   assert.match(document.querySelector('#api').textContent, /RecordCollection<R>/);
   for (const slug of ['data-table', 'collection-views', 'record-forms', 'record-details']) {
     const api = pages.get(`/components/${slug}/`).document.querySelector('#api');
     const tables = [...api.querySelectorAll('table')];
-    assert.equal(tables.length, 2, `${slug}: Atlas and AntD APIs must remain separate`);
+    assert.equal(tables.length, 2, `${slug}: GenUX and AntD APIs must remain separate`);
     assert.match(api.textContent, /Underlying Ant Design API/);
     assert.match(tables[0].textContent, /RecordCollection|RecordForm|RecordDisplay/);
     assert.doesNotMatch(tables[0].textContent, /destroyOnHidden|Form\.form|rowSelection/);
@@ -1626,7 +1626,7 @@ test('workspace SSR status and currency Pills have stable distinct colors across
   for (const route of ['/components/data-table/', '/components/collection-views/']) {
     const document = pages.get(route).document;
     const statuses = new Map();
-    for (const pill of document.querySelectorAll('[data-collection-view] .atlas-pill')) {
+    for (const pill of document.querySelectorAll('[data-collection-view] .genux-pill')) {
       const text = pill.textContent.trim();
       const color = pill.getAttribute('data-pill-color');
       if (statuses.has(text)) assert.equal(color, statuses.get(text), route + ': equal status');
@@ -1634,7 +1634,7 @@ test('workspace SSR status and currency Pills have stable distinct colors across
     }
     assert.equal(statuses.size, 4);
     assert.equal(new Set(statuses.values()).size, 4, route + ': distinct statuses');
-    const totals = [...document.querySelectorAll('.atlas-pill')]
+    const totals = [...document.querySelectorAll('.genux-pill')]
       .filter(pill => /^(USD|EUR):/.test(pill.textContent.trim()))
       .map(pill => pill.getAttribute('data-pill-color'));
     assert.equal(totals.length, 2);
@@ -1671,7 +1671,7 @@ test('Pill catalog owns its CSS, renders linked SSR sections and defers random c
     assert.equal(document.querySelectorAll('#' + section.id).length, 1);
     assert.ok(document.getElementById(section.getAttribute('aria-labelledby')));
   }
-  const automatic = [...catalog.querySelectorAll('[data-pill-automatic] .atlas-pill')];
+  const automatic = [...catalog.querySelectorAll('[data-pill-automatic] .genux-pill')];
   assert.equal(automatic.length, 3);
   assert.ok(
     automatic.every(pill => !pill.hasAttribute('data-pill-color')),
@@ -1680,7 +1680,7 @@ test('Pill catalog owns its CSS, renders linked SSR sections and defers random c
   assert.ok(automatic.every(pill => pill.dataset.pillVariant === 'filled'));
 });
 
-test('Card catalog owns its purpose layout and ships useful Entity/Metric SSR before optional GenUI', () => {
+test('Card catalog owns its purpose layout and ships useful Entity/Metric SSR before optional GenUX', () => {
   for (const [route, { document }] of pages) {
     const sheets = [...document.querySelectorAll('link[rel="stylesheet"]')].map(link =>
       stylesheets.get(new URL(link.href).pathname),
@@ -1696,7 +1696,7 @@ test('Card catalog owns its purpose layout and ships useful Entity/Metric SSR be
   const sections = [...catalog.querySelectorAll(':scope > section')];
   assert.deepEqual(
     sections.map(section => section.id),
-    ['card-foundations', 'card-catalog', 'card-interactions', 'card-states', 'card-genui'],
+    ['card-foundations', 'card-catalog', 'card-interactions', 'card-states', 'card-genux'],
   );
   assert.deepEqual(
     [...catalog.querySelectorAll(':scope > nav a')].map(link => link.hash),
@@ -1708,18 +1708,18 @@ test('Card catalog owns its purpose layout and ships useful Entity/Metric SSR be
   }
   assert.equal(catalog.querySelector('#card-catalog').dataset.purposeCount, '23');
   assert.equal(catalog.querySelector('#card-catalog').dataset.recipeCount, '37');
-  assert.ok(catalog.querySelector('[data-card-main] .atlas-card[data-card-kind="entity"]'));
-  assert.ok(catalog.querySelector('#card-foundations .atlas-card[data-card-kind="metric"]'));
+  assert.ok(catalog.querySelector('[data-card-main] .genux-card[data-card-kind="entity"]'));
+  assert.ok(catalog.querySelector('#card-foundations .genux-card[data-card-kind="metric"]'));
   assert.ok(catalog.querySelector('#card-interactions input'));
-  assert.equal(catalog.querySelectorAll('.atlas-card .atlas-card').length, 0, 'no nested Card');
+  assert.equal(catalog.querySelectorAll('.genux-card .genux-card').length, 0, 'no nested Card');
   assert.equal(
-    catalog.querySelectorAll('.atlas-genui-runtime').length,
+    catalog.querySelectorAll('.genux-genux-runtime').length,
     0,
-    'optional GenUI runtime is absent from SSR',
+    'optional GenUX runtime is absent from SSR',
   );
   assert.ok(
     [...catalog.querySelectorAll('button')].some(button =>
-      button.textContent.includes('Open GenUI lab'),
+      button.textContent.includes('Open GenUX lab'),
     ),
   );
 });
@@ -1742,7 +1742,7 @@ test('Splitter and Breadcrumb assets stay with their owning routes and retain na
     ).join('\n');
     const slug = route.match(/^\/components\/([^/]+)\/$/)?.[1];
     assert.equal(
-      css.includes('.atlas-dropdown-trigger'),
+      css.includes('.genux-dropdown-trigger'),
       slug === 'dropdown',
       route + ': Dropdown master asset',
     );
@@ -1762,7 +1762,7 @@ test('Splitter and Breadcrumb assets stay with their owning routes and retain na
       route + ': Splitter catalog asset',
     );
     assert.equal(
-      css.includes('.atlas-breadcrumb-nav'),
+      css.includes('.genux-breadcrumb-nav'),
       slug === 'breadcrumb',
       route + ': Breadcrumb asset',
     );
@@ -1772,24 +1772,24 @@ test('Splitter and Breadcrumb assets stay with their owning routes and retain na
       route + ': Breadcrumb catalog asset',
     );
     if (slug === 'splitter' || workspace.has(slug)) {
-      const native = document.querySelector('[data-atlas-splitter] .ant-splitter');
+      const native = document.querySelector('[data-genux-splitter] .ant-splitter');
       assert.ok(native, route + ': native Splitter first paint');
       assert.equal(native.querySelectorAll(':scope > .ant-splitter-panel').length, 2);
-      assert.equal(native.closest('[data-atlas-splitter]').dataset.splitterOrientation, 'vertical');
+      assert.equal(native.closest('[data-genux-splitter]').dataset.splitterOrientation, 'vertical');
     }
   }
   const breadcrumb = pages.get('/components/breadcrumb/').document;
   assert.equal(breadcrumb.querySelectorAll('.ant-breadcrumb[aria-label]').length, 2);
   assert.equal(
-    breadcrumb.querySelectorAll('.atlas-breadcrumb-current[aria-current="page"]').length,
+    breadcrumb.querySelectorAll('.genux-breadcrumb-current[aria-current="page"]').length,
     2,
   );
   assert.ok(breadcrumb.querySelector('button[aria-haspopup="menu"]'));
 });
 
-test('optional GenUI remains outside initial Card/workspace graphs and preload hints', async () => {
+test('optional GenUX remains outside initial Card/workspace graphs and preload hints', async () => {
   await init();
-  const lab = builtFiles.find(path => /GenUICardLab\.[^/]+\.js$/.test(path));
+  const lab = builtFiles.find(path => /GenUXCardLab\.[^/]+\.js$/.test(path));
   assert.ok(lab, 'the optional native SDK lab is built');
   const labUrl = '/' + relative(dist, lab).split(sep).join('/');
   for (const slug of ['card', 'data-table', 'collection-views', 'record-workspace']) {
@@ -1826,7 +1826,7 @@ test('Pagination SSR retains boundary pairs and owns its catalog while workspace
       )
     ).join('\n');
     assert.equal(
-      sheets.includes('.atlas-pagination-current-marker'),
+      sheets.includes('.genux-pagination-current-marker'),
       ['/components/pagination/', '/components/record-workspace/'].includes(route),
       route + ': pagination master ownership',
     );
@@ -1868,7 +1868,7 @@ test('Steps SSR keeps a mobile-first sequence and owns only its native skin and 
       )
     ).join('\n');
     assert.equal(
-      sheets.includes('.atlas-steps-sr-status'),
+      sheets.includes('.genux-steps-sr-status'),
       route === '/components/steps/',
       route + ': Steps master ownership',
     );
@@ -1899,7 +1899,7 @@ test('AutoComplete SSR keeps labeled editable fields and owns its master and cat
       .map(link => stylesheets.get(new URL(link.href).pathname))
       .join('\n');
     assert.equal(
-      sheets.includes('.atlas-autocomplete-result'),
+      sheets.includes('.genux-autocomplete-result'),
       route === '/components/autocomplete/',
       route + ': AutoComplete master ownership',
     );
@@ -1939,7 +1939,7 @@ test('AutoComplete SSR keeps labeled editable fields and owns its master and cat
   assert.match(invalid.querySelector('[role="alert"]').textContent, /Enter a complete address/);
   const disabled = document.querySelector('[data-autocomplete-example="disabled"]');
   assert.equal(disabled.querySelector('input').disabled, true);
-  assert.equal(disabled.querySelector('input').value, 'Atlas Studio');
+  assert.equal(disabled.querySelector('input').value, 'GenUX Studio');
   assert.match(disabled.textContent, /Team assignment is unavailable/);
   assert.equal(document.querySelectorAll('select').length, 0);
   assert.equal(

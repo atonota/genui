@@ -3,7 +3,7 @@ import { useI18n } from './useI18n';
 import { Checkbox, Collapse, Select, type CollapseProps } from 'antd';
 import { toggleCollapseOnSpace } from './keyboard';
 import { selectedLabel } from './selectedLabel';
-import { TweakerSettings } from './AtlasTweaker';
+import { TweakerSettings } from './GenUXTweaker';
 import ExamplePreview from './ExamplePreview';
 
 type IconPlacement = NonNullable<CollapseProps['expandIconPlacement']>;

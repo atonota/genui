@@ -586,7 +586,7 @@
     },
     "unit": "px",
     "css": "--size-compact-sm",
-    "description": "Fixed px height for compact rows such as pills, chips, checkboxes, radios, switches, slider and cascader rows; the SM step of the compact sm/md/lg height family that follows the shared Component size profile through --atlas-compact-height. Regular controls and avatars keep the 48/56/64 family. Same value in light and dark schemes; range 24-96 px in 4 px steps, ordered sm ≤ md ≤ lg. Text inside stays at least 14px.",
+    "description": "Fixed px height for compact rows such as pills, chips, checkboxes, radios, switches, slider and cascader rows; the SM step of the compact sm/md/lg height family that follows the shared Component size profile through --genux-compact-height. Regular controls and avatars keep the 48/56/64 family. Same value in light and dark schemes; range 24-96 px in 4 px steps, ordered sm ≤ md ≤ lg. Text inside stays at least 14px.",
     "min": 24,
     "max": 96,
     "step": 4
@@ -602,7 +602,7 @@
     },
     "unit": "px",
     "css": "--size-compact-md",
-    "description": "Fixed px height for compact rows at the MD step of the compact sm/md/lg height family (default 40). Pills, chips, selection controls and compact list rows read it through --atlas-compact-height when the shared size profile is md. Same value in light and dark schemes; range 24-96 px in 4 px steps, at or above Compact height SM and at or below Compact height LG. Text inside stays at least 14px.",
+    "description": "Fixed px height for compact rows at the MD step of the compact sm/md/lg height family (default 40). Pills, chips, selection controls and compact list rows read it through --genux-compact-height when the shared size profile is md. Same value in light and dark schemes; range 24-96 px in 4 px steps, at or above Compact height SM and at or below Compact height LG. Text inside stays at least 14px.",
     "min": 24,
     "max": 96,
     "step": 4
@@ -618,7 +618,7 @@
     },
     "unit": "px",
     "css": "--size-compact-lg",
-    "description": "Fixed px height for compact rows at the LG step of the compact sm/md/lg height family (default 48). Compact rows read it through --atlas-compact-height when the shared size profile is lg. Same value in light and dark schemes; range 24-96 px in 4 px steps, at or above Compact height MD. Text inside stays at least 14px.",
+    "description": "Fixed px height for compact rows at the LG step of the compact sm/md/lg height family (default 48). Compact rows read it through --genux-compact-height when the shared size profile is lg. Same value in light and dark schemes; range 24-96 px in 4 px steps, at or above Compact height MD. Text inside stays at least 14px.",
     "min": 24,
     "max": 96,
     "step": 4
@@ -682,7 +682,7 @@
     },
     "unit": "px",
     "css": "--text-body",
-    "description": "Base font size in fixed CSS px for body content: paragraphs, table cells, form control values, helper and error text. GenUI allows 14–48 px in 1 px steps; the standard default remains 14 px and ideal reading size is 16 px. Light and dark defaults match. Headings and labels use their own tokens; never lower the host root font size to bypass the scoped 14 px floor.",
+    "description": "Base font size in fixed CSS px for body content: paragraphs, table cells, form control values, helper and error text. GenUX allows 14–48 px in 1 px steps; the standard default remains 14 px and ideal reading size is 16 px. Light and dark defaults match. Headings and labels use their own tokens; never lower the host root font size to bypass the scoped 14 px floor.",
     "min": 14,
     "max": 48,
     "step": 1
@@ -698,7 +698,7 @@
     },
     "unit": "px",
     "css": "--text-label",
-    "description": "Font size in fixed CSS px for form field labels, control captions and short metadata labels, resolved through --text-label. GenUI allows 14–48 px in 1 px steps with a scoped 14 px minimum; the default stays 14 px in both light and dark schemes. This is a single typography size token with no sm/md/lg variants.",
+    "description": "Font size in fixed CSS px for form field labels, control captions and short metadata labels, resolved through --text-label. GenUX allows 14–48 px in 1 px steps with a scoped 14 px minimum; the default stays 14 px in both light and dark schemes. This is a single typography size token with no sm/md/lg variants.",
     "min": 14,
     "max": 48,
     "step": 1
@@ -714,7 +714,7 @@
     },
     "unit": "px",
     "css": "--text-helper",
-    "description": "Font size in fixed CSS px for supporting helper text, hints, format guidance and character counts. GenUI allows 14–48 px in 1 px steps; overrides must respect the scoped 14 px floor. Light and dark schemes retain the same 14 px default. This standalone size does not change color, motion or focus styling.",
+    "description": "Font size in fixed CSS px for supporting helper text, hints, format guidance and character counts. GenUX allows 14–48 px in 1 px steps; overrides must respect the scoped 14 px floor. Light and dark schemes retain the same 14 px default. This standalone size does not change color, motion or focus styling.",
     "min": 14,
     "max": 48,
     "step": 1
@@ -730,7 +730,7 @@
     },
     "unit": "px",
     "css": "--text-table",
-    "description": "Font size in fixed CSS px for data table body cells and column headers, applied through --text-table. GenUI allows 14–48 px in 1 px steps with a scoped 14 px floor; both schemes retain the 14 px default. This is a single typography role, not an sm/md/lg group. On narrow viewports the table scrolls inside its own container instead of reducing this size; headers and long model names wrap only between words.",
+    "description": "Font size in fixed CSS px for data table body cells and column headers, applied through --text-table. GenUX allows 14–48 px in 1 px steps with a scoped 14 px floor; both schemes retain the 14 px default. This is a single typography role, not an sm/md/lg group. On narrow viewports the table scrolls inside its own container instead of reducing this size; headers and long model names wrap only between words.",
     "min": 14,
     "max": 48,
     "step": 1
@@ -746,7 +746,7 @@
     },
     "unit": "px",
     "css": "--text-heading",
-    "description": "Fixed CSS px size for page, section and panel headings, emitted as --text-heading. Defaults remain 24px in both schemes; GenUI permits 14–48 in 1px steps with a scoped 14px floor. Resolved headings stay at or above body text to preserve hierarchy. Sets size only, not color or weight.",
+    "description": "Fixed CSS px size for page, section and panel headings, emitted as --text-heading. Defaults remain 24px in both schemes; GenUX permits 14–48 in 1px steps with a scoped 14px floor. Resolved headings stay at or above body text to preserve hierarchy. Sets size only, not color or weight.",
     "min": 14,
     "max": 48,
     "step": 1
@@ -762,7 +762,7 @@
     },
     "unit": "px",
     "css": "--text-code",
-    "description": "Font size in fixed CSS px for inline code, code blocks and snippets. GenUI permits 14–48px in 1px steps with a scoped 14px floor; both schemes retain the 14px default. Not a spacing, motion or focus value.",
+    "description": "Font size in fixed CSS px for inline code, code blocks and snippets. GenUX permits 14–48px in 1px steps with a scoped 14px floor; both schemes retain the 14px default. Not a spacing, motion or focus value.",
     "min": 14,
     "max": 48,
     "step": 1
@@ -778,7 +778,7 @@
     },
     "unit": "",
     "css": "--font-weight-body",
-    "description": "Editable GenUI body font weight for Outfit, emitted as --font-weight-body. Both schemes default to 400. Unitless range 300–900 in steps of 100; weights below 300 are rejected. Does not change host typography or font-size defaults.",
+    "description": "Editable GenUX body font weight for Outfit, emitted as --font-weight-body. Both schemes default to 400. Unitless range 300–900 in steps of 100; weights below 300 are rejected. Does not change host typography or font-size defaults.",
     "min": 300,
     "max": 900,
     "step": 100

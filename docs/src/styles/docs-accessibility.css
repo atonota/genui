@@ -6,23 +6,23 @@
    with positive Cubic durations after the palette commit; transform and geometry
    durations remain positive and their current motion is preserved throughout. */
 :root[data-theme-paint='atomic']
-  body[data-atlas-surface='docs']
-  .atlas-demo
+  body[data-genux-surface='docs']
+  .genux-demo
   :is(.ant-input, .ant-input-affix-wrapper, .ant-input-number):is(
-    .css-var-atlas-docs,
-    .css-var-atlas-color-preview,
-    [class*='css-var-atlas-color-family-']
+    .css-var-genux-docs,
+    .css-var-genux-color-preview,
+    [class*='css-var-genux-color-family-']
   ),
 :root[data-theme-paint='atomic']
-  body[data-atlas-surface='docs']
+  body[data-genux-surface='docs']
   .nav-search
-  input:not(.atlas-input-frame *) {
+  input:not(.genux-input-frame *) {
   --docs-input-transition-properties: opacity, transform !important;
 }
-:root[data-theme-paint='atomic'] body[data-atlas-surface='docs'],
-:root[data-theme-paint='atomic'] body[data-atlas-surface='docs'] *,
-:root[data-theme-paint='atomic'] body[data-atlas-surface='docs'] *::before,
-:root[data-theme-paint='atomic'] body[data-atlas-surface='docs'] *::after {
+:root[data-theme-paint='atomic'] body[data-genux-surface='docs'],
+:root[data-theme-paint='atomic'] body[data-genux-surface='docs'] *,
+:root[data-theme-paint='atomic'] body[data-genux-surface='docs'] *::before,
+:root[data-theme-paint='atomic'] body[data-genux-surface='docs'] *::after {
   transition-property:
     opacity, transform, translate, scale, rotate, filter, inset, inset-inline-start,
     inset-inline-end, inset-block-start, inset-block-end, top, right, bottom, left, width, height,
@@ -30,151 +30,151 @@
     clip-path !important;
 }
 /* Shared with portalled Tweaker inputs, which are outside live-preview. */
-body[data-atlas-surface='docs']
-  .atlas-demo
+body[data-genux-surface='docs']
+  .genux-demo
   :is(input, textarea):is(
-    .css-var-atlas-docs,
-    .css-var-atlas-color-preview,
-    [class*='css-var-atlas-color-family-']
+    .css-var-genux-docs,
+    .css-var-genux-color-preview,
+    [class*='css-var-genux-color-family-']
   ):not([type='checkbox'], [type='radio'])::placeholder,
-body[data-atlas-surface='docs']
-  .atlas-demo
+body[data-genux-surface='docs']
+  .genux-demo
   :is(.ant-input-affix-wrapper, .ant-input-number):is(
-    .css-var-atlas-docs,
-    .css-var-atlas-color-preview,
-    [class*='css-var-atlas-color-family-']
+    .css-var-genux-docs,
+    .css-var-genux-color-preview,
+    [class*='css-var-genux-color-family-']
   )
   :is(input, textarea)::placeholder {
   color: var(--ink);
   opacity: var(--docs-placeholder-opacity);
   transition: opacity var(--transition-duration) var(--motion-easing);
 }
-body[data-atlas-surface='docs']
-  .atlas-demo
+body[data-genux-surface='docs']
+  .genux-demo
   :is(.ant-input, .ant-input-affix-wrapper, .ant-input-number):is(
-    .css-var-atlas-docs,
-    .css-var-atlas-color-preview,
-    [class*='css-var-atlas-color-family-']
+    .css-var-genux-docs,
+    .css-var-genux-color-preview,
+    [class*='css-var-genux-color-family-']
   ) {
   transition-property: var(--docs-input-transition-properties) !important;
   /* --field-underline is the decorative inset edge role set in components.css;
      the resting edge is paint, not a contrast boundary. */
 }
-body[data-atlas-surface='docs']
-  .atlas-demo
+body[data-genux-surface='docs']
+  .genux-demo
   :is(
     .ant-input-status-error,
     .ant-input-affix-wrapper-status-error,
     .ant-input-number-status-error
-  ):is(.css-var-atlas-docs, .css-var-atlas-color-preview, [class*='css-var-atlas-color-family-']) {
+  ):is(.css-var-genux-docs, .css-var-genux-color-preview, [class*='css-var-genux-color-family-']) {
   border-bottom-color: color-mix(
     in srgb,
     var(--error) calc(var(--docs-input-underline-opacity) * 100%),
     transparent
   ) !important;
 }
-body[data-atlas-surface='docs']
-  .atlas-demo
+body[data-genux-surface='docs']
+  .genux-demo
   :is(
     .ant-input-status-warning,
     .ant-input-affix-wrapper-status-warning,
     .ant-input-number-status-warning
-  ):is(.css-var-atlas-docs, .css-var-atlas-color-preview, [class*='css-var-atlas-color-family-']) {
+  ):is(.css-var-genux-docs, .css-var-genux-color-preview, [class*='css-var-genux-color-family-']) {
   border-bottom-color: color-mix(
     in srgb,
     var(--warning) calc(var(--docs-input-underline-opacity) * 100%),
     transparent
   ) !important;
 }
-body[data-atlas-surface='docs']
-  .atlas-demo
+body[data-genux-surface='docs']
+  .genux-demo
   :is(input, textarea):is(
-    .css-var-atlas-docs,
-    .css-var-atlas-color-preview,
-    [class*='css-var-atlas-color-family-']
+    .css-var-genux-docs,
+    .css-var-genux-color-preview,
+    [class*='css-var-genux-color-family-']
   ):not([type='checkbox'], [type='radio']):hover::placeholder,
-body[data-atlas-surface='docs']
-  .atlas-demo
+body[data-genux-surface='docs']
+  .genux-demo
   :is(.ant-input-affix-wrapper, .ant-input-number):is(
-    .css-var-atlas-docs,
-    .css-var-atlas-color-preview,
-    [class*='css-var-atlas-color-family-']
+    .css-var-genux-docs,
+    .css-var-genux-color-preview,
+    [class*='css-var-genux-color-family-']
   ):hover
   :is(input, textarea)::placeholder {
   opacity: var(--docs-placeholder-hover-opacity);
 }
 /* AntD uses colorTextQuaternary for these icons; use the local semantic icon
    role on enabled docs controls without changing approved/disabled styling. */
-body[data-atlas-surface='docs']
-  .atlas-demo
+body[data-genux-surface='docs']
+  .genux-demo
   .ant-input-affix-wrapper:is(
-    .css-var-atlas-docs,
-    .css-var-atlas-color-preview,
-    [class*='css-var-atlas-color-family-']
+    .css-var-genux-docs,
+    .css-var-genux-color-preview,
+    [class*='css-var-genux-color-family-']
   ):not(.ant-input-affix-wrapper-disabled)
   .ant-input-clear-icon,
-body[data-atlas-surface='docs']
-  .atlas-demo
+body[data-genux-surface='docs']
+  .genux-demo
   .ant-select:is(
-    .css-var-atlas-docs,
-    .css-var-atlas-color-preview,
-    [class*='css-var-atlas-color-family-']
+    .css-var-genux-docs,
+    .css-var-genux-color-preview,
+    [class*='css-var-genux-color-family-']
   ):not(.ant-select-disabled)
   :is(.ant-select-clear, .ant-select-suffix),
-body[data-atlas-surface='docs']
-  .atlas-demo
+body[data-genux-surface='docs']
+  .genux-demo
   .ant-picker:is(
-    .css-var-atlas-docs,
-    .css-var-atlas-color-preview,
-    [class*='css-var-atlas-color-family-']
+    .css-var-genux-docs,
+    .css-var-genux-color-preview,
+    [class*='css-var-genux-color-family-']
   ):not(.ant-picker-disabled)
   :is(.ant-picker-clear, .ant-picker-suffix) {
   color: var(--ant-color-icon);
 }
-body[data-atlas-surface='docs']
-  .atlas-demo
+body[data-genux-surface='docs']
+  .genux-demo
   .ant-input-affix-wrapper:is(
-    .css-var-atlas-docs,
-    .css-var-atlas-color-preview,
-    [class*='css-var-atlas-color-family-']
+    .css-var-genux-docs,
+    .css-var-genux-color-preview,
+    [class*='css-var-genux-color-family-']
   ):not(.ant-input-affix-wrapper-disabled)
   .ant-input-clear-icon:hover,
-body[data-atlas-surface='docs']
-  .atlas-demo
+body[data-genux-surface='docs']
+  .genux-demo
   .ant-select:is(
-    .css-var-atlas-docs,
-    .css-var-atlas-color-preview,
-    [class*='css-var-atlas-color-family-']
+    .css-var-genux-docs,
+    .css-var-genux-color-preview,
+    [class*='css-var-genux-color-family-']
   ):not(.ant-select-disabled)
   .ant-select-clear:hover,
-body[data-atlas-surface='docs']
-  .atlas-demo
+body[data-genux-surface='docs']
+  .genux-demo
   .ant-picker:is(
-    .css-var-atlas-docs,
-    .css-var-atlas-color-preview,
-    [class*='css-var-atlas-color-family-']
+    .css-var-genux-docs,
+    .css-var-genux-color-preview,
+    [class*='css-var-genux-color-family-']
   ):not(.ant-picker-disabled)
   .ant-picker-clear:hover {
   color: var(--ant-color-icon-hover);
 }
 /* Native single Select dims its selected content to 0.25 while open.
    Keep documentation values readable; native search-child visibility stays intact. */
-body[data-atlas-surface='docs']
-  .atlas-demo
+body[data-genux-surface='docs']
+  .genux-demo
   .ant-select:is(
-    .css-var-atlas-docs,
-    .css-var-atlas-color-preview,
-    [class*='css-var-atlas-color-family-']
+    .css-var-genux-docs,
+    .css-var-genux-color-preview,
+    [class*='css-var-genux-color-family-']
   ).ant-select-open.ant-select-single:not(.ant-select-disabled)
   .ant-select-content-has-value {
   opacity: 1;
 }
-body[data-atlas-surface='docs']
-  .atlas-demo
+body[data-genux-surface='docs']
+  .genux-demo
   :is(.ant-input, .ant-input-affix-wrapper, .ant-input-number, .ant-select, .ant-picker):is(
-    .css-var-atlas-docs,
-    .css-var-atlas-color-preview,
-    [class*='css-var-atlas-color-family-']
+    .css-var-genux-docs,
+    .css-var-genux-color-preview,
+    [class*='css-var-genux-color-family-']
   ):not(
     [class*='-status-'],
     :disabled,
@@ -188,64 +188,64 @@ body[data-atlas-surface='docs']
   border-bottom-color: var(--field-underline, var(--control-boundary)) !important;
 }
 /* Keyboard field focus (bottom edge and focus surface) is owned by focus-fields.css. */
-/* The sidebar search is a canonical .atlas-input-frame: atlas-input.css owns its well,
+/* The sidebar search is a canonical .genux-input-frame: genux-input.css owns its well,
    edges and placeholder. These legacy rules only reach an unframed search input. */
-body[data-atlas-surface='docs'] .nav-search input:not(.atlas-input-frame *) {
+body[data-genux-surface='docs'] .nav-search input:not(.genux-input-frame *) {
   transition-property: var(--docs-input-transition-properties) !important;
 }
-body[data-atlas-surface='docs'] .nav-search input:not(.atlas-input-frame *)::placeholder {
+body[data-genux-surface='docs'] .nav-search input:not(.genux-input-frame *)::placeholder {
   color: var(--ink);
   opacity: var(--docs-placeholder-opacity);
   transition: opacity var(--transition-duration) var(--motion-easing);
 }
-body[data-atlas-surface='docs'] .nav-search input:not(.atlas-input-frame *):hover::placeholder {
+body[data-genux-surface='docs'] .nav-search input:not(.genux-input-frame *):hover::placeholder {
   opacity: var(--docs-placeholder-hover-opacity);
 }
 @media (prefers-reduced-motion: reduce) {
-  body[data-atlas-surface='docs']
-    .atlas-demo
+  body[data-genux-surface='docs']
+    .genux-demo
     :is(input, textarea):is(
-      .css-var-atlas-docs,
-      .css-var-atlas-color-preview,
-      [class*='css-var-atlas-color-family-']
+      .css-var-genux-docs,
+      .css-var-genux-color-preview,
+      [class*='css-var-genux-color-family-']
     ):not([type='checkbox'], [type='radio'])::placeholder,
-  body[data-atlas-surface='docs']
-    .atlas-demo
+  body[data-genux-surface='docs']
+    .genux-demo
     :is(.ant-input-affix-wrapper, .ant-input-number):is(
-      .css-var-atlas-docs,
-      .css-var-atlas-color-preview,
-      [class*='css-var-atlas-color-family-']
+      .css-var-genux-docs,
+      .css-var-genux-color-preview,
+      [class*='css-var-genux-color-family-']
     )
     :is(input, textarea)::placeholder,
-  body[data-atlas-surface='docs'] .nav-search input:not(.atlas-input-frame *)::placeholder {
+  body[data-genux-surface='docs'] .nav-search input:not(.genux-input-frame *)::placeholder {
     transition: none;
   }
 }
-body[data-atlas-surface='docs']
-  .atlas-demo
+body[data-genux-surface='docs']
+  .genux-demo
   :is(.ant-checkbox-wrapper, .ant-radio-wrapper):is(
-    .css-var-atlas-docs,
-    .css-var-atlas-color-preview,
-    [class*='css-var-atlas-color-family-']
+    .css-var-genux-docs,
+    .css-var-genux-color-preview,
+    [class*='css-var-genux-color-family-']
   ):not(.ant-checkbox-wrapper-disabled, .ant-radio-wrapper-disabled) {
   opacity: 1;
 }
-body[data-atlas-surface='docs']
-  .atlas-demo
+body[data-genux-surface='docs']
+  .genux-demo
   :is(.ant-checkbox-wrapper, .ant-radio-wrapper):is(
-    .css-var-atlas-docs,
-    .css-var-atlas-color-preview,
-    [class*='css-var-atlas-color-family-']
+    .css-var-genux-docs,
+    .css-var-genux-color-preview,
+    [class*='css-var-genux-color-family-']
   )
   :is(.ant-checkbox, .ant-radio):not(.ant-checkbox-disabled, .ant-radio-disabled) {
   border-color: var(--control-boundary) !important;
 }
-body[data-atlas-surface='docs']
-  .atlas-demo
+body[data-genux-surface='docs']
+  .genux-demo
   :is(.ant-checkbox-wrapper, .ant-radio-wrapper):is(
-    .css-var-atlas-docs,
-    .css-var-atlas-color-preview,
-    [class*='css-var-atlas-color-family-']
+    .css-var-genux-docs,
+    .css-var-genux-color-preview,
+    [class*='css-var-genux-color-family-']
   )
   :is(.ant-checkbox-checked, .ant-radio-checked):not(
     .ant-checkbox-disabled,
@@ -256,62 +256,62 @@ body[data-atlas-surface='docs']
 }
 /* Native mixed boxes use colorBgContainer instead of the checked primary fill.
    Local previews override --ink alongside their own container theme. */
-body[data-atlas-surface='docs']
-  .atlas-demo
+body[data-genux-surface='docs']
+  .genux-demo
   .ant-checkbox-wrapper:is(
-    .css-var-atlas-docs,
-    .css-var-atlas-color-preview,
-    [class*='css-var-atlas-color-family-']
+    .css-var-genux-docs,
+    .css-var-genux-color-preview,
+    [class*='css-var-genux-color-family-']
   )
   .ant-checkbox-indeterminate:not(.ant-checkbox-disabled)::after {
   background-color: var(--selection-mixed-mark-ink);
 }
-body[data-atlas-surface='docs']
-  .atlas-demo
+body[data-genux-surface='docs']
+  .genux-demo
   .ant-radio-wrapper:is(
-    .css-var-atlas-docs,
-    .css-var-atlas-color-preview,
-    [class*='css-var-atlas-color-family-']
+    .css-var-genux-docs,
+    .css-var-genux-color-preview,
+    [class*='css-var-genux-color-family-']
   ):not(.ant-radio-wrapper-disabled) {
   --radio-selected-color: var(--docs-brand-action-ink);
 }
-body[data-atlas-surface='docs']
-  .atlas-demo
+body[data-genux-surface='docs']
+  .genux-demo
   .ant-tabs:is(
-    .css-var-atlas-docs,
-    .css-var-atlas-color-preview,
-    [class*='css-var-atlas-color-family-']
+    .css-var-genux-docs,
+    .css-var-genux-color-preview,
+    [class*='css-var-genux-color-family-']
   )
   .ant-tabs-ink-bar {
   display: none;
 }
-body[data-atlas-surface='docs']
-  .atlas-demo
+body[data-genux-surface='docs']
+  .genux-demo
   .ant-tabs:is(
-    .css-var-atlas-docs,
-    .css-var-atlas-color-preview,
-    [class*='css-var-atlas-color-family-']
+    .css-var-genux-docs,
+    .css-var-genux-color-preview,
+    [class*='css-var-genux-color-family-']
   )
   .ant-tabs-tab-btn {
   position: relative;
   text-decoration: none;
 }
-body[data-atlas-surface='docs']
-  .atlas-demo
+body[data-genux-surface='docs']
+  .genux-demo
   .ant-tabs:is(
-    .css-var-atlas-docs,
-    .css-var-atlas-color-preview,
-    [class*='css-var-atlas-color-family-']
+    .css-var-genux-docs,
+    .css-var-genux-color-preview,
+    [class*='css-var-genux-color-family-']
   )
   .ant-tabs-tab-btn:focus-visible {
   outline: none;
 }
-body[data-atlas-surface='docs']
-  .atlas-demo
+body[data-genux-surface='docs']
+  .genux-demo
   .ant-tabs:is(
-    .css-var-atlas-docs,
-    .css-var-atlas-color-preview,
-    [class*='css-var-atlas-color-family-']
+    .css-var-genux-docs,
+    .css-var-genux-color-preview,
+    [class*='css-var-genux-color-family-']
   )
   .ant-tabs-tab-btn:focus-visible::after {
   content: '';
@@ -322,52 +322,52 @@ body[data-atlas-surface='docs']
   background: var(--focus-color);
   pointer-events: none;
 }
-body[data-atlas-surface='docs']
-  .atlas-demo
-  .atlas-slider:is(
-    .css-var-atlas-docs,
-    .css-var-atlas-color-preview,
-    [class*='css-var-atlas-color-family-']
+body[data-genux-surface='docs']
+  .genux-demo
+  .genux-slider:is(
+    .css-var-genux-docs,
+    .css-var-genux-color-preview,
+    [class*='css-var-genux-color-family-']
   ) {
   --slider-rail-color: var(--control-boundary);
 }
-body[data-atlas-surface='docs']
+body[data-genux-surface='docs']
   :is(
     .theme-toggle,
     .ant-switch:is(
-      .css-var-atlas-docs,
-      .css-var-atlas-color-preview,
-      [class*='css-var-atlas-color-family-']
+      .css-var-genux-docs,
+      .css-var-genux-color-preview,
+      [class*='css-var-genux-color-family-']
     )
   ):not(.ant-switch-disabled) {
   box-shadow: var(--control-boundary-shadow);
   opacity: 1;
 }
-body[data-atlas-surface='docs']
+body[data-genux-surface='docs']
   .ant-switch:is(
-    .css-var-atlas-docs,
-    .css-var-atlas-color-preview,
-    [class*='css-var-atlas-color-family-']
+    .css-var-genux-docs,
+    .css-var-genux-color-preview,
+    [class*='css-var-genux-color-family-']
   )
   .ant-switch-handle::before,
-body[data-atlas-surface='docs'] .theme-toggle-thumb {
+body[data-genux-surface='docs'] .theme-toggle-thumb {
   box-shadow: var(--switch-thumb-boundary-shadow), var(--switch-handle-shadow);
 }
 @media (any-hover: hover) {
-  body[data-atlas-surface='docs']
+  body[data-genux-surface='docs']
     :is(
       .theme-toggle,
       .ant-switch:is(
-        .css-var-atlas-docs,
-        .css-var-atlas-color-preview,
-        [class*='css-var-atlas-color-family-']
+        .css-var-genux-docs,
+        .css-var-genux-color-preview,
+        [class*='css-var-genux-color-family-']
       )
     ):hover:not(.ant-switch-disabled) {
     box-shadow: var(--control-boundary-shadow), var(--switch-hover-shadow);
   }
 }
 /* Reserve scroll clearance for fixed UI; rendered occlusion still needs browser QA. */
-body[data-atlas-surface='docs'] :is(button, input, textarea, [tabindex]) {
+body[data-genux-surface='docs'] :is(button, input, textarea, [tabindex]) {
   scroll-margin-block: var(--space-lg);
   scroll-margin-inline-end: calc(var(--target-min) + var(--space-md));
 }

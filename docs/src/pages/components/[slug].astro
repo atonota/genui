@@ -11,7 +11,7 @@ import PageBreadcrumb from '../../components/shell/PageBreadcrumb.astro';
 import { components } from '../../data/catalog';
 import { previewProfiles } from '../../preview/profiles';
 import documentationRules from '../../data/documentation-rules.json';
-import type { GenUIComponentName } from '../../genui/contracts';
+import type { GenUXComponentName } from '../../genux/contracts';
 import { WebButtonDemo as ButtonDemo } from '../../react/ButtonDemo';
 import { WebInputDemo as InputDemo } from '../../react/InputDemo';
 import { WebSelectDemo as SelectDemo } from '../../react/SelectDemo';
@@ -53,6 +53,7 @@ import RichMenuDemo from '../../react/RichMenuDemo';
 import ChartDemo from '../../react/ChartDemo';
 import ListyDemo from '../../react/ListyDemo';
 import BadgeDemo from '../../react/BadgeDemo';
+import FabDemo from '../../react/FabDemo';
 import { extractDemoStyles } from '../../ssr/styles';
 import { sourceHref } from '../source/[...path].txt';
 import workspaceStyles from '../../styles/workspace.css?url';
@@ -67,38 +68,39 @@ import sliderStyles from '../../styles/slider.css?url';
 import buttonCatalogStyles from '../../styles/button-catalog.css?url';
 import pillCatalogStyles from '../../styles/pill-catalog.css?url';
 import cardCatalogStyles from '../../styles/card-catalog.css?url';
-import atlasCardStyles from '../../styles/atlas-card.css?url';
-import splitterStyles from '../../styles/atlas-splitter.css?url';
+import genuxCardStyles from '../../styles/genux-card.css?url';
+import splitterStyles from '../../styles/genux-splitter.css?url';
 import splitterCatalogStyles from '../../styles/splitter-catalog.css?url';
-import breadcrumbStyles from '../../styles/atlas-breadcrumb.css?url';
+import breadcrumbStyles from '../../styles/genux-breadcrumb.css?url';
 import breadcrumbCatalogStyles from '../../styles/breadcrumb-catalog.css?url';
-import paginationStyles from '../../styles/atlas-pagination.css?url';
+import paginationStyles from '../../styles/genux-pagination.css?url';
 import paginationCatalogStyles from '../../styles/pagination-catalog.css?url';
-import stepsStyles from '../../styles/atlas-steps.css?url';
+import stepsStyles from '../../styles/genux-steps.css?url';
 import stepsCatalogStyles from '../../styles/steps-catalog.css?url';
-import autoCompleteStyles from '../../styles/atlas-autocomplete.css?url';
+import autoCompleteStyles from '../../styles/genux-autocomplete.css?url';
 import autoCompleteCatalogStyles from '../../styles/autocomplete-catalog.css?url';
-import cascaderStyles from '../../styles/atlas-cascader.css?url';
+import cascaderStyles from '../../styles/genux-cascader.css?url';
 import cascaderCatalogStyles from '../../styles/cascader-catalog.css?url';
-import dropdownStyles from '../../styles/atlas-dropdown.css?url';
+import dropdownStyles from '../../styles/genux-dropdown.css?url';
 import dropdownCatalogStyles from '../../styles/dropdown-catalog.css?url';
 import dataEntryCatalogStyles from '../../styles/data-entry-catalog.css?url';
-import feedbackStyles from '../../styles/atlas-feedback.css?url';
-import dateTimeStyles from '../../styles/atlas-date-time.css?url';
-import selectionVariantStyles from '../../styles/atlas-selection-variants.css?url';
-import drawerExtensionStyles from '../../styles/atlas-drawer-extensions.css?url';
+import feedbackStyles from '../../styles/genux-feedback.css?url';
+import dateTimeStyles from '../../styles/genux-date-time.css?url';
+import selectionVariantStyles from '../../styles/genux-selection-variants.css?url';
+import drawerExtensionStyles from '../../styles/genux-drawer-extensions.css?url';
 import kitFormFixes from '../../styles/kit-forms-fixes.css?url';
-import avatarStyles from '../../styles/atlas-avatar.css?url';
+import avatarStyles from '../../styles/genux-avatar.css?url';
 import kitIdentityStyles from '../../styles/kit-identity.css?url';
-import mediaStyles from '../../styles/atlas-media.css?url';
-import screenshotStyles from '../../styles/atlas-screenshot.css?url';
-import contentPatternStyles from '../../styles/atlas-content-patterns.css?url';
-import carouselStyles from '../../styles/atlas-carousel.css?url';
-import uploadStyles from '../../styles/atlas-upload.css?url';
-import richMenuStyles from '../../styles/atlas-rich-menu.css?url';
-import chartStyles from '../../styles/atlas-chart.css?url';
-import listyStyles from '../../styles/atlas-listy.css?url';
-import badgeStyles from '../../styles/atlas-badge.css?url';
+import mediaStyles from '../../styles/genux-media.css?url';
+import screenshotStyles from '../../styles/genux-screenshot.css?url';
+import contentPatternStyles from '../../styles/genux-content-patterns.css?url';
+import carouselStyles from '../../styles/genux-carousel.css?url';
+import uploadStyles from '../../styles/genux-upload.css?url';
+import richMenuStyles from '../../styles/genux-rich-menu.css?url';
+import chartStyles from '../../styles/genux-chart.css?url';
+import listyStyles from '../../styles/genux-listy.css?url';
+import badgeStyles from '../../styles/genux-badge.css?url';
+import fabStyles from '../../styles/genux-fab.css?url';
 import previewDocumentStyles from '../../styles/preview-document.css?url';
 import previewWorkbenchStyles from '../../styles/preview-workbench.css?url';
 export function getStaticPaths() {
@@ -146,6 +148,7 @@ const demos = {
   chart: ChartDemo,
   listy: ListyDemo,
   badge: BadgeDemo,
+  fab: FabDemo,
 };
 const workspaceSheets: Record<string, { file: string; href: string }> = {
   'data-table': { file: 'workspace-collections.css', href: collectionStyles },
@@ -170,30 +173,30 @@ const routeSheetRules: RouteSheetRule[] = [
   [['slider', 'record-workspace'].includes(slug), 'slider.css', sliderStyles],
   [slug === 'button', 'button-catalog.css', buttonCatalogStyles],
   [slug === 'pill', 'pill-catalog.css', pillCatalogStyles],
-  [slug === 'card' || kitRoute || feedbackRoutes.includes(slug), 'atlas-card.css', atlasCardStyles],
+  [slug === 'card' || kitRoute || feedbackRoutes.includes(slug), 'genux-card.css', genuxCardStyles],
   [slug === 'card', 'card-catalog.css', cardCatalogStyles],
   [
     slug === 'splitter' || component.category === 'Data workspace',
-    'atlas-splitter.css',
+    'genux-splitter.css',
     splitterStyles,
   ],
   [slug === 'splitter', 'splitter-catalog.css', splitterCatalogStyles],
-  [slug === 'breadcrumb', 'atlas-breadcrumb.css', breadcrumbStyles],
+  [slug === 'breadcrumb', 'genux-breadcrumb.css', breadcrumbStyles],
   [slug === 'breadcrumb', 'breadcrumb-catalog.css', breadcrumbCatalogStyles],
   [
     ['pagination', 'record-workspace', 'empty-state'].includes(slug),
-    'atlas-pagination.css',
+    'genux-pagination.css',
     paginationStyles,
   ],
   [slug === 'pagination', 'pagination-catalog.css', paginationCatalogStyles],
-  [slug === 'steps', 'atlas-steps.css', stepsStyles],
+  [slug === 'steps', 'genux-steps.css', stepsStyles],
   [slug === 'steps', 'steps-catalog.css', stepsCatalogStyles],
-  [slug === 'autocomplete', 'atlas-autocomplete.css', autoCompleteStyles],
+  [slug === 'autocomplete', 'genux-autocomplete.css', autoCompleteStyles],
   [slug === 'autocomplete', 'autocomplete-catalog.css', autoCompleteCatalogStyles],
-  [slug === 'cascader', 'atlas-cascader.css', cascaderStyles],
-  [['listy', 'cascader'].includes(slug), 'atlas-listy.css', listyStyles],
+  [slug === 'cascader', 'genux-cascader.css', cascaderStyles],
+  [['listy', 'cascader'].includes(slug), 'genux-listy.css', listyStyles],
   [slug === 'cascader', 'cascader-catalog.css', cascaderCatalogStyles],
-  [['dropdown', 'rich-menu'].includes(slug), 'atlas-dropdown.css', dropdownStyles],
+  [['dropdown', 'rich-menu'].includes(slug), 'genux-dropdown.css', dropdownStyles],
   [slug === 'dropdown', 'dropdown-catalog.css', dropdownCatalogStyles],
   [
     ['input', 'select', 'checkbox', 'radio', 'switch', 'slider', 'form', 'date-time'].includes(
@@ -204,17 +207,17 @@ const routeSheetRules: RouteSheetRule[] = [
   ],
   [
     ['checkbox', 'radio', 'switch', 'listy'].includes(slug),
-    'atlas-selection-variants.css',
+    'genux-selection-variants.css',
     selectionVariantStyles,
   ],
-  [slug === 'drawer', 'atlas-drawer-extensions.css', drawerExtensionStyles],
+  [slug === 'drawer', 'genux-drawer-extensions.css', drawerExtensionStyles],
   [
     ['avatar', 'content-patterns', 'badge', 'listy', ...identityRoutes].includes(slug),
-    'atlas-avatar.css',
+    'genux-avatar.css',
     avatarStyles,
   ],
-  [feedbackRoutes.includes(slug), 'atlas-feedback.css', feedbackStyles],
-  [slug === 'date-time', 'atlas-date-time.css', dateTimeStyles],
+  [feedbackRoutes.includes(slug), 'genux-feedback.css', feedbackStyles],
+  [slug === 'date-time', 'genux-date-time.css', dateTimeStyles],
   [Boolean(featureSheet), 'workspace.css', workspaceStyles],
   [Boolean(featureSheet), featureSheet?.file ?? '', featureSheet?.href ?? ''],
   [kitRoute, 'workspace-kit.css', kitStyles],
@@ -224,14 +227,15 @@ const routeSheetRules: RouteSheetRule[] = [
   [['record-workspace', 'empty-state'].includes(slug), 'kit-collections.css', kitCollectionStyles],
   [slug === 'record-workspace', 'kit-records.css', kitRecordStyles],
   [identityRoutes.includes(slug), 'kit-identity.css', kitIdentityStyles],
-  [['media', 'carousel'].includes(slug), 'atlas-media.css', mediaStyles],
-  [slug === 'media', 'atlas-screenshot.css', screenshotStyles],
-  [slug === 'content-patterns', 'atlas-content-patterns.css', contentPatternStyles],
-  [slug === 'carousel', 'atlas-carousel.css', carouselStyles],
-  [slug === 'upload', 'atlas-upload.css', uploadStyles],
-  [slug === 'rich-menu', 'atlas-rich-menu.css', richMenuStyles],
-  [slug === 'chart', 'atlas-chart.css', chartStyles],
-  [slug === 'badge', 'atlas-badge.css', badgeStyles],
+  [['media', 'carousel'].includes(slug), 'genux-media.css', mediaStyles],
+  [slug === 'media', 'genux-screenshot.css', screenshotStyles],
+  [slug === 'content-patterns', 'genux-content-patterns.css', contentPatternStyles],
+  [slug === 'carousel', 'genux-carousel.css', carouselStyles],
+  [slug === 'upload', 'genux-upload.css', uploadStyles],
+  [slug === 'rich-menu', 'genux-rich-menu.css', richMenuStyles],
+  [slug === 'chart', 'genux-chart.css', chartStyles],
+  [['badge', 'fab'].includes(slug), 'genux-badge.css', badgeStyles],
+  [slug === 'fab', 'genux-fab.css', fabStyles],
 ];
 const routeSheets = routeSheetRules
   .filter(([included]) => included)
@@ -251,17 +255,21 @@ interface ComponentSources {
   styles: readonly string[];
   tests: readonly string[];
   browserTests?: readonly string[];
+  /** Test helpers and guards, relative to the repository root; published as-is. */
+  supportFiles?: readonly string[];
   catalogFiles?: readonly string[];
-  capabilities?: readonly GenUIComponentName[];
+  /** Framework-free model sources, relative to docs/src. */
+  modelFiles?: readonly string[];
+  capabilities?: readonly GenUXComponentName[];
 }
 const uxCompletionTests = ['ux-completion.spec.ts'];
 const uxPatternCatalog = ['catalog-ux-patterns.ts'];
 const dataEntry = ['web.css', 'data-entry-catalog.css'];
-const feedbackSources = ['components.css', 'atlas-feedback.css', 'atlas-card.css'];
+const feedbackSources = ['components.css', 'genux-feedback.css', 'genux-card.css'];
 const componentSources: Record<string, ComponentSources> = {
   button: {
     island: { module: 'ButtonDemo', component: 'WebButtonDemo', named: true },
-    adapters: ['AtlasButton.tsx'],
+    adapters: ['GenUXButton.tsx'],
     styles: ['button-catalog.css'],
     tests: ['button-refresh'],
   },
@@ -273,86 +281,86 @@ const componentSources: Record<string, ComponentSources> = {
   },
   select: {
     island: { module: 'SelectDemo', component: 'WebSelectDemo', named: true },
-    adapters: ['AtlasPill.tsx', 'DataEntryCatalog.tsx'],
+    adapters: ['GenUXPill.tsx', 'DataEntryCatalog.tsx'],
     styles: dataEntry,
     tests: ['patterns', 'data-entry-catalog'],
   },
   pill: {
     island: { module: 'PillDemo', component: 'PillDemo' },
-    adapters: ['AtlasPill.tsx'],
+    adapters: ['GenUXPill.tsx'],
     styles: ['pill-catalog.css'],
     tests: ['pill-refresh', 'pill-colors'],
   },
   card: {
     island: { module: 'CardDemo', component: 'CardDemo' },
-    adapters: ['cards/AtlasCard.tsx'],
-    styles: ['atlas-card.css', 'card-catalog.css', 'genui-card-lab.css', 'genui-runtime.css'],
+    adapters: ['cards/GenUXCard.tsx'],
+    styles: ['genux-card.css', 'card-catalog.css', 'genux-card-lab.css', 'genux-runtime.css'],
     tests: ['card', 'card-primitives'],
-    capabilities: ['AtlasEntityCard', 'AtlasMetricCard', 'AtlasPurposeCard'],
+    capabilities: ['GenUXEntityCard', 'GenUXMetricCard', 'GenUXPurposeCard'],
   },
   splitter: {
     island: { module: 'SplitterDemo', component: 'SplitterDemo' },
-    adapters: ['AtlasSplitter.tsx'],
-    styles: ['atlas-splitter.css', 'splitter-catalog.css'],
+    adapters: ['GenUXSplitter.tsx'],
+    styles: ['genux-splitter.css', 'splitter-catalog.css'],
     tests: ['splitter', 'splitter-page'],
   },
   breadcrumb: {
     island: { module: 'BreadcrumbDemo', component: 'BreadcrumbDemo' },
-    adapters: ['AtlasBreadcrumb.tsx'],
-    styles: ['atlas-breadcrumb.css', 'breadcrumb-catalog.css'],
+    adapters: ['GenUXBreadcrumb.tsx'],
+    styles: ['genux-breadcrumb.css', 'breadcrumb-catalog.css'],
     tests: ['breadcrumb'],
   },
   pagination: {
     island: { module: 'PaginationDemo', component: 'PaginationDemo' },
-    adapters: ['AtlasPagination.tsx'],
-    styles: ['atlas-pagination.css', 'pagination-catalog.css'],
+    adapters: ['GenUXPagination.tsx'],
+    styles: ['genux-pagination.css', 'pagination-catalog.css'],
     tests: ['pagination', 'pagination-page'],
   },
   steps: {
     island: { module: 'StepsDemo', component: 'StepsDemo' },
-    adapters: ['AtlasSteps.tsx'],
-    styles: ['atlas-steps.css', 'steps-catalog.css'],
+    adapters: ['GenUXSteps.tsx'],
+    styles: ['genux-steps.css', 'steps-catalog.css'],
     tests: ['steps', 'steps-page'],
   },
   autocomplete: {
     island: { module: 'AutoCompleteDemo', component: 'AutoCompleteDemo' },
-    adapters: ['AtlasAutoComplete.tsx'],
-    styles: ['atlas-autocomplete.css', 'autocomplete-catalog.css'],
+    adapters: ['GenUXAutoComplete.tsx'],
+    styles: ['genux-autocomplete.css', 'autocomplete-catalog.css'],
     tests: ['autocomplete', 'autocomplete-page'],
   },
   cascader: {
     island: { module: 'CascaderDemo', component: 'CascaderDemo' },
-    adapters: ['AtlasCascader.tsx'],
-    styles: ['atlas-cascader.css', 'cascader-catalog.css'],
+    adapters: ['GenUXCascader.tsx'],
+    styles: ['genux-cascader.css', 'cascader-catalog.css'],
     tests: ['cascader', 'cascader-page'],
   },
   dropdown: {
     island: { module: 'DropdownDemo', component: 'DropdownDemo' },
-    adapters: ['AtlasDropdown.tsx'],
-    styles: ['atlas-dropdown.css', 'dropdown-catalog.css'],
+    adapters: ['GenUXDropdown.tsx'],
+    styles: ['genux-dropdown.css', 'dropdown-catalog.css'],
     tests: ['dropdown-page'],
   },
   checkbox: {
     island: { module: 'CheckboxDemo', component: 'WebCheckboxDemo', named: true },
-    adapters: ['DataEntryCatalog.tsx', 'AtlasSelectionVariants.tsx'],
-    styles: [...dataEntry, 'atlas-selection-variants.css'],
+    adapters: ['DataEntryCatalog.tsx', 'GenUXSelectionVariants.tsx'],
+    styles: [...dataEntry, 'genux-selection-variants.css'],
     tests: ['patterns', 'selection-size'],
   },
   radio: {
     island: { module: 'RadioDemo', component: 'WebRadioDemo', named: true },
-    adapters: ['AtlasSegmented.tsx', 'DataEntryCatalog.tsx', 'AtlasSelectionVariants.tsx'],
-    styles: [...dataEntry, 'atlas-selection-variants.css'],
+    adapters: ['GenUXSegmented.tsx', 'DataEntryCatalog.tsx', 'GenUXSelectionVariants.tsx'],
+    styles: [...dataEntry, 'genux-selection-variants.css'],
     tests: ['patterns', 'selection-size'],
   },
   switch: {
     island: { module: 'SwitchDemo', component: 'WebSwitchDemo', named: true },
-    adapters: ['DataEntryCatalog.tsx', 'AtlasSelectionVariants.tsx'],
-    styles: [...dataEntry, 'atlas-selection-variants.css'],
+    adapters: ['DataEntryCatalog.tsx', 'GenUXSelectionVariants.tsx'],
+    styles: [...dataEntry, 'genux-selection-variants.css'],
     tests: ['patterns', 'selection-size'],
   },
   slider: {
     island: { module: 'SliderDemo', component: 'SliderDemo' },
-    adapters: ['AtlasSlider.tsx', 'DataEntryCatalog.tsx'],
+    adapters: ['GenUXSlider.tsx', 'DataEntryCatalog.tsx'],
     styles: ['slider.css', 'data-entry-catalog.css'],
     tests: ['slider'],
   },
@@ -370,70 +378,70 @@ const componentSources: Record<string, ComponentSources> = {
   },
   drawer: {
     island: { module: 'DrawerDemo', component: 'DrawerDemo' },
-    adapters: ['DrawerExamples.tsx', 'AtlasOverlay.tsx'],
-    styles: ['components.css', 'atlas-drawer-extensions.css'],
+    adapters: ['DrawerExamples.tsx', 'GenUXOverlay.tsx'],
+    styles: ['components.css', 'genux-drawer-extensions.css'],
     tests: ['patterns'],
   },
   'empty-state': {
     island: { module: 'EmptyStateDemo', component: 'EmptyStateDemo' },
-    adapters: ['AtlasEmptyState.tsx'],
-    styles: ['components.css', 'atlas-pagination.css', 'kit-collections.css'],
+    adapters: ['GenUXEmptyState.tsx'],
+    styles: ['components.css', 'genux-pagination.css', 'kit-collections.css'],
     tests: [],
     browserTests: ['refactoring-ui.spec.ts'],
     catalogFiles: ['catalog-content.ts'],
   },
   avatar: {
     island: { module: 'AvatarDemo', component: 'AvatarDemo' },
-    adapters: ['AtlasAvatar.tsx'],
-    styles: ['atlas-avatar.css'],
+    adapters: ['GenUXAvatar.tsx'],
+    styles: ['genux-avatar.css'],
     tests: [],
     browserTests: ['refactoring-ui.spec.ts'],
     catalogFiles: ['catalog-content.ts'],
   },
   toast: {
     island: { module: 'FeedbackDemo', component: 'ToastDemo', named: true },
-    adapters: ['AtlasFeedback.tsx'],
+    adapters: ['GenUXFeedback.tsx'],
     styles: feedbackSources,
     tests: ['patterns'],
   },
   alert: {
     island: { module: 'FeedbackDemo', component: 'AlertDemo', named: true },
-    adapters: ['AtlasFeedback.tsx'],
+    adapters: ['GenUXFeedback.tsx'],
     styles: feedbackSources,
     tests: ['patterns'],
   },
   notification: {
     island: { module: 'FeedbackDemo', component: 'NotificationDemo', named: true },
-    adapters: ['AtlasFeedback.tsx'],
+    adapters: ['GenUXFeedback.tsx'],
     styles: feedbackSources,
     tests: ['patterns'],
   },
   modal: {
     island: { module: 'FeedbackDemo', component: 'ModalDemo', named: true },
-    adapters: ['AtlasFeedback.tsx'],
+    adapters: ['GenUXFeedback.tsx'],
     styles: feedbackSources,
     tests: ['patterns'],
   },
   popconfirm: {
     island: { module: 'FeedbackDemo', component: 'PopconfirmDemo', named: true },
-    adapters: ['AtlasFeedback.tsx'],
+    adapters: ['GenUXFeedback.tsx'],
     styles: feedbackSources,
     tests: ['patterns'],
   },
   'date-time': {
     island: { module: 'DateTimeDemo', component: 'DateTimeDemo' },
-    adapters: ['AtlasDateTime.tsx'],
-    styles: ['atlas-date-time.css', 'data-entry-catalog.css'],
+    adapters: ['GenUXDateTime.tsx'],
+    styles: ['genux-date-time.css', 'data-entry-catalog.css'],
     tests: ['patterns'],
   },
   'data-table': {
     island: { module: 'workspace/CollectionDemo', component: 'DataTableDemo', named: true },
-    styles: ['workspace.css', 'workspace-collections.css', 'atlas-avatar.css', 'kit-identity.css'],
+    styles: ['workspace.css', 'workspace-collections.css', 'genux-avatar.css', 'kit-identity.css'],
     tests: ['workspace', 'kit-collections'],
   },
   'collection-views': {
     island: { module: 'workspace/CollectionDemo', component: 'CollectionDemo' },
-    styles: ['workspace.css', 'workspace-collections.css', 'atlas-avatar.css', 'kit-identity.css'],
+    styles: ['workspace.css', 'workspace-collections.css', 'genux-avatar.css', 'kit-identity.css'],
     tests: ['workspace', 'kit-collections'],
   },
   'record-details': {
@@ -453,7 +461,7 @@ const componentSources: Record<string, ComponentSources> = {
       'workspace-connected.css',
       'kit-collections.css',
       'kit-records.css',
-      'atlas-avatar.css',
+      'genux-avatar.css',
       'kit-identity.css',
     ],
     tests: ['workspace-kit-core', 'kit-records', 'kit-collections'],
@@ -461,48 +469,48 @@ const componentSources: Record<string, ComponentSources> = {
   },
   media: {
     island: { module: 'MediaDemo', component: 'MediaDemo' },
-    adapters: ['AtlasMediaFrame.tsx', 'AtlasScreenshot.tsx'],
-    styles: ['atlas-media.css', 'atlas-screenshot.css'],
+    adapters: ['GenUXMediaFrame.tsx', 'GenUXScreenshot.tsx'],
+    styles: ['genux-media.css', 'genux-screenshot.css'],
     tests: [],
     browserTests: uxCompletionTests,
     catalogFiles: uxPatternCatalog,
   },
   'content-patterns': {
     island: { module: 'ContentPatternsDemo', component: 'ContentPatternsDemo' },
-    adapters: ['AtlasIconList.tsx', 'AtlasQuote.tsx', 'AtlasAvatarGroup.tsx', 'AtlasAvatar.tsx'],
-    styles: ['atlas-avatar.css', 'atlas-content-patterns.css'],
+    adapters: ['GenUXIconList.tsx', 'GenUXQuote.tsx', 'GenUXAvatarGroup.tsx', 'GenUXAvatar.tsx'],
+    styles: ['genux-avatar.css', 'genux-content-patterns.css'],
     tests: [],
     browserTests: uxCompletionTests,
     catalogFiles: uxPatternCatalog,
   },
   carousel: {
     island: { module: 'CarouselDemo', component: 'CarouselDemo' },
-    adapters: ['AtlasCarousel.tsx', 'AtlasMediaFrame.tsx'],
-    styles: ['atlas-media.css', 'atlas-carousel.css'],
+    adapters: ['GenUXCarousel.tsx', 'GenUXMediaFrame.tsx'],
+    styles: ['genux-media.css', 'genux-carousel.css'],
     tests: [],
     browserTests: uxCompletionTests,
     catalogFiles: uxPatternCatalog,
   },
   upload: {
     island: { module: 'UploadDemo', component: 'UploadDemo' },
-    adapters: ['AtlasUpload.tsx'],
-    styles: ['atlas-upload.css'],
+    adapters: ['GenUXUpload.tsx'],
+    styles: ['genux-upload.css'],
     tests: [],
     browserTests: uxCompletionTests,
     catalogFiles: uxPatternCatalog,
   },
   'rich-menu': {
     island: { module: 'RichMenuDemo', component: 'RichMenuDemo' },
-    adapters: ['AtlasRichMenu.tsx', 'AtlasDropdown.tsx'],
-    styles: ['atlas-dropdown.css', 'atlas-rich-menu.css'],
+    adapters: ['GenUXRichMenu.tsx', 'GenUXDropdown.tsx'],
+    styles: ['genux-dropdown.css', 'genux-rich-menu.css'],
     tests: [],
     browserTests: uxCompletionTests,
     catalogFiles: uxPatternCatalog,
   },
   chart: {
     island: { module: 'ChartDemo', component: 'ChartDemo' },
-    adapters: ['AtlasChart.tsx'],
-    styles: ['atlas-chart.css'],
+    adapters: ['GenUXChart.tsx'],
+    styles: ['genux-chart.css'],
     tests: [],
     browserTests: uxCompletionTests,
     catalogFiles: uxPatternCatalog,
@@ -514,22 +522,40 @@ const componentSources: Record<string, ComponentSources> = {
       'ListyControlPatterns.tsx',
       'ListyReorderPattern.tsx',
       'ListyDataPatterns.tsx',
-      'AtlasListy.tsx',
-      'AtlasListyItem.tsx',
-      'AtlasAvatar.tsx',
+      'GenUXListy.tsx',
+      'GenUXListyItem.tsx',
+      'GenUXAvatar.tsx',
     ],
-    styles: ['atlas-listy.css', 'atlas-avatar.css', 'atlas-selection-variants.css'],
+    styles: ['genux-listy.css', 'genux-avatar.css', 'genux-selection-variants.css'],
     tests: [],
     browserTests: ['listy-cascader.spec.ts'],
     catalogFiles: ['catalog-listy.ts'],
   },
   badge: {
     island: { module: 'BadgeDemo', component: 'BadgeDemo' },
-    adapters: ['AtlasBadge.tsx', 'AtlasButton.tsx', 'AtlasAvatar.tsx'],
-    styles: ['atlas-badge.css', 'atlas-avatar.css'],
+    adapters: ['GenUXBadge.tsx', 'GenUXButton.tsx', 'GenUXAvatar.tsx'],
+    styles: ['genux-badge.css', 'genux-avatar.css'],
     tests: [],
     browserTests: ['badge-radius.spec.ts'],
     catalogFiles: ['catalog-badge.ts'],
+  },
+  fab: {
+    island: { module: 'FabDemo', component: 'FabDemo' },
+    adapters: [
+      'GenUXFab.tsx',
+      'fab/useFab.ts',
+      'fab/useFabPosition.ts',
+      'fab/FabIcon.tsx',
+      'GenUXButton.tsx',
+      'GenUXBadge.tsx',
+      'GenUXOverlay.tsx',
+    ],
+    modelFiles: ['fab/types.ts', 'fab/options.ts', 'fab/geometry.ts', 'fab/motion.ts'],
+    styles: ['genux-fab.css', 'genux-badge.css'],
+    tests: ['fab', 'component-motion', 'interaction-stability'],
+    browserTests: ['fab.spec.ts'],
+    supportFiles: ['docs/tests/fab-harness.mjs', 'tools/fab-motion-guard.mjs'],
+    catalogFiles: ['catalog-fab.ts', 'fab-tokens.json'],
   },
 };
 const sources: ComponentSources | undefined = componentSources[component.slug];
@@ -567,6 +593,14 @@ const astroExample =
     `  <${island.component} documentation client:load />`,
     '</DocsLayout>',
   ].join('\n');
+const adapterPaths = sources
+  ? [
+      ...[sources.island.module + '.tsx', ...(sources.adapters ?? []), 'ExamplePreview.tsx'].map(
+        file => 'docs/src/react/' + file,
+      ),
+      ...(sources.modelFiles ?? []).map(file => 'docs/src/' + file),
+    ]
+  : [];
 const resourceGroups = [
   {
     kind: 'catalog',
@@ -590,11 +624,7 @@ const resourceGroups = [
   {
     kind: 'adapter',
     label: 'React adapters',
-    paths: sources
-      ? [sources.island.module + '.tsx', ...(sources.adapters ?? []), 'ExamplePreview.tsx'].map(
-          file => 'docs/src/react/' + file,
-        )
-      : [],
+    paths: adapterPaths,
   },
   {
     kind: 'styles',
@@ -618,15 +648,16 @@ const resourceGroups = [
         name => 'docs/tests/' + name + '.test.mjs',
       ),
       ...(sources?.browserTests ?? []).map(file => 'docs/browser/' + file),
+      ...(sources?.supportFiles ?? []),
     ],
   },
   {
-    kind: 'genui',
-    label: 'GenUI contracts and trusted renderer',
+    kind: 'genux',
+    label: 'GenUX contracts and trusted renderer',
     paths: [
-      'docs/src/genui/contracts.ts',
-      'docs/src/genui/policy.ts',
-      'docs/src/react/genui/AtlasGenUISurface.tsx',
+      'docs/src/genux/contracts.ts',
+      'docs/src/genux/policy.ts',
+      'docs/src/react/genux/GenUXSurface.tsx',
     ],
   },
 ];
@@ -789,6 +820,7 @@ const tabGroups = [
             {component.slug === 'chart' && <ChartDemo documentation client:load />}
             {component.slug === 'listy' && <ListyDemo documentation client:load />}
             {component.slug === 'badge' && <BadgeDemo documentation client:load />}
+            {component.slug === 'fab' && <FabDemo documentation client:load />}
           </div>
           <noscript>
             <p>
@@ -924,7 +956,7 @@ const tabGroups = [
               Commonly used properties. See the official component reference for the full contract.
             </span>
           </p>
-          <h3 data-i18n="GenUI usage API">GenUI usage API</h3>
+          <h3 data-i18n="GenUX usage API">GenUX usage API</h3>
           {component.apiDescription && (
             <p data-i18n={component.apiDescription}>{component.apiDescription}</p>
           )}
@@ -932,8 +964,8 @@ const tabGroups = [
           <h3 data-i18n="Underlying Ant Design API">Underlying Ant Design API</h3>
           {component.nativeApi && (
             <>
-              <p data-i18n="These library settings are used inside the example. They are separate from the Atlas component props above.">
-                These library settings are used inside the example. They are separate from the Atlas
+              <p data-i18n="These library settings are used inside the example. They are separate from the GenUX component props above.">
+                These library settings are used inside the example. They are separate from the GenUX
                 component props above.
               </p>
               <ApiReference rows={component.nativeApi} label="Ant Design API reference" />
@@ -974,8 +1006,8 @@ const tabGroups = [
           </ul>
           {sources?.capabilities?.length ? (
             <p data-doc-capability-status>
-              <span data-i18n="Registered GenUI capabilities from this component family:">
-                Registered GenUI capabilities from this component family:
+              <span data-i18n="Registered GenUX capabilities from this component family:">
+                Registered GenUX capabilities from this component family:
               </span>{' '}
               {sources.capabilities.map(name => (
                 <code>{name}</code>
@@ -983,9 +1015,9 @@ const tabGroups = [
             </p>
           ) : (
             <p data-doc-capability-status>
-              <span data-i18n="No GenUI capability is registered for this component yet. A catalog entry or React export alone is not a GenUI capability.">
-                No GenUI capability is registered for this component yet. A catalog entry or React
-                export alone is not a GenUI capability.
+              <span data-i18n="No GenUX capability is registered for this component yet. A catalog entry or React export alone is not a GenUX capability.">
+                No GenUX capability is registered for this component yet. A catalog entry or React
+                export alone is not a GenUX capability.
               </span>
             </p>
           )}
@@ -1011,7 +1043,7 @@ const tabGroups = [
         )}
       </nav>
       <footer class="component-footer" data-component-footer>
-        <span>GenUI</span>
+        <span>GenUX</span>
         <span>
           <span data-i18n="Version">Version</span> {releaseVersion}
         </span>

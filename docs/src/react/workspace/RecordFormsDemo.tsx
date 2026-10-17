@@ -1,17 +1,17 @@
 import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import { flushSync } from 'react-dom';
 import { Checkbox, Form, Select, type FormProps } from 'antd';
-import Input from '../AtlasInput';
-import InputNumber from '../AtlasInputNumber';
+import Input from '../GenUXInput';
+import InputNumber from '../GenUXInputNumber';
 import { DateField } from './kit/Fields';
-import AtlasProvider from '../AtlasProvider';
+import GenUXProvider from '../GenUXProvider';
 import ExamplePreview from '../ExamplePreview';
-import AtlasButton from '../AtlasButton';
-import AtlasSplitter from '../AtlasSplitter';
+import GenUXButton from '../GenUXButton';
+import GenUXSplitter from '../GenUXSplitter';
 import NumberStepper from '../NumberStepper';
 import { selectedLabel } from '../selectedLabel';
 import { useI18n } from '../useI18n';
-import { TweakerSettings } from '../AtlasTweaker';
+import { TweakerSettings } from '../GenUXTweaker';
 import WorkspaceFrame, { type WorkspaceProfile } from './WorkspaceFrame';
 import {
   initialRecords,
@@ -287,7 +287,7 @@ export function RecordFormsExamples() {
             <h4 className="record-form-heading" id={`record-form-heading-${group}`}>
               <button
                 type="button"
-                className="record-form-accordion-trigger atlas-control"
+                className="record-form-accordion-trigger genux-control"
                 aria-expanded={isExpanded}
                 aria-controls={`record-form-content-${group}`}
                 onClick={event => {
@@ -306,7 +306,7 @@ export function RecordFormsExamples() {
                 }}
               >
                 <span>{t(GROUP_LABELS[group])}</span>
-                <span className="record-form-chevron atlas-motion-layer" aria-hidden="true">
+                <span className="record-form-chevron genux-motion-layer" aria-hidden="true">
                   ›
                 </span>
               </button>
@@ -399,7 +399,7 @@ export function RecordFormsExamples() {
               key={group}
               type="button"
               role="tab"
-              className="record-form-tab atlas-control"
+              className="record-form-tab genux-control"
               id={`record-form-tab-${group}`}
               aria-controls={`record-form-panel-${group}`}
               aria-selected={activeGroup === group}
@@ -421,7 +421,7 @@ export function RecordFormsExamples() {
             section: t(GROUP_LABELS[activeGroup]),
           })}
         </p>
-        <AtlasSplitter
+        <GenUXSplitter
           id="record-form-splitter"
           className="record-form-splitter"
           label={t('Record editor and live draft review')}
@@ -790,7 +790,7 @@ export function RecordFormsExamples() {
                                           controls={false}
                                         />
                                       </Form.Item>
-                                      <AtlasButton
+                                      <GenUXButton
                                         htmlType="button"
                                         fill="text"
                                         text={t('Remove line {number}', { number: index + 1 })}
@@ -799,7 +799,7 @@ export function RecordFormsExamples() {
                                     </fieldset>
                                   );
                                 })}
-                                <AtlasButton
+                                <GenUXButton
                                   id="record-form-add-line"
                                   htmlType="button"
                                   fill="text"
@@ -837,7 +837,7 @@ export function RecordFormsExamples() {
                     )}
                   </Form>
                   <div className="record-form-actions">
-                    <AtlasButton
+                    <GenUXButton
                       id="record-form-prev"
                       htmlType="button"
                       fill="text"
@@ -845,21 +845,21 @@ export function RecordFormsExamples() {
                       hidden={mode !== 'steps' || activeGroup === GROUPS[0]}
                       onClick={() => changeStep(-1)}
                     />
-                    <AtlasButton
+                    <GenUXButton
                       id="record-form-next"
                       htmlType="button"
                       text={t('Next step')}
                       hidden={mode !== 'steps' || activeGroup === GROUPS[GROUPS.length - 1]}
                       onClick={() => changeStep(1)}
                     />
-                    <AtlasButton
+                    <GenUXButton
                       id="record-form-submit"
                       htmlType="button"
                       text={t('Validate and preview')}
                       disabled={readOnly}
                       onClick={() => form.submit()}
                     />
-                    <AtlasButton
+                    <GenUXButton
                       id="record-form-reset"
                       htmlType="button"
                       fill="text"
@@ -998,10 +998,10 @@ export default function RecordFormsDemo({
   documentation = false,
 }: { documentation?: boolean } = {}) {
   return (
-    <AtlasProvider appearance={documentation ? 'docs' : undefined}>
+    <GenUXProvider appearance={documentation ? 'docs' : undefined}>
       <ExamplePreview id="record-forms-workspace" title="Record form organizations">
         <RecordFormsExamples />
       </ExamplePreview>
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }

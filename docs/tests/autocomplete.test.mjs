@@ -8,7 +8,7 @@ async function fixture(t) {
   const file = `docs/tests/.autocomplete-${randomUUID()}.tsx`;
   await writeFile(
     file,
-    `import{useState}from'react';import AtlasProvider from'../src/react/AtlasProvider';import AtlasAutoComplete from'../src/react/AtlasAutoComplete';const items=[{key:'archived',value:'Archived',title:'Archived',description:'Unavailable resource',disabled:true},{key:'card',value:'Card',title:'Card',description:'Entity summaries',group:{key:'components',label:'Components'}},{key:'guide',value:'Design guide',title:'Design guide',description:'Shared tokens',group:{key:'guides',label:'Guides'}}];export default function Demo(){const[value,setValue]=useState('');const[selected,setSelected]=useState([]);return <AtlasProvider appearance="docs"><AtlasAutoComplete label="Find resources" value={value} onChange={setValue} items={items} onSelect={item=>setSelected(v=>[...v,item.key])}/><output data-selections>{JSON.stringify(selected)}</output></AtlasProvider>}`,
+    `import{useState}from'react';import GenUXProvider from'../src/react/GenUXProvider';import GenUXAutoComplete from'../src/react/GenUXAutoComplete';const items=[{key:'archived',value:'Archived',title:'Archived',description:'Unavailable resource',disabled:true},{key:'card',value:'Card',title:'Card',description:'Entity summaries',group:{key:'components',label:'Components'}},{key:'guide',value:'Design guide',title:'Design guide',description:'Shared tokens',group:{key:'guides',label:'Guides'}}];export default function Demo(){const[value,setValue]=useState('');const[selected,setSelected]=useState([]);return <GenUXProvider appearance="docs"><GenUXAutoComplete label="Find resources" value={value} onChange={setValue} items={items} onSelect={item=>setSelected(v=>[...v,item.key])}/><output data-selections>{JSON.stringify(selected)}</output></GenUXProvider>}`,
   );
   const h = await mountPattern('default', file);
   t.after(async () => {
@@ -56,7 +56,7 @@ test('native keyboard navigation preserves draft until explicit selection and Es
   assert.equal(input.value, 'Card');
   assert.equal(h.document.querySelector('[data-selections]').textContent, '["card"]');
   assert.equal(
-    input.closest('.ant-select').querySelectorAll('.atlas-autocomplete-result').length,
+    input.closest('.ant-select').querySelectorAll('.genux-autocomplete-result').length,
     0,
     'rich popup rows must not be rendered in the single-line field',
   );

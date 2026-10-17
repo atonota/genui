@@ -61,9 +61,9 @@
   gap: var(--space-xs);
   margin-bottom: var(--space-md);
 }
-/* The label text shares the row inset; the search well is the canonical .atlas-input-frame
-   from DocsNav, painted by atlas-input.css with its keyboard marker in focus-fields.css. */
-.sidebar .nav-search > span:not(.atlas-input-frame) {
+/* The label text shares the row inset; the search well is the canonical .genux-input-frame
+   from DocsNav, painted by genux-input.css with its keyboard marker in focus-fields.css. */
+.sidebar .nav-search > span:not(.genux-input-frame) {
   padding-inline: var(--space-sm);
 }
 .sidebar .navigation ul {

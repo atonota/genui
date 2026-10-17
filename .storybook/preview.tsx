@@ -8,11 +8,11 @@ import {
   themeStyleText,
 } from '../docs/src/theme';
 import '../docs/src/styles/docs.css';
-import '../docs/src/styles/atlas-shadows.css';
+import '../docs/src/styles/genux-shadows.css';
 import '../docs/src/styles/components.css';
 import './preview.css';
 import '../docs/src/styles/web.css';
-import '../docs/src/styles/atlas-input.css';
+import '../docs/src/styles/genux-input.css';
 import { restoreLocale, setLocale, type Locale } from '../docs/src/i18n';
 import { useI18n } from '../docs/src/react/useI18n';
 
@@ -47,11 +47,11 @@ function StoryFrame({
   const mode = useSyncExternalStore(subscribeTheme, getThemeSnapshot, getServerThemeSnapshot);
   const dark = mode === 'dark';
   return (
-    <main className="atlas-story-frame" aria-label={t('Component example')}>
+    <main className="genux-story-frame" aria-label={t('Component example')}>
       <style>{themeStyleText}</style>
-      <div className="atlas-story-toolbar">
+      <div className="genux-story-toolbar">
         <button
-          className="atlas-story-theme"
+          className="genux-story-theme"
           type="button"
           role="switch"
           aria-label={t('Dark theme')}
@@ -95,7 +95,7 @@ const preview: Preview = {
   },
   decorators: [
     (Story, context) => (
-      <StoryFrame sharedControls={context.parameters.atlasSharedPreview === true}>
+      <StoryFrame sharedControls={context.parameters.genuxSharedPreview === true}>
         <Story />
       </StoryFrame>
     ),

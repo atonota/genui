@@ -374,8 +374,8 @@ test('visible grid drafts survive schema changes and explicit grid commit update
   const h = await mountPattern('default', 'docs/src/react/workspace/kit/ConnectedWorkspace.tsx');
   t.after(() => h.dispose());
   assert.ok(
-    h.document.querySelector('.atlas-demo'),
-    'the documentation island owns its Atlas provider',
+    h.document.querySelector('.genux-demo'),
+    'the documentation island owns its GenUX provider',
   );
   const grid = h.document.querySelector('.kit-editable-grid');
   await h.click(grid.querySelector('[data-edit-trigger="SP-26-0401::title"]'));

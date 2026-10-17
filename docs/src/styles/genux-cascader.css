@@ -1,0 +1,197 @@
+/* Native navigation, contained columns and one-edge focus feedback. */
+.genux-cascader {
+  --cascader-text: var(--text);
+  --cascader-column-width: 192px;
+  --cascader-list-height: 320px;
+  /* At least one option row always stays visible in the panel. */
+  --cascader-options-min: calc(var(--genux-compact-height) + 2 * var(--space-xs));
+  /* Native 4px placement offset plus a visible gap to the viewport edge. */
+  --cascader-popup-gap: calc(4px + var(--space-xs));
+  position: relative;
+  display: grid;
+  gap: var(--space-xs);
+  min-width: 0;
+  max-width: 100%;
+  font-size: var(--cascader-text);
+}
+.genux-cascader :is(label, p) {
+  margin: 0;
+  font: inherit;
+}
+.genux-cascader .genux-cascader-control {
+  --ant-select-font-size: var(--cascader-text);
+  width: 100%;
+  min-width: 0;
+  min-height: var(--genux-component-height);
+  font-size: var(--cascader-text);
+}
+.genux-cascader-help,
+.genux-cascader-description,
+.genux-cascader-trail,
+.genux-cascader-footer {
+  color: var(--muted);
+}
+.genux-cascader-error {
+  color: var(--error);
+}
+.genux-cascader .genux-cascader-popup {
+  min-width: 0 !important;
+  max-width: 100%;
+  width: 100%;
+  color: var(--ink);
+  font-size: var(--cascader-text);
+}
+/* Bounded to the measured room beside the field (half the viewport until measured).
+   Options keep a usable minimum; when options and guidance together exceed the room,
+   the whole panel scrolls instead of clipping either. */
+.genux-cascader-panel {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(
+    var(--cascader-popup-room, calc((100dvh - var(--genux-component-height)) / 2)) -
+      var(--cascader-popup-gap)
+  );
+  overflow-y: auto;
+  overscroll-behavior-block: contain;
+}
+.genux-cascader-tree {
+  display: flex;
+  flex: 0 1 auto;
+  flex-direction: column;
+  min-width: 0;
+  min-height: var(--cascader-options-min);
+  max-width: 100%;
+}
+.genux-cascader-scroll {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  overflow-x: auto;
+  max-width: 100%;
+  overscroll-behavior-inline: contain;
+}
+.genux-cascader-popup .ant-cascader-menus {
+  flex: 1 1 auto;
+  align-items: stretch;
+  width: max-content;
+  min-width: 100%;
+  min-height: 0;
+}
+.genux-cascader-popup .ant-cascader-menu {
+  flex: 0 0 var(--cascader-column-width);
+  width: var(--cascader-column-width);
+  min-width: 0;
+  height: auto;
+  max-height: var(--cascader-list-height);
+  min-height: 0;
+  padding: var(--space-xs);
+  border-inline-end-color: var(--line);
+}
+/* Compact Listy rows: exact height on one line, description rows grow without clipping. */
+.genux-cascader-popup .ant-cascader-menu-item {
+  min-height: var(--genux-compact-height);
+  padding-block: 0;
+  padding-inline: var(--space-xs);
+  color: var(--ink);
+  font-size: var(--cascader-text);
+  font-weight: var(--font-weight-body);
+  line-height: var(--line-height);
+  border-radius: var(--radius);
+  transition-property: color, background-color, opacity;
+  transition-duration: var(--motion-duration-standard);
+  transition-timing-function: var(--motion-easing);
+  transition-delay: var(--motion-delay);
+}
+.genux-cascader-popup .ant-cascader-menu-item-content {
+  min-width: 0;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
+/* One surface well: the native row paints state; the shared Listy item paints content only. */
+.genux-cascader-popup .ant-cascader-menu-item [data-genux-listy-item] {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: var(--genux-compact-height);
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.genux-cascader-result {
+  display: grid;
+  gap: var(--space-xs);
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+.genux-cascader-popup .ant-cascader-menu-item-active:not(.ant-cascader-menu-item-disabled) {
+  background: var(--soft);
+  color: var(--ink);
+  box-shadow: inset var(--focus-marker) 0 0 var(--accent);
+}
+.genux-cascader-popup .ant-cascader-menu-item-disabled {
+  color: var(--muted);
+}
+.genux-cascader-popup .ant-cascader-checkbox {
+  flex: 0 0 var(--genux-selection-height);
+  width: var(--genux-selection-height);
+  height: var(--genux-selection-height);
+  min-width: 32px;
+  min-height: 32px;
+  align-self: center;
+}
+.genux-cascader-popup .ant-cascader-checkbox-inner {
+  width: 100%;
+  height: 100%;
+  border-color: var(--line);
+  background: var(--panel);
+  border-radius: var(--radius);
+}
+.genux-cascader-popup .ant-cascader-checkbox-checked .ant-cascader-checkbox-inner,
+.genux-cascader-popup .ant-cascader-checkbox-indeterminate .ant-cascader-checkbox-inner {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.genux-cascader-popup .ant-cascader-checkbox-inner::after {
+  width: calc(var(--genux-selection-height) * 0.2);
+  height: calc(var(--genux-selection-height) * 0.35);
+}
+.genux-cascader-popup .genux-cascader-footer {
+  flex: 0 0 auto;
+  padding: var(--space-sm);
+  margin: 0;
+  font-size: var(--cascader-text);
+  line-height: var(--line-height);
+  white-space: normal;
+  background: var(--panel);
+}
+.genux-cascader-empty {
+  display: block;
+  padding: var(--space-sm);
+  white-space: normal;
+}
+/* Search results and the empty state wrap within the popup instead of widening it. */
+.genux-cascader-popup:is(:has(.genux-cascader-result), :has(.genux-cascader-empty))
+  .ant-cascader-menus {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+.genux-cascader-popup:is(:has(.genux-cascader-result), :has(.genux-cascader-empty))
+  .ant-cascader-menu {
+  flex-basis: 100%;
+  width: 100%;
+  max-width: 100%;
+}
+.genux-cascader-control .ant-select-item-remove {
+  min-width: 32px;
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+@media (prefers-reduced-motion: reduce) {
+  .genux-cascader-popup .ant-cascader-menu-item {
+    transition-duration: 0ms;
+  }
+}

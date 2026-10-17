@@ -50,7 +50,7 @@ export const approvedTypographyVariables = {
 // Body scope reaches documentation portals; provider variables also serve embeds.
 // Approved Storybook/standalone profiles retain their separately approved typography.
 export const docsTypographyStyleText = `
-body[data-atlas-surface='docs'],.atlas-demo[data-atlas-appearance='docs'] {
+body[data-genux-surface='docs'],.genux-demo[data-genux-appearance='docs'] {
   ${Object.entries(docsTypographyVariables)
     .map(([name, value]) => `${name}:${value};`)
     .join('\n  ')}

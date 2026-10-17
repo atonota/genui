@@ -1,12 +1,12 @@
 import { useId, useState } from 'react';
 import { Select, Switch } from 'antd';
-import AtlasProvider from './AtlasProvider';
-import { TweakerSettings } from './AtlasTweaker';
-import AtlasUpload from './AtlasUpload';
+import GenUXProvider from './GenUXProvider';
+import { TweakerSettings } from './GenUXTweaker';
+import GenUXUpload from './GenUXUpload';
 import ExamplePreview from './ExamplePreview';
 import { useI18n } from './useI18n';
 
-// Chooser hints only; AtlasUpload still checks every chosen or dropped file locally.
+// Chooser hints only; GenUXUpload still checks every chosen or dropped file locally.
 const acceptedFiles = {
   text: 'text/plain,.txt',
   'text-and-images': 'text/plain,.txt,image/*',
@@ -23,7 +23,7 @@ export default function UploadDemo({ documentation = false }: { documentation?: 
   const count = files.length;
   const settings = documentation ? (
     <TweakerSettings title="Upload settings">
-      <div className="atlas-tweaker-token">
+      <div className="genux-tweaker-token">
         <label htmlFor={`${settingsId}multiple`}>{t('Allow multiple files')}</label>
         <Switch
           id={`${settingsId}multiple`}
@@ -31,7 +31,7 @@ export default function UploadDemo({ documentation = false }: { documentation?: 
           onChange={checked => setMultiple(checked)}
         />
       </div>
-      <div className="atlas-tweaker-token">
+      <div className="genux-tweaker-token">
         <label htmlFor={`${settingsId}accept`}>{t('Accepted files')}</label>
         <Select
           id={`${settingsId}accept`}
@@ -48,18 +48,18 @@ export default function UploadDemo({ documentation = false }: { documentation?: 
     </TweakerSettings>
   ) : null;
   return (
-    <AtlasProvider appearance={documentation ? 'docs' : undefined}>
+    <GenUXProvider appearance={documentation ? 'docs' : undefined}>
       <ExamplePreview id="upload-local-files" title={t('Choose local files')}>
         {settings}
-        <div className="atlas-upload-demo">
-          <AtlasUpload
+        <div className="genux-upload-demo">
+          <GenUXUpload
             label={t('Choose local files')}
             accept={acceptedFiles[accepted]}
             maxBytes={1024}
             multiple={multiple}
             onFilesChange={setFiles}
           />
-          <p className="atlas-upload-count" role="status">
+          <p className="genux-upload-count" role="status">
             {count === 0
               ? t('No files selected')
               : count === 1
@@ -68,6 +68,6 @@ export default function UploadDemo({ documentation = false }: { documentation?: 
           </p>
         </div>
       </ExamplePreview>
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }

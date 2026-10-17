@@ -1,8 +1,10 @@
+import { readMigratedItem } from '../storage-migration';
+
 // Component page behaviour for pages/components/[slug].astro: four tabs over the eight
 // server-rendered sections, active-tab filtering of the existing section and contents links,
 // copy as Markdown and the shared package manager. Without it every section stays readable.
 const defaultTab = 'examples';
-const managerKey = 'genui-package-manager';
+const managerKey = 'genux-package-manager';
 
 function repository(raw: unknown): string | undefined {
   let url: URL;
@@ -25,12 +27,12 @@ function branch(raw: unknown): string | undefined {
   const name = typeof raw === 'string' ? raw.trim() : '';
   return name.split('/').every(validSegment) ? name : undefined;
 }
-/** Public repository for edit, issue, GitHub and clone links: the canonical GenUI repository
- * and its main branch unless a valid PUBLIC_GENUI_REPOSITORY_* override replaces them. */
+/** Public repository for edit, issue, GitHub and clone links: the canonical GenUX repository
+ * and its main branch unless a valid PUBLIC_GENUX_REPOSITORY_* override replaces them. */
 export const repositoryUrl: string =
-  repository(import.meta.env.PUBLIC_GENUI_REPOSITORY_URL) ?? 'https://github.com/atonota/genui';
+  repository(import.meta.env.PUBLIC_GENUX_REPOSITORY_URL) ?? 'https://github.com/atonota/genux';
 export const repositoryBranch: string =
-  branch(import.meta.env.PUBLIC_GENUI_REPOSITORY_BRANCH) ?? 'main';
+  branch(import.meta.env.PUBLIC_GENUX_REPOSITORY_BRANCH) ?? 'main';
 
 const text = (node: Element) => (node.textContent ?? '').trim().split(/\s+/).join(' ');
 const prefixes: Record<string, string> = { h1: '# ', h2: '## ', h3: '### ', li: '- ' };
@@ -181,7 +183,7 @@ export function installDocsPage(root: Document): () => void {
   if (install && choices.length) {
     let stored = '';
     try {
-      stored = view.localStorage.getItem(managerKey) ?? '';
+      stored = readMigratedItem(view.localStorage, managerKey) ?? '';
     } catch {
       // Blocked storage keeps npm for this page.
     }

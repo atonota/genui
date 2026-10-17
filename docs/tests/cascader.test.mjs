@@ -40,7 +40,7 @@ async function fixture(t, mode = {}) {
     : '';
   await writeFile(
     file,
-    `import{useState}from'react';import AtlasProvider from'../src/react/AtlasProvider';import AtlasCascader from'../src/react/AtlasCascader';const tree=${tree};const longTree=${longTree};const collection=${collection};export default function Demo(){const[value,setValue]=useState(${JSON.stringify(initial)});const[count,setCount]=useState(0);const[loaded,setLoaded]=useState('');const[revealed,setRevealed]=useState(false);return <AtlasProvider appearance="docs"><AtlasCascader label="Destination" options={${options}} ${selection} ${source} disabled={${disabled}} help="Choose a full path" value={value} onChange={next=>{setValue(next);setCount(n=>n+1)}}/><output data-value>{JSON.stringify(value)}</output><output data-count>{count}</output><output data-loaded>{loaded}</output>${update}</AtlasProvider>}`,
+    `import{useState}from'react';import GenUXProvider from'../src/react/GenUXProvider';import GenUXCascader from'../src/react/GenUXCascader';const tree=${tree};const longTree=${longTree};const collection=${collection};export default function Demo(){const[value,setValue]=useState(${JSON.stringify(initial)});const[count,setCount]=useState(0);const[loaded,setLoaded]=useState('');const[revealed,setRevealed]=useState(false);return <GenUXProvider appearance="docs"><GenUXCascader label="Destination" options={${options}} ${selection} ${source} disabled={${disabled}} help="Choose a full path" value={value} onChange={next=>{setValue(next);setCount(n=>n+1)}}/><output data-value>{JSON.stringify(value)}</output><output data-count>{count}</output><output data-loaded>{loaded}</output>${update}</GenUXProvider>}`,
   );
   let h;
   t.after(async () => {

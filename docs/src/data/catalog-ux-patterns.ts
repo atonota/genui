@@ -38,20 +38,20 @@ export const uxPatternComponents: ComponentDoc[] = [
         'Photograph with caption',
         'Cover fills a landscape frame and may crop the edges. The overlay sits on an opaque panel.',
         `
-import '../src/styles/atlas-media.css';
-import AtlasProvider from '../src/react/AtlasProvider';
-import AtlasMediaFrame from '../src/react/AtlasMediaFrame';
+import '../src/styles/genux-media.css';
+import GenUXProvider from '../src/react/GenUXProvider';
+import GenUXMediaFrame from '../src/react/GenUXMediaFrame';
 
 export default function Example() {
   return (
-    <AtlasProvider appearance="docs">
-      <AtlasMediaFrame
+    <GenUXProvider appearance="docs">
+      <GenUXMediaFrame
         src="/selection/coast.svg"
         alt="Coast illustration"
         caption="Cover fills the frame and may crop the edges."
         overlay="Coast"
       />
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }`,
       ),
@@ -60,25 +60,25 @@ export default function Example() {
         'Contain and unavailable image',
         'Contain shows the whole image in a square frame. Without a usable source the frame keeps its space and shows Image unavailable with the text alternative.',
         `
-import '../src/styles/atlas-media.css';
-import AtlasProvider from '../src/react/AtlasProvider';
-import AtlasMediaFrame from '../src/react/AtlasMediaFrame';
+import '../src/styles/genux-media.css';
+import GenUXProvider from '../src/react/GenUXProvider';
+import GenUXMediaFrame from '../src/react/GenUXMediaFrame';
 
 export default function Example() {
   return (
-    <AtlasProvider appearance="docs">
-      <AtlasMediaFrame
+    <GenUXProvider appearance="docs">
+      <GenUXMediaFrame
         src="/selection/city.svg"
         fit="contain"
         ratio="square"
         alt="City illustration"
         caption="Contain shows the whole image inside the frame."
       />
-      <AtlasMediaFrame
+      <GenUXMediaFrame
         alt="Forest illustration"
         caption="The frame keeps its space when no image is available."
       />
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }`,
       ),
@@ -87,27 +87,27 @@ export default function Example() {
         'Recorded screenshot',
         'A recorded page image keeps its original 1440 by 1000 CSS pixel size inside a bounded region that scrolls in both directions, so its text stays readable instead of shrinking.',
         `
-import '../src/styles/atlas-screenshot.css';
-import AtlasProvider from '../src/react/AtlasProvider';
-import AtlasScreenshot from '../src/react/AtlasScreenshot';
+import '../src/styles/genux-screenshot.css';
+import GenUXProvider from '../src/react/GenUXProvider';
+import GenUXScreenshot from '../src/react/GenUXScreenshot';
 
 export default function Example() {
   return (
-    <AtlasProvider appearance="docs">
-      <AtlasScreenshot
-        src="/examples/atlas-avatar-desktop.png"
+    <GenUXProvider appearance="docs">
+      <GenUXScreenshot
+        src="/examples/genux-avatar-desktop.png"
         width={1440}
         height={1000}
-        alt="Recorded static image of the Atlas Avatar documentation page at 1440 by 1000 CSS pixels. It is not interactive."
-        caption="Recorded Atlas Avatar example"
+        alt="Recorded static image of the GenUX Avatar documentation page at 1440 by 1000 CSS pixels. It is not interactive."
+        caption="Recorded GenUX Avatar example"
       />
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }`,
       ),
     ],
     apiDescription:
-      'Rows without a prefix belong to AtlasMediaFrame. Rows that start with AtlasScreenshot belong to the recorded screenshot figure.',
+      'Rows without a prefix belong to GenUXMediaFrame. Rows that start with GenUXScreenshot belong to the recorded screenshot figure.',
     api: rows(
       ['src', 'string', '-', 'Image address. Empty or missing values show the fallback.'],
       ['alt', 'string', '-', 'Text alternative. An empty string marks the image decorative.'],
@@ -116,31 +116,31 @@ export default function Example() {
       ['ratio', "'landscape' | 'square' | 'portrait'", "'landscape'", 'Reserved frame ratio.'],
       ['overlay', 'string', '-', 'Short text on an opaque panel over the image.'],
       [
-        'AtlasScreenshot src',
+        'GenUXScreenshot src',
         'string',
         '-',
         'Screenshot address. Empty values and failed loads show Screenshot unavailable.',
       ],
       [
-        'AtlasScreenshot alt',
+        'GenUXScreenshot alt',
         'string',
         '-',
         'Text alternative that says what the recording shows.',
       ],
       [
-        'AtlasScreenshot caption',
+        'GenUXScreenshot caption',
         'string',
         '-',
         'Visible figcaption; it also names the scroll region.',
       ],
       [
-        'AtlasScreenshot width',
+        'GenUXScreenshot width',
         'number',
         '-',
         'Original CSS width; a positive number. Other values show the fallback.',
       ],
       [
-        'AtlasScreenshot height',
+        'GenUXScreenshot height',
         'number',
         '-',
         'Original CSS height; a positive number. Other values show the fallback.',
@@ -161,7 +161,7 @@ export default function Example() {
       'Retry image requests the same src again by remounting the image; the address is not changed, no cache-busting query is added and nothing retries on a timer.',
       'data-image-state reports none, loading, loaded or error for styling and tests; it is not a visible status.',
       'Examples use local illustrations only; no image is fetched from a remote service.',
-      'AtlasScreenshot never scales the image down: width and height reserve the original size, and the region scrolls instead of shrinking the text.',
+      'GenUXScreenshot never scales the image down: width and height reserve the original size, and the region scrolls instead of shrinking the text.',
       'The recorded screenshot is a static local file with no zoom, live controls or server capability.',
     ],
   },
@@ -184,10 +184,10 @@ export default function Example() {
         'Named avatar group',
         'Three people are shown with their names. Expand people reveals the whole list instead of a clipped menu.',
         `
-import '../src/styles/atlas-avatar.css';
-import '../src/styles/atlas-content-patterns.css';
-import AtlasProvider from '../src/react/AtlasProvider';
-import AtlasAvatarGroup from '../src/react/AtlasAvatarGroup';
+import '../src/styles/genux-avatar.css';
+import '../src/styles/genux-content-patterns.css';
+import GenUXProvider from '../src/react/GenUXProvider';
+import GenUXAvatarGroup from '../src/react/GenUXAvatarGroup';
 
 const people = [
   { id: 'ada', name: 'Ada Lovelace' },
@@ -198,9 +198,9 @@ const people = [
 
 export default function Example() {
   return (
-    <AtlasProvider appearance="docs">
-      <AtlasAvatarGroup people={people} maxVisible={3} />
-    </AtlasProvider>
+    <GenUXProvider appearance="docs">
+      <GenUXAvatarGroup people={people} maxVisible={3} />
+    </GenUXProvider>
   );
 }`,
       ),
@@ -209,15 +209,15 @@ export default function Example() {
         'Icon list and quotation',
         'Decorative icons mark list items, and a fictional quotation names its source and context.',
         `
-import '../src/styles/atlas-content-patterns.css';
-import AtlasProvider from '../src/react/AtlasProvider';
-import AtlasIconList from '../src/react/AtlasIconList';
-import AtlasQuote from '../src/react/AtlasQuote';
+import '../src/styles/genux-content-patterns.css';
+import GenUXProvider from '../src/react/GenUXProvider';
+import GenUXIconList from '../src/react/GenUXIconList';
+import GenUXQuote from '../src/react/GenUXQuote';
 
 export default function Example() {
   return (
-    <AtlasProvider appearance="docs">
-      <AtlasIconList
+    <GenUXProvider appearance="docs">
+      <GenUXIconList
         items={[
           {
             id: 'define',
@@ -228,12 +228,12 @@ export default function Example() {
           { id: 'review', title: 'Review the result', icon: 'arrowRight' },
         ]}
       />
-      <AtlasQuote
+      <GenUXQuote
         quote="We start with the task, then choose the simplest useful interface."
-        attribution="Atlas demo team"
+        attribution="GenUX demo team"
         context="Fictional example"
       />
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }`,
       ),
@@ -242,21 +242,21 @@ export default function Example() {
       'Three components share this page. Each row names the component before its property.',
     api: rows(
       [
-        'AtlasIconList items',
-        '{ id: string; title: string; description?: string; icon?: AtlasIconName }[]',
+        'GenUXIconList items',
+        '{ id: string; title: string; description?: string; icon?: GenUXIconName }[]',
         '-',
         'List entries; the icon is decorative.',
       ],
-      ['AtlasQuote quote', 'string', '-', 'Quoted text.'],
-      ['AtlasQuote attribution', 'string', '-', 'Visible source of the quotation.'],
-      ['AtlasQuote context', 'string', '-', 'Optional disclosure, for example Fictional example.'],
+      ['GenUXQuote quote', 'string', '-', 'Quoted text.'],
+      ['GenUXQuote attribution', 'string', '-', 'Visible source of the quotation.'],
+      ['GenUXQuote context', 'string', '-', 'Optional disclosure, for example Fictional example.'],
       [
-        'AtlasAvatarGroup people',
+        'GenUXAvatarGroup people',
         '{ id: string; name: string; src?: string }[]',
         '-',
         'People in display order; every name stays visible.',
       ],
-      ['AtlasAvatarGroup maxVisible', 'number', '3', 'People shown before Expand people.'],
+      ['GenUXAvatarGroup maxVisible', 'number', '3', 'People shown before Expand people.'],
     ),
     accessibility: [
       'Icons and overlapping faces are hidden from assistive technology; visible titles and names carry the meaning.',
@@ -265,7 +265,7 @@ export default function Example() {
       'The collapsed list states how many more people there are as text, not only as +N beside the faces.',
     ],
     notes: [
-      'AtlasAvatarGroup composes the existing Ant Design Avatar and Button through AtlasAvatar and AtlasButton.',
+      'GenUXAvatarGroup composes the existing Ant Design Avatar and Button through GenUXAvatar and GenUXButton.',
       'Quotations in examples are fictional and labelled as such; they do not imply endorsement.',
       'All content is supplied by the caller; nothing is stored or fetched.',
     ],
@@ -288,10 +288,10 @@ export default function Example() {
         'Illustration gallery',
         'Buttons move one slide at a time and wrap at the ends. The status reports the current position.',
         `
-import '../src/styles/atlas-media.css';
-import '../src/styles/atlas-carousel.css';
-import AtlasProvider from '../src/react/AtlasProvider';
-import AtlasCarousel from '../src/react/AtlasCarousel';
+import '../src/styles/genux-media.css';
+import '../src/styles/genux-carousel.css';
+import GenUXProvider from '../src/react/GenUXProvider';
+import GenUXCarousel from '../src/react/GenUXCarousel';
 
 const slides = [
   {
@@ -307,9 +307,9 @@ const slides = [
 
 export default function Example() {
   return (
-    <AtlasProvider appearance="docs">
-      <AtlasCarousel label="Illustration gallery" slides={slides} />
-    </AtlasProvider>
+    <GenUXProvider appearance="docs">
+      <GenUXCarousel label="Illustration gallery" slides={slides} />
+    </GenUXProvider>
   );
 }`,
       ),
@@ -354,15 +354,15 @@ export default function Example() {
         'Accepts text files up to 1 KB. Refused files are explained by name, and the count updates as files are added or removed.',
         `
 import { useState } from 'react';
-import '../src/styles/atlas-upload.css';
-import AtlasProvider from '../src/react/AtlasProvider';
-import AtlasUpload from '../src/react/AtlasUpload';
+import '../src/styles/genux-upload.css';
+import GenUXProvider from '../src/react/GenUXProvider';
+import GenUXUpload from '../src/react/GenUXUpload';
 
 export default function Example() {
   const [files, setFiles] = useState<File[]>([]);
   return (
-    <AtlasProvider appearance="docs">
-      <AtlasUpload
+    <GenUXProvider appearance="docs">
+      <GenUXUpload
         label="Choose local files"
         accept="text/plain,.txt"
         maxBytes={1024}
@@ -370,7 +370,7 @@ export default function Example() {
         onFilesChange={setFiles}
       />
       <p role="status">Files selected: {files.length}</p>
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }`,
       ),
@@ -437,7 +437,7 @@ export default function Example() {
     slug: 'rich-menu',
     title: 'Rich menu',
     summary:
-      'Grouped menu actions with a title and description each, built on AtlasDropdown so the native menu keeps its focus, keyboard and dismissal behavior.',
+      'Grouped menu actions with a title and description each, built on GenUXDropdown so the native menu keeps its focus, keyboard and dismissal behavior.',
     antdComponent: 'Dropdown',
     category: 'Navigation',
     sourceUrl: 'https://ant.design/components/dropdown/',
@@ -452,12 +452,12 @@ export default function Example() {
         'Two labelled groups with descriptions and one unavailable action. Choosing an action updates local status text.',
         `
 import { useState } from 'react';
-import '../src/styles/atlas-dropdown.css';
-import '../src/styles/atlas-rich-menu.css';
-import AtlasProvider from '../src/react/AtlasProvider';
-import AtlasRichMenu, { type AtlasRichMenuGroup } from '../src/react/AtlasRichMenu';
+import '../src/styles/genux-dropdown.css';
+import '../src/styles/genux-rich-menu.css';
+import GenUXProvider from '../src/react/GenUXProvider';
+import GenUXRichMenu, { type GenUXRichMenuGroup } from '../src/react/GenUXRichMenu';
 
-const groups: AtlasRichMenuGroup[] = [
+const groups: GenUXRichMenuGroup[] = [
   {
     id: 'report-tools',
     label: 'Report tools',
@@ -488,27 +488,27 @@ export default function Example() {
   const [selected, setSelected] = useState('');
   const label = groups.flatMap(group => group.items).find(item => item.id === selected)?.label;
   return (
-    <AtlasProvider appearance="docs">
-      <AtlasRichMenu label="Workspace shortcuts" groups={groups} onAction={setSelected} />
+    <GenUXProvider appearance="docs">
+      <GenUXRichMenu label="Workspace shortcuts" groups={groups} onAction={setSelected} />
       <p role="status">{label ? 'Selected: ' + label : ''}</p>
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }`,
       ),
     ],
     api: rows(
       ['label', 'string', '-', 'Visible trigger text and accessible name.'],
-      ['groups', 'AtlasRichMenuGroup[]', '-', 'Labelled groups of actions in keyboard order.'],
+      ['groups', 'GenUXRichMenuGroup[]', '-', 'Labelled groups of actions in keyboard order.'],
       ['onAction', '(id: string) => void', '-', 'Called with the chosen item id.'],
       [
-        'AtlasRichMenuGroup',
-        '{ id: string; label: string; items: AtlasRichMenuItem[] }',
+        'GenUXRichMenuGroup',
+        '{ id: string; label: string; items: GenUXRichMenuItem[] }',
         '-',
         'One labelled group of actions.',
       ],
       [
-        'AtlasRichMenuItem',
-        '{ id: string; label: string; description: string; icon?: AtlasIconName; disabled?: boolean }',
+        'GenUXRichMenuItem',
+        '{ id: string; label: string; description: string; icon?: GenUXIconName; disabled?: boolean }',
         '-',
         'One action; the description is required.',
       ],
@@ -523,7 +523,7 @@ export default function Example() {
       [
         'classNames.root',
         'string',
-        "'atlas-rich-menu-popup'",
+        "'genux-rich-menu-popup'",
         'Scopes the rich layout to this popup.',
       ],
     ),
@@ -534,7 +534,7 @@ export default function Example() {
       'Unavailable actions stay visible and disabled, and Escape closes the menu.',
     ],
     notes: [
-      'There is no second menu engine: grouping, focus and dismissal come from AtlasDropdown and Ant Design Dropdown.',
+      'There is no second menu engine: grouping, focus and dismissal come from GenUXDropdown and Ant Design Dropdown.',
       'Narrow screens use one column with a maximum height and scrolling inside the popup.',
       'onAction only reports an id; the example updates local status text such as Selected: Draft report.',
     ],
@@ -557,14 +557,14 @@ export default function Example() {
         'Weekly activity',
         'Planned and completed tasks share one scale from zero. Each bar shows its value, and the table lists every number.',
         `
-import '../src/styles/atlas-chart.css';
-import AtlasProvider from '../src/react/AtlasProvider';
-import AtlasChart from '../src/react/AtlasChart';
+import '../src/styles/genux-chart.css';
+import GenUXProvider from '../src/react/GenUXProvider';
+import GenUXChart from '../src/react/GenUXChart';
 
 export default function Example() {
   return (
-    <AtlasProvider appearance="docs">
-      <AtlasChart
+    <GenUXProvider appearance="docs">
+      <GenUXChart
         title="Weekly activity"
         description="Tasks planned and completed each day on one scale that starts at zero."
         categories={['Mon', 'Tue', 'Wed']}
@@ -573,7 +573,7 @@ export default function Example() {
           { id: 'completed', label: 'Completed', values: [8, 12, 11] },
         ]}
       />
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }`,
       ),
@@ -582,19 +582,19 @@ export default function Example() {
         'Data that cannot be drawn',
         'A series with fewer values than categories is refused with an explicit reason instead of a broken chart.',
         `
-import '../src/styles/atlas-chart.css';
-import AtlasProvider from '../src/react/AtlasProvider';
-import AtlasChart from '../src/react/AtlasChart';
+import '../src/styles/genux-chart.css';
+import GenUXProvider from '../src/react/GenUXProvider';
+import GenUXChart from '../src/react/GenUXChart';
 
 export default function Example() {
   return (
-    <AtlasProvider appearance="docs">
-      <AtlasChart
+    <GenUXProvider appearance="docs">
+      <GenUXChart
         title="Weekly activity"
         categories={['Mon', 'Tue', 'Wed']}
         series={[{ id: 'planned', label: 'Planned', values: [10, 15] }]}
       />
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }`,
       ),

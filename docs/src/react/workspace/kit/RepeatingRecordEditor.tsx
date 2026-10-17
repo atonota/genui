@@ -1,5 +1,5 @@
 import { useContext, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import AtlasButton from '../../AtlasButton';
+import GenUXButton from '../../GenUXButton';
 import { useI18n } from '../../useI18n';
 import { FieldEditor } from './Fields';
 import { StateSurface } from './StateSurface';
@@ -284,19 +284,19 @@ export function RepeatingRecordEditor<R extends RecordIdentity>({
               );
             })}
             <div className="kit-action-row">
-              <AtlasButton
+              <GenUXButton
                 fill="text"
                 text={t('Move {id} up', { id: row.id })}
                 disabled={locked || index === 0}
                 onClick={() => move(index, -1)}
               />
-              <AtlasButton
+              <GenUXButton
                 fill="text"
                 text={t('Move {id} down', { id: row.id })}
                 disabled={locked || index === rows.length - 1}
                 onClick={() => move(index, 1)}
               />
-              <AtlasButton
+              <GenUXButton
                 fill="text"
                 text={t('Remove {id}', { id: row.id })}
                 disabled={locked || rows.length <= minRows}
@@ -315,7 +315,7 @@ export function RepeatingRecordEditor<R extends RecordIdentity>({
           </fieldset>
         );
       })}
-      <AtlasButton
+      <GenUXButton
         data-add-child=""
         text={t('Add child record')}
         disabled={readOnly || !createRow || rows.length >= maxRows}

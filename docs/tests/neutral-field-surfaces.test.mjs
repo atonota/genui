@@ -32,7 +32,7 @@ async function loadDocsModules() {
     write: false,
     logLevel: 'silent',
   });
-  const dir = await mkdtemp(path.join(tmpdir(), 'atlas-neutral-field-surfaces-'));
+  const dir = await mkdtemp(path.join(tmpdir(), 'genux-neutral-field-surfaces-'));
   const bundleFile = path.join(dir, 'docs-palette.mjs');
   await writeFile(bundleFile, built.outputFiles[0].text);
   try {
@@ -174,10 +174,10 @@ test('neutral warm field surfaces are central, neutral and readable (dark then l
       lower(a11y['--field-border']) === border && lower(a11y['--control-boundary']) === border,
       `${tag} docs --field-border/--control-boundary ${a11y['--field-border']} ${a11y['--control-boundary']} must carry the central border ${border}`,
     );
-    const atlasVariables = inputSurfaceVariables(mode);
+    const genuxVariables = inputSurfaceVariables(mode);
     expect(
-      atlasVariables['--atlas-input-border'] === `var(--field-border, ${surface.border})`,
-      `${tag} --atlas-input-border is ${atlasVariables['--atlas-input-border']}; must alias var(--field-border, ${surface.border})`,
+      genuxVariables['--genux-input-border'] === `var(--field-border, ${surface.border})`,
+      `${tag} --genux-input-border is ${genuxVariables['--genux-input-border']}; must alias var(--field-border, ${surface.border})`,
     );
 
     const expectedById = {
@@ -232,7 +232,7 @@ test('neutral warm field surfaces are central, neutral and readable (dark then l
   );
 });
 
-const WELL_SHADOW_VARIABLES = Object.freeze(['--field-inner-shadow', '--atlas-input-inner-shadow']);
+const WELL_SHADOW_VARIABLES = Object.freeze(['--field-inner-shadow', '--genux-input-inner-shadow']);
 
 test('resolved input wells reuse neutral shadow roles in both themes', async () => {
   const docs = await loadDocsModules();

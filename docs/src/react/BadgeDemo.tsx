@@ -1,13 +1,13 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { InputNumber, Select, Switch } from 'antd';
-import AtlasProvider from './AtlasProvider';
-import AtlasBadge from './AtlasBadge';
-import AtlasButton from './AtlasButton';
-import AtlasAvatar from './AtlasAvatar';
-import AtlasIcon from './AtlasIcon';
+import GenUXProvider from './GenUXProvider';
+import GenUXBadge from './GenUXBadge';
+import GenUXButton from './GenUXButton';
+import GenUXAvatar from './GenUXAvatar';
+import GenUXIcon from './GenUXIcon';
 import ExamplePreview from './ExamplePreview';
-import Segmented from './AtlasSegmented';
-import { TweakerSettings } from './AtlasTweaker';
+import Segmented from './GenUXSegmented';
+import { TweakerSettings } from './GenUXTweaker';
 import { useI18n } from './useI18n';
 
 const variants = ['solid', 'soft', 'outlined'] as const;
@@ -44,22 +44,22 @@ const placementLabels: Record<BadgePlacement, string> = {
 function Group({ title, children }: { title: string; children: ReactNode }) {
   const id = useId();
   return (
-    <section className="atlas-badge-demo-group" aria-labelledby={id}>
+    <section className="genux-badge-demo-group" aria-labelledby={id}>
       <h3 id={id}>{title}</h3>
       {children}
     </section>
   );
 }
 
-/** One row of example cases; layout comes from the shared AtlasBadge stylesheet. */
+/** One row of example cases; layout comes from the shared GenUXBadge stylesheet. */
 function Row({ children }: { children: ReactNode }) {
-  return <div className="atlas-badge-demo-row">{children}</div>;
+  return <div className="genux-badge-demo-row">{children}</div>;
 }
 
 /** Stable browser-test hook around one example case. */
 function Case({ id, children }: { id: string; children: ReactNode }) {
   return (
-    <div className="atlas-badge-demo-case" data-badge-case={id}>
+    <div className="genux-badge-demo-case" data-badge-case={id}>
       {children}
     </div>
   );
@@ -101,9 +101,9 @@ function BadgeExamples() {
     placement: settingsId + '-placement',
   };
   return (
-    <div className="atlas-badge-demo" data-demo="badge">
+    <div className="genux-badge-demo" data-demo="badge">
       <TweakerSettings title="Badge playground">
-        <div className="atlas-badge-settings">
+        <div className="genux-badge-settings">
           <span id={ids.size}>{t('Preview size')}</span>
           <Segmented<PreviewSize>
             aria-labelledby={ids.size}
@@ -154,14 +154,14 @@ function BadgeExamples() {
         <ExamplePreview id="badge-playground" title={t('Badge playground')}>
           <Row>
             <Case id="playground">
-              <AtlasBadge
+              <GenUXBadge
                 kind="label"
                 size={size}
                 variant={variant}
                 tone={tone}
                 label={t('Preview')}
               />
-              <AtlasBadge
+              <GenUXBadge
                 kind="count"
                 label={t('Notifications')}
                 size={size}
@@ -171,8 +171,8 @@ function BadgeExamples() {
                 showZero={showZero}
                 placement={placement}
               >
-                <AtlasAvatar name="Deniz Kaya" />
-              </AtlasBadge>
+                <GenUXAvatar name="Deniz Kaya" />
+              </GenUXBadge>
             </Case>
           </Row>
         </ExamplePreview>
@@ -182,7 +182,7 @@ function BadgeExamples() {
           <Row>
             {sizes.map(value => (
               <Case key={value} id={'size-' + value}>
-                <AtlasBadge kind="label" size={value} tone="brand" label={t('Live')} />
+                <GenUXBadge kind="label" size={value} tone="brand" label={t('Live')} />
                 <span>{heights[value]} px</span>
               </Case>
             ))}
@@ -194,7 +194,7 @@ function BadgeExamples() {
           <Row>
             {variants.map(value => (
               <Case key={value} id={'variant-' + value}>
-                <AtlasBadge
+                <GenUXBadge
                   kind="label"
                   variant={value}
                   tone="brand"
@@ -203,17 +203,17 @@ function BadgeExamples() {
               </Case>
             ))}
             <Case id="icons">
-              <AtlasBadge
+              <GenUXBadge
                 kind="label"
                 tone="brand"
-                leading={<AtlasIcon name="check" />}
+                leading={<GenUXIcon name="check" />}
                 label={t('Live')}
               />
-              <AtlasBadge
+              <GenUXBadge
                 kind="label"
                 variant="soft"
                 tone="info"
-                trailing={<AtlasIcon name="settings" />}
+                trailing={<GenUXIcon name="settings" />}
                 label={t('Export request')}
               />
             </Case>
@@ -224,29 +224,29 @@ function BadgeExamples() {
         <ExamplePreview id="badge-statuses" title={t('Statuses')}>
           <Row>
             <Case id="status-success">
-              <AtlasBadge
+              <GenUXBadge
                 kind="label"
                 variant="soft"
                 tone="success"
-                leading={<AtlasIcon name="check" />}
+                leading={<GenUXIcon name="check" />}
                 label={t('Paid')}
               />
             </Case>
             <Case id="status-warning">
-              <AtlasBadge
+              <GenUXBadge
                 kind="label"
                 variant="soft"
                 tone="warning"
-                leading={<AtlasIcon name="minus" />}
+                leading={<GenUXIcon name="minus" />}
                 label={t('Refunded')}
               />
             </Case>
             <Case id="status-danger">
-              <AtlasBadge
+              <GenUXBadge
                 kind="label"
                 variant="soft"
                 tone="danger"
-                leading={<AtlasIcon name="x" />}
+                leading={<GenUXIcon name="x" />}
                 label={t('Failed')}
               />
             </Case>
@@ -257,11 +257,11 @@ function BadgeExamples() {
         <ExamplePreview id="badge-counts" title={t('Counts and dots')}>
           <Row>
             <Case id="count">
-              <AtlasBadge kind="count" tone="danger" count={8} label={t('Notifications')} />
-              <AtlasBadge kind="count" tone="danger" count={99} label={t('Notifications')} />
+              <GenUXBadge kind="count" tone="danger" count={8} label={t('Notifications')} />
+              <GenUXBadge kind="count" tone="danger" count={99} label={t('Notifications')} />
             </Case>
             <Case id="count-overflow">
-              <AtlasBadge
+              <GenUXBadge
                 kind="count"
                 tone="danger"
                 count={41}
@@ -270,7 +270,7 @@ function BadgeExamples() {
               />
             </Case>
             <Case id="count-zero">
-              <AtlasBadge
+              <GenUXBadge
                 kind="count"
                 tone="neutral"
                 count={0}
@@ -280,7 +280,7 @@ function BadgeExamples() {
             </Case>
             <Case id="dot">
               {sizes.map(value => (
-                <AtlasBadge
+                <GenUXBadge
                   key={value}
                   kind="dot"
                   size={value}
@@ -291,7 +291,7 @@ function BadgeExamples() {
               <span>{t('Online')}</span>
             </Case>
             <Case id="icon-only">
-              <AtlasBadge kind="label" tone="info" label={t('Euro')} hideLabel leading="€" />
+              <GenUXBadge kind="label" tone="info" label={t('Euro')} hideLabel leading="€" />
             </Case>
           </Row>
         </ExamplePreview>
@@ -302,7 +302,7 @@ function BadgeExamples() {
             <Case id="dismissible">
               {euroVisible ? (
                 <span ref={euroHost}>
-                  <AtlasBadge
+                  <GenUXBadge
                     kind="label"
                     tone="neutral"
                     label={t('Euro')}
@@ -315,7 +315,7 @@ function BadgeExamples() {
                 </span>
               ) : (
                 <span ref={restoreHost}>
-                  <AtlasButton
+                  <GenUXButton
                     text={t('Restore badge')}
                     fill="outline"
                     onClick={() => {
@@ -333,27 +333,27 @@ function BadgeExamples() {
         <ExamplePreview id="badge-notification-counter" title={t('Notification counter')}>
           <Row>
             <Case id="dynamic-count">
-              <AtlasBadge
+              <GenUXBadge
                 kind="count"
                 tone="danger"
                 count={notifications}
                 label={t('Notifications')}
               >
-                <AtlasButton text={t('Inbox')} fill="outline" />
-              </AtlasBadge>
+                <GenUXButton text={t('Inbox')} fill="outline" />
+              </GenUXBadge>
             </Case>
-            <AtlasButton
+            <GenUXButton
               text={t('Add notification')}
               fill="tint"
               onClick={() => setNotifications(value => value + 1)}
             />
-            <AtlasButton
+            <GenUXButton
               text={t('Remove notification')}
               fill="outline"
               disabled={notifications === 0}
               onClick={() => setNotifications(value => Math.max(0, value - 1))}
             />
-            <AtlasButton
+            <GenUXButton
               text={t('Clear notifications')}
               fill="text"
               disabled={notifications === 0}
@@ -369,29 +369,29 @@ function BadgeExamples() {
         <ExamplePreview id="badge-attached" title={t('Attached badges')}>
           <Row>
             <Case id="attached-button">
-              <AtlasBadge kind="count" tone="danger" count={3} label={t('Notifications')}>
-                <AtlasButton text={t('Messages')} />
-              </AtlasBadge>
+              <GenUXBadge kind="count" tone="danger" count={3} label={t('Notifications')}>
+                <GenUXButton text={t('Messages')} />
+              </GenUXBadge>
             </Case>
             <Case id="attached-avatar">
-              <AtlasBadge kind="count" tone="danger" count={2} label={t('Notifications')}>
-                <AtlasAvatar name="Deniz Kaya" />
-              </AtlasBadge>
+              <GenUXBadge kind="count" tone="danger" count={2} label={t('Notifications')}>
+                <GenUXAvatar name="Deniz Kaya" />
+              </GenUXBadge>
             </Case>
             <Case id="attached-verified">
-              <AtlasBadge
+              <GenUXBadge
                 kind="count"
                 tone="success"
-                count={<AtlasIcon name="check" />}
+                count={<GenUXIcon name="check" />}
                 label={t('Verified')}
               >
-                <AtlasAvatar name="Deniz Kaya" />
-              </AtlasBadge>
+                <GenUXAvatar name="Deniz Kaya" />
+              </GenUXBadge>
             </Case>
             <Case id="attached-hot">
-              <AtlasBadge kind="count" tone="danger" count="HOT" label={t('Offer')}>
-                <AtlasButton text={t('Offers')} />
-              </AtlasBadge>
+              <GenUXBadge kind="count" tone="danger" count="HOT" label={t('Offer')}>
+                <GenUXButton text={t('Offers')} />
+              </GenUXBadge>
             </Case>
           </Row>
         </ExamplePreview>
@@ -401,15 +401,15 @@ function BadgeExamples() {
           <Row>
             {placements.map(value => (
               <Case key={value} id={'placement-' + value}>
-                <AtlasBadge
+                <GenUXBadge
                   kind="count"
                   tone="danger"
                   count={3}
                   placement={value}
                   label={t('Notifications')}
                 >
-                  <AtlasButton text={t(placementLabels[value])} depth="flat" fill="outline" />
-                </AtlasBadge>
+                  <GenUXButton text={t(placementLabels[value])} depth="flat" fill="outline" />
+                </GenUXBadge>
               </Case>
             ))}
           </Row>
@@ -419,12 +419,12 @@ function BadgeExamples() {
         <ExamplePreview id="badge-ribbon" title={t('Ribbon')}>
           <Row>
             <Case id="ribbon">
-              <AtlasBadge kind="ribbon" tone="brand" label={t('Live')}>
-                <section className="atlas-badge-demo-ribbon-host" aria-labelledby={ribbonId}>
+              <GenUXBadge kind="ribbon" tone="brand" label={t('Live')}>
+                <section className="genux-badge-demo-ribbon-host" aria-labelledby={ribbonId}>
                   <h4 id={ribbonId}>{t('Release notes')}</h4>
                   <p>{t('Ready for review in this local example.')}</p>
                 </section>
-              </AtlasBadge>
+              </GenUXBadge>
             </Case>
           </Row>
         </ExamplePreview>
@@ -436,8 +436,8 @@ function BadgeExamples() {
 /** Local Badge examples; the shared profile sizes inherited badges, explicit sizes stay fixed. */
 export default function BadgeDemo({ documentation = false }: { documentation?: boolean }) {
   return (
-    <AtlasProvider appearance={documentation ? 'docs' : undefined}>
+    <GenUXProvider appearance={documentation ? 'docs' : undefined}>
       <BadgeExamples />
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }

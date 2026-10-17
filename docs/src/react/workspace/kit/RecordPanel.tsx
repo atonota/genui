@@ -7,10 +7,10 @@ import {
   type ReactNode,
   type RefObject,
 } from 'react';
-import { Drawer, Modal } from '../../AtlasOverlay';
-import AtlasSlider from '../../AtlasSlider';
-import AtlasButton from '../../AtlasButton';
-import AtlasIcon from '../../AtlasIcon';
+import { Drawer, Modal } from '../../GenUXOverlay';
+import GenUXSlider from '../../GenUXSlider';
+import GenUXButton from '../../GenUXButton';
+import GenUXIcon from '../../GenUXIcon';
 import { useI18n } from '../../useI18n';
 import { RecordDisplay } from './RecordDisplay';
 import { isReadableSurface, type RecordDisplayProps, type RecordIdentity } from './contracts';
@@ -171,7 +171,7 @@ export function RecordPanel<R extends RecordIdentity>({
             )}
           </p>
           <div className="kit-action-row">
-            <AtlasButton
+            <GenUXButton
               text={t('Keep editing')}
               onClick={() => {
                 pendingAction.current = null;
@@ -179,7 +179,7 @@ export function RecordPanel<R extends RecordIdentity>({
                 heading.current?.focus();
               }}
             />
-            <AtlasButton
+            <GenUXButton
               fill="text"
               text={t(closeDecision === 'navigate' ? 'Discard and continue' : 'Discard and close')}
               onClick={() => {
@@ -216,7 +216,7 @@ export function RecordPanel<R extends RecordIdentity>({
             {returnTrail.map((item, index) => (
               <li key={item.id + '-' + index}>
                 {item.onReturn ? (
-                  <AtlasButton
+                  <GenUXButton
                     fill="text"
                     text={t('Return to {record}', { record: item.label })}
                     onClick={() => requestAction('navigate', item.onReturn!)}
@@ -282,7 +282,7 @@ export function RecordPanel<R extends RecordIdentity>({
   if (renderedContainer === 'modal')
     return (
       <Modal
-        rootClassName="atlas-demo live-preview kit-record-panel-overlay"
+        rootClassName="genux-demo live-preview kit-record-panel-overlay"
         title={panelTitle}
         open={visible}
         onCancel={nativeClose}
@@ -290,7 +290,7 @@ export function RecordPanel<R extends RecordIdentity>({
         keyboard
         focusable={{ trap: true, focusTriggerAfterClose: false }}
         mask={{ closable: true }}
-        closeIcon={<AtlasIcon name="x" />}
+        closeIcon={<GenUXIcon name="x" />}
         closable={{ 'aria-label': t('Close record') }}
         destroyOnHidden={false}
         footer={null}
@@ -302,7 +302,7 @@ export function RecordPanel<R extends RecordIdentity>({
   if (renderedContainer === 'drawer')
     return (
       <Drawer
-        rootClassName="atlas-demo live-preview kit-record-panel-overlay"
+        rootClassName="genux-demo live-preview kit-record-panel-overlay"
         title={panelTitle}
         open={visible}
         onClose={nativeClose}
@@ -310,7 +310,7 @@ export function RecordPanel<R extends RecordIdentity>({
         keyboard
         focusable={{ trap: true, focusTriggerAfterClose: false }}
         mask={{ closable: true }}
-        closeIcon={<AtlasIcon name="x" />}
+        closeIcon={<GenUXIcon name="x" />}
         closable={{ 'aria-label': t('Close record') }}
         destroyOnHidden={false}
         placement="right"
@@ -371,7 +371,7 @@ export function RecordTabs({
       <div role="tablist" aria-label={t('Inspected records')}>
         {shown.map((tab, index) => (
           <div className="kit-record-tab" key={tab.id}>
-            <AtlasButton
+            <GenUXButton
               fill={tab.id === activeId ? 'solid' : 'ghost'}
               text={tab.label}
               role="tab"
@@ -400,7 +400,7 @@ export function RecordTabs({
               }}
             />
             {onPinnedChange && (
-              <AtlasButton
+              <GenUXButton
                 fill="text"
                 text={t(tab.pinned ? 'Unpin {record}' : 'Pin {record}', { record: tab.label })}
                 aria-pressed={Boolean(tab.pinned)}
@@ -408,7 +408,7 @@ export function RecordTabs({
               />
             )}
             {onCloseTab && (
-              <AtlasButton
+              <GenUXButton
                 fill="text"
                 text={t('Close {record}', { record: tab.label })}
                 disabled={tab.pinned}
@@ -459,7 +459,7 @@ export function RecordInspector({
       style={{ '--kit-inspector-width': actual + 'px' } as CSSProperties}
     >
       <div className="kit-inspector-tools">
-        <AtlasButton
+        <GenUXButton
           fill="text"
           text={t(pinned ? 'Unpin inspector' : 'Pin inspector')}
           aria-pressed={pinned}
@@ -467,8 +467,8 @@ export function RecordInspector({
         />
         <div className="kit-inspector-width">
           <p id={id}>{t('Inspector width')}</p>
-          <AtlasSlider
-            className="atlas-control kit-inspector-resize"
+          <GenUXSlider
+            className="genux-control kit-inspector-resize"
             id={`${id}-control`}
             range={false}
             ariaLabelForHandle={t('Inspector width')}

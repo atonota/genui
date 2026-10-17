@@ -1,9 +1,9 @@
 import { useId, useState } from 'react';
 import { Switch } from 'antd';
-import AtlasProvider from './AtlasProvider';
-import AtlasBreadcrumb, { type AtlasBreadcrumbItem } from './AtlasBreadcrumb';
+import GenUXProvider from './GenUXProvider';
+import GenUXBreadcrumb, { type GenUXBreadcrumbItem } from './GenUXBreadcrumb';
 import ExamplePreview from './ExamplePreview';
-import { TweakerSettings } from './AtlasTweaker';
+import { TweakerSettings } from './GenUXTweaker';
 import { useI18n } from './useI18n';
 
 const workspacePages = [
@@ -21,7 +21,7 @@ function BreadcrumbExamples() {
   // Presentation only; every link keeps its destination and the example owns these choices.
   const [showIcons, setShowIcons] = useState(true);
   const [iconOnlyHome, setIconOnlyHome] = useState(true);
-  const quickItems: AtlasBreadcrumbItem[] = [
+  const quickItems: GenUXBreadcrumbItem[] = [
     { key: 'overview', label: t('Overview'), href: '/' },
     {
       key: 'workspace',
@@ -36,7 +36,7 @@ function BreadcrumbExamples() {
     },
     { key: 'record-details', label: t('Record details') },
   ];
-  const iconItems: AtlasBreadcrumbItem[] = [
+  const iconItems: GenUXBreadcrumbItem[] = [
     {
       key: 'overview',
       label: t('Overview'),
@@ -74,7 +74,7 @@ function BreadcrumbExamples() {
         </header>
         <ExamplePreview id="breadcrumb-quick-navigation" title={t('Quick navigation')}>
           <div className="breadcrumb-stage">
-            <AtlasBreadcrumb label={t('Quick navigation path')} items={quickItems} />
+            <GenUXBreadcrumb label={t('Quick navigation path')} items={quickItems} />
           </div>
         </ExamplePreview>
         <p className="breadcrumb-guidance">
@@ -99,7 +99,7 @@ function BreadcrumbExamples() {
         </header>
         <ExamplePreview id="breadcrumb-icon-style" title={t('Icon style')}>
           <div className="breadcrumb-stage">
-            <AtlasBreadcrumb label={t('Icon navigation path')} items={iconItems} />
+            <GenUXBreadcrumb label={t('Icon navigation path')} items={iconItems} />
           </div>
         </ExamplePreview>
         <p className="breadcrumb-guidance">
@@ -109,11 +109,11 @@ function BreadcrumbExamples() {
         </p>
       </section>
       <TweakerSettings title="Breadcrumb">
-        <div className="atlas-tweaker-token">
+        <div className="genux-tweaker-token">
           <label htmlFor={iconsId}>{t('Show icons')}</label>
           <Switch id={iconsId} checked={showIcons} onChange={checked => setShowIcons(checked)} />
         </div>
-        <div className="atlas-tweaker-token">
+        <div className="genux-tweaker-token">
           <label htmlFor={homeId}>{t('Icon-only home')}</label>
           <Switch
             id={homeId}
@@ -131,8 +131,8 @@ export default function BreadcrumbDemo({
   documentation = false,
 }: { documentation?: boolean } = {}) {
   return (
-    <AtlasProvider appearance={documentation ? 'docs' : undefined}>
+    <GenUXProvider appearance={documentation ? 'docs' : undefined}>
       <BreadcrumbExamples />
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }

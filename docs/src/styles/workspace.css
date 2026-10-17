@@ -25,7 +25,7 @@
   margin-inline: auto;
 }
 /* Adaptive canvas width is independent from the chosen content preview profile. */
-.workspace-lab .workspace-stage:has([data-atlas-splitter]) {
+.workspace-lab .workspace-stage:has([data-genux-splitter]) {
   max-width: none;
   margin-inline: 0;
 }
@@ -167,19 +167,19 @@
 }
 
 /* EntityCard owns the peer surface. Keep record identity on its plain list owner. */
-.workspace-lab .kit-record-cards > li:has(> .atlas-card-native) {
+.workspace-lab .kit-record-cards > li:has(> .genux-card-native) {
   padding: 0;
   background: transparent;
 }
-.workspace-lab .kit-record-cards > li[data-active='true'] > .atlas-card-native {
+.workspace-lab .kit-record-cards > li[data-active='true'] > .genux-card-native {
   background: var(--soft);
 }
-.workspace-lab :is(.collection-record-row, .collection-board-item):has(> .atlas-card-native) {
+.workspace-lab :is(.collection-record-row, .collection-board-item):has(> .genux-card-native) {
   grid-template-columns: minmax(0, 1fr);
   padding: 0;
   border-block-end: 0;
   background: transparent;
 }
-.workspace-lab .collection-record-row[data-active='true'] > .atlas-card-native {
+.workspace-lab .collection-record-row[data-active='true'] > .genux-card-native {
   background: var(--soft);
 }

@@ -25,7 +25,7 @@ import { getThemeSnapshot, type ThemeMode } from '../theme';
 import { focusLocalPreview, releaseLocalPreview } from './PreviewContext';
 
 /** Asks the parent UI to show the preview view before the native settings open. */
-export const previewShowEvent = 'genui-preview-show';
+export const previewShowEvent = 'genux-preview-show';
 
 // The first mounted preview owns Inspector focus until another one calls focus().
 let focusedPreviewId: string | null = null;
@@ -143,7 +143,7 @@ export function usePreviewFrame({
     focusLocalPreview(id);
     publish();
   }, [id, publish]);
-  /** The example's settings live in the page Demo Tweaker: the nearest .atlas-demo owner that
+  /** The example's settings live in the page Demo Tweaker: the nearest .genux-demo owner that
       holds its existing trigger opens it, so focus return stays with that Tweaker. This example
       becomes the local target first; without its registration the Tweaker would fall back to
       the global token editors, so it stays closed. */
@@ -153,14 +153,14 @@ export function usePreviewFrame({
     const available = focusLocalPreview(id);
     if (!selected) publish();
     if (!available) return;
-    let owner = anchorRef?.current?.closest('.atlas-demo') ?? null;
+    let owner = anchorRef?.current?.closest('.genux-demo') ?? null;
     while (owner) {
-      const trigger = owner.querySelector<HTMLElement>('.atlas-tweaker-trigger button');
+      const trigger = owner.querySelector<HTMLElement>('.genux-tweaker-trigger button');
       if (trigger) {
         trigger.click();
         return;
       }
-      owner = owner.parentElement?.closest('.atlas-demo') ?? null;
+      owner = owner.parentElement?.closest('.genux-demo') ?? null;
     }
   }, [anchorRef, id, publish]);
 

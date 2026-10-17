@@ -1,8 +1,8 @@
 import { useId, useMemo, useState } from 'react';
 import { Select } from 'antd';
-import AtlasProvider from './AtlasProvider';
-import AtlasCascader, { resolveCascadePath, type AtlasCascadeOption } from './AtlasCascader';
-import { TweakerSettings } from './AtlasTweaker';
+import GenUXProvider from './GenUXProvider';
+import GenUXCascader, { resolveCascadePath, type GenUXCascadeOption } from './GenUXCascader';
+import { TweakerSettings } from './GenUXTweaker';
 import ExamplePreview from './ExamplePreview';
 import { useI18n } from './useI18n';
 
@@ -17,7 +17,7 @@ function CascaderExamples() {
   const [selectionLabel, setSelectionLabel] = useState<'path' | 'leaf'>('path');
   const [loaded, setLoaded] = useState(false);
   const [lazyValue, setLazyValue] = useState<string[]>([]);
-  const options = useMemo<AtlasCascadeOption[]>(
+  const options = useMemo<GenUXCascadeOption[]>(
     () => [
       {
         value: 'studio',
@@ -86,7 +86,7 @@ function CascaderExamples() {
     ],
     [locale],
   );
-  const lazyOptions: AtlasCascadeOption[] = [
+  const lazyOptions: GenUXCascadeOption[] = [
     {
       value: 'collection',
       label: t('Collection'),
@@ -165,7 +165,7 @@ function CascaderExamples() {
           </p>
         </header>
         <ExamplePreview id="cascader-browse-or-search" title={t('Browse or search')}>
-          <AtlasCascader
+          <GenUXCascader
             label={t('Workspace destination')}
             value={destination}
             onChange={setDestination}
@@ -203,7 +203,7 @@ function CascaderExamples() {
           </p>
         </header>
         <ExamplePreview id="cascader-several-paths" title={t('Select several paths')}>
-          <AtlasCascader
+          <GenUXCascader
             label={t('Assigned areas')}
             multiple
             value={assignments}
@@ -247,7 +247,7 @@ function CascaderExamples() {
         <ExamplePreview id="cascader-path-presentation" title={t('Path presentation')}>
           <div className="cascader-example-grid">
             <div className="cascader-example">
-              <AtlasCascader
+              <GenUXCascader
                 label={t('Selected path')}
                 options={options}
                 value={compact}
@@ -260,7 +260,7 @@ function CascaderExamples() {
               </p>
             </div>
             <div className="cascader-example">
-              <AtlasCascader
+              <GenUXCascader
                 label={t('Team or specific area')}
                 options={options}
                 value={branch}
@@ -292,7 +292,7 @@ function CascaderExamples() {
         <ExamplePreview id="cascader-availability-guidance" title={t('Availability and guidance')}>
           <div className="cascader-example-grid">
             <div data-cascader-example="error">
-              <AtlasCascader
+              <GenUXCascader
                 label={t('Required destination')}
                 value={branch}
                 onChange={setBranch}
@@ -303,7 +303,7 @@ function CascaderExamples() {
               />
             </div>
             <div data-cascader-example="disabled">
-              <AtlasCascader
+              <GenUXCascader
                 label={t('Locked destination')}
                 value={['studio', 'design', 'library']}
                 onChange={() => {}}
@@ -330,7 +330,7 @@ function CascaderExamples() {
           </p>
         </header>
         <ExamplePreview id="cascader-reveal-on-demand" title={t('Reveal on demand')}>
-          <AtlasCascader
+          <GenUXCascader
             label={t('Browse a collection')}
             options={lazyOptions}
             value={lazyValue}
@@ -357,8 +357,8 @@ function CascaderExamples() {
 }
 export default function CascaderDemo({ documentation = false }: { documentation?: boolean }) {
   return (
-    <AtlasProvider appearance={documentation ? 'docs' : undefined}>
+    <GenUXProvider appearance={documentation ? 'docs' : undefined}>
       <CascaderExamples />
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }

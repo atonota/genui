@@ -7,18 +7,18 @@ import {
   type FormEvent,
 } from 'react';
 import { Checkbox, Select } from 'antd';
-import Input from '../AtlasInput';
-import { Drawer } from '../AtlasOverlay';
+import Input from '../GenUXInput';
+import { Drawer } from '../GenUXOverlay';
 import { DateField } from './kit/Fields';
-import AtlasProvider from '../AtlasProvider';
+import GenUXProvider from '../GenUXProvider';
 import ExamplePreview from '../ExamplePreview';
-import AtlasButton from '../AtlasButton';
-import AtlasPill from '../AtlasPill';
-import AtlasSplitter from '../AtlasSplitter';
+import GenUXButton from '../GenUXButton';
+import GenUXPill from '../GenUXPill';
+import GenUXSplitter from '../GenUXSplitter';
 import { workspacePillColorIndex } from '../../data/workspace-pill-colors';
 import { selectedLabel } from '../selectedLabel';
 import { useI18n } from '../useI18n';
-import { TweakerSettings } from '../AtlasTweaker';
+import { TweakerSettings } from '../GenUXTweaker';
 import WorkspaceFrame, { type WorkspaceProfile } from './WorkspaceFrame';
 import RecordSummary from './RecordSummary';
 import CollectionViews, {
@@ -289,7 +289,7 @@ export default function CollectionDemo({
       <strong id={`${id}-label`}>{label}</strong>
       <div className="collection-choice-group">
         {choices.map(option => (
-          <AtlasButton
+          <GenUXButton
             key={option.value}
             id={`${id}-${option.value}`}
             fill={value === option.value ? 'solid' : 'text'}
@@ -351,8 +351,8 @@ export default function CollectionDemo({
         />
       </div>
       <div className="collection-inline">
-        <AtlasButton id="collection-edit-save" htmlType="submit" text={t('Save local draft')} />
-        <AtlasButton
+        <GenUXButton id="collection-edit-save" htmlType="submit" text={t('Save local draft')} />
+        <GenUXButton
           id="collection-edit-cancel"
           fill="text"
           text={t('Cancel draft')}
@@ -421,7 +421,7 @@ export default function CollectionDemo({
         <p>{t('Enter a value to preview the update.')}</p>
       )}
       <div className="collection-inline">
-        <AtlasButton
+        <GenUXButton
           id="collection-bulk-preview"
           disabled={!bulkValid}
           text={t('Preview selected changes')}
@@ -436,7 +436,7 @@ export default function CollectionDemo({
             })
           }
         />
-        <AtlasButton
+        <GenUXButton
           id="collection-bulk-apply"
           text={t('Apply locally')}
           disabled={!currentPreview || currentPreview.appliedIds.length === 0}
@@ -484,7 +484,7 @@ export default function CollectionDemo({
       view,
     );
   return (
-    <AtlasProvider appearance={documentation ? 'docs' : undefined}>
+    <GenUXProvider appearance={documentation ? 'docs' : undefined}>
       <CollectionWorkbench
         tableOnly={tableOnly}
         profile={profile}
@@ -520,19 +520,19 @@ export default function CollectionDemo({
             </TweakerSettings>
           </div>
           <div className="collection-inline">
-            <AtlasButton
+            <GenUXButton
               id="collection-filters"
               fill="text"
               text={t('Filter and sort')}
               onClick={() => setDrawer('filters')}
             />
-            <AtlasButton
+            <GenUXButton
               id="collection-customize"
               fill="text"
               text={t('Choose table columns')}
               onClick={() => setDrawer('columns')}
             />
-            <AtlasButton
+            <GenUXButton
               id="collection-clear-filters"
               fill="text"
               text={t('Clear filters')}
@@ -557,7 +557,7 @@ export default function CollectionDemo({
             )}
           </p>
           <div className="collection-inline">
-            <AtlasButton
+            <GenUXButton
               id="collection-select-visible"
               fill="text"
               text={t('Select visible loaded records')}
@@ -568,7 +568,7 @@ export default function CollectionDemo({
                 ])
               }
             />
-            <AtlasButton
+            <GenUXButton
               id="collection-clear-selection"
               fill="text"
               text={t('Clear selection')}
@@ -578,12 +578,12 @@ export default function CollectionDemo({
           </div>
           <div className="collection-inline" aria-label={t('Totals by currency')}>
             {currencyTotals(filtered).map(total => (
-              <AtlasPill
+              <GenUXPill
                 key={total.currency}
                 colorIndex={workspacePillColorIndex.currency[total.currency]}
               >
                 {total.currency}: {moneyText(total.amount, total.currency, locale)}
-              </AtlasPill>
+              </GenUXPill>
             ))}
           </div>
           {currencyTotals(filtered).some(total => total.amount === null) && (
@@ -624,7 +624,7 @@ export default function CollectionDemo({
             {t('Enter non-negative amount limits and keep the minimum at or below the maximum.')}
           </p>
         )}
-        <AtlasSplitter
+        <GenUXSplitter
           id="collection-workspace-splitter"
           className="collection-workspace"
           label={t(
@@ -641,7 +641,7 @@ export default function CollectionDemo({
                   {filtered.length === 0 && view !== 'bulk' && view !== 'compare' && (
                     <div className="collection-empty">
                       <h4>{t('No records match the current filters.')}</h4>
-                      <AtlasButton text={t('Clear filters')} onClick={clearFilters} />
+                      <GenUXButton text={t('Clear filters')} onClick={clearFilters} />
                     </div>
                   )}
                   <section
@@ -717,7 +717,7 @@ export default function CollectionDemo({
                           tabIndex={-1}
                           aria-label={t('Selected record details')}
                         >
-                          <AtlasButton
+                          <GenUXButton
                             fill="text"
                             id="collection-detail-back"
                             text={t('Close details')}
@@ -734,7 +734,7 @@ export default function CollectionDemo({
           ]}
         />
         <Drawer
-          rootClassName="atlas-demo workspace-lab workspace-overlay live-preview"
+          rootClassName="genux-demo workspace-lab workspace-overlay live-preview"
           title={t(drawer === 'columns' ? 'Choose table columns' : 'Filter and sort')}
           open={drawer !== null}
           onClose={() => setDrawer(null)}
@@ -892,11 +892,11 @@ export default function CollectionDemo({
                 ],
                 setSecondSort,
               )}
-              <AtlasButton text={t('Clear filters')} fill="text" onClick={clearFilters} />
+              <GenUXButton text={t('Clear filters')} fill="text" onClick={clearFilters} />
             </div>
           )}
         </Drawer>
       </CollectionWorkbench>
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }

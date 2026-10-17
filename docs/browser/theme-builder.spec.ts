@@ -1,7 +1,7 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
 const ROUTE = '/theme-builder/';
-const STORAGE_KEY = 'atlas-theme-builder-v1';
+const STORAGE_KEY = 'genux-theme-builder-v1';
 const DEFAULT_PRIMARY = '#0099ff';
 const CUSTOM_PRIMARY = '#7c3aed';
 const CUSTOM_PRIMARY_RGB = 'rgb(124, 58, 237)';
@@ -166,7 +166,7 @@ test('applied primary token restyles the preview, survives reload and reaches sh
   );
 
   await page.goto('/components/input/');
-  const demos = page.locator('.atlas-demo');
+  const demos = page.locator('.genux-demo');
   await expect(demos.first()).toBeAttached();
   await expect
     .poll(() =>

@@ -4,7 +4,7 @@ import { create } from 'storybook/theming';
 addons.setConfig({
   theme: create({
     base: 'light',
-    brandTitle: 'Atlas Components',
+    brandTitle: 'GenUX Components',
     fontBase: 'Outfit, sans-serif',
     fontCode: 'ui-monospace, SFMono-Regular, Consolas, monospace',
     colorPrimary: '#a8071a',

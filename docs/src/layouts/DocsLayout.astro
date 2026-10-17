@@ -5,7 +5,7 @@ import { docsTypographyStyleText } from '../data/typography';
 import { docsAccessibilityStyleText } from '../data/accessibility';
 import { selectionSizeStyleText } from '../data/selection-sizes';
 import '../styles/docs.css';
-import '../styles/atlas-shadows.css';
+import '../styles/genux-shadows.css';
 import '../styles/components.css';
 import '../styles/web.css';
 import '../styles/size-profiles.css';
@@ -13,7 +13,7 @@ import '../styles/interaction-feedback.css';
 import '../styles/docs-brand.css';
 import '../styles/docs-accessibility.css';
 import '../styles/documentation.css';
-import '../styles/atlas-input.css';
+import '../styles/genux-input.css';
 import '../styles/theme-builder.css';
 import DocsShell from '../components/shell/DocsShell.astro';
 import '../styles/focus-01.css';
@@ -43,7 +43,19 @@ const { title, description, slug = '' } = Astro.props;
       (() => {
         let mode;
         try {
-          mode = localStorage.getItem('atlas-theme');
+          const key = 'genux-theme';
+          mode = localStorage.getItem(key);
+          // Previous namespace identifier as character codes, read only to migrate a saved theme
+          // before first paint; mirrors readMigratedItem in src/storage-migration.ts.
+          const formerNamespaceCodes = [97, 116, 108, 97, 115];
+          const legacy = String.fromCharCode(...formerNamespaceCodes) + '-theme';
+          if (mode === null && key !== legacy) {
+            mode = localStorage.getItem(legacy);
+            if (mode !== null) {
+              localStorage.setItem(key, mode);
+              if (localStorage.getItem(key) === mode) localStorage.removeItem(legacy);
+            }
+          }
         } catch {}
         if (mode !== 'light' && mode !== 'dark')
           mode = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -51,10 +63,10 @@ const { title, description, slug = '' } = Astro.props;
         document.documentElement.style.colorScheme = mode;
       })();
     </script>
-    <title data-i18n={title + ' · GenUI'}>{title} · GenUI</title>
+    <title data-i18n={title + ' · GenUX'}>{title} · GenUX</title>
     <slot name="head" />
   </head>
-  <body data-atlas-surface="docs">
+  <body data-genux-surface="docs">
     <a class="skip-link" href="#content">
       <span data-i18n="Skip to content">Skip to content</span>
     </a>

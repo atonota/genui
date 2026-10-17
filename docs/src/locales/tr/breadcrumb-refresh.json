@@ -18,7 +18,7 @@
   "Use sibling navigation when related pages are useful next steps. Keep the current page distinct from links.": "İlişkili sayfalar yararlı sonraki adımlarsa kardeş gezinmesini kullanın. Mevcut sayfayı bağlantılardan ayırın.",
   "An ancestor link and its adjacent menu have separate targets. The menu opens by click or keyboard and offers real destinations.": "Üst konum bağlantısının ve yanındaki menünün hedefleri ayrıdır. Menü tıklama veya klavyeyle açılır ve gerçek sayfalar sunar.",
   "The home shortcut has an accessible name. Other icons accompany visible text; the final item remains a non-link current page.": "Ana sayfa kısayolunun erişilebilir adı vardır. Diğer ikonlar görünür metne eşlik eder; son öğe mevcut sayfadır ve bağlantı değildir.",
-  "AtlasBreadcrumb composes the native Breadcrumb and Dropdown with explicit link, current-page and keyboard semantics.": "AtlasBreadcrumb yerel Breadcrumb ve Dropdown bileşenlerini açık bağlantı, mevcut sayfa ve klavye semantiğiyle birleştirir.",
+  "GenUXBreadcrumb composes the native Breadcrumb and Dropdown with explicit link, current-page and keyboard semantics.": "GenUXBreadcrumb yerel Breadcrumb ve Dropdown bileşenlerini açık bağlantı, mevcut sayfa ve klavye semantiğiyle birleştirir.",
   "Accessible navigation name that distinguishes the path from other navigation.": "Konum yolunu diğer gezinme alanlarından ayıran erişilebilir ad.",
   "Ordered stable keys and readable labels. The last item is the current page and never a link.": "Sıralı sabit anahtarlar ve okunabilir etiketler. Son öğe mevcut sayfadır ve bağlantı olmaz.",
   "Real destination for an ancestor. Current-page href is ignored.": "Üst konum için gerçek hedef. Mevcut sayfanın href değeri kullanılmaz.",
@@ -30,6 +30,6 @@
   "Arrow keys move through native menu items. Enter or Space activates the selected destination exactly once.": "Ok tuşları yerel menü öğelerinde ilerler. Enter veya Space seçili hedefi tam bir kez açar.",
   "The current page has aria-current=page. Icons and separators are decorative; icon-only home keeps its accessible name.": "Mevcut sayfa aria-current=page taşır. İkonlar ve ayırıcılar dekoratiftir; yalnız ikonlu ana sayfanın erişilebilir adı korunur.",
   "Paths wrap at narrow widths without reducing text size. Links and menu targets retain shared minimum dimensions.": "Yol, metin küçültülmeden dar alanda alt satıra geçer. Bağlantılar ve menü hedefleri ortak minimum boyutları korur.",
-  "The two variants share one native component and the existing Atlas tokens, sizing, language and motion contracts.": "İki varyant aynı yerel bileşeni ve mevcut Atlas token, boyut, dil ve hareket sözleşmelerini paylaşır.",
+  "The two variants share one native component and the existing GenUX tokens, sizing, language and motion contracts.": "İki varyant aynı yerel bileşeni ve mevcut GenUX token, boyut, dil ve hareket sözleşmelerini paylaşır.",
   "The example path describes a workspace context; its links lead to actual documentation routes.": "Örnek yol bir çalışma alanı bağlamını gösterir; bağlantıları gerçek dokümantasyon rotalarına gider."
 }

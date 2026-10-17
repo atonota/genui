@@ -10,7 +10,7 @@ import '../styles/adaptive-lab.scss';
 const demoStyles = extractDemoStyles(AdaptiveLab, { documentation: true });
 const example = `import type { ReactNode } from 'react';
 import AdaptiveProvider from './AdaptiveProvider';
-import AtlasProvider from './AtlasProvider';
+import GenUXProvider from './GenUXProvider';
 import AdaptiveShell from './AdaptiveShell';
 import type { AdaptiveEnvironment, AdaptiveOptions } from '../adaptive/policy';
 import type { InitialLayout } from '../adaptive/delivery';
@@ -21,7 +21,7 @@ import '../styles/adaptive-components.scss';
 // initialLayout; the profile comes only from the literal layout registry. Static builds omit
 // all three and keep the shared conservative baseline.
 // children is your shared business subtree; it stays mounted across profiles.
-// AdaptiveProvider wraps AtlasProvider so every primitive reads the host options.
+// AdaptiveProvider wraps GenUXProvider so every primitive reads the host options.
 export default function AdaptivePage({
   children,
   ariaLabel,
@@ -37,11 +37,11 @@ export default function AdaptivePage({
 }) {
   return (
     <AdaptiveProvider options={options} initialEnvironment={initialEnvironment}>
-      <AtlasProvider appearance="docs">
+      <GenUXProvider appearance="docs">
         <AdaptiveShell ariaLabel={ariaLabel} initialLayout={initialLayout}>
           {children}
         </AdaptiveShell>
-      </AtlasProvider>
+      </GenUXProvider>
     </AdaptiveProvider>
   );
 }`;
@@ -106,8 +106,8 @@ const sections = [
       </span>
     </p>
     <p>
-      <span data-i18n="No npm GenUI package is published. Use the source path below inside this repository.">
-        No npm GenUI package is published. Use the source path below inside this repository.
+      <span data-i18n="No npm GenUX package is published. Use the source path below inside this repository.">
+        No npm GenUX package is published. Use the source path below inside this repository.
       </span>
     </p>
     <CodeExample code={example} title="TSX example" />

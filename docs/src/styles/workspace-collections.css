@@ -1,4 +1,4 @@
-/* Experimental collection layouts inherit Atlas identity and shared motion tokens. */
+/* Experimental collection layouts inherit GenUX identity and shared motion tokens. */
 .workspace-lab {
   --collection-column-id: 11.25rem;
   --collection-column-customer: 18.75rem;
@@ -145,7 +145,7 @@
   > tr.ant-table-row
   > td {
   box-sizing: border-box;
-  height: var(--atlas-component-height);
+  height: var(--genux-component-height);
   padding-block: 0;
   vertical-align: middle;
 }

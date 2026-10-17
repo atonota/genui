@@ -1,0 +1,64 @@
+/* Rich menu: grouped native Dropdown actions with descriptions. DOM order stays flat. */
+.genux-demo .genux-rich-menu-demo {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-md);
+  min-width: 0;
+}
+.genux-demo .genux-rich-menu-status {
+  margin: 0;
+  font-size: var(--text);
+}
+.genux-demo .genux-rich-menu-popup .ant-dropdown-menu-root {
+  box-sizing: border-box;
+  max-width: calc(100vw - 2 * var(--space-md));
+  max-height: min(70vh, 32rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.genux-demo .genux-rich-menu-popup .ant-dropdown-menu-item-group-title {
+  color: var(--muted);
+  font-size: var(--text);
+  overflow-wrap: break-word;
+}
+.genux-demo .genux-rich-menu-popup .ant-dropdown-menu-item {
+  height: auto;
+  white-space: normal;
+}
+.genux-demo .genux-rich-menu-popup .ant-dropdown-menu-title-content {
+  min-width: 0;
+}
+.genux-demo .genux-rich-menu-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  min-width: 0;
+}
+.genux-demo .genux-rich-menu-icon {
+  display: inline-flex;
+  flex: none;
+}
+.genux-demo .genux-rich-menu-text {
+  display: grid;
+  min-width: 0;
+}
+.genux-demo .genux-rich-menu-title,
+.genux-demo .genux-rich-menu-description {
+  font-size: var(--text);
+  overflow-wrap: break-word;
+}
+.genux-demo .genux-rich-menu-description {
+  color: var(--muted);
+}
+.genux-demo .genux-rich-menu-popup .ant-dropdown-menu-item-disabled .genux-rich-menu-description {
+  color: inherit;
+}
+/* Wide popups place groups side by side; arrow keys still follow the flat native order. */
+@media (min-width: 40rem) {
+  .genux-demo .genux-rich-menu-popup .ant-dropdown-menu-root {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-md);
+    width: min(36rem, calc(100vw - 2 * var(--space-md)));
+  }
+}

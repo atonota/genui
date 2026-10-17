@@ -13,7 +13,7 @@ const {
   utils: { report, ruleMessages, validateOptions },
 } = stylelint;
 
-export const ruleName = 'atlas/focus-no-surround';
+export const ruleName = 'genux/focus-no-surround';
 
 export const messages = ruleMessages(ruleName, {
   outline: (prop, value) =>

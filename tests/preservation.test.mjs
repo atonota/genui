@@ -63,7 +63,7 @@ function historicalMarkup(markup) {
   }
   document.querySelector('#formLab .jump > [data-workspace-jump]')?.remove();
   document.querySelector('.language-control')?.remove();
-  const dictionary = document.querySelector('#atlas-i18n-tr');
+  const dictionary = document.querySelector('#genux-i18n-tr');
   if (dictionary?.nextSibling?.nodeValue === '\n') dictionary.nextSibling.remove();
   dictionary?.remove();
   document.documentElement.lang = 'tr';
@@ -253,15 +253,15 @@ test('fonts, vendor and unrelated CSS/DOM remain exact after approved i18n and U
     withoutApprovedMarkup(html.replace(/<script>[\s\S]*?<\/script>/, '<script></script>'));
   assert.equal(strip(after), strip(before));
   assert.equal(
-    sha256(originalCss(after.match(/<style id="atlas-styles">([\s\S]*?)<\/style>/)[1])),
-    sha256(before.match(/<style id="atlas-styles">([\s\S]*?)<\/style>/)[1]),
+    sha256(originalCss(after.match(/<style id="genux-styles">([\s\S]*?)<\/style>/)[1])),
+    sha256(before.match(/<style id="genux-styles">([\s\S]*?)<\/style>/)[1]),
   );
 });
 
 test('two clean builds are deterministic and introduce no runtime resource URLs', async () => {
   assert.equal((await render()).html, after);
   assert.doesNotMatch(after, /<script[^>]+src=|<link[^>]+(?:stylesheet|modulepreload)/i);
-  assert.doesNotMatch(after, /\/Users\/w6x\/Developer\/button-atlas|built_at|build_timestamp/);
+  assert.doesNotMatch(after, /\/Users\/w6x\/Developer\/button-genux|built_at|build_timestamp/);
 });
 
 test('all real tab, studio, form, theme and math journeys preserve DOM and control state', async t => {
@@ -508,10 +508,10 @@ test('standalone button export keeps its exact CSS, markup, fonts and licenses',
     historicalMarkup(b.read('standaloneButton()')),
     historicalMarkup(a.read('standaloneButton()')),
   );
-  assert.doesNotMatch(b.read('standaloneButton()'), /AtlasDropdowns|ff-control/);
+  assert.doesNotMatch(b.read('standaloneButton()'), /GenUXDropdowns|ff-control/);
 });
 
-test('all download actions preserve names, MIME and data; full atlas reopens without duplicates', async t => {
+test('all download actions preserve names, MIME and data; full genux reopens without duplicates', async t => {
   const outputs = [];
   for (const html of [before, after]) {
     const h = setup(html);
@@ -529,7 +529,7 @@ test('all download actions preserve names, MIME and data; full atlas reopens wit
     };
     h.window.URL.createObjectURL = blob => {
       blobs.push(blob);
-      return 'blob:atlas-' + blobs.length;
+      return 'blob:genux-' + blobs.length;
     };
     h.window.URL.revokeObjectURL = url => revoked.push(url);
     h.window.HTMLAnchorElement.prototype.click = function () {
@@ -547,13 +547,13 @@ test('all download actions preserve names, MIME and data; full atlas reopens wit
       html === after
         ? [
             'component-decisions.json',
-            'button-atlas.html',
+            'button-genux.html',
             'button-design-recipe.json',
             'selected-button.html',
           ]
         : [
             'component-kararlari.json',
-            'buton-atlasi.html',
+            'buton-genuxi.html',
             'buton-tasarim-tarifi.json',
             'secili-buton.html',
           ],

@@ -37,7 +37,7 @@ const sourceUrl = (sourcePath: string) => {
 export const prerender = true;
 
 export const getStaticPaths = (() => {
-  const redactHome = process.env.GENUI_DOCS_PAGES === '1';
+  const redactHome = process.env.GENUX_DOCS_PAGES === '1';
   const raw = Object.entries(sources).map(([key, text]) => ({
     path: 'docs/src/' + key.slice('../../'.length),
     text,

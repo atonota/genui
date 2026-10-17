@@ -18,6 +18,8 @@ body[data-preview-body] {
   height: var(--preview-document-height);
   overflow: auto;
   overscroll-behavior: contain;
+  /* Block-axis wheel chains to the page once nothing scrolls inside; inline stays contained. */
+  overscroll-behavior-block: auto;
 }
 
 /* Central layout grid per profile: small 4 columns, 16px margins, 12px gutters; medium 8

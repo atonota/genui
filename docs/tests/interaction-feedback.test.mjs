@@ -31,7 +31,7 @@ function feedbackFixture(t) {
     <button id="disabled" disabled>Disabled</button>
     <input id="readonly" readonly value="Copy me">
     <span id="slider" role="slider" tabindex="0" aria-valuenow="1"></span>
-    <button id="optout" data-atlas-click-feedback="false">No effect</button>
+    <button id="optout" data-genux-click-feedback="false">No effect</button>
     </main></body></html>`,
     { pretendToBeVisual: true },
   );
@@ -79,7 +79,7 @@ function feedbackFixture(t) {
       return document.getElementById(id);
     },
     waves() {
-      return document.querySelectorAll('[data-atlas-feedback="click"]');
+      return document.querySelectorAll('[data-genux-feedback="click"]');
     },
     pseudoStyle(node, pseudo, style) {
       pseudoStyles.set(node, { ...pseudoStyles.get(node), [pseudo]: style });
@@ -103,7 +103,7 @@ function nativeFeedbackFixture(h) {
     width: 100,
     height: 48,
   });
-  return () => h.document.querySelectorAll('[data-atlas-feedback="click"]');
+  return () => h.document.querySelectorAll('[data-genux-feedback="click"]');
 }
 
 test('Delegated click feedback preserves immediate activation, deduplicates nested installs and removes its transient', async t => {
@@ -133,7 +133,7 @@ test('Delegated click feedback preserves immediate activation, deduplicates nest
   wave.dispatchEvent(new h.window.Event('animationend'));
   assert.equal(h.waves().length, 0);
   const button = h.get('button');
-  button.className = 'atlas-button';
+  button.className = 'genux-button';
   button.style.setProperty('--button-face', '#0080cc');
   button.style.borderTopColor = 'black';
   button.style.borderTopWidth = '0px';
@@ -143,7 +143,7 @@ test('Delegated click feedback preserves immediate activation, deduplicates nest
   assert.equal(
     h.waves()[0].style.getPropertyValue('--click-feedback-color'),
     'rgb(0, 128, 204)',
-    'pseudo-painted Atlas face owns the wave color',
+    'pseudo-painted GenUX face owns the wave color',
   );
   h.waves()[0].dispatchEvent(new h.window.Event('animationend'));
   for (const id of ['radio', 'check', 'switch', 'slider']) {
@@ -412,7 +412,7 @@ test('Button feedback uses the painted pseudo face and preserves transparent for
   button.style.setProperty('--ant-color-primary', '#0099ff');
   button.style.backgroundColor = '#005580';
   button.style.color = '#242622';
-  for (const className of ['atlas-button', 'ant-btn ant-btn-primary']) {
+  for (const className of ['genux-button', 'ant-btn ant-btn-primary']) {
     button.className = className;
     for (const backgroundColor of ['#33adff', '#0083db']) {
       h.pseudoStyle(button, '::before', { content: '""', backgroundColor });
@@ -425,7 +425,7 @@ test('Button feedback uses the painted pseudo face and preserves transparent for
       h.waves()[0].dispatchEvent(new h.window.Event('animationend'));
     }
   }
-  button.className = 'atlas-button ant-btn-variant-link';
+  button.className = 'genux-button ant-btn-variant-link';
   button.style.backgroundColor = 'transparent';
   button.style.color = '#005fa3';
   h.pseudoStyle(button, '::before', { content: 'none', backgroundColor: '#0099ff' });
@@ -519,7 +519,7 @@ test('Virtual Select portal options receive feedback while disabled options keep
 
 test('Native Slider rail, mark and handle interactions paint the final handle without repeating changes', async t => {
   const values = [];
-  const h = await mountPattern('default', 'docs/src/react/AtlasSlider.tsx', {
+  const h = await mountPattern('default', 'docs/src/react/GenUXSlider.tsx', {
     defaultValue: 20,
     marks: { 20: '20', 80: '80' },
     tooltip: { open: false },
@@ -619,7 +619,7 @@ test('Native range keyboard crossing decorates the endpoint focused after sorted
   ]) {
     await t.test(entry.key, async t => {
       const values = [];
-      const h = await mountPattern('default', 'docs/src/react/AtlasSlider.tsx', {
+      const h = await mountPattern('default', 'docs/src/react/GenUXSlider.tsx', {
         range: true,
         allowCross: true,
         defaultValue: [24, 76],
@@ -674,7 +674,7 @@ test('Native range keyboard crossing decorates the endpoint focused after sorted
 
 test('Rapid native range crossings retain one wave and tracker per Slider owner', async t => {
   const values = [];
-  const h = await mountPattern('default', 'docs/src/react/AtlasSlider.tsx', {
+  const h = await mountPattern('default', 'docs/src/react/GenUXSlider.tsx', {
     range: true,
     allowCross: true,
     defaultValue: [24, 76],
@@ -763,7 +763,7 @@ test('Native range midpoint rail input decorates the handle selected by Slider, 
   for (const reverse of [false, true]) {
     await t.test(reverse ? 'reverse range' : 'forward range', async t => {
       const values = [];
-      const h = await mountPattern('default', 'docs/src/react/AtlasSlider.tsx', {
+      const h = await mountPattern('default', 'docs/src/react/GenUXSlider.tsx', {
         range: true,
         reverse,
         defaultValue: [24, 76],
@@ -958,7 +958,7 @@ test('Read-only input and stepper stay selectable/focusable while their actions 
   const quantity = h.document.getElementById('input-readonly-number');
   assert.equal(quantity.readOnly, true);
   assert.equal(quantity.disabled, false);
-  for (const button of quantity.closest('.atlas-number-stepper').querySelectorAll('button')) {
+  for (const button of quantity.closest('.genux-number-stepper').querySelectorAll('button')) {
     assert.equal(button.disabled, true);
     await h.click(button);
   }
@@ -970,7 +970,7 @@ test('Radio double and triple choices reuse the wrapped master with native singl
     documentation: true,
   });
   t.after(() => h.dispose());
-  const groups = h.document.querySelectorAll('.atlas-button-group');
+  const groups = h.document.querySelectorAll('.genux-button-group');
   assert.equal(groups.length, 2);
   assert.equal(groups[0].getAttribute('data-button-group-count'), '3');
   assert.equal(groups[1].getAttribute('data-button-group-count'), '2');

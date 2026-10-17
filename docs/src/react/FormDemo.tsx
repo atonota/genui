@@ -1,9 +1,9 @@
-import AtlasProvider from './AtlasProvider';
+import GenUXProvider from './GenUXProvider';
 import { FormExamples } from './FormExamples';
 export default function FormDemo({ documentation = false }: { documentation?: boolean } = {}) {
   return (
-    <AtlasProvider appearance={documentation ? 'docs' : undefined}>
+    <GenUXProvider appearance={documentation ? 'docs' : undefined}>
       <FormExamples documentation={documentation} />
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }

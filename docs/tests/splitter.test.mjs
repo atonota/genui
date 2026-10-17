@@ -76,21 +76,21 @@ async function fixture(t) {
   await writeFile(
     path,
     `import {useState} from 'react';
-import AtlasProvider from '../src/react/AtlasProvider';
-import AtlasSplitter from '../src/react/AtlasSplitter';
-import {AtlasSizeContext} from '../src/react/AtlasSizeProfile';
+import GenUXProvider from '../src/react/GenUXProvider';
+import GenUXSplitter from '../src/react/GenUXSplitter';
+import {GenUXSizeContext} from '../src/react/GenUXSizeProfile';
 const callbacks=new Map();
 let area={width:320,height:760,viewportHeight:900};
 const captures=new Set();
 window.ResizeObserver=class { callback; constructor(callback){this.callback=callback;} observe(element){callbacks.set(element,this.callback);} unobserve(element){callbacks.delete(element);} disconnect(){for(const [element,callback] of callbacks)if(callback===this.callback)callbacks.delete(element);} };
 const originalRect=window.HTMLElement.prototype.getBoundingClientRect;
-window.HTMLElement.prototype.getBoundingClientRect=function(){if(this.matches('[data-atlas-splitter]'))return {x:0,y:0,width:area.width,height:area.height,top:0,left:0,right:area.width,bottom:area.height,toJSON(){}};if(this.matches('.atlas-splitter-native'))return {x:0,y:0,width:area.width,height:640,top:0,left:0,right:area.width,bottom:640,toJSON(){}};if(this.matches('[role="separator"]'))return {x:0,y:0,width:40,height:40,top:0,left:0,right:40,bottom:40,toJSON(){}};return originalRect.call(this);};
+window.HTMLElement.prototype.getBoundingClientRect=function(){if(this.matches('[data-genux-splitter]'))return {x:0,y:0,width:area.width,height:area.height,top:0,left:0,right:area.width,bottom:area.height,toJSON(){}};if(this.matches('.genux-splitter-native'))return {x:0,y:0,width:area.width,height:640,top:0,left:0,right:area.width,bottom:640,toJSON(){}};if(this.matches('[role="separator"]'))return {x:0,y:0,width:40,height:40,top:0,left:0,right:40,bottom:40,toJSON(){}};return originalRect.call(this);};
 window.HTMLElement.prototype.setPointerCapture=function(id){captures.add(id);};
 window.HTMLElement.prototype.hasPointerCapture=function(id){return captures.has(id);};
 window.HTMLElement.prototype.releasePointerCapture=function(id){captures.delete(id);};
 function resize(width,height,viewportHeight){area={width,height,viewportHeight};Object.defineProperty(window,'innerHeight',{configurable:true,value:viewportHeight});for(const [element,callback]of callbacks)callback([{target:element,contentRect:element.getBoundingClientRect()}]);}
 function Draft(){const[draft,setDraft]=useState('');return <input aria-label="Persistent draft" value={draft} onChange={e=>setDraft(e.target.value)}/>;}
-export default function Fixture(){const[profile,setProfile]=useState('md');return <AtlasProvider appearance="docs"><AtlasSizeContext.Provider value={profile}><AtlasSplitter id="fixture-split" label="Workspace layout" initialSizes={[60,40]} panels={[{id:'records',label:'Records',children:<Draft/>},{id:'details',label:'Details',children:<input aria-label="Detail field" defaultValue="One native pane"/>}]}/></AtlasSizeContext.Provider><button data-layout="wide" onClick={()=>resize(900,760,900)}>Wide</button><button data-layout="short" onClick={()=>resize(900,760,360)}>Short landscape</button><button data-layout="narrow" onClick={()=>resize(320,760,900)}>Narrow</button><button data-profile="large" onClick={()=>setProfile('lg')}>Large</button></AtlasProvider>;}`,
+export default function Fixture(){const[profile,setProfile]=useState('md');return <GenUXProvider appearance="docs"><GenUXSizeContext.Provider value={profile}><GenUXSplitter id="fixture-split" label="Workspace layout" initialSizes={[60,40]} panels={[{id:'records',label:'Records',children:<Draft/>},{id:'details',label:'Details',children:<input aria-label="Detail field" defaultValue="One native pane"/>}]}/></GenUXSizeContext.Provider><button data-layout="wide" onClick={()=>resize(900,760,900)}>Wide</button><button data-layout="short" onClick={()=>resize(900,760,360)}>Short landscape</button><button data-layout="narrow" onClick={()=>resize(320,760,900)}>Narrow</button><button data-profile="large" onClick={()=>setProfile('lg')}>Large</button></GenUXProvider>;}`,
   );
   t.after(() => unlink(path));
   const h = await mountPattern('default', path);
@@ -122,7 +122,7 @@ async function pointer(h, target, type, props = {}) {
 
 test('native Splitter has one named keyboard separator and real non-drag controls without remounting drafts', async t => {
   const h = await fixture(t);
-  const root = h.document.querySelector('[data-atlas-splitter]');
+  const root = h.document.querySelector('[data-genux-splitter]');
   const handle = root.querySelector('[role="separator"]');
   const field = h.document.querySelector('[aria-label="Persistent draft"]');
   assert.equal(root.dataset.splitterOrientation, 'vertical');
@@ -144,7 +144,7 @@ test('native Splitter has one named keyboard separator and real non-drag control
     assert.ok(region.matches('.ant-splitter-panel'));
     assert.equal(region.tabIndex, 0);
     assert.equal(root.querySelectorAll('#' + id).length, 1);
-    assert.equal(region.querySelector('.atlas-splitter-pane').tagName, 'DIV');
+    assert.equal(region.querySelector('.genux-splitter-pane').tagName, 'DIV');
     await h.act(() => region.focus());
     assert.equal(h.document.activeElement, region);
     const paneEnd = new h.window.KeyboardEvent('keydown', {
@@ -199,7 +199,7 @@ test('native Splitter has one named keyboard separator and real non-drag control
 
 test('Splitter pointer ownership clamps extremes and releases on cancel, lost capture and orientation changes', async t => {
   const h = await fixture(t);
-  const root = h.document.querySelector('[data-atlas-splitter]');
+  const root = h.document.querySelector('[data-genux-splitter]');
   const handle = root.querySelector('[role="separator"]');
   await pointer(h, handle, 'pointerdown', { button: 2 });
   assert.equal(root.dataset.splitterResizing, undefined);
@@ -241,7 +241,7 @@ test('Splitter pointer ownership clamps extremes and releases on cancel, lost ca
 
 test('Splitter adaptation reveals only off-viewport owned focus without replacing its draft or caret', async t => {
   const h = await fixture(t);
-  const root = h.document.querySelector('[data-atlas-splitter]');
+  const root = h.document.querySelector('[data-genux-splitter]');
   const field = root.querySelector('[aria-label="Persistent draft"]');
   const panel = field.closest('.ant-splitter-panel');
   const scrolls = [];
@@ -290,7 +290,7 @@ test('Splitter adaptation reveals only off-viewport owned focus without replacin
 });
 
 test('Splitter reserves accessible gutter space and binds all native motion layers to shared tokens', async () => {
-  const css = await readFile(new URL('../src/styles/atlas-splitter.css', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../src/styles/genux-splitter.css', import.meta.url), 'utf8');
   assert.match(
     css,
     /ant-splitter-horizontal\s*>\s*\.ant-splitter-bar\s*\{\s*width:\s*var\(--splitter-gutter\)/,
@@ -306,7 +306,7 @@ test('Splitter reserves accessible gutter space and binds all native motion laye
   assert.match(css, /transition-duration:\s*var\(--motion-duration-standard\)/);
   assert.match(css, /transition-timing-function:\s*var\(--motion-easing\)/);
   assert.match(css, /prefers-reduced-motion:\s*reduce/);
-  assert.match(css, /:focus-visible\s+\.atlas-splitter-grip::after/);
+  assert.match(css, /:focus-visible\s+\.genux-splitter-grip::after/);
   assert.match(
     css,
     /ant-splitter-panel:focus-visible\s*\{\s*border-inline-start-color:\s*var\(--focus-color\)/,

@@ -1,13 +1,13 @@
 import { useState, type ReactNode } from 'react';
 import { Form, Select, Switch } from 'antd';
 import { useI18n } from './useI18n';
-import AtlasProvider from './AtlasProvider';
-import { TweakerSettings } from './AtlasTweaker';
-import Input from './AtlasInput';
-import InputNumber from './AtlasInputNumber';
+import GenUXProvider from './GenUXProvider';
+import { TweakerSettings } from './GenUXTweaker';
+import Input from './GenUXInput';
+import InputNumber from './GenUXInputNumber';
 import NumberStepper from './NumberStepper';
-import AtlasIcon from './AtlasIcon';
-import AtlasClearIcon from './AtlasClearIcon';
+import GenUXIcon from './GenUXIcon';
+import GenUXClearIcon from './GenUXClearIcon';
 import DataEntryCatalog, { DataEntryGrid } from './DataEntryCatalog';
 import ExamplePreview from './ExamplePreview';
 
@@ -18,7 +18,7 @@ export function WebInputDemo({ documentation = false }: { documentation?: boolea
   return <InputDemo numberMode="spinner" documentation={documentation} />;
 }
 
-/** Workspace form and state examples built on the Atlas input facades. */
+/** Workspace form and state examples built on the GenUX input facades. */
 export default function InputDemo({
   numberMode = 'input',
   documentation = false,
@@ -36,7 +36,7 @@ export default function InputDemo({
   // Example-local Tweaker options; state stays here so closing the panel keeps form values.
   const [clearable, setClearable] = useState(true);
   const [showCount, setShowCount] = useState(false);
-  const clear = clearable ? { clearIcon: <AtlasClearIcon /> } : false;
+  const clear = clearable ? { clearIcon: <GenUXClearIcon /> } : false;
   const block = documentation ? 'example-block' : undefined;
 
   const field = (id: string, label: string, control: ReactNode, after?: ReactNode) => (
@@ -194,12 +194,12 @@ export default function InputDemo({
       value={t('Istanbul')}
       aria-describedby="input-readonly-help"
       suffix={
-        <span className="atlas-readonly-indicator">
-          <AtlasIcon name="lock-simple" />
+        <span className="genux-readonly-indicator">
+          <GenUXIcon name="lock-simple" />
         </span>
       }
     />,
-    <p id="input-readonly-help" className="atlas-readonly-help">
+    <p id="input-readonly-help" className="genux-readonly-help">
       {t('Read-only. You can select and copy this value.')}
     </p>,
   );
@@ -247,7 +247,7 @@ export default function InputDemo({
   );
 
   return (
-    <AtlasProvider appearance={documentation ? 'docs' : undefined}>
+    <GenUXProvider appearance={documentation ? 'docs' : undefined}>
       {inputSettings}
       {documentation ? (
         <DataEntryCatalog
@@ -323,6 +323,6 @@ export default function InputDemo({
           </section>
         </div>
       )}
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }

@@ -1,12 +1,12 @@
 import type { ReactNode } from 'react';
-import AtlasIcon from './AtlasIcon';
-import AtlasListy, { type AtlasListyEntry } from './AtlasListy';
+import GenUXIcon from './GenUXIcon';
+import GenUXListy, { type GenUXListyEntry } from './GenUXListy';
 import ExamplePreview from './ExamplePreview';
 import { useI18n } from './useI18n';
 
 type BasicPatternId = 'plain' | 'unordered' | 'ordered' | 'icon' | 'nested';
 
-/** One live reference section; the coordinator places it inside the documentation AtlasProvider. */
+/** One live reference section; the coordinator places it inside the documentation GenUXProvider. */
 function Pattern({
   id,
   title,
@@ -86,7 +86,7 @@ const names: Record<string, string> = {
 export default function ListyBasicPatterns() {
   const { t } = useI18n();
   const name = (segment: string) => t(names[segment] ?? segment);
-  const nested: AtlasListyEntry[] = tree.map(path => ({
+  const nested: GenUXListyEntry[] = tree.map(path => ({
     key: path.join('/'),
     label: name(path[path.length - 1]!),
     description: `${t('Inside')} ${path.slice(0, -1).map(name).join(' / ')}`,
@@ -99,11 +99,11 @@ export default function ListyBasicPatterns() {
         summary={t('Single line rows and key-value details share one list surface.')}
       >
         <ExamplePreview id="listy-plain" title={t('Plain list')}>
-          <AtlasListy
+          <GenUXListy
             label={t('Plain list')}
             items={plainRows.map(label => ({ key: label, label: t(label) }))}
           />
-          <AtlasListy
+          <GenUXListy
             label={t('Record details')}
             items={details.map(([key, label, value]) => ({
               key,
@@ -119,7 +119,7 @@ export default function ListyBasicPatterns() {
         summary={t('Items without a sequence carry a quiet marker.')}
       >
         <ExamplePreview id="listy-unordered" title={t('Unordered list')}>
-          <AtlasListy
+          <GenUXListy
             label={t('Unordered list')}
             items={bullets.map(([key, label]) => ({
               key,
@@ -135,7 +135,7 @@ export default function ListyBasicPatterns() {
         summary={t('Numbers state the order the steps happen in.')}
       >
         <ExamplePreview id="listy-ordered" title={t('Ordered list')}>
-          <AtlasListy
+          <GenUXListy
             label={t('Ordered list')}
             items={steps.map(([key, label], index) => ({
               key,
@@ -151,13 +151,13 @@ export default function ListyBasicPatterns() {
         summary={t('A decorative icon supports each label without replacing it.')}
       >
         <ExamplePreview id="listy-icon" title={t('Icon list')}>
-          <AtlasListy
+          <GenUXListy
             label={t('Icon list')}
             items={icons.map(([key, icon, label, description]) => ({
               key,
               label: t(label),
               description: t(description),
-              leading: <AtlasIcon name={icon} />,
+              leading: <GenUXIcon name={icon} />,
             }))}
           />
         </ExamplePreview>
@@ -168,7 +168,7 @@ export default function ListyBasicPatterns() {
         summary={t('Group headers name each area; descriptions state where every item sits.')}
       >
         <ExamplePreview id="listy-nested" title={t('Nested list')}>
-          <AtlasListy
+          <GenUXListy
             label={t('Nested list')}
             items={nested}
             group={{

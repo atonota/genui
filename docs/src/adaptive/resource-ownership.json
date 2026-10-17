@@ -1,10 +1,10 @@
 {
   "version": 1,
   "sharedRoots": [
-    "docs/src/react/AtlasProvider",
-    "docs/src/react/AtlasInput",
-    "docs/src/react/AtlasCascader",
-    "docs/src/react/AtlasButton",
+    "docs/src/react/GenUXProvider",
+    "docs/src/react/GenUXInput",
+    "docs/src/react/GenUXCascader",
+    "docs/src/react/GenUXButton",
     "docs/src/react/cards/index",
     "docs/src/react/AdaptiveProvider",
     "docs/src/adaptive/component-coverage",
@@ -18,10 +18,10 @@
     "desktop": ["docs/src/adaptive/layouts/desktop"],
     "wide": ["docs/src/adaptive/layouts/wide"],
     "living-room": ["docs/src/adaptive/layouts/living-room"],
-    "genuiLab": [
-      "docs/src/react/genui/GenUICardLab",
-      "docs/src/styles/genui-card-lab.css",
-      "docs/src/styles/genui-runtime.css"
+    "genuxLab": [
+      "docs/src/react/genux/GenUXCardLab",
+      "docs/src/styles/genux-card-lab.css",
+      "docs/src/styles/genux-runtime.css"
     ]
   },
   "alwaysOwned": [
@@ -39,19 +39,19 @@
     { "prefix": "docs/src/styles/adaptive-layouts/living-room", "owner": "living-room" },
     { "prefix": "docs/src/adaptive/spatial", "owner": "living-room" },
     { "prefix": "docs/src/adaptive/webos", "owner": "living-room" },
-    { "prefix": "docs/src/react/genui/", "owner": "genuiLab" },
-    { "prefix": "docs/src/genui/sdk/", "owner": "genuiLab" },
-    { "prefix": "docs/src/genui/runtime", "owner": "genuiLab" },
-    { "prefix": "docs/src/genui/definitions", "owner": "genuiLab" },
-    { "prefix": "docs/src/genui/native", "owner": "genuiLab" },
-    { "prefix": "docs/src/genui/native-registry", "owner": "genuiLab" },
-    { "prefix": "docs/src/genui/policy", "owner": "genuiLab" },
-    { "prefix": "docs/src/styles/genui-card-lab.css", "owner": "genuiLab" },
-    { "prefix": "docs/src/styles/genui-runtime.css", "owner": "genuiLab" }
+    { "prefix": "docs/src/react/genux/", "owner": "genuxLab" },
+    { "prefix": "docs/src/genux/sdk/", "owner": "genuxLab" },
+    { "prefix": "docs/src/genux/runtime", "owner": "genuxLab" },
+    { "prefix": "docs/src/genux/definitions", "owner": "genuxLab" },
+    { "prefix": "docs/src/genux/native", "owner": "genuxLab" },
+    { "prefix": "docs/src/genux/native-registry", "owner": "genuxLab" },
+    { "prefix": "docs/src/genux/policy", "owner": "genuxLab" },
+    { "prefix": "docs/src/styles/genux-card-lab.css", "owner": "genuxLab" },
+    { "prefix": "docs/src/styles/genux-runtime.css", "owner": "genuxLab" }
   ],
   "sharedExceptions": [
-    "docs/src/genui/contracts",
-    "docs/src/genui/native-contract",
-    "docs/src/genui/adaptive"
+    "docs/src/genux/contracts",
+    "docs/src/genux/native-contract",
+    "docs/src/genux/adaptive"
   ]
 }

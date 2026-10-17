@@ -10,7 +10,7 @@ test('Card begins with Entity and Metric foundations, one playground and five li
   const sections = [...catalog.querySelectorAll(':scope > section')];
   assert.deepEqual(
     sections.map(section => section.id),
-    ['card-foundations', 'card-catalog', 'card-interactions', 'card-states', 'card-genui'],
+    ['card-foundations', 'card-catalog', 'card-interactions', 'card-states', 'card-genux'],
   );
   assert.deepEqual(
     [...catalog.querySelectorAll(':scope > nav a')].map(link => link.hash),
@@ -37,11 +37,11 @@ test('the purpose catalog exposes 23 purposes and 31 domain recipes with one sel
   const catalog = h.document.querySelector('#card-catalog');
   assert.equal(catalog.dataset.purposeCount, '23');
   assert.ok(Number(catalog.dataset.recipeCount) >= 31);
-  assert.equal(catalog.querySelectorAll('[data-recipe-preview] [data-atlas-card]').length, 1);
+  assert.equal(catalog.querySelectorAll('[data-recipe-preview] [data-genux-card]').length, 1);
   await selectOption(h, catalog.querySelector('input[aria-label="Recipe category"]'), 'Commerce');
-  assert.equal(catalog.querySelectorAll('[data-recipe-preview] [data-atlas-card]').length, 1);
+  assert.equal(catalog.querySelectorAll('[data-recipe-preview] [data-genux-card]').length, 1);
   const selectedTitle = catalog.querySelector(
-    '[data-recipe-preview] [data-atlas-card] h4',
+    '[data-recipe-preview] [data-genux-card] h4',
   ).textContent;
   await h.click(catalog.querySelector('[data-card-primary]'));
   await h.waitFor(() => h.document.querySelector('[role="dialog"]'), 'real local details');
@@ -77,15 +77,15 @@ test('selection, task moves and form drafts are controlled local outcomes preser
   assert.equal(choice.checked, true);
 });
 
-test('GenUI is opt-in, and the initial Card module has no X Cards or SDK import', async t => {
+test('GenUX is opt-in, and the initial Card module has no X Cards or SDK import', async t => {
   const h = await mountPattern('default', 'docs/src/react/CardDemo.tsx', { documentation: true });
   t.after(() => h.dispose());
-  assert.equal(h.document.querySelector('[data-genui-card-lab]'), null);
-  const trigger = buttonByText(h.document.querySelector('#card-genui'), 'Open GenUI lab');
+  assert.equal(h.document.querySelector('[data-genux-card-lab]'), null);
+  const trigger = buttonByText(h.document.querySelector('#card-genux'), 'Open GenUX lab');
   assert.ok(trigger);
   assert.equal(trigger.getAttribute('aria-expanded'), 'false');
   const source = await readFile(new URL('../src/react/CardDemo.tsx', import.meta.url), 'utf8');
-  assert.match(source, /lazy\(\(\) => import\('\.\/genui\/GenUICardLab'\)\)/);
+  assert.match(source, /lazy\(\(\) => import\('\.\/genux\/GenUXCardLab'\)\)/);
   assert.doesNotMatch(source, /from ['"]@ant-design\/x-(?:card|sdk)/);
 });
 

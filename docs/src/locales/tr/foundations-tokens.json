@@ -17,7 +17,7 @@
   "Read tokens through their CSS variables. Do not copy default values into components.": "Tokenları CSS değişkenleri üzerinden okuyun. Varsayılan değerleri bileşenlere kopyalamayın.",
   "Each scheme object lists every definition id exactly once. Import accepts only known keys with finite values inside each token's bounds. This shape is a summary, not an importable file. Create a complete file with Export JSON in the Theme Builder.": "Her şema nesnesi her tanım kimliğini tam bir kez listeler. İçe aktarma yalnızca her tokenın sınırları içinde sonlu değerlere sahip bilinen anahtarları kabul eder. Bu biçim bir özettir, içe aktarılabilir dosya değildir. Tam dosyayı Theme Builder'da JSON dışa aktar ile oluşturun.",
   "Themes are stored only in this browser. Nothing is sent to a server.": "Temalar yalnızca bu tarayıcıda saklanır. Sunucuya hiçbir şey gönderilmez.",
-  "These definitions are documented standards. They are not full runtime acceptance or GenUI registrations, and not every CSS binding has been verified in every component at runtime.": "Bu tanımlar belgelenmiş standartlardır. Tam çalışma zamanı kabulü veya GenUI kaydı değildir ve her CSS bağlantısı her bileşende çalışma zamanında doğrulanmamıştır.",
+  "These definitions are documented standards. They are not full runtime acceptance or GenUX registrations, and not every CSS binding has been verified in every component at runtime.": "Bu tanımlar belgelenmiş standartlardır. Tam çalışma zamanı kabulü veya GenUX kaydı değildir ve her CSS bağlantısı her bileşende çalışma zamanında doğrulanmamıştır.",
   "Read tokens as CSS variables": "Tokenları CSS değişkeni olarak okuyun",
   "An exported theme has this shape:": "Dışa aktarılan tema şu biçimdedir:",
   "Colors": "Renkler",

@@ -11,7 +11,7 @@
       "reason": "The route duplicated the tokens classification. It is now a redirect page validated by its canonical link, zero-delay refresh and fallback link."
     },
     { "route": "/standards/", "from": null, "to": "ux-standards" },
-    { "route": "/genui/", "from": null, "to": "genui" }
+    { "route": "/genux/", "from": null, "to": "genux" }
   ],
   "legacyFragments": {
     "owner": "docs/src/data/token-redirects.ts",

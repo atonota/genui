@@ -1,5 +1,5 @@
 import { presentFieldValue } from './field-kit';
-import type { AtlasCardModel } from './card-model';
+import type { GenUXCardModel } from './card-model';
 import type {
   FieldAvailability,
   FieldDefinition,
@@ -216,7 +216,7 @@ export function entityCardFromFields<R extends RecordIdentity>(
     locale = 'en',
     translate = (key: string) => key,
   }: { locale?: string; translate?: (key: string) => string } = {},
-): AtlasCardModel {
+): GenUXCardModel {
   return {
     id: record.id,
     kind: 'entity',

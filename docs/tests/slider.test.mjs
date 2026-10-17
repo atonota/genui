@@ -41,7 +41,7 @@ const key = (h, node, value) =>
     ),
   );
 
-test('Atlas Slider exposes native single, range, vertical and reverse semantics with distinct handle names', async t => {
+test('GenUX Slider exposes native single, range, vertical and reverse semantics with distinct handle names', async t => {
   const h = await mountPattern('default', entry);
   t.after(() => h.dispose());
   for (const name of [
@@ -52,7 +52,7 @@ test('Atlas Slider exposes native single, range, vertical and reverse semantics 
     'Reversed value',
   ]) {
     assert.ok(slider(h, name), name);
-    assert.ok(slider(h, name).closest('.atlas-slider'));
+    assert.ok(slider(h, name).closest('.genux-slider'));
   }
   assert.equal(slider(h, 'Vertical value').getAttribute('aria-orientation'), 'vertical');
   const first = slider(h, 'Range start');

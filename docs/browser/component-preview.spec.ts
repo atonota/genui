@@ -10,12 +10,12 @@ import { components } from '../src/data/catalog';
 // and theme options paint icons over assistive-only labels and the current device name stays a
 // visible caption. Detail columns start at 1280 CSS px; the far-right rail returns on wide pages.
 // At 320 CSS px the fixed Tweaker opener stays inside the viewport and covers no readable text.
-// Screenshots are saved under testInfo.outputPath, labelled with ATLAS_SOURCE_STAGE.
+// Screenshots are saved under testInfo.outputPath, labelled with GENUX_SOURCE_STAGE.
 // Routes and code payloads resolve against Playwright's configured baseURL, so the service the
-// config starts is the one tested; ATLAS_DOCS_ORIGIN is only an explicit controller override.
-const docsOrigin = process.env.ATLAS_DOCS_ORIGIN?.trim() || undefined;
-const stage = (process.env.ATLAS_SOURCE_STAGE ?? 'unlabeled').replace(/[^a-z0-9-]/gi, '-');
-const THEME_KEY = 'atlas-theme';
+// config starts is the one tested; GENUX_DOCS_ORIGIN is only an explicit controller override.
+const docsOrigin = process.env.GENUX_DOCS_ORIGIN?.trim() || undefined;
+const stage = (process.env.GENUX_SOURCE_STAGE ?? 'unlabeled').replace(/[^a-z0-9-]/gi, '-');
+const THEME_KEY = 'genux-theme';
 const tolerancePx = 1;
 const wide = { width: 1920, height: 1080 };
 const narrow = { width: 320, height: 800 };
@@ -33,7 +33,7 @@ const WORKBENCH = '[data-example-preview]';
 // sections, the Listy patterns and each selection layout section. The no-child-leaf filter keeps
 // wrapping categories out.
 const LEAF =
-  '.example-block, .atlas-badge-demo-group, .data-entry-section, [data-listy-pattern], .atlas-selection-variant';
+  '.example-block, .genux-badge-demo-group, .data-entry-section, [data-listy-pattern], .genux-selection-variant';
 // Independent leaf examples that each need their own workbench, never a shared one. Business
 // choices, cells and variant comparisons inside one example are not independent leaves.
 const independentLeaves = [
@@ -432,7 +432,7 @@ function auditWorkbenches(page: Page) {
         el =>
           !el.querySelector(leafSelector) &&
           shown(el) &&
-          !el.closest('.atlas-tweaker-panel, [data-tweaker-settings], [role=dialog]'),
+          !el.closest('.genux-tweaker-panel, [data-tweaker-settings], [role=dialog]'),
       );
       return {
         ids: workbenches.map(idOf),
@@ -448,7 +448,7 @@ function auditWorkbenches(page: Page) {
               !el.querySelector(workbenchSelector),
           )
           .map(describe),
-        badgeOwners: [...main.querySelectorAll('.atlas-badge-demo-group')].map(el => {
+        badgeOwners: [...main.querySelectorAll('.genux-badge-demo-group')].map(el => {
           const owner = el.closest(workbenchSelector) ?? el.querySelector(workbenchSelector);
           return owner ? idOf(owner) : null;
         }),
@@ -456,7 +456,7 @@ function auditWorkbenches(page: Page) {
           .filter(
             el =>
               shown(el) &&
-              !el.closest('.atlas-tweaker-panel, [data-tweaker-settings], [role=dialog]'),
+              !el.closest('.genux-tweaker-panel, [data-tweaker-settings], [role=dialog]'),
           )
           .map(el => {
             const owner = el.closest(workbenchSelector) ?? el.querySelector(workbenchSelector);
@@ -465,8 +465,8 @@ function auditWorkbenches(page: Page) {
               owner: owner ? idOf(owner) : null,
             };
           }),
-        selectionOwners: [...main.querySelectorAll('.atlas-selection-variant')]
-          .filter(el => !el.closest('.atlas-tweaker-panel, [data-tweaker-settings], [role=dialog]'))
+        selectionOwners: [...main.querySelectorAll('.genux-selection-variant')]
+          .filter(el => !el.closest('.genux-tweaker-panel, [data-tweaker-settings], [role=dialog]'))
           .map(el => {
             const owner = el.closest(workbenchSelector) ?? el.querySelector(workbenchSelector);
             return owner ? idOf(owner) : null;
@@ -476,7 +476,7 @@ function auditWorkbenches(page: Page) {
             .filter(
               el =>
                 shown(el) &&
-                !el.closest('.atlas-tweaker-panel, [data-tweaker-settings], [role=dialog]'),
+                !el.closest('.genux-tweaker-panel, [data-tweaker-settings], [role=dialog]'),
             )
             .map(el => {
               const owner = el.closest(workbenchSelector) ?? el.querySelector(workbenchSelector);
@@ -522,7 +522,7 @@ function columns(page: Page) {
       el.append(probe);
       const inset = parseFloat(getComputedStyle(probe).paddingInlineStart);
       probe.remove();
-      const triggers = [...el.querySelectorAll('[data-tweaker-trigger], .atlas-tweaker-trigger')]
+      const triggers = [...el.querySelectorAll('[data-tweaker-trigger], .genux-tweaker-trigger')]
         .filter(node => node.checkVisibility({ visibilityProperty: true }))
         .map(node => node.getBoundingClientRect())
         .filter(box => box.width > 0 && box.height > 0)
@@ -1003,7 +1003,7 @@ test('every component route wraps each example cluster in one preview workbench 
   // the opener itself and assistive-only, aria-hidden, inert, hidden or off-screen text is skipped.
   const tweaker = await page.evaluate(() => {
     const viewport = { width: window.innerWidth, height: window.innerHeight };
-    const triggers = [...document.querySelectorAll('.atlas-tweaker-trigger')].filter(el => {
+    const triggers = [...document.querySelectorAll('.genux-tweaker-trigger')].filter(el => {
       const rect = el.getBoundingClientRect();
       return el.checkVisibility({ visibilityProperty: true }) && rect.width > 0 && rect.height > 0;
     });
@@ -1090,6 +1090,54 @@ test('Button and Input workbenches keep device, shared theme, lazy code, state a
   await visit(page, 'button');
   await settle(page);
   await shot(page, testInfo, 'button-1920-before');
+
+  // Regression (2026-10-17): a real wheel over an empty inline MacBook screen or its bezel
+  // chains to the page in the block axis; true inner overflow stays with the private probe.
+  {
+    const flat = page.locator('[data-example-preview=button-depth-flat-example]');
+    const flatScreen = flat.locator('.example-preview-screen').first();
+    const flatBezel = flat.locator('.example-preview-bezel').first();
+    await expect(flatScreen).toBeVisible();
+    const initialScrollY = await page.evaluate(() => window.scrollY);
+    const spots = [
+      { label: 'screen blank', target: flatScreen, dx: 30, owner: '.example-preview-screen' },
+      { label: 'bezel edge', target: flatBezel, dx: 2, owner: '.example-preview-bezel' },
+    ];
+    for (const { label, target, dx, owner } of spots) {
+      await flat.evaluate(el => {
+        const top = el.getBoundingClientRect().top + window.scrollY - 100;
+        window.scrollTo({ top, left: 0, behavior: 'instant' });
+      });
+      await settle(page);
+      const previewBox = await flat.boundingBox();
+      const box = await target.boundingBox();
+      if (!previewBox || !box) throw new Error(`${label} has no layout box`);
+      const x = box.x + dx;
+      const y = Math.max(170, previewBox.y + 300);
+      expect(y, `${label} pointer row lies inside the frame`).toBeGreaterThan(box.y);
+      expect(y, `${label} pointer row lies inside the frame`).toBeLessThan(box.y + box.height);
+      const hit = await page.evaluate(
+        ({ px, py, selector }) => Boolean(document.elementFromPoint(px, py)?.closest(selector)),
+        { px: x, py: y, selector: owner },
+      );
+      expect(hit, `${label} is under the pointer`).toBe(true);
+      const before = await page.evaluate(() => window.scrollY);
+      await page.mouse.move(x, y);
+      await page.mouse.wheel(0, 240);
+      await page.mouse.wheel(0, 360);
+      await expect
+        .poll(() => page.evaluate(() => window.scrollY), {
+          message: `${label} wheel scrolls the page`,
+        })
+        .toBeGreaterThan(before);
+    }
+    await page.evaluate(
+      top => window.scrollTo({ top, left: 0, behavior: 'instant' }),
+      initialScrollY,
+    );
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(initialScrollY);
+    await settle(page);
+  }
 
   const allIds = await page
     .locator(`main ${WORKBENCH}`)

@@ -102,7 +102,7 @@ for (const mode of ['light', 'dark'] as const) {
   });
 }
 
-// Appended well case: the painted owner is .atlas-input-frame[data-atlas-input], measured at rest and on keyboard focus.
+// Appended well case: the painted owner is .genux-input-frame[data-genux-input], measured at rest and on keyboard focus.
 const inputWellBase = 'http://127.0.0.1:4324';
 const inputWellViews = [320, 1440].flatMap(width =>
   (['dark', 'light'] as const).map(mode => ({ width, mode })),
@@ -231,7 +231,7 @@ async function inputWellFacts(page: Page) {
         targets: targets.map(({ sel, well }) => {
           const child = document.querySelector<HTMLElement>(sel);
           const frame =
-            child?.closest<HTMLElement>('.atlas-input-frame[data-atlas-input]') ??
+            child?.closest<HTMLElement>('.genux-input-frame[data-genux-input]') ??
             // AntD 6 paints the Select well on .ant-select itself; .ant-select-selector no longer exists.
             (well ? null : (child?.closest<HTMLElement>('.ant-select') ?? child));
           if (!child || !frame) return { sel, well, missing: child ? 'frame owner' : 'selector' };
@@ -430,8 +430,8 @@ test('input well: frame owner paints a quiet inset well at rest and a bottom-onl
   test.setTimeout(120_000);
   const failures: string[] = [];
   const shot = (name: string) => {
-    const file = `${process.env.ATLAS_INPUT_WELL_PHASE ?? 'candidate'}-input-well-${name}.png`;
-    const dir = process.env.ATLAS_INPUT_WELL_EVIDENCE_DIR;
+    const file = `${process.env.GENUX_INPUT_WELL_PHASE ?? 'candidate'}-input-well-${name}.png`;
+    const dir = process.env.GENUX_INPUT_WELL_EVIDENCE_DIR;
     return dir ? `${dir}/${file}` : testInfo.outputPath(file);
   };
   const settled = async (page: Page, label: string) => {
@@ -461,8 +461,8 @@ test('input well: frame owner paints a quiet inset well at rest and a bottom-onl
       viewport: { width, height: 900 },
     });
     await context.addInitScript(theme => {
-      localStorage.setItem('atlas-theme', theme);
-      localStorage.setItem('atlas-locale', 'en');
+      localStorage.setItem('genux-theme', theme);
+      localStorage.setItem('genux-locale', 'en');
     }, mode);
     const page = await context.newPage();
     await page.goto('/components/input/');
@@ -470,7 +470,7 @@ test('input well: frame owner paints a quiet inset well at rest and a bottom-onl
       page.evaluate(() => (document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light'));
     if ((await theme()) !== mode) await page.locator('.theme-toggle').first().click();
     await expect
-      .poll(theme, { message: `${label} theme from localStorage atlas-theme` })
+      .poll(theme, { message: `${label} theme from localStorage genux-theme` })
       .toBe(mode);
     await page.locator(inputWellFocus).scrollIntoViewIfNeeded();
     await page.waitForFunction(sel => {
@@ -501,7 +501,7 @@ test('input well: frame owner paints a quiet inset well at rest and a bottom-onl
     failures.push(...inputWellJudge(label, mode, focus, rest));
     const invalid = page
       .locator(
-        '.atlas-input-frame[data-atlas-input]:is([data-status="error"], :has([aria-invalid="true"]))',
+        '.genux-input-frame[data-genux-input]:is([data-status="error"], :has([aria-invalid="true"]))',
       )
       .first();
     const help = page.locator('.ant-form-item-explain-error').first();

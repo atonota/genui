@@ -1,20 +1,20 @@
 import { useI18n } from './useI18n';
 import { Select, Switch, type SelectProps } from 'antd';
 import { useId, useRef, useState, type ComponentRef } from 'react';
-import AtlasProvider from './AtlasProvider';
-import { TweakerSettings } from './AtlasTweaker';
-import AtlasPill, { AtlasPillColorScope } from './AtlasPill';
+import GenUXProvider from './GenUXProvider';
+import { TweakerSettings } from './GenUXTweaker';
+import GenUXPill, { GenUXPillColorScope } from './GenUXPill';
 import { normalizeSearch } from '../i18n';
 import { selectedLabel } from './selectedLabel';
 import DataEntryCatalog, { DataEntryGrid } from './DataEntryCatalog';
 import ExamplePreview from './ExamplePreview';
 import DepartmentSelectExample from './DepartmentSelectExample';
 
-const classNames = { popup: { root: 'atlas-select-popup' } };
+const classNames = { popup: { root: 'genux-select-popup' } };
 const renderPill =
   (focus: () => void): NonNullable<SelectProps['tagRender']> =>
   ({ label, value, closable, disabled, onClose }) => (
-    <AtlasPill
+    <GenUXPill
       colorKey={String(value)}
       closable={closable}
       disabled={disabled}
@@ -31,7 +31,7 @@ const renderPill =
       }}
     >
       {label}
-    </AtlasPill>
+    </GenUXPill>
   );
 
 export function WebSelectDemo({ documentation = false }: { documentation?: boolean } = {}) {
@@ -86,7 +86,7 @@ export default function SelectDemo({
   const multipleField = (
     <div className={documentation ? 'example-block' : undefined}>
       <label htmlFor="select-multiple">{t('Teams')}</label>
-      <AtlasPillColorScope values={multipleValues}>
+      <GenUXPillColorScope values={multipleValues}>
         <Select
           variant="filled"
           id="select-multiple"
@@ -103,13 +103,13 @@ export default function SelectDemo({
           allowClear={clearable}
           classNames={classNames}
         />
-      </AtlasPillColorScope>
+      </GenUXPillColorScope>
     </div>
   );
   const tagsField = (
     <div className={documentation ? 'example-block' : undefined}>
       <label htmlFor="select-tags">{t('Tags')}</label>
-      <AtlasPillColorScope values={tagValues}>
+      <GenUXPillColorScope values={tagValues}>
         <Select
           variant="filled"
           id="select-tags"
@@ -129,7 +129,7 @@ export default function SelectDemo({
           placeholder={t('Enter a new tag')}
           classNames={classNames}
         />
-      </AtlasPillColorScope>
+      </GenUXPillColorScope>
     </div>
   );
   const filled = (
@@ -209,7 +209,7 @@ export default function SelectDemo({
   // Tags keep search on: typing is how a new tag is entered.
   const settings = documentation ? (
     <TweakerSettings title="Select settings">
-      <div className="atlas-tweaker-token">
+      <div className="genux-tweaker-token">
         <label htmlFor={`${settingsId}clearable`}>{t('Clearable')}</label>
         <Switch
           id={`${settingsId}clearable`}
@@ -217,7 +217,7 @@ export default function SelectDemo({
           onChange={checked => setClearable(checked)}
         />
       </div>
-      <div className="atlas-tweaker-token">
+      <div className="genux-tweaker-token">
         <label htmlFor={`${settingsId}searchable`}>{t('Searchable')}</label>
         <Switch
           id={`${settingsId}searchable`}
@@ -225,7 +225,7 @@ export default function SelectDemo({
           onChange={checked => setSearchable(checked)}
         />
       </div>
-      <div className="atlas-tweaker-token">
+      <div className="genux-tweaker-token">
         <label htmlFor={`${settingsId}tag-display`}>{t('Selected values')}</label>
         <Select
           id={`${settingsId}tag-display`}
@@ -240,7 +240,7 @@ export default function SelectDemo({
     </TweakerSettings>
   ) : null;
   return (
-    <AtlasProvider appearance={documentation ? 'docs' : undefined}>
+    <GenUXProvider appearance={documentation ? 'docs' : undefined}>
       {settings}
       {documentation ? (
         <DataEntryCatalog
@@ -344,6 +344,6 @@ export default function SelectDemo({
           </section>
         </div>
       )}
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }

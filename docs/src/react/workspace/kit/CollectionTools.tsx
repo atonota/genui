@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { Checkbox, Select } from 'antd';
-import Input from '../../AtlasInput';
-import AtlasButton from '../../AtlasButton';
+import Input from '../../GenUXInput';
+import GenUXButton from '../../GenUXButton';
 import { selectedLabel } from '../../selectedLabel';
 import { FieldEditor } from './Fields';
 import { useI18n } from '../../useI18n';
@@ -119,7 +119,7 @@ export function FilterBuilder<R extends RecordIdentity>({
                 />
               </div>
             )}
-            <AtlasButton
+            <GenUXButton
               fill="text"
               text={t('Remove filter {number}', { number: index + 1 })}
               onClick={() => {
@@ -135,7 +135,7 @@ export function FilterBuilder<R extends RecordIdentity>({
           </div>
         );
       })}
-      <AtlasButton
+      <GenUXButton
         fill="text"
         disabled={!fields.some(field => fieldOperators(field).length)}
         text={t('Add filter')}
@@ -213,7 +213,7 @@ export function SortBuilder<R extends RecordIdentity>({
                 }
               />
             </label>
-            <AtlasButton
+            <GenUXButton
               fill="text"
               text={t('Remove sort {number}', { number: index + 1 })}
               onClick={() =>
@@ -223,7 +223,7 @@ export function SortBuilder<R extends RecordIdentity>({
           </div>
         );
       })}
-      <AtlasButton
+      <GenUXButton
         fill="text"
         text={t('Add sort criterion')}
         disabled={query.sort.length >= fields.length}
@@ -293,7 +293,7 @@ export function QueryBar<R extends RecordIdentity>({
         errors={attempted ? errors : {}}
       />
       <div className="kit-actions">
-        <AtlasButton
+        <GenUXButton
           text={t('Apply filters')}
           onClick={() => {
             setAttempted(true);
@@ -303,7 +303,7 @@ export function QueryBar<R extends RecordIdentity>({
             }
           }}
         />
-        <AtlasButton
+        <GenUXButton
           fill="text"
           text={t('Discard filter draft')}
           disabled={!dirty}
@@ -314,7 +314,7 @@ export function QueryBar<R extends RecordIdentity>({
             setAttempted(false);
           }}
         />
-        <AtlasButton
+        <GenUXButton
           fill="text"
           text={t('Clear applied filters')}
           disabled={!query.filters.length}
@@ -378,13 +378,13 @@ export function ProjectionPicker<R extends RecordIdentity>({
         {selected.map((field, index) => (
           <li key={field.key}>
             <span>{t(field.label)}</span>
-            <AtlasButton
+            <GenUXButton
               fill="text"
               text={t('Move {field} earlier', { field: t(field.label) })}
               disabled={index === 0}
               onClick={() => move(index, -1)}
             />
-            <AtlasButton
+            <GenUXButton
               fill="text"
               text={t('Move {field} later', { field: t(field.label) })}
               disabled={index === selected.length - 1}
@@ -416,14 +416,14 @@ export function GroupNavigator<R extends RecordIdentity>({
   return (
     <nav className="kit-group-nav" aria-label={t('Record groups')}>
       <h4>{t('Record groups')}</h4>
-      <AtlasButton
+      <GenUXButton
         fill="text"
         text={t('All records ({count})', { count: records.length })}
         aria-pressed={activeId === null}
         onClick={() => onChange(null)}
       />
       {membership.groups.map(group => (
-        <AtlasButton
+        <GenUXButton
           key={group.id}
           fill="text"
           aria-pressed={activeId === group.id}
@@ -489,7 +489,7 @@ export function SavedViewSettings<R extends RecordIdentity>({
         )}
       </p>
       <div className="kit-actions">
-        <AtlasButton
+        <GenUXButton
           text={t('Save current view locally')}
           onClick={() => {
             setSaved(structuredClone(settings));
@@ -497,13 +497,13 @@ export function SavedViewSettings<R extends RecordIdentity>({
             setError('');
           }}
         />
-        <AtlasButton
+        <GenUXButton
           fill="text"
           text={t('Load saved view')}
           disabled={!saved}
           onClick={() => saved && load(JSON.stringify(saved))}
         />
-        <AtlasButton
+        <GenUXButton
           fill="text"
           text={t('Export current settings')}
           onClick={() => {
@@ -522,7 +522,7 @@ export function SavedViewSettings<R extends RecordIdentity>({
           aria-describedby={error ? errorId : undefined}
         />
       </label>
-      <AtlasButton
+      <GenUXButton
         text={t('Validate and load settings')}
         disabled={!text.trim()}
         onClick={() => load(text)}

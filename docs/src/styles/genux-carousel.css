@@ -1,0 +1,35 @@
+/* Carousel: one slide, its position status and wrapping manual controls. */
+.genux-demo .genux-carousel {
+  display: grid;
+  gap: var(--space-md);
+  min-width: 0;
+  max-width: 100%;
+}
+.genux-demo .genux-carousel-slide {
+  display: grid;
+  gap: var(--space-sm);
+  min-width: 0;
+}
+.genux-demo .genux-carousel-title {
+  margin: 0;
+  color: var(--ink);
+  font-size: var(--text);
+  font-weight: var(--font-weight-label, 600);
+  overflow-wrap: break-word;
+}
+.genux-demo .genux-carousel-status,
+.genux-demo .genux-carousel-empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text);
+}
+.genux-demo .genux-carousel-status {
+  font-variant-numeric: tabular-nums;
+}
+.genux-demo .genux-carousel-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+  min-width: 0;
+}

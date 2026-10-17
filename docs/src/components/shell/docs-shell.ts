@@ -5,7 +5,7 @@
 // (54.6875rem = 875px).
 const sidebarQuery = '(min-width: 54.6875rem)';
 // Announces the opened Drawer to nav-state, which restores the list scroll synchronously.
-const navShownEvent = 'atlas-docs-nav-shown';
+const navShownEvent = 'genux-docs-nav-shown';
 
 /** Wires the menu Drawer; the returned disposer restores the server markup. */
 export function installDocsShell(root: Document): () => void {

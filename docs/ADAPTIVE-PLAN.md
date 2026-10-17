@@ -1,4 +1,4 @@
-# Atlas GenUI uyarlanabilir mimari planı
+# GenUX GenUX uyarlanabilir mimari planı
 
 Durum: **KAYNAK MİMARİSİ UYGULANDI; BİLEŞEN DOĞRULAMASI VE YAYIN AYRI İZLENİR**. Tarih: 2026-10-16. Bu belge test kanıtı değildir ve DONE iddiası taşımaz. Kaynak yazarları hiçbir kontrol çalıştırmadı; sonuçların yetkili kaynağı `adaptive-20261016` altındaki conductor makbuzları ve GitHub'daki gerçek CI/yayın durumudur.
 
@@ -19,7 +19,7 @@ Authoritative source: `docs/decisions/current.json`, revision `human-2026-10-16-
 - **IMPLEMENTED (SOURCE ONLY)** — Vertical text and caret handling on the TV reference. Receipt: browser case.
 - **IMPLEMENTED (SOURCE ONLY)** — Metadata Choice as an accessible combobox; generic coarse touch targets. Receipt: browser case.
 - **IMPLEMENTED (SOURCE ONLY)** — Outfit with the 14 CSS px minimum from the decision record; legacy stored 12/13 values migrate without discarding saved recipes. Receipt: existing typography test.
-- **IMPLEMENTED (SOURCE ONLY)** — Consumable local Ant Design UI package with optional GenUI, SSR and Frappe canonical ports. Receipt: `node tools/build-library.mjs` plus the locally packed consumer check (types, SSR, stylesheet rule coverage and local asset presence); no npm publication, SSR hosting, live Frappe or model call is claimed.
+- **IMPLEMENTED (SOURCE ONLY)** — Consumable local Ant Design UI package with optional GenUX, SSR and Frappe canonical ports. Receipt: `node tools/build-library.mjs` plus the locally packed consumer check (types, SSR, stylesheet rule coverage and local asset presence); no npm publication, SSR hosting, live Frappe or model call is claimed.
 
 Receipt status: IMPLEMENTED (SOURCE ONLY) does not prove acceptance. The latest private conductor receipts and the actual GitHub CI and Pages state are authoritative; this document records no check counts, pass results or open failures. Standalone preview profiles are server-rendered (SSR); selected code entries are embeddable CSR; generic embedded SSR hydration is not verified. The TV reference is a logical 1920x1080 screen regardless of the host viewport used by any browser check. Per-component status for the 61 components, physical-device QA, CI, main and live states are never inferred from this metadata.
 
@@ -39,7 +39,7 @@ Test budget: the existing 2 policy, 4 input and 2 delivery unit cases, the exist
 - SSR ve koşullu teslim: `docs/src/adaptive/server.ts` (`resolveServerAdaptive`, `loadServerAdaptive`), `docs/src/adaptive/delivery.ts` (`layoutLoaders`, `DeliveryController`, `baselineDelivery`, `InitialLayout`).
 - Kapsam: `docs/src/adaptive/component-coverage.ts` (`ADAPTIVE_COMPONENT_COVERAGE`, `DOC_SLUG_COVERAGE`, `assertAdaptiveCoverage`).
 - React: `docs/src/react/AdaptiveProvider`, `docs/src/react/AdaptiveShell.tsx`, `docs/src/react/AdaptiveLab` ve kilitli profilli önizleme tüketicisi `PreviewDocument`.
-- Giriş ve GenUI: `docs/src/input-modality.ts` (`requestSpatialInputModality`), `docs/src/genui/adaptive.ts`, `docs/src/react/genui/AtlasGenUISurface.tsx`, `docs/src/react/genui/native/` altındaki native sunum ve üç native overlay adaptörü.
+- Giriş ve GenUX: `docs/src/input-modality.ts` (`requestSpatialInputModality`), `docs/src/genux/adaptive.ts`, `docs/src/react/genux/GenUXSurface.tsx`, `docs/src/react/genux/native/` altındaki native sunum ve üç native overlay adaptörü.
 - Stil: `docs/src/styles/adaptive-components.scss`, `docs/src/styles/adaptive-lab.scss`; Sass eşik map'i `policy.json` dosyasından üretilir.
 - Kaynak girişleri: `docs/src/adaptive/index.ts` ve `docs/src/react/adaptive.ts` server ve delivery API'lerini dışa aktarır. npm'de yayımlanmış paket yoktur; kök klasik build değişmez.
 - Sayfa: `docs/src/pages/adaptive.astro`; statik lab muhafazakâr baseline'ı render eder.
@@ -57,7 +57,7 @@ Test budget: the existing 2 policy, 4 input and 2 delivery unit cases, the exist
 
 ## 0. Kaynak ve kapsam
 
-- Doğrudan son insan görevi: **tüm GenUI bileşenleri** capability-first uyarlanabilir mimariye güncellenir. Bu görev, önceki yalnız-doküman iki vaka kapsamının yerine geçer.
+- Doğrudan son insan görevi: **tüm GenUX bileşenleri** capability-first uyarlanabilir mimariye güncellenir. Bu görev, önceki yalnız-doküman iki vaka kapsamının yerine geçer.
 - Sözleşme kaynakları: `GELISTIRME-SOZLESMESI` satır 60-118, 141-178, 180-261, 263-294, 296-368. Bu paket bu aralıkların içeriğini yeniden doğrulamadı; her uygulama paketi ilgili aralığı okuyup uyumu kendi kanıtında belgeler.
 - Kurulu sürümler: Node 24.21, TypeScript 5.9.3, React 19.2, Ant Design 6.6.6, Ant Design X 2.9, Astro 7.3.8; Sass 1.105.2 exact devpin olarak eklendi. Framework, model, kimlik bilgisi, deploy ve servis değişikliği kapsam dışıdır.
 - `docs` altındaki kaynak gerçek React runtime'dır. Kök `src` eski klasik HTML olarak kalır; bu plan onu taşımaz.
@@ -77,7 +77,7 @@ Test budget: the existing 2 policy, 4 input and 2 delivery unit cases, the exist
 
 | Liste               | Sayı                        | Not                                                       |
 | ------------------- | --------------------------- | --------------------------------------------------------- |
-| Runtime bileşenleri | 61 = 49 native + 12 generic | Hepsi ortak `AtlasProvider` sarmalayıcısı altında çalışır |
+| Runtime bileşenleri | 61 = 49 native + 12 generic | Hepsi ortak `GenUXProvider` sarmalayıcısı altında çalışır |
 | Doküman sayfaları   | 40                          | Sayfa bileşen değildir; runtime sayısıyla toplanmaz       |
 
 Kapsam koddadır: `component-coverage.ts` her bileşen ve slug için aile, container davranışı, giriş sözleşmesi ve ortak sahip dosyasını taşır; `assertAdaptiveCoverage` eksik, fazla veya yinelenen kaydı reddeder. Fark çıkarsa sayılar sessizce düzeltilmez, raporlanır.
@@ -147,14 +147,14 @@ Semantik click temeldir. TV modalitesi tek merkezi köprüden geçer ve en yakı
 
 - Yaşam döngüsü olan store ve controller'lar sınıftır (`EnvironmentStore`, `DeliveryController`, mevcut odak modu controller'ı).
 - Hook'lar ViewModel rolündedir; görünüm bileşenleri fonksiyon bileşenleridir. React sınıf kalıtımı kullanılmaz.
-- Frappe erişimi `AtlasProvider` üzerinden enjekte edilen bir port ile soyutlanır. Bu plan çalışan bir Frappe backend'i veya deploy iddia etmez. Ant Design X kayıtlı fixture'ı isteğe bağlıdır ve yalnız açık yüklemeyle gelir.
+- Frappe erişimi `GenUXProvider` üzerinden enjekte edilen bir port ile soyutlanır. Bu plan çalışan bir Frappe backend'i veya deploy iddia etmez. Ant Design X kayıtlı fixture'ı isteğe bağlıdır ve yalnız açık yüklemeyle gelir.
 - Yeni katman, sınıf veya arayüz yalnız somut ihtiyaçla eklenir.
 
 ### 3.8 Stil
 
 - Önce Ant Design `ConfigProvider` teması ve semantik `classNames/styles` API'leri kullanılır.
-- SCSS ayrı bir `@layer` tanımlamaz: `adaptive-components.scss` ve profil SCSS'leri Atlas'a ait semantik sınıfları hedefler ve mevcut düz cascade'e modüle bağlı derlenmiş stillerle katılır. Yeni cascade layer eklenmez; vendor stilleri fork edilmez veya kopyalanmaz.
-- `docs/src/react/genui/native/NativeStyles.tsx` yalnız native sunuma özgü CSS'i `?inline` ile isteğe bağlı GenUI JS'ine derler; bu stil React 19 style kaynağı olarak yalnız `AtlasGenUISurface` render edildiğinde ve tekilleştirilerek SSR'a/belgeye girer. Paylaşılan `AtlasCascader` kendi normal CSS importuna sahiptir; native adaptör onu devralır, isteğe bağlı özel CSS'e taşınmaz. Bu düzeltme kaynak dosyalarını ve CSS değerlerini değiştirmez; 9 palet eşdeğerliği korunur.
+- SCSS ayrı bir `@layer` tanımlamaz: `adaptive-components.scss` ve profil SCSS'leri GenUX'a ait semantik sınıfları hedefler ve mevcut düz cascade'e modüle bağlı derlenmiş stillerle katılır. Yeni cascade layer eklenmez; vendor stilleri fork edilmez veya kopyalanmaz.
+- `docs/src/react/genux/native/NativeStyles.tsx` yalnız native sunuma özgü CSS'i `?inline` ile isteğe bağlı GenUX JS'ine derler; bu stil React 19 style kaynağı olarak yalnız `GenUXSurface` render edildiğinde ve tekilleştirilerek SSR'a/belgeye girer. Paylaşılan `GenUXCascader` kendi normal CSS importuna sahiptir; native adaptör onu devralır, isteğe bağlı özel CSS'e taşınmaz. Bu düzeltme kaynak dosyalarını ve CSS değerlerini değiştirmez; 9 palet eşdeğerliği korunur.
 - Sass, sabitlenmiş kaynak sürümünden build zincirinde derlenir. SCSS eşik map'i `policy.json` dosyasından üretilir; elle kopyalanan eşik yoktur ve üretilen dosya ile JSON arasındaki fark bir testte FAIL olur.
 - Tek palet: renkler mevcut merkezi semantik token kaynağından gelir; SCSS ve profil kabukları ikinci bir palet, sabit renk veya eşik tanımlamaz.
 

@@ -87,7 +87,7 @@
   align-content: start;
   min-width: 0;
 }
-.kit-group-nav .atlas-button[aria-pressed='true'] {
+.kit-group-nav .genux-button[aria-pressed='true'] {
   background-color: var(--soft);
   color: var(--accent);
 }
@@ -213,7 +213,7 @@
   gap: var(--space-sm);
 }
 /* Mixed text rows share a baseline; checkbox and avatar rows stay centered. */
-.kit-record-heading:has(> :is(input[type='checkbox'], .ant-checkbox-wrapper, .atlas-avatar)) {
+.kit-record-heading:has(> :is(input[type='checkbox'], .ant-checkbox-wrapper, .genux-avatar)) {
   align-items: center;
 }
 .kit-record-fields {

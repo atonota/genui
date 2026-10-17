@@ -469,12 +469,12 @@ test('review completion and disconnected detail triggers have stable focus fallb
   assert.equal(h.document.activeElement.id, 'collection-search');
 });
 
-test('desktop tree expands with the shared Atlas control rather than native focus borders', async t => {
+test('desktop tree expands with the shared GenUX control rather than native focus borders', async t => {
   const h = await mountPattern('DataTableDemo', 'docs/src/react/workspace/CollectionDemo.tsx');
   t.after(() => h.dispose());
   await selectOption(h, h.document.querySelector('#collection-view'), 'Tree table');
   const expand = h.document.querySelector('button[aria-label="Collapse children SP-26-0401"]');
-  assert.ok(expand?.classList.contains('atlas-button'));
+  assert.ok(expand?.classList.contains('genux-button'));
   assert.equal(h.document.querySelector('.ant-table-row-expand-icon'), null);
   await h.click(expand);
   assert.equal(expand.getAttribute('aria-expanded'), 'false');

@@ -55,7 +55,7 @@
 .workspace-details-list p {
   margin-block: var(--space-xs);
 }
-.workspace-details [data-record-open] .atlas-button-content {
+.workspace-details [data-record-open] .genux-button-content {
   white-space: normal;
   text-align: start;
   justify-content: flex-start;

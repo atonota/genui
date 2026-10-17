@@ -4,7 +4,7 @@ test('default Button wave peaks at 0.4 opacity over 400ms', async ({ page }, tes
   await page.setViewportSize({ width: 320, height: 720 });
   await page.goto('/components/button/');
   const button = page
-    .locator('button.atlas-button.ant-btn-variant-solid:not(:disabled)')
+    .locator('button.genux-button.ant-btn-variant-solid:not(:disabled)')
     .filter({ hasText: 'Continue' })
     .first();
   await button.scrollIntoViewIfNeeded();
@@ -14,9 +14,9 @@ test('default Button wave peaks at 0.4 opacity over 400ms', async ({ page }, tes
     const w = window as unknown as { __wave: Promise<unknown> };
     w.__wave = new Promise((resolve, reject) => {
       const fail = (reason: string) => reject(new Error(`prerequisite: ${reason}`));
-      const timer = setTimeout(() => fail('no .atlas-click-feedback emitted'), 5_000);
+      const timer = setTimeout(() => fail('no .genux-click-feedback emitted'), 5_000);
       const observer = new MutationObserver(async () => {
-        const wave = document.querySelector<HTMLElement>('.atlas-click-feedback');
+        const wave = document.querySelector<HTMLElement>('.genux-click-feedback');
         if (!wave) return;
         observer.disconnect();
         clearTimeout(timer);

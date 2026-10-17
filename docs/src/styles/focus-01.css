@@ -18,7 +18,7 @@
 }
 /* Color roles are declared on body under the root theme so var(--accent) resolves after the
    docs brand override on body (see nav.css). Custom properties inherit their computed value,
-   so every local theme owner (.atlas-demo[data-theme-mode], marked on both the provider and
+   so every local theme owner (.genux-demo[data-theme-mode], marked on both the provider and
    the body portal roots) recomputes the same formulas from its own --ink, --accent and
    --field-bg; otherwise a preview in the opposite mode would inherit the page's focus colors.
    The indicator is --ink on the shell and panel surfaces; button focus text is the focus
@@ -26,7 +26,7 @@
 :root:not([data-theme]) body,
 :root[data-theme='light'] body,
 :root[data-theme='dark'] body,
-.atlas-demo[data-theme-mode] {
+.genux-demo[data-theme-mode] {
   --focus-indicator-color: var(--ink);
   --focus-bg: color-mix(in srgb, var(--field-bg) 90%, var(--ink) 10%);
   --focus-link-ink: color-mix(in srgb, var(--accent) 55%, var(--ink));
@@ -62,7 +62,7 @@
   box-shadow: inset var(--focus-indicator-width) 0 0 0 var(--focus-indicator-color);
 }
 /* Documentation buttons, summaries and copy/clear controls: a fill step of at least 3:1 with
-   readable text. Atlas and Ant Design buttons and choice controls take their focus from the
+   readable text. GenUX and Ant Design buttons and choice controls take their focus from the
    component theme and focus-fields.css. */
 :root[data-input-modality='keyboard']
   :is(
@@ -80,7 +80,7 @@
     [role='option'],
     [role='menuitem'],
     .ant-btn,
-    .atlas-button,
+    .genux-button,
     .ant-switch
   ):focus-visible {
   background-color: var(--focus-button-bg);
@@ -102,7 +102,7 @@
     [role='option'],
     [role='menuitem'],
     .ant-btn,
-    .atlas-button,
+    .genux-button,
     .ant-switch
   ):focus-visible
   * {

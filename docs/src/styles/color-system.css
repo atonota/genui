@@ -51,25 +51,25 @@
   container-type: inline-size;
   container-name: color-controls;
 }
-.color-system-lab .atlas-segmented {
+.color-system-lab .genux-segmented {
   max-width: 100%;
   overflow-x: auto;
   font-size: var(--text);
 }
-.color-system-lab .atlas-segmented.color-selection-method {
+.color-system-lab .genux-segmented.color-selection-method {
   width: 100%;
   overflow: visible;
 }
-.color-system-lab .atlas-segmented.color-selection-method .ant-segmented-group {
+.color-system-lab .genux-segmented.color-selection-method .ant-segmented-group {
   display: flex;
   width: 100%;
   min-width: 0;
 }
-.color-system-lab .atlas-segmented.color-selection-method .ant-segmented-item {
+.color-system-lab .genux-segmented.color-selection-method .ant-segmented-item {
   flex: 1 1 0;
   min-width: 0;
 }
-.color-system-lab .atlas-segmented.color-selection-method .ant-segmented-item-label {
+.color-system-lab .genux-segmented.color-selection-method .ant-segmented-item-label {
   white-space: normal;
   overflow: visible;
   overflow-wrap: normal;
@@ -407,7 +407,7 @@
   background: var(--button-text);
   pointer-events: none;
 }
-.color-seed-preview .atlas-select-popup {
+.color-seed-preview .genux-select-popup {
   background: var(--panel);
   color: var(--ink);
 }
@@ -527,7 +527,7 @@
   --switch-thumb-edge: var(--control-boundary);
 }
 .color-seed-preview
-  .ant-switch:is(.css-var-atlas-color-preview, [class*='css-var-atlas-color-family-']) {
+  .ant-switch:is(.css-var-genux-color-preview, [class*='css-var-genux-color-family-']) {
   --switch-on-hover-color: var(--color-preview-hover) !important;
 }
 
@@ -536,18 +536,18 @@
 .color-seed-preview .color-preview-button:not(:disabled) {
   opacity: 1;
 }
-body[data-atlas-surface='docs']
+body[data-genux-surface='docs']
   .color-seed-preview
   .ant-switch:is(
-    .css-var-atlas-color-preview,
-    [class*='css-var-atlas-color-family-']
+    .css-var-genux-color-preview,
+    [class*='css-var-genux-color-family-']
   ).ant-switch-checked:active:not(.ant-switch-disabled) {
   background: var(--color-preview-active) !important;
 }
 
 /* One composition drives the selected control handles and every hue-offset sample. */
-.color-system-lab .color-channel .atlas-slider,
-.color-system-lab .color-selected-extras .atlas-slider {
+.color-system-lab .color-channel .genux-slider,
+.color-system-lab .color-selected-extras .genux-slider {
   --slider-track-color: var(--color-live-primary);
   --slider-thumb-color: var(--color-live-primary);
   --slider-thumb-edge: var(--color-live-ink);
@@ -612,7 +612,7 @@ body[data-atlas-surface='docs']
   gap: var(--space-xs);
   min-width: 0;
 }
-.color-preview-family .color-family-slider .atlas-slider {
+.color-preview-family .color-family-slider .genux-slider {
   --slider-track-color: var(--color-family-seed);
   --slider-thumb-color: var(--color-family-seed);
   --slider-thumb-edge: var(--color-family-ink);
@@ -623,7 +623,7 @@ body[data-atlas-surface='docs']
 
 /* Live seed paint stays visible while a handle is hovered or being dragged. */
 .color-system-lab
-  .atlas-slider.ant-slider
+  .genux-slider.ant-slider
   .ant-slider-handle:not(.ant-slider-handle-disabled):is(:hover, :active)::after {
   background-color: var(--slider-thumb-color);
 }

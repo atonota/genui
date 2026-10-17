@@ -1,12 +1,12 @@
 // Offline classic-script locale layer. Canonical source and exports remain English.
-const ATLAS_TR = JSON.parse(document.getElementById('atlas-i18n-tr')?.textContent || '{}');
-const ATLAS_EN = Object.fromEntries(Object.entries(ATLAS_TR).map(([en, tr]) => [tr, en]));
-let atlasLocale = 'en';
+const GENUX_TR = JSON.parse(document.getElementById('genux-i18n-tr')?.textContent || '{}');
+const GENUX_EN = Object.fromEntries(Object.entries(GENUX_TR).map(([en, tr]) => [tr, en]));
+let genuxLocale = 'en';
 const localeTextSources = new WeakMap();
 const localeAttributeSources = new WeakMap();
 let localeObserver;
 function getLocale() {
-  return atlasLocale;
+  return genuxLocale;
 }
 function localeRegex(dictionary) {
   const escape = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -24,29 +24,29 @@ function localeRegex(dictionary) {
     'gu',
   );
 }
-const localeEnglishPattern = localeRegex(ATLAS_TR);
-const localeTurkishPattern = localeRegex(ATLAS_EN);
+const localeEnglishPattern = localeRegex(GENUX_TR);
+const localeTurkishPattern = localeRegex(GENUX_EN);
 function canonicalLocaleText(message) {
-  if (Object.hasOwn(ATLAS_TR, message)) return message;
-  if (Object.hasOwn(ATLAS_EN, message)) return ATLAS_EN[message];
+  if (Object.hasOwn(GENUX_TR, message)) return message;
+  if (Object.hasOwn(GENUX_EN, message)) return GENUX_EN[message];
   return /[çğıöşüÇĞİÖŞÜ]/.test(message)
-    ? message.replace(localeTurkishPattern, phrase => ATLAS_EN[phrase])
+    ? message.replace(localeTurkishPattern, phrase => GENUX_EN[phrase])
     : message;
 }
 function t(message, params = {}) {
   const source = String(message);
   const translated =
-    atlasLocale === 'tr'
-      ? Object.hasOwn(ATLAS_TR, source)
-        ? ATLAS_TR[source]
-        : source.replace(localeEnglishPattern, phrase => ATLAS_TR[phrase])
+    genuxLocale === 'tr'
+      ? Object.hasOwn(GENUX_TR, source)
+        ? GENUX_TR[source]
+        : source.replace(localeEnglishPattern, phrase => GENUX_TR[phrase])
       : source;
   return translated.replace(/\{(\w+)\}/g, (match, key) =>
     Object.hasOwn(params, key) ? String(params[key]) : match,
   );
 }
 function formatNumber(value, options) {
-  return new Intl.NumberFormat(atlasLocale === 'tr' ? 'tr-TR' : 'en-US', options).format(value);
+  return new Intl.NumberFormat(genuxLocale === 'tr' ? 'tr-TR' : 'en-US', options).format(value);
 }
 function normalizeSearch(value) {
   return String(value)
@@ -109,18 +109,18 @@ function localizeTree(root) {
   for (const child of root.childNodes) localizeTree(child);
 }
 function setLocale(value) {
-  atlasLocale = value === 'tr' ? 'tr' : 'en';
+  genuxLocale = value === 'tr' ? 'tr' : 'en';
   try {
-    localStorage.setItem('atlas-locale', atlasLocale);
+    localStorage.setItem('genux-locale', genuxLocale);
   } catch {}
-  document.documentElement.lang = atlasLocale;
-  document.documentElement.dataset.locale = atlasLocale;
+  document.documentElement.lang = genuxLocale;
+  document.documentElement.dataset.locale = genuxLocale;
   for (const value of ['en', 'tr'])
     document
       .getElementById('locale-' + value)
-      ?.setAttribute('aria-pressed', String(value === atlasLocale));
+      ?.setAttribute('aria-pressed', String(value === genuxLocale));
   document.dispatchEvent(
-    new CustomEvent('atlas:localechange', { detail: { locale: atlasLocale } }),
+    new CustomEvent('genux:localechange', { detail: { locale: genuxLocale } }),
   );
   localizeTree(document.documentElement);
 }
@@ -129,7 +129,7 @@ function initializeLocale() {
     document.getElementById('locale-' + value).onclick = () => setLocale(value);
   let saved;
   try {
-    saved = localStorage.getItem('atlas-locale');
+    saved = migratedStorageItem(localStorage, 'genux-locale');
   } catch {}
   setLocale(saved === 'tr' ? 'tr' : 'en');
   localeObserver = new MutationObserver(records => {

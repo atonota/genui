@@ -1,0 +1,229 @@
+/* Shared Listy row: one presentational primitive for AntD Listy and native Cascader options.
+   Height follows the central compact size family; paint, radius, type and motion resolve from
+   central roles. Rows never draw borders; only the outlined list owns one functional boundary. */
+[data-size-profile='sm'] {
+  --genux-compact-height: var(--size-compact-sm);
+}
+[data-size-profile='md'] {
+  --genux-compact-height: var(--size-compact-md);
+}
+[data-size-profile='lg'] {
+  --genux-compact-height: var(--size-compact-lg);
+}
+
+.genux-listy-frame {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+.genux-listy {
+  box-sizing: border-box;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  padding: var(--inset-control-sm, 4px);
+  border-radius: var(--radius);
+  color: var(--genux-input-text, var(--ink));
+}
+.genux-listy-inset {
+  --genux-listy-bg: var(--genux-input-field-bg, var(--field-bg));
+  border: 0;
+  background: var(--genux-listy-bg);
+  box-shadow: var(--genux-input-inner-shadow, var(--field-inner-shadow));
+}
+/* Outlined owns the single functional boundary; rows stay borderless inside it. */
+.genux-listy-outlined {
+  --genux-listy-bg: var(--genux-input-surface, var(--panel));
+  border: var(--field-border-width, 1px) solid var(--genux-input-border, var(--field-border));
+  background: var(--genux-listy-bg);
+  box-shadow: none;
+}
+/* Native sticky group headers stay opaque over scrolled rows. */
+.genux-listy-group-header {
+  box-sizing: border-box;
+  padding: var(--inset-control-sm, 4px) var(--inset-control-lg, 12px);
+  background: var(--genux-listy-bg, var(--panel));
+  color: var(--genux-input-hint, var(--muted));
+  font-size: var(--text-label, var(--text-body));
+}
+/* Cascader popups take the same central surface: one popup surface, no nested menu frames.
+   Native scroll columns and their token padding stay intact. */
+.genux-select-popup.genux-cascader-popup.genux-listy-inset,
+.genux-select-popup.genux-cascader-popup.genux-listy-outlined {
+  padding: var(--inset-control-sm, 4px);
+  border-radius: var(--radius);
+  background: var(--genux-listy-bg);
+}
+.genux-select-popup.genux-cascader-popup.genux-listy-inset {
+  border: 0;
+  box-shadow: var(--genux-input-inner-shadow, var(--field-inner-shadow));
+}
+.genux-select-popup.genux-cascader-popup.genux-listy-outlined {
+  border: var(--field-border-width, 1px) solid var(--genux-input-border, var(--field-border));
+  box-shadow: none;
+}
+.genux-select-popup.genux-cascader-popup .ant-cascader-menu,
+.genux-select-popup.genux-cascader-popup .ant-cascader-menu:not(:last-child) {
+  border: 0;
+  box-shadow: none;
+}
+/* Native Listy item slots carry block padding and a divider at higher specificity; rooted
+   selectors reset every side so the shared row alone owns compact height and growth. */
+.genux-listy-slot,
+.genux-listy.ant-listy .ant-listy-item.genux-listy-slot,
+.genux-listy.ant-listy .ant-listy-item.genux-listy-slot:not(:last-child) {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.genux-listy-item {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--inset-control-md, 8px);
+  inline-size: 100%;
+  min-inline-size: 0;
+  min-block-size: var(--genux-compact-height, var(--size-compact-md));
+  padding-inline: var(--inset-control-lg, 12px);
+  border: 0;
+  border-radius: var(--radius);
+  outline: none;
+  background: transparent;
+  color: var(--genux-input-text, var(--ink));
+  font-family: inherit;
+  font-size: var(--text-body, var(--text));
+  font-weight: inherit;
+  transition:
+    background-color var(--release-duration) var(--motion-easing),
+    box-shadow var(--release-duration) var(--motion-easing);
+}
+/* One-line simple rows hold the exact compact height; wrapped labels and tall leading media such
+   as an avatar grow the row. Description rows add block padding instead of clipping. */
+.genux-listy-item[data-layout='rich'] {
+  padding-block: var(--inset-control-md, 8px);
+}
+.genux-listy-item[data-layout='simple']:has(> .genux-listy-leading .genux-avatar) {
+  padding-block: var(--inset-control-sm, 4px);
+}
+.genux-listy-leading,
+.genux-listy-trailing {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+}
+.genux-listy-trailing {
+  margin-inline-start: auto;
+  color: var(--genux-input-hint, var(--muted));
+}
+.genux-listy-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+.genux-listy-description {
+  color: var(--genux-input-hint, var(--muted));
+}
+.genux-listy-item[data-interactive] {
+  cursor: pointer;
+}
+.genux-listy-item[data-interactive]:active {
+  transition-duration: var(--press-duration);
+}
+@media (hover: hover) {
+  .genux-listy-item[data-interactive]:hover {
+    background: var(--field-hover-bg);
+  }
+}
+.genux-listy-item[data-selected] {
+  background: var(--ant-color-primary-bg);
+}
+.genux-listy-item[data-disabled] {
+  color: var(--genux-input-disabled-text, var(--field-disabled-text));
+  cursor: not-allowed;
+}
+.genux-listy-item[data-disabled] .genux-listy-description,
+.genux-listy-item[data-disabled] .genux-listy-trailing {
+  color: inherit;
+}
+
+/* Keyboard focus uses the central list treatment (focus-01.css) and only in Tab mode: the row
+   itself or its slot host is :focus-visible, or the Cascader combobox is :focus-visible and the
+   row sits in the deepest active cell its aria-activedescendant names. Role hosts already get the
+   central marker, so they are excluded to keep a single indicator. */
+:root[data-input-modality='keyboard'] .genux-listy-item:focus-visible,
+:root[data-input-modality='keyboard']
+  .genux-listy-slot:focus-visible:not(
+    [role='option'],
+    [role='menuitem'],
+    [role='treeitem'],
+    [role='tab']
+  )
+  .genux-listy-item,
+:root[data-input-modality='keyboard']:has(.ant-cascader [role='combobox']:focus-visible)
+  .ant-cascader-menu:not(:has(~ .ant-cascader-menu .ant-cascader-menu-item-active))
+  .ant-cascader-menu-item-active
+  .genux-listy-item {
+  background-color: var(--focus-bg);
+  box-shadow: inset var(--focus-indicator-width) 0 0 0 var(--focus-indicator-color);
+}
+
+/* Native Cascader li keeps its roles and state paint; the shared row owns the geometry. */
+.ant-cascader-menu-item:has([data-genux-listy-item]) {
+  padding-block: 0;
+  padding-inline-start: 0;
+}
+
+/* Focused hosts take the central CanvasText outline; the virtual Cascader cell keeps one
+   non-enclosing start bar because forced colors drop the inset shadow. */
+@media (forced-colors: active) {
+  :root[data-input-modality='keyboard']:has(.ant-cascader [role='combobox']:focus-visible)
+    .ant-cascader-menu:not(:has(~ .ant-cascader-menu .ant-cascader-menu-item-active))
+    .ant-cascader-menu-item-active
+    .genux-listy-item {
+    border-inline-start: var(--focus-indicator-width) solid Highlight;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .genux-listy-item,
+  .genux-listy-item[data-interactive]:active {
+    transition: none;
+  }
+}
+
+/* Reference pattern sections: whitespace separates sections, controls wrap at 320px and bounded
+   native scrollers stay inside their section so the page never scrolls sideways. */
+.genux-listy-patterns,
+.genux-listy-patterns > :has(> [data-listy-pattern]) {
+  display: grid;
+  gap: var(--section-gap, var(--space-section-sm, 32px));
+  min-inline-size: 0;
+}
+.genux-listy-patterns > p {
+  margin: 0;
+}
+.genux-listy-patterns [data-listy-pattern] {
+  display: grid;
+  gap: var(--field-gap, var(--space-local-md, 16px));
+  min-inline-size: 0;
+  margin: 0;
+}
+.genux-listy-patterns [data-listy-pattern] > :is(h2, h3, h4, p) {
+  margin: 0;
+}
+/* Independent lists in one section keep the field rhythm when a wrapper hides the section grid. */
+.genux-listy-patterns :not([data-listy-pattern]) > .genux-listy-frame + .genux-listy-frame {
+  margin-block-start: var(--field-gap, var(--space-local-md, 16px));
+}
+.genux-listy-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--inset-control-md, 8px);
+  min-inline-size: 0;
+}
+.genux-listy-patterns [data-listy-pattern] [role='status'] {
+  margin: 0;
+  color: var(--genux-input-text, var(--ink));
+  font-size: var(--text-body, var(--text));
+}

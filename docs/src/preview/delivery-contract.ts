@@ -56,7 +56,7 @@ export const previewDeliveryContracts: DeliveryContracts = {
 };
 
 /** Canonical public site of the standalone preview pages when no other site base is given. */
-export const canonicalPreviewSiteBase = 'https://atonota.github.io/genui/';
+export const canonicalPreviewSiteBase = 'https://atonota.github.io/genux/';
 
 // Only absolute http(s) bases are used; the path ends in one slash so the preview route
 // resolves beneath it, and any query or hash is dropped.

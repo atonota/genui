@@ -1,12 +1,12 @@
 import type { ComponentDoc } from './catalog';
 
-/** Badge entry; AtlasBadge composes native Badge, Badge.Ribbon and Tag. */
+/** Badge entry; GenUXBadge composes native Badge, Badge.Ribbon and Tag. */
 export const badgeComponents: ComponentDoc[] = [
   {
     slug: 'badge',
     title: 'Badge',
     summary:
-      'Short status, count and label markers on shared Atlas surfaces. Labels, counts, dots and ribbons keep fixed 20, 26 and 32 px heights.',
+      'Short status, count and label markers on shared GenUX surfaces. Labels, counts, dots and ribbons keep fixed 20, 26 and 32 px heights.',
     antdComponent: 'Badge · Badge.Ribbon · Tag',
     category: 'Data display',
     sourceUrl: 'https://ant.design/components/badge/',
@@ -21,20 +21,20 @@ export const badgeComponents: ComponentDoc[] = [
         title: 'Labels, variants and sizes',
         description:
           'Label badges render native Tag with the required label. Variant, semantic tone and size are independent; status text never relies on color alone, and hideLabel keeps the label as the name of an icon-only badge.',
-        code: `import AtlasProvider from '../src/react/AtlasProvider';
-import AtlasBadge from '../src/react/AtlasBadge';
-import AtlasIcon from '../src/react/AtlasIcon';
-import '../src/styles/atlas-badge.css';
+        code: `import GenUXProvider from '../src/react/GenUXProvider';
+import GenUXBadge from '../src/react/GenUXBadge';
+import GenUXIcon from '../src/react/GenUXIcon';
+import '../src/styles/genux-badge.css';
 
 export default function BadgeLabels() {
-  return <AtlasProvider appearance="docs">
-    <AtlasBadge kind="label" variant="solid" tone="brand" size="sm" label="Live" />
-    <AtlasBadge kind="label" variant="soft" tone="info" size="md"
-      trailing={<AtlasIcon name="settings" />} label="Export request" />
-    <AtlasBadge kind="label" variant="outlined" tone="success" size="lg"
-      leading={<AtlasIcon name="check" />} label="Paid" />
-    <AtlasBadge kind="label" tone="info" label="Euro" hideLabel leading="€" />
-  </AtlasProvider>;
+  return <GenUXProvider appearance="docs">
+    <GenUXBadge kind="label" variant="solid" tone="brand" size="sm" label="Live" />
+    <GenUXBadge kind="label" variant="soft" tone="info" size="md"
+      trailing={<GenUXIcon name="settings" />} label="Export request" />
+    <GenUXBadge kind="label" variant="outlined" tone="success" size="lg"
+      leading={<GenUXIcon name="check" />} label="Paid" />
+    <GenUXBadge kind="label" tone="info" label="Euro" hideLabel leading="€" />
+  </GenUXProvider>;
 }`,
       },
       {
@@ -42,17 +42,17 @@ export default function BadgeLabels() {
         title: 'Counts and dots',
         description:
           'Count badges render native Badge and are named by label. overflowCount shortens large numbers while the accessible name keeps the actual count; showZero keeps 0 visible.',
-        code: `import AtlasProvider from '../src/react/AtlasProvider';
-import AtlasBadge from '../src/react/AtlasBadge';
-import '../src/styles/atlas-badge.css';
+        code: `import GenUXProvider from '../src/react/GenUXProvider';
+import GenUXBadge from '../src/react/GenUXBadge';
+import '../src/styles/genux-badge.css';
 
 export default function BadgeCounts() {
-  return <AtlasProvider appearance="docs">
-    <AtlasBadge kind="count" tone="danger" count={8} label="Notifications" />
-    <AtlasBadge kind="count" tone="danger" count={41} overflowCount={20} label="Notifications" />
-    <AtlasBadge kind="count" tone="neutral" count={0} showZero label="Notifications" />
-    <AtlasBadge kind="dot" tone="success" label="Online" /> <span>Online</span>
-  </AtlasProvider>;
+  return <GenUXProvider appearance="docs">
+    <GenUXBadge kind="count" tone="danger" count={8} label="Notifications" />
+    <GenUXBadge kind="count" tone="danger" count={41} overflowCount={20} label="Notifications" />
+    <GenUXBadge kind="count" tone="neutral" count={0} showZero label="Notifications" />
+    <GenUXBadge kind="dot" tone="success" label="Online" /> <span>Online</span>
+  </GenUXProvider>;
 }`,
       },
       {
@@ -61,26 +61,26 @@ export default function BadgeCounts() {
         description:
           'The page owns the count and visibility. The remove action is named and keyboard operable; a restore action brings the label back.',
         code: `import { useState } from 'react';
-import AtlasProvider from '../src/react/AtlasProvider';
-import AtlasBadge from '../src/react/AtlasBadge';
-import AtlasButton from '../src/react/AtlasButton';
-import '../src/styles/atlas-badge.css';
+import GenUXProvider from '../src/react/GenUXProvider';
+import GenUXBadge from '../src/react/GenUXBadge';
+import GenUXButton from '../src/react/GenUXButton';
+import '../src/styles/genux-badge.css';
 
 export default function ControlledBadges() {
   const [count, setCount] = useState(5);
   const [visible, setVisible] = useState(true);
-  return <AtlasProvider appearance="docs">
-    <AtlasBadge kind="count" tone="danger" count={count} label="Notifications">
-      <AtlasButton text="Inbox" fill="outline" />
-    </AtlasBadge>
-    <AtlasButton text="Add notification" onClick={() => setCount(value => value + 1)} />
-    <AtlasButton text="Remove notification" disabled={count === 0}
+  return <GenUXProvider appearance="docs">
+    <GenUXBadge kind="count" tone="danger" count={count} label="Notifications">
+      <GenUXButton text="Inbox" fill="outline" />
+    </GenUXBadge>
+    <GenUXButton text="Add notification" onClick={() => setCount(value => value + 1)} />
+    <GenUXButton text="Remove notification" disabled={count === 0}
       onClick={() => setCount(value => Math.max(0, value - 1))} />
     <p role="status" aria-live="polite">Unread notifications: {count}</p>
     {visible
-      ? <AtlasBadge kind="label" label="Euro" closeLabel="Remove Euro" onClose={() => setVisible(false)} />
-      : <AtlasButton text="Restore badge" fill="outline" onClick={() => setVisible(true)} />}
-  </AtlasProvider>;
+      ? <GenUXBadge kind="label" label="Euro" closeLabel="Remove Euro" onClose={() => setVisible(false)} />
+      : <GenUXButton text="Restore badge" fill="outline" onClick={() => setVisible(true)} />}
+  </GenUXProvider>;
 }`,
       },
       {
@@ -88,40 +88,40 @@ export default function ControlledBadges() {
         title: 'Attached badges and ribbon',
         description:
           'A count can sit on any of four corners of a button or avatar. A string or an icon element can replace the number and is named by label. The ribbon labels a content section without adding another border.',
-        code: `import AtlasProvider from '../src/react/AtlasProvider';
-import AtlasBadge from '../src/react/AtlasBadge';
-import AtlasButton from '../src/react/AtlasButton';
-import AtlasAvatar from '../src/react/AtlasAvatar';
-import AtlasIcon from '../src/react/AtlasIcon';
-import '../src/styles/atlas-badge.css';
-import '../src/styles/atlas-avatar.css';
+        code: `import GenUXProvider from '../src/react/GenUXProvider';
+import GenUXBadge from '../src/react/GenUXBadge';
+import GenUXButton from '../src/react/GenUXButton';
+import GenUXAvatar from '../src/react/GenUXAvatar';
+import GenUXIcon from '../src/react/GenUXIcon';
+import '../src/styles/genux-badge.css';
+import '../src/styles/genux-avatar.css';
 
 export default function AttachedBadges() {
-  return <AtlasProvider appearance="docs">
-    <AtlasBadge kind="count" tone="danger" count={3} placement="top-end" label="Notifications">
-      <AtlasButton text="Messages" />
-    </AtlasBadge>
-    <AtlasBadge kind="count" tone="danger" count={2} placement="bottom-start" label="Notifications">
-      <AtlasAvatar name="Deniz Kaya" />
-    </AtlasBadge>
-    <AtlasBadge kind="count" tone="success" count={<AtlasIcon name="check" />} label="Verified">
-      <AtlasAvatar name="Deniz Kaya" />
-    </AtlasBadge>
-    <AtlasBadge kind="count" tone="danger" count="HOT" label="Offer">
-      <AtlasButton text="Offers" />
-    </AtlasBadge>
-    <AtlasBadge kind="ribbon" tone="brand" label="Live">
+  return <GenUXProvider appearance="docs">
+    <GenUXBadge kind="count" tone="danger" count={3} placement="top-end" label="Notifications">
+      <GenUXButton text="Messages" />
+    </GenUXBadge>
+    <GenUXBadge kind="count" tone="danger" count={2} placement="bottom-start" label="Notifications">
+      <GenUXAvatar name="Deniz Kaya" />
+    </GenUXBadge>
+    <GenUXBadge kind="count" tone="success" count={<GenUXIcon name="check" />} label="Verified">
+      <GenUXAvatar name="Deniz Kaya" />
+    </GenUXBadge>
+    <GenUXBadge kind="count" tone="danger" count="HOT" label="Offer">
+      <GenUXButton text="Offers" />
+    </GenUXBadge>
+    <GenUXBadge kind="ribbon" tone="brand" label="Live">
       <section aria-labelledby="release-title">
         <h3 id="release-title">Release notes</h3>
         <p>Ready for review.</p>
       </section>
-    </AtlasBadge>
-  </AtlasProvider>;
+    </GenUXBadge>
+  </GenUXProvider>;
 }`,
       },
     ],
     apiDescription:
-      'AtlasBadge composes installed native Ant Design 6.6.6 Badge, Badge.Ribbon and Tag. Counts, dots and ribbons follow the Badge reference; labels and dismissal follow the Tag reference at https://ant.design/components/tag/.',
+      'GenUXBadge composes installed native Ant Design 6.6.6 Badge, Badge.Ribbon and Tag. Counts, dots and ribbons follow the Badge reference; labels and dismissal follow the Tag reference at https://ant.design/components/tag/.',
     api: [
       {
         property: 'kind',
@@ -229,7 +229,7 @@ export default function AttachedBadges() {
       'Labels, counts and dots paint fixed 20, 26 and 32 px outer heights. A dot reserves the same box around a smaller native dot.',
       'Text uses Outfit at weight 400. Corners follow the general radius role: 0, 3, 5 px or 100%, with 5 px by default.',
       'Colors come from the existing semantic palette. Motion uses the shared Cubic easing and respects reduced motion.',
-      'Uses installed Ant Design Badge and Tag; no package was added. Examples use local state only; Storybook, approved decisions and GenUI registries are unchanged.',
+      'Uses installed Ant Design Badge and Tag; no package was added. Examples use local state only; Storybook, approved decisions and GenUX registries are unchanged.',
     ],
   },
 ];

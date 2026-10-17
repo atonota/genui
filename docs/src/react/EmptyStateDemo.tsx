@@ -1,16 +1,16 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { Switch } from 'antd';
-import AtlasProvider from './AtlasProvider';
-import AtlasEmptyState from './AtlasEmptyState';
-import { TweakerSettings } from './AtlasTweaker';
-import AtlasInput from './AtlasInput';
+import GenUXProvider from './GenUXProvider';
+import GenUXEmptyState from './GenUXEmptyState';
+import { TweakerSettings } from './GenUXTweaker';
+import GenUXInput from './GenUXInput';
 import ExamplePreview from './ExamplePreview';
 import { useI18n } from './useI18n';
 import RecordCollection from './workspace/kit/RecordCollection';
 import type { FieldDefinition, ProjectionState, QueryState } from './workspace/kit/contracts';
 
 // Local example data only; nothing is fetched or persisted.
-const exampleRecord = 'Atlas research brief';
+const exampleRecord = 'GenUX research brief';
 
 type ExampleRecord = { id: string; title: string };
 
@@ -40,7 +40,7 @@ function FirstUseExample() {
   const resultRef = useFocusWhen(created);
   // The record exists only after the caller's create action; nothing is fetched or saved.
   const records: ExampleRecord[] = created
-    ? [{ id: 'atlas-research-brief', title: t(exampleRecord) }]
+    ? [{ id: 'genux-research-brief', title: t(exampleRecord) }]
     : [];
   return (
     <section aria-labelledby={headingId}>
@@ -49,7 +49,7 @@ function FirstUseExample() {
       </h3>
       <ExamplePreview id="empty-state-first-use" title={t('First-use collection')}>
         {created && (
-          <p ref={resultRef} className="atlas-empty-state-result" tabIndex={-1}>
+          <p ref={resultRef} className="genux-empty-state-result" tabIndex={-1}>
             {t('First local record created')}
           </p>
         )}
@@ -104,7 +104,7 @@ function FilteredExample({ showDescription }: { showDescription: boolean }) {
       <ExamplePreview id="empty-state-filtered" title={t('Filtered collection')}>
         <div className="form-layout-control">
           <label htmlFor={inputId}>{t('Search example records')}</label>
-          <AtlasInput id={inputId} value={query} onChange={event => setQuery(event.target.value)} />
+          <GenUXInput id={inputId} value={query} onChange={event => setQuery(event.target.value)} />
         </div>
         {matches.length > 0 ? (
           <ul>
@@ -113,7 +113,7 @@ function FilteredExample({ showDescription }: { showDescription: boolean }) {
             ))}
           </ul>
         ) : (
-          <AtlasEmptyState
+          <GenUXEmptyState
             kind="no-match"
             title={t('No matching records')}
             description={
@@ -143,7 +143,7 @@ function UnavailableExample({ showDescription }: { showDescription: boolean }) {
       <ExamplePreview id="empty-state-unavailable" title={t('Unavailable collection')}>
         {restored ? (
           <>
-            <p ref={resultRef} className="atlas-empty-state-result" tabIndex={-1}>
+            <p ref={resultRef} className="genux-empty-state-result" tabIndex={-1}>
               {t('Local records restored')}
             </p>
             <ul>
@@ -151,7 +151,7 @@ function UnavailableExample({ showDescription }: { showDescription: boolean }) {
             </ul>
           </>
         ) : (
-          <AtlasEmptyState
+          <GenUXEmptyState
             kind="error"
             title={t('The supplied records could not be shown')}
             description={
@@ -180,13 +180,13 @@ function EmptyStateExamples() {
   // Presentation only; create, search and retry stay inside the local preview.
   const [showDescriptions, setShowDescriptions] = useState(true);
   return (
-    <div className="atlas-content-examples">
+    <div className="genux-content-examples">
       <LocalExamplesNote />
       <FirstUseExample />
       <FilteredExample showDescription={showDescriptions} />
       <UnavailableExample showDescription={showDescriptions} />
       <TweakerSettings title="Empty state">
-        <div className="atlas-tweaker-token">
+        <div className="genux-tweaker-token">
           <label htmlFor={descriptionsId}>{t('Show descriptions')}</label>
           <Switch
             id={descriptionsId}
@@ -203,8 +203,8 @@ export default function EmptyStateDemo({
   documentation = false,
 }: { documentation?: boolean } = {}) {
   return (
-    <AtlasProvider appearance={documentation ? 'docs' : undefined}>
+    <GenUXProvider appearance={documentation ? 'docs' : undefined}>
       <EmptyStateExamples />
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }

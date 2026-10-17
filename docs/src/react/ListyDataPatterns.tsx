@@ -1,11 +1,11 @@
 import { useId, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Segmented, Spin, theme, type ListyProps } from 'antd';
 import type { ListyRef } from 'antd/lib/listy';
-import AtlasAvatar from './AtlasAvatar';
-import AtlasButton from './AtlasButton';
-import AtlasEmptyState from './AtlasEmptyState';
-import AtlasIcon from './AtlasIcon';
-import AtlasListy, { type AtlasListyEntry } from './AtlasListy';
+import GenUXAvatar from './GenUXAvatar';
+import GenUXButton from './GenUXButton';
+import GenUXEmptyState from './GenUXEmptyState';
+import GenUXIcon from './GenUXIcon';
+import GenUXListy, { type GenUXListyEntry } from './GenUXListy';
 import ExamplePreview from './ExamplePreview';
 import { useI18n } from './useI18n';
 
@@ -30,7 +30,7 @@ function Pattern({
 }) {
   const heading = useId();
   return (
-    <section className="atlas-listy-pattern" data-listy-pattern={id} aria-labelledby={heading}>
+    <section className="genux-listy-pattern" data-listy-pattern={id} aria-labelledby={heading}>
       <h3 id={heading}>{title}</h3>
       <p>{description}</p>
       {children}
@@ -46,7 +46,7 @@ export function ListyStepsPattern() {
   // current === steps.length means every step is complete.
   const [current, setCurrent] = useState(0);
   const finished = current >= steps.length;
-  const items: AtlasListyEntry[] = steps.map((name, index) => {
+  const items: GenUXListyEntry[] = steps.map((name, index) => {
     const state = index < current ? 'complete' : index === current ? 'current' : 'upcoming';
     return {
       key: `step-${index + 1}`,
@@ -54,7 +54,7 @@ export function ListyStepsPattern() {
       // The trailing text carries the state; the leading mark is decorative.
       leading:
         state === 'complete' ? (
-          <AtlasIcon name="check" />
+          <GenUXIcon name="check" />
         ) : (
           <span aria-hidden="true">{index + 1}</span>
         ),
@@ -72,16 +72,16 @@ export function ListyStepsPattern() {
       description={t('Each step completes in order; the current step stays selected.')}
     >
       <ExamplePreview id="listy-steps" title={t('Steps')}>
-        <AtlasListy label={t('Workspace setup steps')} items={items} />
+        <GenUXListy label={t('Workspace setup steps')} items={items} />
         <p role="status">
           {finished ? t('All steps complete') : `${t('Current step')}: ${t(steps[current]!)}`}
         </p>
-        <AtlasButton
+        <GenUXButton
           text={t('Next step')}
           disabled={finished}
           onClick={() => setCurrent(step => Math.min(step + 1, steps.length))}
         />
-        <AtlasButton
+        <GenUXButton
           text={t('Restart')}
           fill="outline"
           disabled={current === 0}
@@ -104,7 +104,7 @@ type FeedState = 'ready' | 'loading' | 'empty';
 export function ListyStatusPattern() {
   const { t } = useI18n();
   const [feed, setFeed] = useState<FeedState>('ready');
-  const items: AtlasListyEntry[] = services.map(service => ({
+  const items: GenUXListyEntry[] = services.map(service => ({
     key: service.key,
     label: t(service.label),
     trailing: t(service.state),
@@ -128,7 +128,7 @@ export function ListyStatusPattern() {
         />
         <div data-listy-state={feed} aria-busy={feed === 'loading'}>
           {feed === 'empty' ? (
-            <AtlasEmptyState
+            <GenUXEmptyState
               kind="empty"
               title={t('No services to show')}
               description={t('Switch the list state to show the sample services again.')}
@@ -137,7 +137,7 @@ export function ListyStatusPattern() {
             />
           ) : (
             <Spin spinning={feed === 'loading'}>
-              <AtlasListy label={t('Service status')} items={items} />
+              <GenUXListy label={t('Service status')} items={items} />
             </Spin>
           )}
           {/* One persistent live region; the empty state announces itself. */}
@@ -164,11 +164,11 @@ const people = [
 /** Avatar rows: the visible name labels the row, so the avatar stays decorative. */
 export function ListyRichPattern() {
   const { t } = useI18n();
-  const items: AtlasListyEntry[] = people.map(person => ({
+  const items: GenUXListyEntry[] = people.map(person => ({
     key: person.key,
     label: person.name,
     description: t(person.role),
-    leading: <AtlasAvatar name={person.name} decorative />,
+    leading: <GenUXAvatar name={person.name} decorative />,
   }));
   return (
     <Pattern
@@ -177,7 +177,7 @@ export function ListyRichPattern() {
       description={t('Rows with an avatar and a description grow instead of clipping.')}
     >
       <ExamplePreview id="listy-rich" title={t('Rich content')}>
-        <AtlasListy label={t('Team members')} items={items} />
+        <GenUXListy label={t('Team members')} items={items} />
       </ExamplePreview>
     </Pattern>
   );
@@ -221,11 +221,11 @@ export function ListyMarketPattern() {
     () => new Intl.NumberFormat(locale, { style: 'currency', currency: 'USD' }),
     [locale],
   );
-  const items: AtlasListyEntry[] = products.map(product => ({
+  const items: GenUXListyEntry[] = products.map(product => ({
     key: product.key,
     label: t(product.label),
     description: t(product.description),
-    leading: <AtlasIcon name={product.icon} />,
+    leading: <GenUXIcon name={product.icon} />,
     trailing: currency.format(product.price),
   }));
   return (
@@ -235,7 +235,7 @@ export function ListyMarketPattern() {
       description={t('Sample catalog with prices; nothing is purchased.')}
     >
       <ExamplePreview id="listy-market" title={t('Market')}>
-        <AtlasListy label={t('Products')} items={items} />
+        <GenUXListy label={t('Products')} items={items} />
       </ExamplePreview>
     </Pattern>
   );
@@ -261,18 +261,18 @@ const teamChannels = teams.flatMap(team =>
     channel,
   })),
 );
-// Native group keys resolve through the stable row key; entries stay plain AtlasListyEntry.
+// Native group keys resolve through the stable row key; entries stay plain GenUXListyEntry.
 const teamOf = new Map<string, string>(teamChannels.map(row => [row.key, row.team]));
 
 /** Native grouping with sticky headers inside a bounded scroller. */
 export function ListyGroupedPattern() {
   const { t } = useI18n();
   const height = useBoundedHeight(visibleRows.grouped);
-  const items: AtlasListyEntry[] = teamChannels.map(row => ({
+  const items: GenUXListyEntry[] = teamChannels.map(row => ({
     key: row.key,
     label: t(row.channel),
   }));
-  const group: ListyProps<AtlasListyEntry, string>['group'] = {
+  const group: ListyProps<GenUXListyEntry, string>['group'] = {
     key: item => teamOf.get(item.key) ?? teams[0],
     title: key => t(key),
   };
@@ -283,14 +283,14 @@ export function ListyGroupedPattern() {
       description={t('Team headers stay pinned while their channels scroll.')}
     >
       <ExamplePreview id="listy-grouped" title={t('Grouped')}>
-        <AtlasListy
+        <GenUXListy
           label={t('Channels by team')}
           items={items}
           group={group}
           sticky
           virtual={false}
           height={height}
-          classNames={() => ({ groupHeader: 'atlas-listy-group-header atlas-listy-team-header' })}
+          classNames={() => ({ groupHeader: 'genux-listy-group-header genux-listy-team-header' })}
         />
       </ExamplePreview>
     </Pattern>
@@ -306,7 +306,7 @@ export function ListyVirtualPattern() {
   const listRef = useRef<ListyRef>(null);
   const [jumped, setJumped] = useState(false);
   const word = t('Record');
-  const records = useMemo<AtlasListyEntry[]>(
+  const records = useMemo<GenUXListyEntry[]>(
     () =>
       Array.from({ length: recordCount }, (_, index) => ({
         key: `record-${index + 1}`,
@@ -321,7 +321,7 @@ export function ListyVirtualPattern() {
       description={t('Ten thousand rows; only the visible rows are rendered.')}
     >
       <ExamplePreview id="listy-virtual" title={t('Virtual')}>
-        <AtlasButton
+        <GenUXButton
           text={t('Jump to last item')}
           fill="outline"
           onClick={() => {
@@ -329,7 +329,7 @@ export function ListyVirtualPattern() {
             setJumped(true);
           }}
         />
-        <AtlasListy
+        <GenUXListy
           ref={listRef}
           label={t('Records')}
           items={records}

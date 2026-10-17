@@ -8,24 +8,30 @@ on:
       - 'src/**'
       - 'tools/docs-*'
       - 'tools/adaptive-styles*'
+      - 'tools/fab-motion-guard.mjs'
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/adaptive-ui.yml'
+      - '.github/workflows/pages.yml'
   pull_request:
     paths:
       - 'docs/**'
       - 'src/**'
       - 'tools/docs-*'
       - 'tools/adaptive-styles*'
+      - 'tools/fab-motion-guard.mjs'
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/adaptive-ui.yml'
+      - '.github/workflows/pages.yml'
+  # Pages calls this workflow so a deploy needs every gate on its own revision.
+  workflow_call:
 
 permissions:
   contents: read
 
 concurrency:
-  group: adaptive-ui-${{ github.ref }}
+  group: adaptive-ui-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -45,6 +51,8 @@ jobs:
         run: node --test docs/tests/decision-admission.test.mjs
       - name: Adaptive contract tests
         run: npm run docs:adaptive:test
+      - name: FAB contract and motion gates
+        run: node --test docs/tests/fab.test.mjs docs/tests/component-motion.test.mjs docs/tests/interaction-stability.test.mjs
       - name: Docs format
         run: npm run docs:format
       - name: Docs lint
@@ -60,7 +68,11 @@ jobs:
       - name: Adaptive browser tests
         run: npm run docs:adaptive:browser
         env:
-          ATLAS_SOURCE_STAGE: ci
+          GENUX_SOURCE_STAGE: ci
+      - name: FAB browser tests
+        run: npx playwright test --config docs/browser/fab.config.ts
+        env:
+          GENUX_SOURCE_STAGE: ci
       - name: Upload adaptive browser evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

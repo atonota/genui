@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Select } from 'antd';
-import AtlasButton from '../../AtlasButton';
-import AtlasPagination from '../../AtlasPagination';
+import GenUXButton from '../../GenUXButton';
+import GenUXPagination from '../../GenUXPagination';
 import { useI18n } from '../../useI18n';
 import { presentFieldValue, queryKitRecords } from '../../../data/field-kit';
 import { selectedLabel } from '../../selectedLabel';
@@ -240,7 +240,7 @@ export function RecordCollection<R extends RecordIdentity>(props: RecordCollecti
       )}
       {!firstUse && (
         <>
-          <AtlasButton
+          <GenUXButton
             fill="text"
             aria-expanded={toolsOpen}
             text={t('View settings')}
@@ -298,7 +298,7 @@ export function RecordCollection<R extends RecordIdentity>(props: RecordCollecti
         <div className="kit-collection-results">
           <StateSurface state={state}>
             <ViewAdapter {...props} records={page.records} onQueryChange={changeQuery} />
-            <AtlasPagination
+            <GenUXPagination
               current={page.page}
               total={scoped.length}
               pageSize={page.size}

@@ -10,13 +10,13 @@ import {
   type ReactNode,
 } from 'react';
 import { Button, Checkbox, ConfigProvider, Radio, Select, Switch, theme } from 'antd';
-import Input from '../AtlasInput';
-import InputNumber from '../AtlasInputNumber';
-import Segmented from '../AtlasSegmented';
-import AtlasProvider from '../AtlasProvider';
-import AtlasButton from '../AtlasButton';
-import AtlasSlider from '../AtlasSlider';
-import AtlasPill from '../AtlasPill';
+import Input from '../GenUXInput';
+import InputNumber from '../GenUXInputNumber';
+import Segmented from '../GenUXSegmented';
+import GenUXProvider from '../GenUXProvider';
+import GenUXButton from '../GenUXButton';
+import GenUXSlider from '../GenUXSlider';
+import GenUXPill from '../GenUXPill';
 import ColorFamilyPreview from './ColorFamilyPreview';
 import { colorPreviewFamilies, colorPreviewTheme } from '../../data/color-preview';
 import { useI18n } from '../useI18n';
@@ -122,7 +122,7 @@ function ColorChannel({
       </div>
       <div className="color-channel-rail">
         <Spectrum colors={colors} />
-        <AtlasSlider
+        <GenUXSlider
           min={min}
           max={max}
           step={step}
@@ -254,22 +254,22 @@ function SeedPreview({ selection }: { selection: ColorSelection }) {
         </label>
         <Button
           type="primary"
-          className="atlas-button color-preview-button"
+          className="genux-button color-preview-button"
           onClick={() => setResult(true)}
         >
           {t('Preview action')}
         </Button>
       </div>
       <div className="color-selected-extras">
-        <div className="atlas-pill-list">
-          <AtlasPill
+        <div className="genux-pill-list">
+          <GenUXPill
             styles={{
               root: { backgroundColor: token.colorPrimary, color: contrastInk(token.colorPrimary) },
             }}
           >
             {t('Selected color')}
-          </AtlasPill>
-          <AtlasPill color="success">{t('Success')}</AtlasPill>
+          </GenUXPill>
+          <GenUXPill color="success">{t('Success')}</GenUXPill>
         </div>
         <Checkbox checked={checked} onChange={event => setChecked(event.target.checked)}>
           {t('Include archived')}
@@ -287,7 +287,7 @@ function SeedPreview({ selection }: { selection: ColorSelection }) {
           <p>
             {t('Preview amount')} · {amount}
           </p>
-          <AtlasSlider
+          <GenUXSlider
             value={amount}
             onChange={setAmount}
             ariaLabelForHandle={t('Preview amount')}
@@ -374,7 +374,7 @@ function ColorSystemWorkbench() {
   useLayoutEffect(beginThemePaint, [selection.mode, converted.seedHex]);
   const source = presetStatus(selection);
   const preview = useMemo(
-    () => colorPreviewTheme(converted.seedHex, selection.mode, 'css-var-atlas-color-preview'),
+    () => colorPreviewTheme(converted.seedHex, selection.mode, 'css-var-genux-color-preview'),
     [converted.seedHex, selection.mode],
   );
   const computedRoles = preview.roles;
@@ -498,7 +498,7 @@ function ColorSystemWorkbench() {
       );
       const link = document.createElement('a');
       link.href = url;
-      link.download = 'atlas-color-selection.json';
+      link.download = 'genux-color-selection.json';
       document.body.append(link);
       link.click();
       link.remove();
@@ -576,7 +576,7 @@ function ColorSystemWorkbench() {
     >
       <div className="color-workbench-heading">
         <h2>{t('Choose a color')}</h2>
-        <AtlasButton
+        <GenUXButton
           fill="text"
           text={t('Reset color')}
           onClick={() => update(resetColorSelection(selection))}
@@ -585,7 +585,7 @@ function ColorSystemWorkbench() {
       <div className="color-workbench-grid">
         <section className="color-controls" aria-label={t('Color selection controls')}>
           <Segmented
-            className="atlas-segmented color-method color-selection-method"
+            className="genux-segmented color-method color-selection-method"
             block
             name={`${id}-method`}
             value={selection.selectionMode}
@@ -619,7 +619,7 @@ function ColorSystemWorkbench() {
                   <div className="color-hue-window" aria-hidden="true">
                     {hueWindowSegments(selection.anchor).map((segment, index) => (
                       <span
-                        className="atlas-motion-layer"
+                        className="genux-motion-layer"
                         key={index}
                         style={css({
                           '--window-left': `${segment.left}%`,
@@ -654,7 +654,7 @@ function ColorSystemWorkbench() {
                   </div>
                   <div className="color-channel-rail">
                     <Spectrum colors={fineSpectrum} />
-                    <AtlasSlider
+                    <GenUXSlider
                       min={-36}
                       max={36}
                       step={0.1}
@@ -673,7 +673,7 @@ function ColorSystemWorkbench() {
                   </div>
                   <div className="color-channel-footer">
                     <span className="color-caption">{t('72° window · 5× magnification')}</span>
-                    <AtlasButton
+                    <GenUXButton
                       fill="text"
                       text={t('Center fine hue')}
                       onClick={() => update(setFineOffset(selection, 0))}
@@ -794,7 +794,7 @@ function ColorSystemWorkbench() {
               {compositionBoundaries.map(boundary => (
                 <span
                   key={boundary.id}
-                  className="color-composition-marker atlas-motion-layer"
+                  className="color-composition-marker genux-motion-layer"
                   data-boundary={boundary.id}
                   data-position={boundary.position}
                   data-visible={boundary.visible}
@@ -820,21 +820,21 @@ function ColorSystemWorkbench() {
               ))}
               <div className="color-composition-strip">
                 <span
-                  className="atlas-motion-layer"
+                  className="genux-motion-layer"
                   style={css({
                     '--composition-share': `${converted.pureShare}%`,
                     '--composition-color': hwbToHex(converted.h, 0, 0),
                   })}
                 />
                 <span
-                  className="atlas-motion-layer"
+                  className="genux-motion-layer"
                   style={css({
                     '--composition-share': `${converted.effectiveW}%`,
                     '--composition-color': '#FFFFFF',
                   })}
                 />
                 <span
-                  className="atlas-motion-layer"
+                  className="genux-motion-layer"
                   style={css({
                     '--composition-share': `${converted.effectiveB}%`,
                     '--composition-color': '#000000',
@@ -913,7 +913,7 @@ function ColorSystemWorkbench() {
             <div className="color-section-heading">
               <h3 id={`${id}-palette`}>{t('Ant Design color palette')}</h3>
               <Segmented
-                className="atlas-segmented"
+                className="genux-segmented"
                 name={`${id}-theme`}
                 aria-label={t('Preview theme')}
                 tabIndex={-1}
@@ -964,7 +964,7 @@ function ColorSystemWorkbench() {
         <div className="color-section-heading">
           <h2 id={`${id}-export`}>{t('Use this color system')}</h2>
           <Segmented
-            className="atlas-segmented"
+            className="genux-segmented"
             name={`${id}-export-kind`}
             aria-label={t('Output format')}
             tabIndex={-1}
@@ -979,14 +979,14 @@ function ColorSystemWorkbench() {
           />
         </div>
         <div className="color-actions">
-          <AtlasButton text={t('Copy output')} onClick={() => void copy()} />
-          <AtlasButton fill="text" text={t('Download JSON')} onClick={download} />
-          <AtlasButton
+          <GenUXButton text={t('Copy output')} onClick={() => void copy()} />
+          <GenUXButton fill="text" text={t('Download JSON')} onClick={download} />
+          <GenUXButton
             fill="text"
             text={t('Import JSON')}
             onClick={() => fileRef.current?.click()}
           />
-          <AtlasButton
+          <GenUXButton
             id={`${id}-save-selection`}
             fill="text"
             text={t('Save selection')}
@@ -1044,7 +1044,7 @@ function ColorSystemWorkbench() {
                   />
                   <code>{convertedItem.seedHex}</code>
                   <span>{convertedItem.hwb}</span>
-                  <AtlasButton
+                  <GenUXButton
                     data-saved-load=""
                     fill="text"
                     text={t('Load selection {number}', { number: index + 1 })}
@@ -1053,7 +1053,7 @@ function ColorSystemWorkbench() {
                       setNotice({ message: 'Saved selection loaded.' });
                     }}
                   />
-                  <AtlasButton
+                  <GenUXButton
                     fill="text"
                     text={t('Remove selection {number}', { number: index + 1 })}
                     onClick={() => removeSelection(index)}
@@ -1074,8 +1074,8 @@ export default function ColorSystemDemo({
   documentation = false,
 }: { documentation?: boolean } = {}) {
   return (
-    <AtlasProvider appearance={documentation ? 'docs' : undefined}>
+    <GenUXProvider appearance={documentation ? 'docs' : undefined}>
       <ColorSystemWorkbench />
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }

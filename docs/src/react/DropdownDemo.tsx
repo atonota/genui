@@ -1,16 +1,16 @@
 import { useId, useState } from 'react';
 import { Switch, type DropdownProps, type MenuProps } from 'antd';
-import AtlasProvider from './AtlasProvider';
-import { TweakerSettings } from './AtlasTweaker';
+import GenUXProvider from './GenUXProvider';
+import { TweakerSettings } from './GenUXTweaker';
 import ExamplePreview from './ExamplePreview';
-import AtlasDropdown from './AtlasDropdown';
-import AtlasIcon from './AtlasIcon';
-import AtlasPill from './AtlasPill';
+import GenUXDropdown from './GenUXDropdown';
+import GenUXIcon from './GenUXIcon';
+import GenUXPill from './GenUXPill';
 import { useI18n } from './useI18n';
 
 const quietClassNames: DropdownProps['classNames'] = {
-  root: 'atlas-dropdown-quiet',
-  item: 'atlas-dropdown-quiet-item',
+  root: 'genux-dropdown-quiet',
+  item: 'genux-dropdown-quiet-item',
 };
 const quietStyles: DropdownProps['styles'] = {
   root: { borderRadius: 'var(--radius)' },
@@ -18,8 +18,8 @@ const quietStyles: DropdownProps['styles'] = {
   itemTitle: { color: 'var(--ink)' },
 };
 const contextClassNames: DropdownProps['classNames'] = ({ props }) => ({
-  root: `atlas-dropdown-context${props.open ? ' atlas-dropdown-context-open' : ''}`,
-  itemContent: 'atlas-dropdown-context-content',
+  root: `genux-dropdown-context${props.open ? ' genux-dropdown-context-open' : ''}`,
+  itemContent: 'genux-dropdown-context-content',
 });
 const contextStyles: DropdownProps['styles'] = ({ props }) => ({
   root: { boxShadow: props.open ? 'var(--shadow-soft)' : 'var(--shadow-contact)' },
@@ -53,14 +53,14 @@ function DropdownExamples({ documentation = false }: { documentation?: boolean }
     {
       key: 'save',
       label: t(saved ? 'Remove from local collection' : 'Save to local collection'),
-      icon: <AtlasIcon name="check" />,
+      icon: <GenUXIcon name="check" />,
     },
-    { key: 'note', label: t('Add review note'), icon: <AtlasIcon name="plus" /> },
+    { key: 'note', label: t('Add review note'), icon: <GenUXIcon name="plus" /> },
     {
       key: 'publish',
       label: t('Publish remotely'),
       disabled: true,
-      icon: <AtlasIcon name="arrowRight" />,
+      icon: <GenUXIcon name="arrowRight" />,
     },
     { type: 'divider' },
     {
@@ -68,20 +68,20 @@ function DropdownExamples({ documentation = false }: { documentation?: boolean }
       label: t('Clear local notes'),
       danger: true,
       disabled: notes.length === 0,
-      icon: <AtlasIcon name="trash" />,
+      icon: <GenUXIcon name="trash" />,
     },
   ];
   const reviewActions: NonNullable<MenuProps['items']> = [
     {
       key: 'review',
       label: t('Mark ready for review'),
-      icon: <AtlasIcon name="check" />,
+      icon: <GenUXIcon name="check" />,
       disabled: phase === 'review',
     },
     {
       key: 'draft',
       label: t('Return to draft'),
-      icon: <AtlasIcon name="reload" />,
+      icon: <GenUXIcon name="reload" />,
       disabled: phase === 'draft',
     },
     { type: 'divider' },
@@ -96,7 +96,7 @@ function DropdownExamples({ documentation = false }: { documentation?: boolean }
         {
           key: 'move',
           label: t('Move to folder'),
-          icon: <AtlasIcon name="arrowRight" />,
+          icon: <GenUXIcon name="arrowRight" />,
           children: [
             { key: 'planning', label: t('Planning') },
             { key: 'delivery', label: t('Delivery') },
@@ -105,7 +105,7 @@ function DropdownExamples({ documentation = false }: { documentation?: boolean }
         {
           key: 'access',
           label: t('Access settings'),
-          icon: <AtlasIcon name="lock-simple" />,
+          icon: <GenUXIcon name="lock-simple" />,
           disabled: true,
           children: [{ key: 'permissions', label: t('Manage access') }],
         },
@@ -116,7 +116,7 @@ function DropdownExamples({ documentation = false }: { documentation?: boolean }
       key: 'inbox',
       label: t('Reset local organization'),
       danger: true,
-      icon: <AtlasIcon name="reload" />,
+      icon: <GenUXIcon name="reload" />,
     },
   ];
   const onAction = (key: string) => {
@@ -157,7 +157,7 @@ function DropdownExamples({ documentation = false }: { documentation?: boolean }
     showIcons ? items : withoutIcons(items);
   const settings = documentation ? (
     <TweakerSettings title="Dropdown settings">
-      <div className="atlas-tweaker-token">
+      <div className="genux-tweaker-token">
         <label htmlFor={`${settingsId}icons`}>{t('Show menu icons')}</label>
         <Switch
           id={`${settingsId}icons`}
@@ -178,11 +178,11 @@ function DropdownExamples({ documentation = false }: { documentation?: boolean }
       <div className="dropdown-local-context">
         <div>
           <p className="eyebrow">{t('Local workspace')}</p>
-          <h3>Atlas Studio</h3>
+          <h3>GenUX Studio</h3>
         </div>
         <div className="dropdown-facts">
-          <AtlasPill color={phase === 'draft' ? 'default' : 'success'}>{phaseLabel}</AtlasPill>
-          <AtlasPill color="processing">{folderLabel}</AtlasPill>
+          <GenUXPill color={phase === 'draft' ? 'default' : 'success'}>{phaseLabel}</GenUXPill>
+          <GenUXPill color="processing">{folderLabel}</GenUXPill>
           <span>{t(saved ? 'In your collection' : 'Not saved')}</span>
         </div>
         <p className="dropdown-status" role="status" aria-live="polite">
@@ -205,7 +205,7 @@ function DropdownExamples({ documentation = false }: { documentation?: boolean }
         </header>
         <ExamplePreview id="dropdown-basic-actions" title={t('Basic actions')}>
           <div className="dropdown-stage">
-            <AtlasDropdown
+            <GenUXDropdown
               label={t('Workspace actions')}
               items={menu(actions)}
               onAction={onAction}
@@ -243,7 +243,7 @@ function DropdownExamples({ documentation = false }: { documentation?: boolean }
             <div className="dropdown-stage">
               <h4>{t('Quiet tools')}</h4>
               <p>{t('A neutral menu for everyday work.')}</p>
-              <AtlasDropdown
+              <GenUXDropdown
                 label={t('Review tools')}
                 items={menu(reviewActions)}
                 onAction={onAction}
@@ -254,7 +254,7 @@ function DropdownExamples({ documentation = false }: { documentation?: boolean }
             <div className="dropdown-stage">
               <h4>{t('Contextual actions')}</h4>
               <p>{t('A soft accent keeps this review menu connected to its workspace.')}</p>
-              <AtlasDropdown
+              <GenUXDropdown
                 label={t('Review options')}
                 items={menu(reviewActions)}
                 onAction={onAction}
@@ -281,7 +281,7 @@ function DropdownExamples({ documentation = false }: { documentation?: boolean }
         </header>
         <ExamplePreview id="dropdown-cascading-menu" title={t('Cascading menu')}>
           <div className="dropdown-stage">
-            <AtlasDropdown
+            <GenUXDropdown
               label={t('Organize workspace')}
               items={menu(organization)}
               onAction={onAction}
@@ -300,8 +300,8 @@ function DropdownExamples({ documentation = false }: { documentation?: boolean }
 
 export default function DropdownDemo({ documentation = false }: { documentation?: boolean } = {}) {
   return (
-    <AtlasProvider appearance={documentation ? 'docs' : undefined}>
+    <GenUXProvider appearance={documentation ? 'docs' : undefined}>
       <DropdownExamples documentation={documentation} />
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }

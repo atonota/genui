@@ -1,0 +1,343 @@
+/* Feedback family: native AntD 6 message, notification, Alert, Modal and Popconfirm.
+   Colors, radius, spacing and motion come from the shared GenUX variables; the
+   layer (--feedback-layer) is set on GenUXFeedbackScope from the central layer order. */
+.genux-demo {
+  --feedback-offset: var(--space-md);
+  --feedback-inline-size: min(20rem, calc(100vw - 2 * var(--page-gutter)));
+  --feedback-motion-duration: var(--motion-duration-standard);
+}
+.genux-feedback-demo {
+  min-width: 0;
+}
+.genux-feedback-scope {
+  display: grid;
+  gap: var(--space-lg);
+  min-width: 0;
+}
+/* Portal targets and holders add no boxes; their layers are fixed or absolute. */
+.genux-feedback-portal,
+.genux-feedback-layer {
+  display: contents;
+}
+.genux-feedback-result {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text);
+}
+.genux-feedback-stack {
+  display: grid;
+  gap: var(--space-md);
+  min-width: 0;
+}
+.genux-feedback-list {
+  margin: 0 0 var(--space-md);
+  color: var(--ink);
+}
+.genux-feedback-icon {
+  flex: none;
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+}
+.genux-feedback-icon[data-status='info'] {
+  color: var(--accent);
+}
+.genux-feedback-icon[data-status='success'] {
+  color: var(--success);
+}
+.genux-feedback-icon[data-status='warning'] {
+  color: var(--warning);
+}
+.genux-feedback-icon[data-status='error'] {
+  color: var(--error);
+}
+
+/* Toast regions: viewport-fixed frames; layout containment makes each native
+   fixed message list position inside its own frame. */
+.genux-toast-region {
+  position: fixed;
+  z-index: var(--feedback-layer);
+  inset-block-start: var(--feedback-offset);
+  inline-size: var(--feedback-inline-size);
+  block-size: 0;
+  contain: layout;
+  pointer-events: none;
+}
+.genux-toast-region[data-toast-placement='top-center'] {
+  inset-inline: 0;
+  margin-inline: auto;
+}
+.genux-toast-region:is(
+  [data-toast-placement='top-right-top'],
+  [data-toast-placement='top-right-right']
+) {
+  inset-inline-end: var(--page-gutter);
+}
+.genux-toast-region .ant-message-notice {
+  text-align: center;
+}
+.genux-toast-region:not([data-toast-placement='top-center']) .ant-message-notice {
+  text-align: end;
+}
+/* Native AntD 6 notice wrapper, named through the documented classNames.wrapper.
+   It starts at the inherited size-profile height and grows with wrapped text. */
+.genux-toast-region .genux-toast-content {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  max-inline-size: 100%;
+  min-block-size: var(--genux-component-height, var(--target-min));
+  padding: var(--space-sm) var(--space-md);
+  color: var(--ink);
+  background: var(--panel);
+  border: 0;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: var(--text);
+  line-height: var(--line-height);
+  text-align: start;
+  pointer-events: auto;
+}
+
+/* Branded toast motion: both directions use the shared duration and Cubic easing. */
+@keyframes genux-toast-in-top {
+  from {
+    opacity: 0;
+    transform: translateY(calc(-1 * var(--feedback-offset)));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes genux-toast-out-top {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(calc(-1 * var(--feedback-offset)));
+  }
+}
+@keyframes genux-toast-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(var(--feedback-offset));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes genux-toast-out-right {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateX(var(--feedback-offset));
+  }
+}
+.genux-toast-from-top-appear,
+.genux-toast-from-top-enter,
+.genux-toast-from-top-leave,
+.genux-toast-from-right-appear,
+.genux-toast-from-right-enter,
+.genux-toast-from-right-leave {
+  animation-duration: var(--feedback-motion-duration);
+  animation-timing-function: var(--motion-easing);
+  animation-delay: var(--motion-delay);
+  animation-fill-mode: both;
+  animation-play-state: paused;
+}
+.genux-toast-from-top-appear,
+.genux-toast-from-top-enter,
+.genux-toast-from-right-appear,
+.genux-toast-from-right-enter {
+  opacity: 0;
+}
+.genux-toast-from-top-appear.genux-toast-from-top-appear-active,
+.genux-toast-from-top-enter.genux-toast-from-top-enter-active {
+  animation-name: genux-toast-in-top;
+  animation-play-state: running;
+}
+.genux-toast-from-top-leave.genux-toast-from-top-leave-active {
+  animation-name: genux-toast-out-top;
+  animation-play-state: running;
+}
+.genux-toast-from-right-appear.genux-toast-from-right-appear-active,
+.genux-toast-from-right-enter.genux-toast-from-right-enter-active {
+  animation-name: genux-toast-in-right;
+  animation-play-state: running;
+}
+.genux-toast-from-right-leave.genux-toast-from-right-leave-active {
+  animation-name: genux-toast-out-right;
+  animation-play-state: running;
+}
+
+/* Notification: central toast layer, bounded borderless panel with the Card radius. */
+.genux-notification-region .ant-notification {
+  z-index: var(--feedback-layer);
+}
+.genux-notification-region .ant-notification-notice {
+  inline-size: var(--feedback-inline-size);
+  max-inline-size: 100%;
+  padding: var(--space-md);
+  color: var(--ink);
+  background: var(--panel);
+  border: 0;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: var(--text);
+  line-height: var(--line-height);
+}
+.genux-notification-region .ant-notification-notice-title {
+  margin-inline-end: var(--target-min);
+  color: var(--ink);
+  font-size: var(--text);
+  font-weight: var(--font-weight-label, 400);
+}
+.genux-notification-region .ant-notification-notice-description {
+  color: var(--muted);
+  font-size: var(--text);
+}
+.genux-notification-region .ant-notification-notice-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  margin-block-start: var(--space-sm);
+}
+
+/* Alert: persistent, borderless, tone from shared status variables. */
+.genux-demo .genux-alert.ant-alert {
+  --alert-tone: var(--accent);
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  color: var(--ink);
+  background: color-mix(in srgb, var(--alert-tone) 12%, var(--panel));
+  border: 0;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: var(--text);
+  line-height: var(--line-height);
+}
+.genux-demo .genux-alert-success.ant-alert {
+  --alert-tone: var(--success);
+}
+.genux-demo .genux-alert-warning.ant-alert {
+  --alert-tone: var(--warning);
+}
+.genux-demo .genux-alert-error.ant-alert {
+  --alert-tone: var(--error);
+}
+.genux-demo .genux-alert .ant-alert-title {
+  color: var(--ink);
+  font-size: var(--text);
+  font-weight: var(--font-weight-label, 400);
+}
+.genux-demo .genux-alert .ant-alert-description {
+  color: var(--ink);
+  font-size: var(--text);
+}
+.genux-demo .genux-alert .ant-alert-close-icon {
+  position: relative;
+  margin: calc(-1 * var(--space-sm)) calc(-1 * var(--space-sm)) 0 0;
+}
+
+/* Modal: native dialog, Card radius and panel surface. */
+.genux-feedback-modal .ant-modal-container {
+  color: var(--ink);
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: var(--space-lg);
+  font-family: var(--font-body);
+  font-size: var(--text);
+}
+.genux-feedback-modal .ant-modal-header {
+  background: transparent;
+}
+.genux-feedback-modal .ant-modal-title {
+  color: var(--ink);
+  font-size: var(--text-large, 1.125rem);
+  font-weight: var(--font-weight-label, 400);
+}
+.genux-feedback-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+}
+
+/* Popconfirm: contextual panel with 48px native buttons. */
+.genux-popconfirm .ant-popover-inner {
+  max-inline-size: var(--feedback-inline-size);
+  padding: var(--space-md);
+  color: var(--ink);
+  background: var(--panel);
+  border-radius: var(--radius);
+}
+.genux-popconfirm :is(.ant-popconfirm-title, .ant-popconfirm-description) {
+  color: var(--ink);
+  font-size: var(--text);
+}
+.genux-popconfirm .ant-popconfirm-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  margin-block-start: var(--space-md);
+}
+.genux-popconfirm .ant-popconfirm-buttons .ant-btn {
+  min-block-size: var(--target-min);
+  margin-inline-start: 0;
+  padding-inline: var(--space-md);
+  font-size: var(--text);
+}
+
+/* Native close buttons: 48px targets, no surrounding ring, immediate bottom cue. */
+.genux-demo :is(.ant-notification-notice-close, .ant-modal-close, .ant-alert-close-icon) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--target-min);
+  block-size: var(--target-min);
+  color: var(--muted);
+  border-radius: var(--radius);
+}
+.genux-demo
+  :is(
+    .ant-notification-notice-close,
+    .ant-modal-close,
+    .ant-alert-close-icon,
+    .genux-popconfirm .ant-btn
+  ):focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+.genux-demo
+  :is(
+    .ant-notification-notice-close,
+    .ant-modal-close,
+    .ant-alert-close-icon,
+    .genux-popconfirm .ant-btn
+  ):focus-visible::after {
+  /* Generated only while focused, so the marker has no prior style to animate from. */
+  content: '';
+  position: absolute;
+  inset-inline: var(--space-xs);
+  inset-block-end: 0;
+  block-size: var(--focus-marker);
+  background: var(--focus-color);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .genux-demo {
+    /* Near-zero keeps native animationend lifecycle events firing. */
+    --feedback-motion-duration: 0.01ms;
+  }
+}

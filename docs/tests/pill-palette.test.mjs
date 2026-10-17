@@ -7,7 +7,7 @@ test('documentation Pills use ordered native Tag fills and retain colors when an
   const h = await mountPattern('default', 'docs/src/react/PillDemo.tsx', { documentation: true });
   t.after(() => h.dispose());
   const basic = h.document.querySelector('[data-pill-removable]');
-  const pills = [...basic.querySelectorAll('.atlas-pill')];
+  const pills = [...basic.querySelectorAll('.genux-pill')];
   assert.deepEqual(
     pills.map(e => e.dataset.pillColor),
     ['red', 'red-orange', 'orange'],
@@ -18,14 +18,14 @@ test('documentation Pills use ordered native Tag fills and retain colors when an
   assert.equal(heading.textContent, 'Color sequence · 75% white / 5% black');
   const remaining = pills[2];
   const fill = remaining.style.getPropertyValue('--pill-bg');
-  await h.click(pills[1].querySelector('.atlas-pill-close'));
-  assert.equal(basic.querySelectorAll('.atlas-pill').length, 2);
-  assert.equal(basic.querySelectorAll('.atlas-pill')[1], remaining);
+  await h.click(pills[1].querySelector('.genux-pill-close'));
+  assert.equal(basic.querySelectorAll('.genux-pill').length, 2);
+  assert.equal(basic.querySelectorAll('.genux-pill')[1], remaining);
   assert.equal(remaining.style.getPropertyValue('--pill-bg'), fill);
   for (const mode of ['dark', 'light']) {
     await h.act(() => {
       h.document.documentElement.dataset.theme = mode;
-      h.window.dispatchEvent(new h.window.Event('atlas-theme-change'));
+      h.window.dispatchEvent(new h.window.Event('genux-theme-change'));
     });
     assert.equal(remaining.style.getPropertyValue('--pill-bg'), fill);
   }
@@ -40,12 +40,12 @@ test('documentation Select tags retain ordered colors across removal and typed t
   });
   t.after(() => h.dispose());
   const owner = h.document.querySelector('#select-multiple').closest('.ant-select');
-  const pills = [...owner.querySelectorAll('.atlas-pill')];
+  const pills = [...owner.querySelectorAll('.genux-pill')];
   const initialColors = pills.map(e => e.dataset.pillColor);
   assert.equal(new Set(initialColors).size, 2);
   assert.ok(initialColors.every(Boolean));
-  await h.click(pills[0].querySelector('.atlas-pill-close'));
-  assert.equal(owner.querySelector('.atlas-pill'), pills[1]);
+  await h.click(pills[0].querySelector('.genux-pill-close'));
+  assert.equal(owner.querySelector('.genux-pill'), pills[1]);
   assert.equal(pills[1].dataset.pillColor, initialColors[1]);
   const input = h.document.querySelector('#select-tags');
   const tagOwner = input.closest('.ant-select');
@@ -71,16 +71,16 @@ test('documentation Select tags retain ordered colors across removal and typed t
       );
     });
     await h.waitFor(
-      () => [...tagOwner.querySelectorAll('.atlas-pill-label')].some(e => e.textContent === label),
+      () => [...tagOwner.querySelectorAll('.genux-pill-label')].some(e => e.textContent === label),
       `custom label inserted: ${label}; current ${tagOwner.textContent}`,
     );
   }
-  const custom = [...tagOwner.querySelectorAll('.atlas-pill')];
+  const custom = [...tagOwner.querySelectorAll('.genux-pill')];
   const customColors = custom.map(e => e.dataset.pillColor);
   assert.equal(new Set(customColors).size, 2);
   assert.ok(customColors.every(Boolean));
-  await h.click(custom[0].querySelector('.atlas-pill-close'));
-  assert.equal(tagOwner.querySelector('.atlas-pill'), custom[1]);
+  await h.click(custom[0].querySelector('.genux-pill-close'));
+  assert.equal(tagOwner.querySelector('.genux-pill'), custom[1]);
   assert.equal(custom[1].dataset.pillColor, customColors[1]);
 });
 
@@ -158,7 +158,7 @@ test('Pill palette derives unique 75/5 colors in the token catalog order with re
   assert.equal(palette.pillColorAt(-1), palette.pillColorAt(0));
   const h = await mountPattern('default', 'docs/src/react/PillDemo.tsx', { documentation: true });
   try {
-    const shown = [...h.document.querySelectorAll('[data-pill-palette] .atlas-pill')];
+    const shown = [...h.document.querySelectorAll('[data-pill-palette] .genux-pill')];
     assert.deepEqual(
       shown.map(p => p.dataset.pillColor),
       ids,
@@ -167,12 +167,12 @@ test('Pill palette derives unique 75/5 colors in the token catalog order with re
   } finally {
     await h.dispose();
   }
-  const approved = await mountPattern('default', 'docs/src/react/AtlasPill.tsx', {
+  const approved = await mountPattern('default', 'docs/src/react/GenUXPill.tsx', {
     children: 'Existing consumer',
     colorIndex: 2,
   });
   try {
-    const p = approved.document.querySelector('.atlas-pill');
+    const p = approved.document.querySelector('.genux-pill');
     assert.equal(p.dataset.pillColor, undefined);
     assert.equal(p.style.getPropertyValue('--pill-bg'), '');
   } finally {

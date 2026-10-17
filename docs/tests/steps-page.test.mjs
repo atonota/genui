@@ -33,7 +33,7 @@ test('Steps presents four linked sections with a closed Tweaker and readable nat
     assert.equal(example.querySelectorAll('[role="button"]').length, 0);
   }
   assert.equal(examples[1].querySelectorAll('[data-icon-library="phosphor"]').length, 3);
-  assert.equal(examples[3].querySelector('.atlas-steps').dataset.stepsOrientation, 'vertical');
+  assert.equal(examples[3].querySelector('.genux-steps').dataset.stepsOrientation, 'vertical');
 });
 
 test('guided setup validates a name, retains the draft on Back and completes only through explicit actions', async t => {
@@ -93,8 +93,8 @@ test('presentation and language changes keep the current step and mounted setup 
   );
   await h.click(h.document.querySelector('[data-steps-icons]'));
   await h.click(h.document.querySelectorAll('[data-size-control] input[type="radio"]')[0]);
-  assert.equal(primary.querySelector('.atlas-steps').dataset.stepsSize, 'sm');
-  assert.equal(primary.querySelector('.atlas-steps').dataset.stepsOrientation, 'vertical');
+  assert.equal(primary.querySelector('.genux-steps').dataset.stepsSize, 'sm');
+  assert.equal(primary.querySelector('.genux-steps').dataset.stepsOrientation, 'vertical');
   assert.equal(primary.querySelectorAll('[data-icon-library="phosphor"]').length, 3);
   assert.equal(primary.querySelector('[data-steps-workspace-name]'), name);
   assert.equal(name.value, 'Keep this workspace');

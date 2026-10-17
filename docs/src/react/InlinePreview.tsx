@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import AdaptiveProvider from './AdaptiveProvider';
-import AtlasProvider from './AtlasProvider';
+import GenUXProvider from './GenUXProvider';
 import { PreviewProvider, usePreviewContext, type PreviewContextValue } from './PreviewContext';
 import { layoutLoaders } from '../adaptive/delivery';
 import type { AdaptiveOptions } from '../adaptive/policy';
@@ -112,7 +112,7 @@ export default function InlinePreview({
           options={options}
           viewport={{ width: screen.widthPx, height: screen.heightPx }}
         >
-          <AtlasProvider appearance="docs">
+          <GenUXProvider appearance="docs">
             <div data-preview-viewport="">
               <div data-preview-container="">
                 {/* A div, not main: the page already owns its one main landmark. */}
@@ -125,7 +125,7 @@ export default function InlinePreview({
                 </div>
               </div>
             </div>
-          </AtlasProvider>
+          </GenUXProvider>
         </AdaptiveProvider>
       </div>
     </PreviewProvider>

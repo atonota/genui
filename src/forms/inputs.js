@@ -81,7 +81,7 @@ function buildFormInputs() {
       id: 'ff-readonly',
       title: 'Read only',
       label: 'Reference',
-      value: 'ATLAS-2026',
+      value: 'GENUX-2026',
       readOnly: true,
       help: 'You can select and copy the text.',
     },

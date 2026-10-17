@@ -20,10 +20,10 @@
       "description": "Normative measurement, surface and state, motion and focus, layer and overlay rules.",
       "routes": ["/standards/"]
     },
-    "genui": {
-      "label": "GenUI",
-      "description": "GenUI contract, policy and registration status reference.",
-      "routes": ["/genui/"]
+    "genux": {
+      "label": "GenUX",
+      "description": "GenUX contract, policy and registration status reference.",
+      "routes": ["/genux/"]
     },
     "color-lab": {
       "label": "Color lab",
@@ -99,7 +99,7 @@
     "verification-limits": "Verification limits"
   },
   "resources": {
-    "kinds": ["catalog", "route", "adapter", "styles", "instructions", "tests", "genui"],
+    "kinds": ["catalog", "route", "adapter", "styles", "instructions", "tests", "genux"],
     "labels": {
       "catalog": "Catalog data",
       "route": "Astro route and layout",
@@ -107,13 +107,13 @@
       "styles": "Styles and tokens",
       "instructions": "AGENTS instructions",
       "tests": "Tests",
-      "genui": "GenUI contracts and registry"
+      "genux": "GenUX contracts and registry"
     },
     "requiredSources": {
-      "genui": [
-        "docs/src/genui/contracts.ts",
-        "docs/src/genui/policy.ts",
-        "docs/src/react/genui/AtlasGenUISurface.tsx"
+      "genux": [
+        "docs/src/genux/contracts.ts",
+        "docs/src/genux/policy.ts",
+        "docs/src/react/genux/GenUXSurface.tsx"
       ]
     }
   },
@@ -275,8 +275,8 @@
       "ruleId": "component-resources-incomplete",
       "severity": "error",
       "event": "A component page is inspected.",
-      "condition": "A resource kind lacks concrete source paths, a required GenUI source is absent, or the capability status is missing.",
-      "action": "Fail the build; name concrete source locations and state the GenUI capability status separately."
+      "condition": "A resource kind lacks concrete source paths, a required GenUX source is absent, or the capability status is missing.",
+      "action": "Fail the build; name concrete source locations and state the GenUX capability status separately."
     },
     {
       "ruleId": "astro-guide-missing",

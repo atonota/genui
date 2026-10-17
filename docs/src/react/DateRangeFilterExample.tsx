@@ -1,8 +1,8 @@
 import { useId, useState } from 'react';
 import { Checkbox, Select } from 'antd';
 import dayjs, { type Dayjs } from 'dayjs';
-import AtlasButton from './AtlasButton';
-import { AtlasDateTimeRange, type AtlasDateTimeRangeValue } from './AtlasDateTime';
+import GenUXButton from './GenUXButton';
+import { GenUXDateTimeRange, type GenUXDateTimeRangeValue } from './GenUXDateTime';
 import { useI18n } from './useI18n';
 
 /** Fixed sample sync date keeps presets and server markup deterministic. */
@@ -29,21 +29,21 @@ const previousPeriod = ([start, end]: Period): Period => {
 const isAfterSync = (day: Dayjs) => day.isAfter(LAST_SYNC, 'day');
 
 /** Complete, ordered and not after the last sync; otherwise null. */
-const completePeriod = (value: AtlasDateTimeRangeValue): Period | null => {
+const completePeriod = (value: GenUXDateTimeRangeValue): Period | null => {
   const [start, end] = value ?? [null, null];
   return start && end && !start.isAfter(end, 'day') && !isAfterSync(end) ? [start, end] : null;
 };
 
-const periodKey = (value: AtlasDateTimeRangeValue) => {
+const periodKey = (value: GenUXDateTimeRangeValue) => {
   const [start, end] = value ?? [null, null];
   return `${start?.format(ISO) ?? ''}/${end?.format(ISO) ?? ''}`;
 };
 
 type Filter = {
   preset: Preset;
-  period: AtlasDateTimeRangeValue;
+  period: GenUXDateTimeRangeValue;
   compare: boolean;
-  comparison: AtlasDateTimeRangeValue;
+  comparison: GenUXDateTimeRangeValue;
   comparisonEdited: boolean;
 };
 
@@ -56,7 +56,7 @@ const initialFilter: Filter = {
 };
 
 /** An untouched comparison follows the previous period of the same length. */
-const withPeriod = (filter: Filter, period: AtlasDateTimeRangeValue, preset: Preset): Filter => {
+const withPeriod = (filter: Filter, period: GenUXDateTimeRangeValue, preset: Preset): Filter => {
   const complete = completePeriod(period);
   return {
     ...filter,
@@ -94,7 +94,7 @@ export function DateRangeFilterExample() {
         ? t('Changes are not applied yet.')
         : null;
 
-  const showPeriod = (value: AtlasDateTimeRangeValue) => {
+  const showPeriod = (value: GenUXDateTimeRangeValue) => {
     const [start, end] = value ?? [null, null];
     return t('{start} to {end}', {
       start: start ? start.format(ISO) : t('Not chosen'),
@@ -144,7 +144,7 @@ export function DateRangeFilterExample() {
           ]}
         />
       </div>
-      <AtlasDateTimeRange
+      <GenUXDateTimeRange
         id={`${id}-period`}
         mode="date"
         label={t('Report period')}
@@ -152,7 +152,7 @@ export function DateRangeFilterExample() {
         placeholder={placeholder}
         allowClear
         value={draft.period}
-        onChange={(next: AtlasDateTimeRangeValue) =>
+        onChange={(next: GenUXDateTimeRangeValue) =>
           setDraft(current => withPeriod(current, next, 'custom'))
         }
         disabledDate={isAfterSync}
@@ -167,7 +167,7 @@ export function DateRangeFilterExample() {
         </Checkbox>
       </div>
       {draft.compare && (
-        <AtlasDateTimeRange
+        <GenUXDateTimeRange
           id={`${id}-comparison`}
           mode="date"
           label={t('Comparison period')}
@@ -175,7 +175,7 @@ export function DateRangeFilterExample() {
           placeholder={placeholder}
           allowClear
           value={draft.comparison}
-          onChange={(next: AtlasDateTimeRangeValue) =>
+          onChange={(next: GenUXDateTimeRangeValue) =>
             setDraft(current => ({ ...current, comparison: next, comparisonEdited: true }))
           }
           disabledDate={isAfterSync}
@@ -183,7 +183,7 @@ export function DateRangeFilterExample() {
         />
       )}
       <div className="date-range-filter-actions">
-        <AtlasButton
+        <GenUXButton
           text={t('Apply')}
           fill="solid"
           data-filter-apply
@@ -191,7 +191,7 @@ export function DateRangeFilterExample() {
           aria-describedby={hint ? `${id}-hint` : undefined}
           onClick={apply}
         />
-        <AtlasButton
+        <GenUXButton
           text={t('Cancel')}
           fill="outline"
           data-filter-cancel

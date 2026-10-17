@@ -10,7 +10,7 @@ test('documentation flat buttons have no border reservation, including disabled 
   );
   let flat;
   sheet.walkRules(rule => {
-    if (rule.selector === ".atlas-demo[data-atlas-appearance='docs']") flat = rule;
+    if (rule.selector === ".genux-demo[data-genux-appearance='docs']") flat = rule;
   });
   assert.ok(
     flat,
@@ -21,35 +21,35 @@ test('documentation flat buttons have no border reservation, including disabled 
     documentation: true,
   });
   t.after(() => h.dispose());
-  const actions = [...h.document.querySelectorAll('.atlas-number-stepper .atlas-button')];
+  const actions = [...h.document.querySelectorAll('.genux-number-stepper .genux-button')];
   assert.equal(actions.length, 4);
   assert.ok(
     actions.some(action => action.disabled),
     'read-only actions stay disabled',
   );
-  for (const action of actions) assert.ok(action.closest('.atlas-demo').matches(flat.selector));
-  const base = sheet.nodes.find(rule => rule.selector === '.atlas-demo');
+  for (const action of actions) assert.ok(action.closest('.genux-demo').matches(flat.selector));
+  const base = sheet.nodes.find(rule => rule.selector === '.genux-demo');
   const value = (rule, name) => rule.nodes.find(node => node.prop === name)?.value;
   assert.equal(value(base, '--button-outline-border-width'), '1px');
   assert.equal(value(base, '--button-border-width'), 'var(--button-outline-border-width)');
   const approved = h.document.createElement('div');
-  approved.className = 'atlas-demo';
+  approved.className = 'genux-demo';
   const nestedDocs = h.document.createElement('div');
-  nestedDocs.className = 'atlas-demo';
-  nestedDocs.dataset.atlasAppearance = 'docs';
+  nestedDocs.className = 'genux-demo';
+  nestedDocs.dataset.genuxAppearance = 'docs';
   const approvedAction = h.document.createElement('button');
   const docsAction = h.document.createElement('button');
   approved.append(approvedAction, nestedDocs);
   nestedDocs.append(docsAction);
-  h.document.querySelector('.atlas-demo').append(approved);
-  assert.equal(approvedAction.closest('.atlas-demo').matches(flat.selector), false);
-  assert.equal(docsAction.closest('.atlas-demo').matches(flat.selector), true);
+  h.document.querySelector('.genux-demo').append(approved);
+  assert.equal(approvedAction.closest('.genux-demo').matches(flat.selector), false);
+  assert.equal(docsAction.closest('.genux-demo').matches(flat.selector), true);
   const outline = h.document.createElement('button');
-  outline.className = 'ant-btn atlas-button atlas-button-outlined';
-  h.document.querySelector('.atlas-demo').append(outline);
+  outline.className = 'ant-btn genux-button genux-button-outlined';
+  h.document.querySelector('.genux-demo').append(outline);
   let framed;
   sheet.walkRules(rule => {
-    if (rule.selector.includes('.atlas-button-outlined') && outline.matches(rule.selector))
+    if (rule.selector.includes('.genux-button-outlined') && outline.matches(rule.selector))
       framed = rule;
   });
   assert.equal(
@@ -71,11 +71,11 @@ test('docs Button press and release finish 30 percent faster than the previous o
     new URL('../src/layouts/DocsLayout.astro', import.meta.url),
     'utf8',
   );
-  assert.match(layout, /<body data-atlas-surface="docs">/);
+  assert.match(layout, /<body data-genux-surface="docs">/);
   const sheet = postcss.parse(
     await readFile(new URL('../src/styles/web.css', import.meta.url), 'utf8'),
   );
-  const selector = "body[data-atlas-surface='docs'] .atlas-demo .atlas-button";
+  const selector = "body[data-genux-surface='docs'] .genux-demo .genux-button";
   let adapter;
   sheet.walkRules(rule => {
     if (rule.selector === selector) adapter = rule;
@@ -90,10 +90,10 @@ test('docs Button press and release finish 30 percent faster than the previous o
     await readFile(new URL('../src/styles/components.css', import.meta.url), 'utf8'),
   );
   const owners = new Map([
-    ['.atlas-demo .ant-btn', ['opacity', 'box-shadow']],
-    ['.atlas-demo :is(.ant-btn-primary, .atlas-button)::before', ['inset']],
-    ['.atlas-demo .atlas-button-lip::before', ['height']],
-    ['.atlas-demo .atlas-button-lip::after', ['height']],
+    ['.genux-demo .ant-btn', ['opacity', 'box-shadow']],
+    ['.genux-demo :is(.ant-btn-primary, .genux-button)::before', ['inset']],
+    ['.genux-demo .genux-button-lip::before', ['height']],
+    ['.genux-demo .genux-button-lip::after', ['height']],
   ]);
   for (const [owner, properties] of owners) {
     let transition;
@@ -129,7 +129,7 @@ test('docs Button press and release finish 30 percent faster than the previous o
   });
   assert.equal(reduced?.value, '0s');
   assert.ok(reduced.important, 'reduced motion must still win over fast Button feedback');
-  const renderer = await readFile(new URL('../src/react/AtlasButton.tsx', import.meta.url), 'utf8');
+  const renderer = await readFile(new URL('../src/react/GenUXButton.tsx', import.meta.url), 'utf8');
   for (const prop of ['--button-duration', '--press-duration', '--release-duration'])
     assert.ok(renderer.includes(`'${prop}': 'var(--motion-duration-deliberate)'`));
 });
@@ -137,7 +137,7 @@ test('docs Button press and release finish 30 percent faster than the previous o
 test('Drawer action uses the shared Button renderer', async t => {
   const h = await mountPattern('DrawerExamples');
   t.after(() => h.dispose());
-  assert.equal(buttonByText(h.document, 'Open panel').classList.contains('atlas-button'), true);
+  assert.equal(buttonByText(h.document, 'Open panel').classList.contains('genux-button'), true);
 });
 
 test('web Button copy describes fast press and release feedback', async t => {
@@ -167,7 +167,7 @@ test('web number stepper exposes one visible shared surface and removes the nest
   const rules = [];
   css.walkRules(rule => rules.push(rule));
   const wrapper = rules.find(
-    rule => rule.selector === '.live-preview .atlas-demo .atlas-number-stepper',
+    rule => rule.selector === '.live-preview .genux-demo .genux-number-stepper',
   );
   const declarations = rule => Object.fromEntries(rule.nodes.map(node => [node.prop, node.value]));
   assert.match(
@@ -176,7 +176,7 @@ test('web number stepper exposes one visible shared surface and removes the nest
   );
   assert.match(declarations(wrapper).padding ?? '', /var\(--/);
   const field = rules.find(
-    rule => rule.selector === '.live-preview .atlas-demo .atlas-number-stepper > .ant-input-number',
+    rule => rule.selector === '.live-preview .genux-demo .genux-number-stepper > .ant-input-number',
   );
   assert.equal(declarations(field)['box-shadow'], 'none');
   assert.equal(
@@ -190,20 +190,20 @@ test('web number stepper exposes one visible shared surface and removes the nest
 });
 
 test('Pill native close hides the master surface despite its flex display', async t => {
-  const h = await mountPattern('default', 'docs/src/react/AtlasPill.tsx', {
+  const h = await mountPattern('default', 'docs/src/react/GenUXPill.tsx', {
     children: 'Removable tag',
     closable: true,
   });
   t.after(() => h.dispose());
-  const pill = h.document.querySelector('.atlas-pill');
-  await h.click(pill.querySelector('.atlas-pill-close'));
+  const pill = h.document.querySelector('.genux-pill');
+  await h.click(pill.querySelector('.genux-pill-close'));
   assert.ok(pill.classList.contains('ant-tag-hidden'), 'native Tag owns successful closing');
   const css = postcss.parse(
     await readFile(new URL('../src/styles/components.css', import.meta.url), 'utf8'),
   );
   let display;
   css.walkRules(rule => {
-    if (rule.selector === '.atlas-demo .atlas-pill.ant-tag-hidden')
+    if (rule.selector === '.genux-demo .genux-pill.ant-tag-hidden')
       display = rule.nodes.find(node => node.prop === 'display')?.value;
   });
   assert.equal(display, 'none', 'native hidden class must beat the master flex display');
@@ -215,7 +215,7 @@ test('transparent middle Button fills preserve light colours and use readable da
   );
   let darkInk;
   css.walkRules(rule => {
-    if (rule.selector === ":root[data-theme='dark'] .atlas-demo .atlas-button")
+    if (rule.selector === ":root[data-theme='dark'] .genux-demo .genux-button")
       darkInk = rule.nodes.find(node => node.prop === '--button-transparent-ink')?.value;
   });
   assert.equal(darkInk, 'var(--button-outline-ink)');
@@ -231,11 +231,11 @@ test('transparent middle Button fills preserve light colours and use readable da
     ['link', '#a8071a'],
   ]) {
     await t.test(fill, async t => {
-      const h = await mountPattern('default', 'docs/src/react/AtlasButton.tsx', { fill });
+      const h = await mountPattern('default', 'docs/src/react/GenUXButton.tsx', { fill });
       t.after(() => h.dispose());
-      const button = h.document.querySelector('.atlas-button');
+      const button = h.document.querySelector('.genux-button');
       assert.equal(
-        Boolean(button.querySelector('.atlas-button-lip[aria-hidden="true"]')),
+        Boolean(button.querySelector('.genux-button-lip[aria-hidden="true"]')),
         fill === 'outline',
         'text and link remain flat; outline retains the tactile layer',
       );

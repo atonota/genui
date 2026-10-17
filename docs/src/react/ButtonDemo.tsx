@@ -2,28 +2,28 @@ import { selectedLabel } from './selectedLabel';
 import { useI18n } from './useI18n';
 import { useState } from 'react';
 import { Select, type SelectProps } from 'antd';
-import Input from './AtlasInput';
-import AtlasProvider from './AtlasProvider';
-import { TweakerSettings } from './AtlasTweaker';
-import AtlasButton, {
+import Input from './GenUXInput';
+import GenUXProvider from './GenUXProvider';
+import { TweakerSettings } from './GenUXTweaker';
+import GenUXButton, {
   buttonStates,
   type ButtonDepth,
   type Tone,
   type IconLibrary,
-} from './AtlasButton';
+} from './GenUXButton';
 import { ButtonStates } from './ButtonStates';
 import { ButtonDimensions } from './ButtonDimensions';
-import AtlasIconButton from './AtlasIconButton';
-import AtlasButtonGroup from './AtlasButtonGroup';
-import { type AtlasSize } from './AtlasSizeProfile';
+import GenUXIconButton from './GenUXIconButton';
+import GenUXButtonGroup from './GenUXButtonGroup';
+import { type GenUXSize } from './GenUXSizeProfile';
 import { buttonColorPresets } from '../data/button-palette';
 import { ButtonVisualDecisions, ButtonVisualGroup } from './ButtonVisualDecisions';
 import ExamplePreview from './ExamplePreview';
-import atlas from '../data/atlas.json';
+import genux from '../data/genux.json';
 import motionTokens from '../data/motion.json';
 
-const popup = { popup: { root: 'atlas-select-popup' } };
-const decisions = atlas.decisions.buttons;
+const popup = { popup: { root: 'genux-select-popup' } };
+const decisions = genux.decisions.buttons;
 const depthOptions = [
   { value: '3d', label: '3D' },
   { value: 'flat', label: 'Flat' },
@@ -41,7 +41,7 @@ export default function ButtonDemo({
   const { t } = useI18n();
   const stateOptions = [
     { label: t('Approved'), options: decisions.state_variants },
-    { label: t('Experiments'), options: atlas.experiments.state_variants },
+    { label: t('Experiments'), options: genux.experiments.state_variants },
   ];
   // Both playgrounds share the 24 Color system presets; legacy palettes stay internal.
   const paletteOptions: SelectProps['options'] = [
@@ -50,7 +50,7 @@ export default function ButtonDemo({
   ];
   const shadowOptions = [
     { label: t('Approved'), options: decisions.shadow_variants },
-    { label: t('Experiments'), options: atlas.experiments.shadow_variants },
+    { label: t('Experiments'), options: genux.experiments.shadow_variants },
   ];
 
   const [draftText, setText] = useState<string | null>(null);
@@ -61,7 +61,7 @@ export default function ButtonDemo({
   const [sizeChoice, setSize] = useState<string | null>(null);
   // Leave the prop absent until explicitly overridden so the inner Provider's
   // shared size control can update every child without remounting this demo.
-  const size = sizeChoice === null ? undefined : (sizeChoice as AtlasSize);
+  const size = sizeChoice === null ? undefined : (sizeChoice as GenUXSize);
   const [width, setWidth] = useState('content');
   // Standalone starts on the shared red preset, the closest match to the former coral default.
   const standalonePreset = 'red';
@@ -122,17 +122,17 @@ export default function ButtonDemo({
   ] as const;
   const iconCorners = (
     <ExamplePreview id="button-icon-corners-example" title={t('Icon corners')}>
-      <ul className="atlas-button-visuals" data-icon-radius-examples>
+      <ul className="genux-button-visuals" data-icon-radius-examples>
         {decisions.radius_variants.map(corner => (
           <li key={corner.value} data-icon-radius={corner.value}>
             <div className="control-row">
-              <AtlasIconButton
+              <GenUXIconButton
                 icon="download"
                 aria-label={t('Download · {corner}', { corner: t(corner.label) })}
                 radius={corner.value}
                 size={size}
               />
-              <AtlasButton text={t('Download')} icon="download" radius={corner.value} size={size} />
+              <GenUXButton text={t('Download')} icon="download" radius={corner.value} size={size} />
             </div>
             <p>{t(corner.label)}</p>
           </li>
@@ -167,9 +167,9 @@ export default function ButtonDemo({
       {!documentation && iconDescription}
       <ExamplePreview id="button-icon-only-example" title={t('Icon-only actions')}>
         <div className="control-row">
-          <AtlasIconButton {...iconAppearance} icon="minus" aria-label={t('Decrease')} />
-          <AtlasIconButton {...iconAppearance} icon="plus" aria-label={t('Increase')} />
-          <AtlasIconButton {...iconAppearance} icon="trash" aria-label={t('Remove')} />
+          <GenUXIconButton {...iconAppearance} icon="minus" aria-label={t('Decrease')} />
+          <GenUXIconButton {...iconAppearance} icon="plus" aria-label={t('Increase')} />
+          <GenUXIconButton {...iconAppearance} icon="trash" aria-label={t('Remove')} />
         </div>
       </ExamplePreview>
       {documentation && iconDescription}
@@ -180,7 +180,7 @@ export default function ButtonDemo({
     <>
       <ChoiceHeading className="variant-heading">{t('Double button')}</ChoiceHeading>
       <ExamplePreview id="button-double-example" title={t('Double button')}>
-        <AtlasButtonGroup
+        <GenUXButtonGroup
           aria-label={t('Double button example')}
           value={doubleChoice}
           onChange={setDoubleChoice}
@@ -197,7 +197,7 @@ export default function ButtonDemo({
     <>
       <ChoiceHeading className="variant-heading">{t('Triple button')}</ChoiceHeading>
       <ExamplePreview id="button-triple-example" title={t('Triple button')}>
-        <AtlasButtonGroup
+        <GenUXButtonGroup
           aria-label={t('Triple button example')}
           value={tripleChoice}
           onChange={setTripleChoice}
@@ -238,7 +238,7 @@ export default function ButtonDemo({
         <h4 className="variant-heading">{t('3D')}</h4>
         <ExamplePreview id="button-depth-3d-example" title={t('3D')}>
           <div className="control-row">
-            <AtlasButton text={t('Continue')} size={size} depth="3d" />
+            <GenUXButton text={t('Continue')} size={size} depth="3d" />
           </div>
         </ExamplePreview>
         <p>
@@ -251,7 +251,7 @@ export default function ButtonDemo({
         <h4 className="variant-heading">{t('Flat')}</h4>
         <ExamplePreview id="button-depth-flat-example" title={t('Flat')}>
           <div className="control-row">
-            <AtlasButton text={t('Continue')} size={size} depth="flat" />
+            <GenUXButton text={t('Continue')} size={size} depth="flat" />
           </div>
         </ExamplePreview>
         <p>
@@ -264,13 +264,13 @@ export default function ButtonDemo({
   );
   const primarySearch = (
     <>
-      <AtlasIconButton
+      <GenUXIconButton
         icon="search"
         aria-label={t('Search · primary icon')}
         size={size}
         onClick={() => setSearchActivated(true)}
       />
-      <AtlasButton
+      <GenUXButton
         icon="search"
         text={t('Search')}
         size={size}
@@ -280,14 +280,14 @@ export default function ButtonDemo({
   );
   const secondarySearch = (
     <>
-      <AtlasIconButton
+      <GenUXIconButton
         icon="search"
         aria-label={t('Search · secondary icon')}
         size={size}
         fill="outline"
         onClick={() => setSearchActivated(true)}
       />
-      <AtlasButton
+      <GenUXButton
         icon="search"
         text={t('Search')}
         size={size}
@@ -323,7 +323,7 @@ export default function ButtonDemo({
     <div className="button-playground">
       <ExamplePreview id="button-playground-example" title={t('Playground')}>
         <div className="playground-preview">
-          <AtlasButton
+          <GenUXButton
             {...{
               text,
               radius,
@@ -430,28 +430,28 @@ export default function ButtonDemo({
             'button-icon-library',
             t('Icon library · experimental'),
             library,
-            atlas.experiments.icon_options.library,
+            genux.experiments.icon_options.library,
             value => setLibrary(value as IconLibrary),
           )}
           {control(
             'button-icon',
             t('Icon · experimental'),
             icon,
-            atlas.experiments.icon_options.name,
+            genux.experiments.icon_options.name,
             setIcon,
           )}
           {control(
             'button-icon-position',
             t('Icon position · experimental'),
             position,
-            atlas.experiments.icon_options.position,
+            genux.experiments.icon_options.position,
             setPosition,
           )}
           {control(
             'button-icon-motion',
             t('Icon motion · experimental'),
             motion,
-            atlas.experiments.icon_options.motion,
+            genux.experiments.icon_options.motion,
             setMotion,
           )}
         </div>
@@ -472,7 +472,7 @@ export default function ButtonDemo({
     </div>
   );
   return (
-    <AtlasProvider appearance={documentation ? 'docs' : undefined}>
+    <GenUXProvider appearance={documentation ? 'docs' : undefined}>
       {documentation ? (
         <div className="button-catalog" data-button-catalog>
           <nav aria-label={t('Button example sections')}>
@@ -580,6 +580,6 @@ export default function ButtonDemo({
           {playground}
         </div>
       )}
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }

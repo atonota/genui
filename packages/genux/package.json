@@ -1,0 +1,75 @@
+{
+  "name": "genux",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "description": "Local consumable GenUX Ant Design base UI library built from the canonical docs/src sources.",
+  "type": "module",
+  "engines": {
+    "node": "^24.15.0 || >=26.0.0"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/types/packages/genux/src/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./adaptive": {
+      "types": "./dist/types/packages/genux/src/adaptive.d.ts",
+      "import": "./dist/adaptive.js"
+    },
+    "./genux": {
+      "types": "./dist/types/packages/genux/src/genux.d.ts",
+      "import": "./dist/genux.js"
+    },
+    "./frappe": {
+      "types": "./dist/types/packages/genux/src/frappe.d.ts",
+      "import": "./dist/frappe.js"
+    },
+    "./input/spatial": {
+      "types": "./dist/types/docs/src/adaptive/spatial.d.ts",
+      "import": "./dist/input/spatial.js"
+    },
+    "./input/pointer": {
+      "types": "./dist/types/docs/src/adaptive/pointer.d.ts",
+      "import": "./dist/input/pointer.js"
+    },
+    "./input/webos": {
+      "types": "./dist/types/docs/src/adaptive/webos.d.ts",
+      "import": "./dist/input/webos.js"
+    },
+    "./styles": "./dist/styles.css",
+    "./styles.css": "./dist/styles.css",
+    "./package.json": "./package.json"
+  },
+  "peerDependencies": {
+    "@ant-design/colors": "^8.0.1",
+    "@ant-design/cssinjs": "^2.1.2",
+    "@ant-design/x": "^2.9.0",
+    "@ant-design/x-card": "^2.9.0",
+    "@ant-design/x-sdk": "^2.9.0",
+    "@rc-component/mini-decimal": "^1.1.4",
+    "antd": "^6.6.6",
+    "dayjs": "^1.11.23",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "peerDependenciesMeta": {
+    "@ant-design/x": {
+      "optional": true
+    },
+    "@ant-design/x-card": {
+      "optional": true
+    },
+    "@ant-design/x-sdk": {
+      "optional": true
+    }
+  }
+}

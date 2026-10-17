@@ -1,8 +1,8 @@
 import { useI18n } from './useI18n';
-import AtlasProvider from './AtlasProvider';
-import AtlasButton from './AtlasButton';
+import GenUXProvider from './GenUXProvider';
+import GenUXButton from './GenUXButton';
 import ExamplePreview from './ExamplePreview';
-import atlas from '../data/atlas.json';
+import genux from '../data/genux.json';
 
 export function ButtonStates({ headingLevel = 3 }: { headingLevel?: 3 | 4 } = {}) {
   const Heading = headingLevel === 4 ? 'h4' : 'h3';
@@ -19,10 +19,10 @@ export function ButtonStates({ headingLevel = 3 }: { headingLevel?: 3 | 4 } = {}
         )}
       </p>
       <ExamplePreview id="button-states-example" title={t('Approved states')}>
-        <ul className="atlas-button-states" aria-label={t('Approved button states')}>
-          {atlas.decisions.buttons.state_variants.map(status => (
+        <ul className="genux-button-states" aria-label={t('Approved button states')}>
+          {genux.decisions.buttons.state_variants.map(status => (
             <li key={status.value} data-approved-state={status.value}>
-              <AtlasButton state={status.value} />
+              <GenUXButton state={status.value} />
               <p>{t(status.label)}</p>
             </li>
           ))}
@@ -34,8 +34,8 @@ export function ButtonStates({ headingLevel = 3 }: { headingLevel?: 3 | 4 } = {}
 
 export default function ApprovedButtonStates() {
   return (
-    <AtlasProvider>
+    <GenUXProvider>
       <ButtonStates />
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }

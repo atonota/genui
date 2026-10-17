@@ -3,7 +3,7 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 /*
  * P2-A: one table-driven browser control for field slots.
  *
- * Specified behavior: every slot in an Atlas field well (number stepper minus
+ * Specified behavior: every slot in an GenUX field well (number stepper minus
  * and plus, password eye, read-only lock, search action) sits inside the
  * CONTENT box of the single wrapper that owns the well, and that wrapper's
  * border box is exactly the shared 48/56/64 CSS px profile for sm/md/lg.
@@ -20,7 +20,7 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
  * Keyboard focus (FOCUS-01) is owned by P1-A and is not asserted here.
  */
 
-const INPUT_PATH = process.env.ATLAS_INPUT_PATH ?? '/components/input/';
+const INPUT_PATH = process.env.GENUX_INPUT_PATH ?? '/components/input/';
 const TOLERANCE_PX = 0.5;
 const NO_BORDER = ['0px', '0px', '0px', '0px'];
 const TRANSPARENT = 'rgba(0, 0, 0, 0)';
@@ -145,20 +145,20 @@ async function selectSize(page: Page, value: string) {
   ).toBeChecked();
   if (openedTweaker) {
     await page.keyboard.press('Escape');
-    await expect(page.locator('.atlas-tweaker-panel.ant-drawer-open')).toHaveCount(0);
+    await expect(page.locator('.genux-tweaker-panel.ant-drawer-open')).toHaveCount(0);
   }
 }
 
 function frame(page: Page, kind: string, id: string): Locator {
   return page
-    .locator(`.atlas-input-frame[data-atlas-input='${kind}']`, { has: page.locator(`#${id}`) })
+    .locator(`.genux-input-frame[data-genux-input='${kind}']`, { has: page.locator(`#${id}`) })
     .first();
 }
 
 /** Every existing slot owner: all number steppers plus the password, lock and search fields. */
 async function collectFields(page: Page): Promise<Field[]> {
   const fields: Field[] = [];
-  const steppers = page.locator('.atlas-number-stepper');
+  const steppers = page.locator('.genux-number-stepper');
   const count = await steppers.count();
   for (let index = 0; index < count; index += 1) {
     const wrapper = steppers.nth(index);
@@ -186,7 +186,7 @@ async function collectFields(page: Page): Promise<Field[]> {
     stepper: false,
     wrapper: readonly,
     inner: readonly.locator('input').first(),
-    slots: readonly.locator('.atlas-readonly-indicator'),
+    slots: readonly.locator('.genux-readonly-indicator'),
   });
   const search = frame(page, 'search', 'input-search');
   fields.push({

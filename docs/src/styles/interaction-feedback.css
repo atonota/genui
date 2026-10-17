@@ -28,7 +28,7 @@
       16 16,
     not-allowed;
 }
-.atlas-click-feedback {
+.genux-click-feedback {
   position: fixed;
   z-index: var(--click-feedback-layer);
   display: block;
@@ -37,9 +37,9 @@
   background: transparent;
   color: var(--click-feedback-color, var(--accent));
   opacity: 0;
-  animation: atlas-click-feedback var(--motion-duration-click-feedback) var(--motion-easing) both;
+  animation: genux-click-feedback var(--motion-duration-click-feedback) var(--motion-easing) both;
 }
-@keyframes atlas-click-feedback {
+@keyframes genux-click-feedback {
   0% {
     box-shadow: 0 0 0 0 currentColor;
     opacity: 0;
@@ -56,7 +56,7 @@
    inputs) use readonly to allow choice; only explicit aria-readonly locks them.
    Disabled controls keep the native cursor: native, fieldset, aria-disabled and
    disabled wrapper classes are excluded on the element and its ancestors. */
-body[data-atlas-surface='docs']
+body[data-genux-surface='docs']
   :is(
     input[readonly]:not([role='combobox'], .ant-picker *),
     textarea[readonly],
@@ -82,39 +82,39 @@ body[data-atlas-surface='docs']
   ) {
   cursor: var(--readonly-cursor) !important;
 }
-body[data-atlas-surface='docs'] :is(.atlas-button, .ant-btn)[aria-busy='true'],
-body[data-atlas-surface='docs'] .ant-btn-loading {
+body[data-genux-surface='docs'] :is(.genux-button, .ant-btn)[aria-busy='true'],
+body[data-genux-surface='docs'] .ant-btn-loading {
   cursor: var(--busy-cursor) !important;
 }
-body[data-atlas-surface='docs'] :is(.atlas-button, .ant-btn)[aria-busy='true'] *,
-body[data-atlas-surface='docs'] .ant-btn-loading * {
+body[data-genux-surface='docs'] :is(.genux-button, .ant-btn)[aria-busy='true'] *,
+body[data-genux-surface='docs'] .ant-btn-loading * {
   cursor: inherit;
 }
-.atlas-readonly-indicator {
+.genux-readonly-indicator {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   color: var(--muted);
   pointer-events: none;
 }
-.atlas-readonly-indicator .atlas-icon {
+.genux-readonly-indicator .genux-icon {
   width: var(--readonly-indicator-size);
   height: var(--readonly-indicator-size);
 }
-.atlas-readonly-indicator[hidden] {
+.genux-readonly-indicator[hidden] {
   display: none;
 }
-.atlas-readonly-help {
+.genux-readonly-help {
   color: var(--muted);
   font-size: var(--text);
 }
-.atlas-number-stepper-state {
+.genux-number-stepper-state {
   display: grid;
   gap: var(--space-xs);
   min-width: 0;
 }
 @media (prefers-reduced-motion: reduce) {
-  .atlas-click-feedback {
+  .genux-click-feedback {
     animation: none;
   }
 }

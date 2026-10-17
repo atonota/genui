@@ -1,7 +1,7 @@
 import { useId, useState, type MouseEvent, type ReactNode } from 'react';
 import { Checkbox, Flex, Radio, Switch, Typography } from 'antd';
-import AtlasButton from './AtlasButton';
-import AtlasListy, { type AtlasListyEntry } from './AtlasListy';
+import GenUXButton from './GenUXButton';
+import GenUXListy, { type GenUXListyEntry } from './GenUXListy';
 import ExamplePreview from './ExamplePreview';
 import { useI18n } from './useI18n';
 
@@ -47,7 +47,7 @@ export function ListySelectPattern() {
   const name = useId();
   const [value, setValue] = useState<RoleKey | null>(null);
   const chosen = roles.find(role => role.key === value);
-  const items: AtlasListyEntry[] = roles.map(role => ({
+  const items: GenUXListyEntry[] = roles.map(role => ({
     key: role.key,
     label: t(role.label),
     leading: (
@@ -76,7 +76,7 @@ export function ListySelectPattern() {
     >
       <ExamplePreview id="listy-select" title={t('Single select')}>
         <Flex vertical gap="small">
-          <AtlasListy label={t('Role')} items={items} />
+          <GenUXListy label={t('Role')} items={items} />
           <p role="status">
             {chosen ? `${t('Selected')} ${t(chosen.label)}` : t('Nothing selected')}
           </p>
@@ -102,7 +102,7 @@ export function ListyCheckboxPattern() {
   const toggle = (key: TeamKey, on: boolean) =>
     setPicked(current => teamKeys.filter(item => (item === key ? on : current.includes(item))));
   const count = picked.length;
-  const items: AtlasListyEntry[] = teams.map(team => {
+  const items: GenUXListyEntry[] = teams.map(team => {
     const on = picked.includes(team.key);
     return {
       key: team.key,
@@ -139,9 +139,9 @@ export function ListyCheckboxPattern() {
             >
               {t('Select all')}
             </Checkbox>
-            <AtlasButton text={t('Clear selection')} fill="text" onClick={() => setPicked([])} />
+            <GenUXButton text={t('Clear selection')} fill="text" onClick={() => setPicked([])} />
           </Flex>
-          <AtlasListy label={t('Teams')} items={items} />
+          <GenUXListy label={t('Teams')} items={items} />
           <p role="status">{`${count} ${t('selected')}`}</p>
         </Flex>
       </ExamplePreview>
@@ -178,7 +178,7 @@ export function ListySettingsPattern() {
     setLast(key);
   };
   const changed = preferences.find(preference => preference.key === last);
-  const items: AtlasListyEntry[] = preferences.map(preference => {
+  const items: GenUXListyEntry[] = preferences.map(preference => {
     const on = enabled[preference.key];
     return {
       key: preference.key,
@@ -207,7 +207,7 @@ export function ListySettingsPattern() {
     >
       <ExamplePreview id="listy-settings" title={t('Settings')}>
         <Flex vertical gap="small">
-          <AtlasListy label={t('Preferences')} items={items} />
+          <GenUXListy label={t('Preferences')} items={items} />
           <p role="status">
             {changed
               ? `${t(changed.label)}: ${enabled[changed.key] ? t('On') : t('Off')}`
@@ -220,7 +220,7 @@ export function ListySettingsPattern() {
 }
 
 const records = [
-  { key: 'roadmap', label: 'Atlas roadmap', description: 'Planning document' },
+  { key: 'roadmap', label: 'GenUX roadmap', description: 'Planning document' },
   { key: 'billing', label: 'Billing export', description: 'Finance spreadsheet' },
   { key: 'review', label: 'Design review', description: 'Meeting notes' },
 ] as const;
@@ -231,12 +231,12 @@ export function ListyActionsPattern() {
   const { t } = useI18n();
   const [opened, setOpened] = useState<RecordKey | null>(null);
   const current = records.find(record => record.key === opened);
-  const items: AtlasListyEntry[] = records.map(record => ({
+  const items: GenUXListyEntry[] = records.map(record => ({
     key: record.key,
     label: t(record.label),
     description: t(record.description),
     trailing: (
-      <AtlasButton
+      <GenUXButton
         text={t('Open')}
         fill="outline"
         aria-label={`${t('Open record')} ${t(record.label)}`}
@@ -253,7 +253,7 @@ export function ListyActionsPattern() {
     >
       <ExamplePreview id="listy-actions" title={t('Row actions')}>
         <Flex vertical gap="small">
-          <AtlasListy label={t('Records')} items={items} />
+          <GenUXListy label={t('Records')} items={items} />
           <p role="status">
             {current ? `${t('Opened')} ${t(current.label)}` : t('No record opened')}
           </p>
@@ -263,7 +263,7 @@ export function ListyActionsPattern() {
   );
 }
 
-/** Control-bearing Listy references; the coordinator renders them inside AtlasProvider. */
+/** Control-bearing Listy references; the coordinator renders them inside GenUXProvider. */
 export default function ListyControlPatterns() {
   return (
     <>

@@ -38,7 +38,7 @@ const foundationKinds = {
   '/getting-started/': 'guide',
   '/tokens/': 'tokens',
   '/standards/': 'ux-standards',
-  '/genui/': 'genui',
+  '/genux/': 'genux',
   '/color-system/': 'color-lab',
   '/theme-builder/': 'color-lab',
   '/decisions/': 'decisions',
@@ -52,17 +52,17 @@ const resourceSources = {
   catalog: ['docs/src/data/catalog.ts'],
   route: ['docs/src/pages/components/[slug].astro', 'docs/src/layouts/DocsLayout.astro'],
   adapter: ['docs/src/react/TimelineDemo.tsx'],
-  styles: ['docs/src/styles/atlas-timeline.css', 'docs/src/styles/docs.css'],
+  styles: ['docs/src/styles/genux-timeline.css', 'docs/src/styles/docs.css'],
   instructions: ['docs/AGENTS.md'],
   tests: ['docs/tests/timeline.test.mjs'],
-  genui: [
-    'docs/src/genui/contracts.ts',
-    'docs/src/genui/policy.ts',
-    'docs/src/react/genui/AtlasGenUISurface.tsx',
+  genux: [
+    'docs/src/genux/contracts.ts',
+    'docs/src/genux/policy.ts',
+    'docs/src/react/genux/GenUXSurface.tsx',
   ],
 };
 const capabilityStatus =
-  '<p data-doc-capability-status>Not registered as a GenUI capability yet.</p>';
+  '<p data-doc-capability-status>Not registered as a GenUX capability yet.</p>';
 const standardSections = [
   'page-types',
   'section-order',
@@ -102,10 +102,10 @@ const structuralRules = [
 
 const shell = main => `<!doctype html>
 <html lang="en">
-  <head><meta charset="utf-8" /><title>Fixture · Atlas Components</title></head>
-  <body data-atlas-surface="docs">
+  <head><meta charset="utf-8" /><title>Fixture · GenUX Components</title></head>
+  <body data-genux-surface="docs">
     <a class="skip-link" href="#content">Skip to content</a>
-    <header><a href="/">Atlas Components</a></header>
+    <header><a href="/">GenUX Components</a></header>
     <aside>
       <h2>Component library</h2>
       <nav aria-label="Documentation">
@@ -159,7 +159,7 @@ function resources({ sources = resourceSources, raw = {}, status = capabilitySta
 const componentBodies = {
   usage: '<ul><li>Show a dated sequence of related events.</li></ul>',
   examples: `<p>Open Tweaker from the middle of the right edge.</p>${demo}`,
-  code: "<pre><code>import { AtlasTimeline } from '../react/AtlasTimeline';</code></pre>",
+  code: "<pre><code>import { GenUXTimeline } from '../react/GenUXTimeline';</code></pre>",
   astro: `<p>Astro renders static content; the trusted React island owns interaction.</p>
 <pre><code>---
 import Demo from '../react/Demo';
@@ -288,7 +288,7 @@ async function rejects(html, path, ruleId) {
 }
 
 async function tempSite(t, files) {
-  const directory = await mkdtemp(join(tmpdir(), 'atlas-docs-presentation-'));
+  const directory = await mkdtemp(join(tmpdir(), 'genux-docs-presentation-'));
   t.after(() => rm(directory, { recursive: true, force: true }));
   for (const [file, html] of Object.entries(files)) {
     await mkdir(dirname(join(directory, file)), { recursive: true });
@@ -299,7 +299,7 @@ async function tempSite(t, files) {
 const redirectPage = target => `<!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" /><title>Redirecting · Atlas Components</title>
+    <meta charset="utf-8" /><title>Redirecting · GenUX Components</title>
     <link rel="canonical" href="${target}" />
     <meta http-equiv="refresh" content="0; url=${target}" />
   </head>
@@ -633,15 +633,15 @@ test('resources name concrete source locations and keep capability status separa
   await fails({
     raw: { tests: '<li data-doc-resource="tests"><code data-doc-source> </code></li>' },
   });
-  await fails({ raw: { genui: '<li data-doc-resource="genui">GenUI contract and registry</li>' } });
+  await fails({ raw: { genux: '<li data-doc-resource="genux">GenUX contract and registry</li>' } });
   await fails({
-    raw: { genui: '<li data-doc-resource="genui">Not registered as a GenUI capability yet.</li>' },
+    raw: { genux: '<li data-doc-resource="genux">Not registered as a GenUX capability yet.</li>' },
   });
-  for (const required of resourceSources.genui) {
+  for (const required of resourceSources.genux) {
     await fails({
       sources: {
         ...resourceSources,
-        genui: resourceSources.genui.filter(path => path !== required),
+        genux: resourceSources.genux.filter(path => path !== required),
       },
     });
   }
@@ -735,8 +735,8 @@ test('the Astro build:done gate fails the build on structural findings', async t
   const { default: config } = await import(
     pathToFileURL(resolve(root, 'docs/astro.config.mjs')).href
   );
-  const gate = config.integrations.flat().find(item => item?.name === 'atlas-docs-presentation');
-  assert.ok(gate, 'atlas-docs-presentation integration is configured');
+  const gate = config.integrations.flat().find(item => item?.name === 'genux-docs-presentation');
+  assert.ok(gate, 'genux-docs-presentation integration is configured');
   const hook = gate.hooks?.['astro:build:done'];
   assert.equal(typeof hook, 'function');
   const logger = { info() {}, warn() {}, error() {}, debug() {}, fork: () => logger };

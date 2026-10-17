@@ -25,17 +25,17 @@ import {
   Table,
   theme,
 } from 'antd';
-import AtlasProvider from './AtlasProvider';
-import AtlasButton from './AtlasButton';
-import AtlasInput from './AtlasInput';
-import AtlasCascader, { resolveCascadePath, type AtlasCascadeOption } from './AtlasCascader';
+import GenUXProvider from './GenUXProvider';
+import GenUXButton from './GenUXButton';
+import GenUXInput from './GenUXInput';
+import GenUXCascader, { resolveCascadePath, type GenUXCascadeOption } from './GenUXCascader';
 import AdaptiveShell from './AdaptiveShell';
 import AdaptiveSider from './AdaptiveSider';
 import { AdaptiveContext, useAdaptive, type AdaptiveContextValue } from './AdaptiveProvider';
 import { PreviewProvider, type PreviewContextValue } from './PreviewContext';
 import { EntityCard } from './cards';
 import { useI18n } from './useI18n';
-import type { AtlasCardModel } from '../data/card-model';
+import type { GenUXCardModel } from '../data/card-model';
 import type { ThemeMode } from '../theme';
 import {
   adaptivePolicy,
@@ -56,7 +56,7 @@ import {
 
 type Translate = ReturnType<typeof useI18n>['t'];
 
-// The recorded GenUI lab and its stylesheets load only after the explicit button click.
+// The recorded GenUX lab and its stylesheets load only after the explicit button click.
 const labStylesheets = new Map<string, Promise<void>>();
 const loadStylesheet = (href: string) => {
   const cached = labStylesheets.get(href);
@@ -69,18 +69,18 @@ const loadStylesheet = (href: string) => {
     link.onerror = () => {
       labStylesheets.delete(href);
       link.remove();
-      reject(new Error(`GenUI lab stylesheet failed to load: ${href}`));
+      reject(new Error(`GenUX lab stylesheet failed to load: ${href}`));
     };
   });
   labStylesheets.set(href, loaded);
   document.head.append(link);
   return loaded;
 };
-const loadGenUICardLab = async () => {
+const loadGenUXCardLab = async () => {
   const [lab, labStyles, runtimeStyles] = await Promise.all([
-    import('./genui/GenUICardLab'),
-    import('../styles/genui-card-lab.css?url'),
-    import('../styles/genui-runtime.css?url'),
+    import('./genux/GenUXCardLab'),
+    import('../styles/genux-card-lab.css?url'),
+    import('../styles/genux-runtime.css?url'),
   ]);
   await Promise.all([loadStylesheet(labStyles.default), loadStylesheet(runtimeStyles.default)]);
   return lab;
@@ -93,9 +93,9 @@ const labStatusLabels: Record<LabStatus, string> = {
   error: 'Failed to load',
 };
 /** Reports ready only after the module and both stylesheets resolve; a rejection reports error. */
-const trackedGenUICardLab = (report: (status: LabStatus) => void) =>
+const trackedGenUXCardLab = (report: (status: LabStatus) => void) =>
   lazy(() =>
-    loadGenUICardLab().then(
+    loadGenUXCardLab().then(
       lab => {
         report('ready');
         return lab;
@@ -144,7 +144,7 @@ const surfaceLabels: Record<ProductSurface, string> = {
   'living-room': 'Living room (TV)',
 };
 
-const categories: readonly AtlasCascadeOption[] = [
+const categories: readonly GenUXCascadeOption[] = [
   {
     value: 'operations',
     label: 'Operations',
@@ -186,7 +186,7 @@ const categories: readonly AtlasCascadeOption[] = [
   },
 ];
 
-const galleryCard: AtlasCardModel = {
+const galleryCard: GenUXCardModel = {
   id: 'adaptive-card',
   kind: 'entity',
   eyebrow: 'Team workspace',
@@ -248,12 +248,12 @@ function componentCoverageEntries(): CoverageEntry[] {
     status: contract.evidenceStatus,
   }));
 }
-/** A GenUI slug inherits its component's evidence; a doc-only slug carries its own contract. */
+/** A GenUX slug inherits its component's evidence; a doc-only slug carries its own contract. */
 function slugCoverageEntries(): CoverageEntry[] {
   return Object.entries(DOC_SLUG_COVERAGE).map(([id, entry]) => ({
     id,
     status:
-      entry.kind === 'genui'
+      entry.kind === 'genux'
         ? ADAPTIVE_COMPONENT_COVERAGE[entry.component].evidenceStatus
         : entry.contract.evidenceStatus,
   }));
@@ -395,9 +395,9 @@ type Draft = {
 const initialDraft: Draft = { name: '', path: [], error: false, reviewed: null };
 
 function translateOptions(
-  options: readonly AtlasCascadeOption[],
+  options: readonly GenUXCascadeOption[],
   t: Translate,
-): AtlasCascadeOption[] {
+): GenUXCascadeOption[] {
   return options.map(option => ({
     ...option,
     label: t(option.label),
@@ -436,7 +436,7 @@ function DraftJourney({
       </p>
       <div className="adaptive-field">
         <label htmlFor={`${id}-name`}>{t('Draft name')}</label>
-        <AtlasInput
+        <GenUXInput
           id={`${id}-name`}
           value={draft.name}
           status={draft.error ? 'error' : undefined}
@@ -454,7 +454,7 @@ function DraftJourney({
           </p>
         )}
       </div>
-      <AtlasCascader
+      <GenUXCascader
         label={t('Category path')}
         options={options}
         value={draft.path}
@@ -463,7 +463,7 @@ function DraftJourney({
         onChange={path => onChange(current => ({ ...current, path }))}
       />
       <div className="adaptive-actions">
-        <AtlasButton text={t('Review draft')} onClick={review} />
+        <GenUXButton text={t('Review draft')} onClick={review} />
       </div>
       <p role="status" className="adaptive-result" data-adaptive-result>
         {draft.reviewed
@@ -698,7 +698,7 @@ class LabBoundary extends Component<
     return this.state.failed ? (
       <div role="alert">
         <p>{this.props.message}</p>
-        <AtlasButton text={this.props.retryLabel} onClick={this.props.onRetry} />
+        <GenUXButton text={this.props.retryLabel} onClick={this.props.onRetry} />
       </div>
     ) : (
       this.props.children
@@ -706,8 +706,8 @@ class LabBoundary extends Component<
   }
 }
 
-/** Existing recorded GenUI lab, imported only from the explicit button. */
-function GenUIStory({
+/** Existing recorded GenUX lab, imported only from the explicit button. */
+function GenUXStory({
   status,
   onStatus,
 }: {
@@ -719,18 +719,18 @@ function GenUIStory({
   const id = useId();
   const [open, setOpen] = useState(false);
   const [requested, setRequested] = useState(false);
-  const [Lab, setLab] = useState(() => trackedGenUICardLab(onStatus));
+  const [Lab, setLab] = useState(() => trackedGenUXCardLab(onStatus));
   const [revision, setRevision] = useState(0);
   return (
-    <section className="adaptive-genui" aria-labelledby={`${id}-title`}>
+    <section className="adaptive-genux" aria-labelledby={`${id}-title`}>
       <h3 id={`${id}-title`}>{t('AI result story')}</h3>
       <p>
         {t(
-          'Recorded fixture, not a live backend. The optional GenUI lab loads only after you open it.',
+          'Recorded fixture, not a live backend. The optional GenUX lab loads only after you open it.',
         )}
       </p>
       <div className="adaptive-actions">
-        <AtlasButton
+        <GenUXButton
           text={t(open ? 'Close AI result story' : 'Open AI result story')}
           aria-expanded={open}
           aria-controls={`${id}-lab`}
@@ -745,16 +745,16 @@ function GenUIStory({
         {requested && (
           <LabBoundary
             key={revision}
-            message={t('The GenUI lab could not load. The rest of the page remains available.')}
-            retryLabel={t('Retry GenUI lab')}
+            message={t('The GenUX lab could not load. The rest of the page remains available.')}
+            retryLabel={t('Retry GenUX lab')}
             onError={() => onStatus('error')}
             onRetry={() => {
               onStatus('loading');
-              setLab(() => trackedGenUICardLab(onStatus));
+              setLab(() => trackedGenUXCardLab(onStatus));
               setRevision(value => value + 1);
             }}
           >
-            <Suspense fallback={<p role="status">{t('Loading the optional GenUI lab…')}</p>}>
+            <Suspense fallback={<p role="status">{t('Loading the optional GenUX lab…')}</p>}>
               <Lab />
             </Suspense>
           </LabBoundary>
@@ -848,7 +848,7 @@ function AdaptiveLabContent() {
       )
     : [];
   // A requested or failed lab is never reported as loaded; only a resolved module and CSS count.
-  const loaded = [delivery.loaded, labStatus === 'ready' ? 'genui-card-lab' : '']
+  const loaded = [delivery.loaded, labStatus === 'ready' ? 'genux-card-lab' : '']
     .filter(Boolean)
     .join(', ');
   return (
@@ -856,7 +856,7 @@ function AdaptiveLabContent() {
       className="adaptive-lab"
       data-adaptive-mode={settings.mode}
       data-adaptive-surface={settings.surface}
-      data-genui-lab-status={labStatus}
+      data-genux-lab-status={labStatus}
     >
       <section className="adaptive-lab-controls" aria-labelledby={`${id}-controls`}>
         <h3 id={`${id}-controls`}>{t('Lab controls')}</h3>
@@ -868,7 +868,7 @@ function AdaptiveLabContent() {
           )}
         </p>
         <div className="adaptive-control-row">
-          <AtlasButton
+          <GenUXButton
             text={t(simulated ? 'Use actual signals' : 'Start simulation')}
             aria-pressed={simulated}
             onClick={() => update({ mode: simulated ? 'actual' : 'simulation' })}
@@ -951,14 +951,14 @@ function AdaptiveLabContent() {
           </fieldset>
         )}
         <div className="adaptive-actions">
-          <AtlasButton
+          <GenUXButton
             text={t(compare ? 'Hide web and TV comparison' : 'Compare web and TV')}
             fill="text"
             aria-expanded={compare}
             onClick={() => setCompare(current => !current)}
           />
           {retainedPhone && (
-            <AtlasButton text={t('Reset')} fill="text" onClick={() => actual.releaseJourney()} />
+            <GenUXButton text={t('Reset')} fill="text" onClick={() => actual.releaseJourney()} />
           )}
         </div>
       </section>
@@ -993,7 +993,7 @@ function AdaptiveLabContent() {
                   [t('Shell layout'), delivery.layout || t('Not reported')],
                   [t('Delivery status'), delivery.status || t('Not reported')],
                   [t('Loaded modules'), loaded || t('Not reported')],
-                  [t('GenUI lab status'), t(labStatusLabels[labStatus])],
+                  [t('GenUX lab status'), t(labStatusLabels[labStatus])],
                 ]}
               />
             </div>
@@ -1017,7 +1017,7 @@ function AdaptiveLabContent() {
         {/* Local preview theme and overflow owner; the draft state above never remounts. */}
         <div className="adaptive-lab-frame" data-adaptive-preview-mode={previewMode}>
           <PreviewProvider value={preview}>
-            <AtlasProvider appearance="docs">
+            <GenUXProvider appearance="docs">
               <div className="adaptive-lab-preview">
                 <div ref={host} className="adaptive-lab-shell">
                   <AdaptiveShell
@@ -1035,7 +1035,7 @@ function AdaptiveLabContent() {
                   <h3 id={`${id}-data`}>{t('Responsive data examples')}</h3>
                   <ResponsiveExamples />
                 </section>
-                <GenUIStory status={labStatus} onStatus={setLabStatus} />
+                <GenUXStory status={labStatus} onStatus={setLabStatus} />
                 <section
                   className="adaptive-container"
                   data-adaptive-container="card-widths"
@@ -1045,7 +1045,7 @@ function AdaptiveLabContent() {
                   <CardGallery />
                 </section>
               </div>
-            </AtlasProvider>
+            </GenUXProvider>
           </PreviewProvider>
         </div>
       </AdaptiveContext.Provider>
@@ -1056,8 +1056,8 @@ function AdaptiveLabContent() {
 
 export default function AdaptiveLab({ documentation = false }: { documentation?: boolean } = {}) {
   return (
-    <AtlasProvider appearance={documentation ? 'docs' : undefined}>
+    <GenUXProvider appearance={documentation ? 'docs' : undefined}>
       <AdaptiveLabContent />
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }

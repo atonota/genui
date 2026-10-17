@@ -9,7 +9,7 @@ async function mountFixture(t, body) {
   await writeFile(
     file,
     `import {useState} from 'react';
-import AtlasProvider from '../src/react/AtlasProvider';
+import GenUXProvider from '../src/react/GenUXProvider';
 import {RecordForm} from '../src/react/workspace/kit/RecordForm';
 import {EditableGrid} from '../src/react/workspace/kit/EditableGrid';
 ${body}`,
@@ -94,7 +94,7 @@ test(
       `
 const record={id:'record-a',title:'Authored title'};
 const fields=[{key:'title',label:'Title',kind:'text',required:true,getValue:r=>r.title,setValue:(r,value)=>({...r,title:value})}];
-export default function Fixture(){const[draft,setDraft]=useState(record);const[commits,setCommits]=useState(0);return <AtlasProvider><RecordForm record={record} draft={draft} fields={fields} errors={{_server:'The supplied operation could not be completed.'}} onDraftChange={setDraft} onCommit={()=>setCommits(value=>value+1)} onCancel={()=>setDraft(record)}/><output>{commits}</output></AtlasProvider>}`,
+export default function Fixture(){const[draft,setDraft]=useState(record);const[commits,setCommits]=useState(0);return <GenUXProvider><RecordForm record={record} draft={draft} fields={fields} errors={{_server:'The supplied operation could not be completed.'}} onDraftChange={setDraft} onCommit={()=>setCommits(value=>value+1)} onCancel={()=>setDraft(record)}/><output>{commits}</output></GenUXProvider>}`,
     );
     await h.submit(h.document.querySelector('form'));
 
@@ -122,7 +122,7 @@ test(
       `
 const record={id:'record-a',title:'Authored title'};
 const fields=[{key:'title',label:'Title',kind:'text',required:true,getValue:r=>r.title,setValue:(r,value)=>({...r,title:value})}];
-export default function Fixture(){const[draft,setDraft]=useState({...record,id:'wrong-record'});const[commits,setCommits]=useState(0);return <AtlasProvider><button data-restore-identity='' onClick={()=>setDraft(current=>({...current,id:record.id}))}>Restore supplied identity</button><RecordForm record={record} draft={draft} fields={fields} errors={{}} onDraftChange={setDraft} onCommit={()=>setCommits(value=>value+1)} onCancel={()=>setDraft(record)}/><output>{commits}</output></AtlasProvider>}`,
+export default function Fixture(){const[draft,setDraft]=useState({...record,id:'wrong-record'});const[commits,setCommits]=useState(0);return <GenUXProvider><button data-restore-identity='' onClick={()=>setDraft(current=>({...current,id:record.id}))}>Restore supplied identity</button><RecordForm record={record} draft={draft} fields={fields} errors={{}} onDraftChange={setDraft} onCommit={()=>setCommits(value=>value+1)} onCancel={()=>setDraft(record)}/><output>{commits}</output></GenUXProvider>}`,
     );
     await h.submit(h.document.querySelector('form'));
 
@@ -155,7 +155,7 @@ test(
       `
 const records=[{id:'first',title:'First record',location:'North'},{id:'second',title:'Second record',location:'South'}];
 const fields=['title','location'].map(key=>({key,label:key==='title'?'Title':'Location',kind:'text',required:true,getValue:r=>r[key],setValue:(r,value)=>({...r,[key]:value})}));
-export default function Fixture(){const[drafts,setDrafts]=useState({second:{...records[1],title:'Changed title',location:''}});const[commits,setCommits]=useState(0);return <AtlasProvider><EditableGrid records={records} fields={fields} drafts={drafts} projection={['title']} pageSize={1} onDraftsChange={setDrafts} onCommit={()=>setCommits(value=>value+1)} onCancel={()=>setDrafts({})}/><output>{commits}</output></AtlasProvider>}`,
+export default function Fixture(){const[drafts,setDrafts]=useState({second:{...records[1],title:'Changed title',location:''}});const[commits,setCommits]=useState(0);return <GenUXProvider><EditableGrid records={records} fields={fields} drafts={drafts} projection={['title']} pageSize={1} onDraftsChange={setDrafts} onCommit={()=>setCommits(value=>value+1)} onCancel={()=>setDrafts({})}/><output>{commits}</output></GenUXProvider>}`,
     );
     assert.ok(h.document.querySelector('[data-grid-row="second"]') === null);
     await h.click(buttonByText(h.document, 'Commit all drafts'));

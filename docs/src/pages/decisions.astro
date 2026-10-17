@@ -1,8 +1,9 @@
 ---
 import DocsLayout from '../layouts/DocsLayout.astro';
 import DocumentationNav from '../components/DocumentationNav.astro';
-import atlas from '../data/atlas.json';
-const decisions = atlas.decisions.buttons;
+import genux from '../data/genux.json';
+import { genuxPageHref } from '../data/foundation-navigation';
+const decisions = genux.decisions.buttons;
 const variantGroups = [
   { label: 'Radius', variants: decisions.radius_variants },
   { label: 'Width', variants: decisions.width_variants },
@@ -16,12 +17,12 @@ const variantGroups = [
 ];
 type Variant = { label: string };
 const experimentGroups: { label: string; variants: readonly Variant[] }[] = [
-  { label: 'Width', variants: atlas.experiments.width_variants },
-  { label: 'Color family', variants: atlas.experiments.palette_variants },
-  { label: 'Tone', variants: atlas.experiments.tone_variants },
-  { label: 'Transition duration', variants: atlas.experiments.duration_variants },
-  { label: 'Shadow', variants: atlas.experiments.shadow_variants },
-  { label: 'States', variants: atlas.experiments.state_variants },
+  { label: 'Width', variants: genux.experiments.width_variants },
+  { label: 'Color family', variants: genux.experiments.palette_variants },
+  { label: 'Tone', variants: genux.experiments.tone_variants },
+  { label: 'Transition duration', variants: genux.experiments.duration_variants },
+  { label: 'Shadow', variants: genux.experiments.shadow_variants },
+  { label: 'States', variants: genux.experiments.state_variants },
 ].filter(group => group.variants.length > 0);
 // One line per dated user decision; the linked section owns the full rule and values.
 const decisionLog = [
@@ -151,11 +152,11 @@ const decisionLog = [
   },
   {
     date: '2026-10-15',
-    scope: 'GenUI typography',
+    scope: 'GenUX typography',
     summary:
-      'GenUI text uses a 12 px minimum, 14 px standard and 16 px reading size, with font weight of at least 300.',
-    href: '/genui/',
-    link: 'GenUI',
+      'GenUX text uses a 12 px minimum, 14 px standard and 16 px reading size, with font weight of at least 300.',
+    href: genuxPageHref(import.meta.env.BASE_URL),
+    link: 'GenUX',
   },
 ];
 decisionLog.push(
@@ -163,7 +164,7 @@ decisionLog.push(
     date: '2026-10-16',
     scope: 'Badge profiles',
     summary:
-      'Approved native Badge and Tag profiles have a dedicated Badge size exception; this adds no GenUI registration.',
+      'Approved native Badge and Tag profiles have a dedicated Badge size exception; this adds no GenUX registration.',
     href: '/components/badge/',
     link: 'Badge component',
   },
@@ -195,7 +196,7 @@ decisionLog.push(
     date: '2026-10-16',
     scope: 'GitHub Pages publication',
     summary:
-      'Publication to atonota.github.io/genui is authorized while the local root is retained; authorization and committed source are not deployment receipts.',
+      'Publication to atonota.github.io/genux is authorized while the local root is retained; authorization and committed source are not deployment receipts.',
     href: '/standards/#accessibility',
     link: 'Evidence boundary',
   },

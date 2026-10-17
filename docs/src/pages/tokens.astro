@@ -2,7 +2,7 @@
 import DocsLayout from '../layouts/DocsLayout.astro';
 import CodeExample from '../components/CodeExample.astro';
 import DocumentationNav from '../components/DocumentationNav.astro';
-import atlas from '../data/atlas.json';
+import genux from '../data/genux.json';
 import motion from '../data/motion.json';
 import { STANDARDS_ROUTE, tokenGroupId } from '../data/token-redirects';
 import { createDefaultRecipe, resolveThemeBuilder, tokenDefinitions } from '../theme-builder/model';
@@ -142,7 +142,7 @@ const tables: Table[] = [
     'control-sizes',
     'Control sizes',
     ['Size', 'Height', 'Horizontal padding'],
-    atlas.decisions.buttons.size_variants.map(size => [
+    genux.decisions.buttons.size_variants.map(size => [
       code(size.value),
       code(`${size.height_px}px`),
       code(`${size.padding_inline_px}px`),
@@ -243,7 +243,7 @@ const sections = [
       'Read tokens through their CSS variables. Do not copy default values into components.',
       'Each exported scheme lists every definition id exactly once. Import accepts known token values under their declared constraints, including approved radius choices and retained valid legacy numeric radii. Older recipes receive only missing defaults; existing custom values are preserved. This shape is a summary, not an importable file. Create a complete file with Export JSON in the Theme Builder.',
       'Themes are stored only in this browser. Nothing is sent to a server.',
-      'These definitions are documented standards. They are not full runtime acceptance or GenUI registrations, and not every CSS binding has been verified in every component at runtime.',
+      'These definitions are documented standards. They are not full runtime acceptance or GenUX registrations, and not every CSS binding has been verified in every component at runtime.',
     ],
   },
 ];

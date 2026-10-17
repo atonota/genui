@@ -8,7 +8,7 @@ async function mountFixture(t, body) {
   const file = `docs/tests/.kit-records-${randomUUID()}.tsx`;
   await writeFile(
     file,
-    `import {useState,useRef} from 'react';\nimport AtlasProvider from '../src/react/AtlasProvider';\nimport {RecordForm} from '../src/react/workspace/kit/RecordForm';\nimport {RecordDisplay} from '../src/react/workspace/kit/RecordDisplay';\nimport {RecordPanel} from '../src/react/workspace/kit/RecordPanel';\nimport {EntityPicker} from '../src/react/workspace/kit/EntityPicker';\nimport {RepeatingRecordEditor} from '../src/react/workspace/kit/RepeatingRecordEditor';\nimport {ReviewQueue,ChangeReview,CopyCreate} from '../src/react/workspace/kit/ActionReview';\nimport {AttachmentList,AttachmentPreview,EventList,AuditDisplay,RecordDiff} from '../src/react/workspace/kit/EvidencePanels';\n${body}`,
+    `import {useState,useRef} from 'react';\nimport GenUXProvider from '../src/react/GenUXProvider';\nimport {RecordForm} from '../src/react/workspace/kit/RecordForm';\nimport {RecordDisplay} from '../src/react/workspace/kit/RecordDisplay';\nimport {RecordPanel} from '../src/react/workspace/kit/RecordPanel';\nimport {EntityPicker} from '../src/react/workspace/kit/EntityPicker';\nimport {RepeatingRecordEditor} from '../src/react/workspace/kit/RepeatingRecordEditor';\nimport {ReviewQueue,ChangeReview,CopyCreate} from '../src/react/workspace/kit/ActionReview';\nimport {AttachmentList,AttachmentPreview,EventList,AuditDisplay,RecordDiff} from '../src/react/workspace/kit/EvidencePanels';\n${body}`,
   );
   let h;
   try {
@@ -29,7 +29,7 @@ test('RecordForm reveals a hidden invalid field without losing the mounted draft
     t,
     `
     const fields=[{key:'name',label:'Customer name',kind:'text',section:'Identity',required:true,getValue:r=>r.name,setValue:(r,v)=>({...r,name:v})},{key:'email',label:'Contact email',kind:'text',section:'Contact',required:true,getValue:r=>r.email,setValue:(r,v)=>({...r,email:v})}];
-    export default function Fixture(){const record={id:'R-1',name:'',email:''};const[draft,setDraft]=useState(record);const[committed,setCommitted]=useState('');return <AtlasProvider><RecordForm record={record} draft={draft} fields={fields} errors={{}} organization="steps" onDraftChange={setDraft} onCommit={r=>setCommitted(r.name)} onCancel={()=>{}}/><output data-committed="">{committed}</output></AtlasProvider>}
+    export default function Fixture(){const record={id:'R-1',name:'',email:''};const[draft,setDraft]=useState(record);const[committed,setCommitted]=useState('');return <GenUXProvider><RecordForm record={record} draft={draft} fields={fields} errors={{}} organization="steps" onDraftChange={setDraft} onCommit={r=>setCommitted(r.name)} onCancel={()=>{}}/><output data-committed="">{committed}</output></GenUXProvider>}
   `,
   );
   const name = h.document.querySelector('[data-field-key="name"] input');
@@ -59,7 +59,7 @@ test('EntityPicker stores disambiguated IDs and open/create remain explicit inte
   const h = await mountFixture(
     t,
     `
-    export default function Fixture(){const[value,setValue]=useState('north');const[opened,setOpened]=useState('');const[created,setCreated]=useState(false);return <AtlasProvider><EntityPicker id="entity-test" label="Customer relation" value={value} options={[{id:'north',label:'Acme'},{id:'south',label:'Acme'}]} onChange={setValue} onOpen={setOpened} onCreate={()=>setCreated(true)}/><output data-value="">{value}</output><output data-opened="">{opened}</output><output data-created="">{String(created)}</output></AtlasProvider>}
+    export default function Fixture(){const[value,setValue]=useState('north');const[opened,setOpened]=useState('');const[created,setCreated]=useState(false);return <GenUXProvider><EntityPicker id="entity-test" label="Customer relation" value={value} options={[{id:'north',label:'Acme'},{id:'south',label:'Acme'}]} onChange={setValue} onOpen={setOpened} onCreate={()=>setCreated(true)}/><output data-value="">{value}</output><output data-opened="">{opened}</output><output data-created="">{String(created)}</output></GenUXProvider>}
   `,
   );
   await selectOption(h, h.document.querySelector('#entity-test'), 'Acme · south');
@@ -75,7 +75,7 @@ test('RepeatingRecordEditor preserves child/error identity through reorder and r
     t,
     `
     const fields=[{key:'label',label:'Line description',kind:'text',getValue:r=>r.label,setValue:(r,v)=>({...r,label:v})}];
-    export default function Fixture(){const[rows,setRows]=useState([{id:'first',label:'First draft'},{id:'second',label:'Second draft'}]);return <AtlasProvider><RepeatingRecordEditor rows={rows} fields={fields} errorsById={{first:{label:'Review first line'}}} onRowsChange={setRows} createRow={()=>({id:'third',label:''})}/></AtlasProvider>}
+    export default function Fixture(){const[rows,setRows]=useState([{id:'first',label:'First draft'},{id:'second',label:'Second draft'}]);return <GenUXProvider><RepeatingRecordEditor rows={rows} fields={fields} errorsById={{first:{label:'Review first line'}}} onRowsChange={setRows} createRow={()=>({id:'third',label:''})}/></GenUXProvider>}
   `,
   );
   const first = h.document.querySelector('[data-child-id="first"] input');
@@ -101,7 +101,7 @@ test('ReviewQueue navigation cannot approve and reports distinct queue counters'
   const h = await mountFixture(
     t,
     `
-    export default function Fixture(){const[active,setActive]=useState('a');const[decision,setDecision]=useState('');return <AtlasProvider><ReviewQueue items={[{id:'a',label:'Alpha'},{id:'b',label:'Beta'}]} activeId={active} completedIds={['done']} deferredIds={['later']} onNavigate={setActive} onDecision={(id,action)=>setDecision(id+':'+action)}/><output data-decision="">{decision}</output><output data-active="">{active}</output></AtlasProvider>}
+    export default function Fixture(){const[active,setActive]=useState('a');const[decision,setDecision]=useState('');return <GenUXProvider><ReviewQueue items={[{id:'a',label:'Alpha'},{id:'b',label:'Beta'}]} activeId={active} completedIds={['done']} deferredIds={['later']} onNavigate={setActive} onDecision={(id,action)=>setDecision(id+':'+action)}/><output data-decision="">{decision}</output><output data-active="">{active}</output></GenUXProvider>}
   `,
   );
   await h.click(buttonByText(h.document, 'Next queued record'));
@@ -117,7 +117,7 @@ test('ChangeReview shows supplied unknown/partial results without claiming succe
   const h = await mountFixture(
     t,
     `
-    export default function Fixture(){return <AtlasProvider><ChangeReview targets={[{id:'a',changes:[{fieldKey:'owner',label:'Owner',mode:'set',before:'Old',after:'New'}]},{id:'b',changes:[{fieldKey:'owner',label:'Owner',mode:'clear',before:'Other',after:null}]}]} results={[{id:'a',state:'partial',message:'One field accepted',retryable:true},{id:'b',state:'unknown',message:'Outcome unconfirmed'}]}/></AtlasProvider>}
+    export default function Fixture(){return <GenUXProvider><ChangeReview targets={[{id:'a',changes:[{fieldKey:'owner',label:'Owner',mode:'set',before:'Old',after:'New'}]},{id:'b',changes:[{fieldKey:'owner',label:'Owner',mode:'clear',before:'Other',after:null}]}]} results={[{id:'a',state:'partial',message:'One field accepted',retryable:true},{id:'b',state:'unknown',message:'Outcome unconfirmed'}]}/></GenUXProvider>}
   `,
   );
   assert.match(h.document.body.textContent, /Partial result/);
@@ -129,7 +129,7 @@ test('ChangeReview shows supplied unknown/partial results without claiming succe
 test('RecordDisplay null record exposes recovery state without edit intent', async t => {
   const h = await mountFixture(
     t,
-    `export default function Fixture(){return <AtlasProvider><RecordDisplay record={null} recordId="missing-id" fields={[]} state={{kind:'not-found',message:'Record was removed'}} onEdit={()=>{}}/></AtlasProvider>}`,
+    `export default function Fixture(){return <GenUXProvider><RecordDisplay record={null} recordId="missing-id" fields={[]} state={{kind:'not-found',message:'Record was removed'}} onEdit={()=>{}}/></GenUXProvider>}`,
   );
   assert.match(h.document.body.textContent, /Record was removed/);
   assert.equal(buttonByText(h.document, 'Edit record'), undefined);
@@ -140,7 +140,7 @@ test('RecordForm never evaluates a restricted getter or an unknown-operation com
     t,
     `
     const fields=[{key:'public',label:'Public value',kind:'text',getValue:r=>r.public,setValue:(r,v)=>({...r,public:v})},{key:'secret',label:'Restricted field',kind:'text',availability:()=>({state:'restricted',reason:'Supplied restriction'}),getValue:()=>{throw new Error('Restricted getter must not run')},setValue:r=>r}];
-    export default function Fixture(){const record={id:'r',public:'Visible'};const[draft,setDraft]=useState(record);const[committed,setCommitted]=useState(false);return <AtlasProvider><RecordForm record={record} draft={draft} fields={fields} errors={{}} operation={{kind:'unknown',message:'Outcome unconfirmed'}} onDraftChange={setDraft} onCommit={()=>setCommitted(true)} onCancel={()=>{}}/><output data-committed="">{String(committed)}</output></AtlasProvider>}
+    export default function Fixture(){const record={id:'r',public:'Visible'};const[draft,setDraft]=useState(record);const[committed,setCommitted]=useState(false);return <GenUXProvider><RecordForm record={record} draft={draft} fields={fields} errors={{}} operation={{kind:'unknown',message:'Outcome unconfirmed'}} onDraftChange={setDraft} onCommit={()=>setCommitted(true)} onCancel={()=>{}}/><output data-committed="">{String(committed)}</output></GenUXProvider>}
   `,
   );
   assert.match(h.document.body.textContent, /Supplied restriction/);
@@ -154,7 +154,7 @@ test('CopyCreate refuses the source identity and leaves identity assignment to t
     t,
     `
     const fields=[{key:'name',label:'Name',kind:'text',getValue:r=>r.name,setValue:(r,v)=>({...r,name:v})}];
-    export default function Fixture(){const source={id:'same',name:'Source name'};const[candidate,setCandidate]=useState({...source});const[created,setCreated]=useState('');return <AtlasProvider><CopyCreate source={source} candidate={candidate} fields={fields} onCandidateChange={setCandidate} onCreate={value=>setCreated(value.id)} onCancel={()=>{}}/><output data-created="">{created}</output></AtlasProvider>}
+    export default function Fixture(){const source={id:'same',name:'Source name'};const[candidate,setCandidate]=useState({...source});const[created,setCreated]=useState('');return <GenUXProvider><CopyCreate source={source} candidate={candidate} fields={fields} onCandidateChange={setCandidate} onCreate={value=>setCreated(value.id)} onCancel={()=>{}}/><output data-created="">{created}</output></GenUXProvider>}
   `,
   );
   await h.submit(h.document.querySelector('form'));
@@ -167,7 +167,7 @@ test('Form tabs and accordion headers preserve one mounted field tree', async t 
     t,
     `
     const fields=[{key:'name',label:'Name',kind:'text',section:'Identity',getValue:r=>r.name,setValue:(r,v)=>({...r,name:v})},{key:'note',label:'Note',kind:'multiline',section:'Context',getValue:r=>r.note,setValue:(r,v)=>({...r,note:v})}];
-    export default function Fixture(){const record={id:'r',name:'Initial',note:'Note'};const[draft,setDraft]=useState(record);const[organization,setOrganization]=useState('tabs');return <AtlasProvider><button data-use-accordion="" onClick={()=>setOrganization('accordion')}>Use accordion</button><RecordForm record={record} draft={draft} fields={fields} errors={{}} organization={organization} onDraftChange={setDraft} onCommit={()=>{}} onCancel={()=>{}}/></AtlasProvider>}
+    export default function Fixture(){const record={id:'r',name:'Initial',note:'Note'};const[draft,setDraft]=useState(record);const[organization,setOrganization]=useState('tabs');return <GenUXProvider><button data-use-accordion="" onClick={()=>setOrganization('accordion')}>Use accordion</button><RecordForm record={record} draft={draft} fields={fields} errors={{}} organization={organization} onDraftChange={setDraft} onCommit={()=>{}} onCancel={()=>{}}/></GenUXProvider>}
   `,
   );
   const name = h.document.querySelector('[data-field-key="name"] input');
@@ -194,7 +194,7 @@ test('Repeating row operation state blocks only its target and preserves supplie
     t,
     `
     const fields=[{key:'label',label:'Line label',kind:'text',getValue:r=>r.label,setValue:(r,v)=>({...r,label:v})}];
-    export default function Fixture(){const[rows,setRows]=useState([{id:'first',label:'First'},{id:'second',label:'Second'}]);return <AtlasProvider><RepeatingRecordEditor rows={rows} fields={fields} operationsById={{first:{kind:'pending',message:'Waiting for the first supplied result'}}} onRowsChange={setRows}/><output data-row-count="">{rows.length}</output></AtlasProvider>}
+    export default function Fixture(){const[rows,setRows]=useState([{id:'first',label:'First'},{id:'second',label:'Second'}]);return <GenUXProvider><RepeatingRecordEditor rows={rows} fields={fields} operationsById={{first:{kind:'pending',message:'Waiting for the first supplied result'}}} onRowsChange={setRows}/><output data-row-count="">{rows.length}</output></GenUXProvider>}
   `,
   );
   assert.equal(buttonByText(h.document, 'Remove first').disabled, true);
@@ -214,7 +214,7 @@ test('RecordDisplay reports controlled section and return-context intents', asyn
     t,
     `
     const fields=[{key:'name',label:'Name',kind:'text',section:'Identity',getValue:r=>r.name},{key:'note',label:'Note',kind:'text',section:'Context',getValue:r=>r.note}];
-    export default function Fixture(){const[active,setActive]=useState('Identity');const[returned,setReturned]=useState(false);return <AtlasProvider><RecordDisplay record={{id:'r',name:'Record',note:'Context note'}} fields={fields} presentation="tabs" activeSection={active} onSectionChange={setActive} returnContext={{label:'Results',onReturn:()=>setReturned(true)}}/><output data-active-section="">{active}</output><output data-returned="">{String(returned)}</output></AtlasProvider>}
+    export default function Fixture(){const[active,setActive]=useState('Identity');const[returned,setReturned]=useState(false);return <GenUXProvider><RecordDisplay record={{id:'r',name:'Record',note:'Context note'}} fields={fields} presentation="tabs" activeSection={active} onSectionChange={setActive} returnContext={{label:'Results',onReturn:()=>setReturned(true)}}/><output data-active-section="">{active}</output><output data-returned="">{String(returned)}</output></GenUXProvider>}
   `,
   );
   await h.click(
@@ -234,7 +234,7 @@ test('Evidence panels gate blocked states and retain only explicitly partial or 
     const attachment={id:'secret-attachment',name:'Private attachment name',mimeType:'application/private',sizeBytes:12,preview:{kind:'text',text:'Private attachment content'}};
     const event={id:'secret-event',at:'2026-10-13T09:00:00Z',actor:'Private actor',title:'Private event title',detail:'Private event detail'};
     const differences=[{key:'secret',label:'Private field',before:'Private before',after:'Private after'}];
-    export default function Fixture(){const[kind,setKind]=useState('ready');return <AtlasProvider><nav>{['denied','unknown','loading','error','not-found','partial','stale'].map(value=><button key={value} data-evidence-state={value} onClick={()=>setKind(value)}>{value}</button>)}</nav><AttachmentList attachments={[attachment]} selectedId={attachment.id} onSelect={()=>{}} state={{kind}}/><AttachmentPreview attachment={attachment} state={{kind}}/><EventList events={[event]} state={{kind}}/><AuditDisplay events={[event]} state={{kind}}/><RecordDiff differences={differences} state={{kind}}/></AtlasProvider>}
+    export default function Fixture(){const[kind,setKind]=useState('ready');return <GenUXProvider><nav>{['denied','unknown','loading','error','not-found','partial','stale'].map(value=><button key={value} data-evidence-state={value} onClick={()=>setKind(value)}>{value}</button>)}</nav><AttachmentList attachments={[attachment]} selectedId={attachment.id} onSelect={()=>{}} state={{kind}}/><AttachmentPreview attachment={attachment} state={{kind}}/><EventList events={[event]} state={{kind}}/><AuditDisplay events={[event]} state={{kind}}/><RecordDiff differences={differences} state={{kind}}/></GenUXProvider>}
   `,
   );
   assert.match(h.document.body.textContent, /Private attachment name/);
@@ -258,7 +258,7 @@ test('Evidence panels gate blocked states and retain only explicitly partial or 
 test('Evidence panels preserve supplied strings when Turkish UI labels are translated', async t => {
   const h = await mountFixture(
     t,
-    `export default function Fixture(){return <AtlasProvider><RecordDiff differences={[{key:'first',label:'First',before:'Not set',after:'Yes'},{key:'second',label:'Second',before:'No',after:null},{key:'third',label:'Third',before:false,after:true}]}/><EventList events={[{id:'event',at:'2026-10-13T09:00:00Z',actor:'Not set',title:'Yes',detail:'No'}]}/></AtlasProvider>}`,
+    `export default function Fixture(){return <GenUXProvider><RecordDiff differences={[{key:'first',label:'First',before:'Not set',after:'Yes'},{key:'second',label:'Second',before:'No',after:null},{key:'third',label:'Third',before:false,after:true}]}/><EventList events={[{id:'event',at:'2026-10-13T09:00:00Z',actor:'Not set',title:'Yes',detail:'No'}]}/></GenUXProvider>}`,
   );
   await h.act(async () => h.setLocale('tr'));
   const cells = [...h.document.querySelectorAll('.kit-record-diff tbody td')].map(
@@ -272,7 +272,7 @@ test('Evidence panels preserve supplied strings when Turkish UI labels are trans
 const panelFixture = `
   const records=[{id:'note-a',title:'Alpha notebook',notes:'Long supplied note. '.repeat(100)},{id:'note-b',title:'Beta notebook',notes:'Second supplied note. '.repeat(100)}];
   const fields=[{key:'title',label:'Notebook title',kind:'text',section:'Identity',getValue:r=>r.title},{key:'notes',label:'Notebook notes',kind:'multiline',section:'Context',getValue:r=>r.notes}];
-  export default function Fixture(){const[active,setActive]=useState('note-a');const[open,setOpen]=useState(false);const[container,setContainer]=useState('inline');const[history,setHistory]=useState([]);const[draft,setDraft]=useState('Parent draft');const[denied,setDenied]=useState(false);const[editCount,setEditCount]=useState(0);const opener=useRef(null);return <AtlasProvider><button ref={opener} data-panel-open="" onClick={()=>setOpen(true)}>Open current panel</button><nav>{['page','inline','split','modal','drawer'].map(value=><button key={value} data-panel-mode={value} onClick={()=>setContainer(value)}>{value}</button>)}</nav><button data-deny="" onClick={()=>setDenied(true)}>Deny supplied content</button><input data-parent-draft="" value={draft} onChange={event=>setDraft(event.target.value)}/><output data-active-id="">{active}</output><output data-edit-count="">{editCount}</output><RecordPanel record={records.find(record=>record.id===active)} fields={fields} open={open} onClose={()=>setOpen(false)} container={container} returnFocusRef={opener} capability={{allowed:false,reason:'Editing is unavailable'}} onEdit={()=>setEditCount(value=>value+1)} state={{kind:denied?'denied':'ready'}} returnTrail={history.map((recordId,index)=>({id:recordId+'::'+index,label:recordId+' visit '+index,onReturn:()=>{setActive(recordId);setHistory(current=>current.slice(0,index))}}))}><button data-related="" onClick={()=>{setHistory(current=>[...current,active]);setActive(active==='note-a'?'note-b':'note-a')}}>Open related notebook</button><p data-panel-end="">End of notebook content</p></RecordPanel></AtlasProvider>}
+  export default function Fixture(){const[active,setActive]=useState('note-a');const[open,setOpen]=useState(false);const[container,setContainer]=useState('inline');const[history,setHistory]=useState([]);const[draft,setDraft]=useState('Parent draft');const[denied,setDenied]=useState(false);const[editCount,setEditCount]=useState(0);const opener=useRef(null);return <GenUXProvider><button ref={opener} data-panel-open="" onClick={()=>setOpen(true)}>Open current panel</button><nav>{['page','inline','split','modal','drawer'].map(value=><button key={value} data-panel-mode={value} onClick={()=>setContainer(value)}>{value}</button>)}</nav><button data-deny="" onClick={()=>setDenied(true)}>Deny supplied content</button><input data-parent-draft="" value={draft} onChange={event=>setDraft(event.target.value)}/><output data-active-id="">{active}</output><output data-edit-count="">{editCount}</output><RecordPanel record={records.find(record=>record.id===active)} fields={fields} open={open} onClose={()=>setOpen(false)} container={container} returnFocusRef={opener} capability={{allowed:false,reason:'Editing is unavailable'}} onEdit={()=>setEditCount(value=>value+1)} state={{kind:denied?'denied':'ready'}} returnTrail={history.map((recordId,index)=>({id:recordId+'::'+index,label:recordId+' visit '+index,onReturn:()=>{setActive(recordId);setHistory(current=>current.slice(0,index))}}))}><button data-related="" onClick={()=>{setHistory(current=>[...current,active]);setActive(active==='note-a'?'note-b':'note-a')}}>Open related notebook</button><p data-panel-end="">End of notebook content</p></RecordPanel></GenUXProvider>}
 `;
 
 test('RecordPanel preserves generic record context through containers and native close/reopen', async t => {

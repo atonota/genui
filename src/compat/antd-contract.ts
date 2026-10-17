@@ -38,7 +38,7 @@ export type AntdFormProps = {
 };
 
 // Intentionally component-specific: Switch has no large size; Checkbox and Radio
-// have no size prop. Custom atlas dimensions remain project CSS, not invented APIs.
+// have no size prop. Custom genux dimensions remain project CSS, not invented APIs.
 export const antdFormPropsContract = {
   Input: {
     size: 'medium',

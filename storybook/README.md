@@ -1,8 +1,8 @@
-# Atlas Components Storybook
+# GenUX Components Storybook
 
 Storybook 10.2.19 uses the shared React demos: Button, Input, Select, Checkbox,
 Radio, Switch, Accordion, Form and Drawer. Astro documentation and Storybook
-share demo code, `AtlasProvider`, tokens, Outfit fonts and stylesheets.
+share demo code, `GenUXProvider`, tokens, Outfit fonts and stylesheets.
 
 ## Run and verify
 
@@ -35,12 +35,12 @@ exports `Playground`, approved states, dimensions and visual decision stories.
 Other components export `Variants`. Variants use the existing demo controls;
 props-free demos must not gain a second independent Controls state.
 
-Demos already include `AtlasProvider`; do not add a duplicate provider decorator.
-Preview CSS follows the documentation order: `docs.css`, `atlas-shadows.css`,
+Demos already include `GenUXProvider`; do not add a duplicate provider decorator.
+Preview CSS follows the documentation order: `docs.css`, `genux-shadows.css`,
 `components.css`, then preview chrome styles and `web.css`. Only Input and Select
-opt into `atlasSharedPreview: true`, which places their content inside the same
+opt into `genuxSharedPreview: true`, which places their content inside the same
 `.live-preview` scope as the documentation. Input sets `numberMode: 'spinner'` to
-use the shared NumberStepper; Select sets `pillTags: true` to use AtlasPill.
+use the shared NumberStepper; Select sets `pillTags: true` to use GenUXPill.
 The demo APIs and native fallbacks stay available. Other stories remain outside
 this scope; Checkbox, Radio and Switch web experiments are not promoted by this
 alignment. AntD generates its client styles; the Astro SSR extraction code is not
@@ -53,7 +53,7 @@ decision lists.
 
 Approved states are Default, Hover, Pressed, Disabled, Processing, Saving, Syncing
 and Queued. Approved visual stories preserve the user's recorded fill, color,
-tone, radius, shadow and transition choices. `AtlasButton` is the common AntD
+tone, radius, shadow and transition choices. `GenUXButton` is the common AntD
 renderer. Busy states prevent repeated submission and show an indeterminate line;
 the line does not represent a real request or measured progress.
 

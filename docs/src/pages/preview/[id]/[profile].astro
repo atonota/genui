@@ -9,7 +9,7 @@ import { docsTypographyStyleText } from '../../../data/typography';
 import { docsAccessibilityStyleText } from '../../../data/accessibility';
 import { selectionSizeStyleText } from '../../../data/selection-sizes';
 import '../../../styles/docs.css';
-import '../../../styles/atlas-shadows.css';
+import '../../../styles/genux-shadows.css';
 import '../../../styles/components.css';
 import '../../../styles/web.css';
 import '../../../styles/size-profiles.css';
@@ -17,7 +17,7 @@ import '../../../styles/interaction-feedback.css';
 import '../../../styles/docs-brand.css';
 import '../../../styles/docs-accessibility.css';
 import '../../../styles/documentation.css';
-import '../../../styles/atlas-input.css';
+import '../../../styles/genux-input.css';
 import '../../../styles/theme-builder.css';
 import '../../../styles/focus-01.css';
 import '../../../styles/preview-document.css';
@@ -102,13 +102,13 @@ const favicon = (base.endsWith('/') ? base : base + '/') + 'favicon.svg';
     <style is:inline data-docs-typography set:html={docsTypographyStyleText} />
     <style is:inline data-docs-accessibility set:html={docsAccessibilityStyleText} />
     <style is:inline data-selection-sizes set:html={selectionSizeStyleText} />
-    <title>{`${id} · ${selection.profile} · Preview · GenUI`}</title>
+    <title>{`${id} · ${selection.profile} · Preview · GenUX`}</title>
     <Fragment set:html={ssrStyles} />
     {routeSheets.map(href => (
       <link rel="stylesheet" href={href} />
     ))}
   </head>
-  <body class="live-preview" data-atlas-surface="docs" data-preview-body>
+  <body class="live-preview" data-genux-surface="docs" data-preview-body>
     {selection.profile === 'small' && <SmallDelivery id={id} slug={slug} standalone client:load />}
     {selection.profile === 'medium' && (
       <MediumDelivery id={id} slug={slug} standalone client:load />

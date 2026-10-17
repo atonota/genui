@@ -226,7 +226,7 @@ function officialHref(href, path) {
 }
 
 // Same-site URL for an href resolved against the page route; null when absent, invalid or external.
-const siteOrigin = 'https://atlas.invalid';
+const siteOrigin = 'https://genux.invalid';
 function localUrl(href, path) {
   if (!href) return null;
   try {
@@ -370,7 +370,7 @@ function checkComponent(document, sections, path, findings) {
       findings.push(
         finding(
           'component-resources-incomplete',
-          'Resources must state the GenUI capability status separately.',
+          'Resources must state the GenUX capability status separately.',
         ),
       );
   }
@@ -592,7 +592,7 @@ function linkedCss(href, base) {
 
 function cssSnapshotPlugin(snapshots) {
   return {
-    name: 'atlas-docs-css-snapshot',
+    name: 'genux-docs-css-snapshot',
     generateBundle: {
       order: 'pre',
       handler(_options, bundle) {
@@ -647,7 +647,7 @@ export default function docsPresentation() {
   const snapshots = new Map();
   let base = '';
   return {
-    name: 'atlas-docs-presentation',
+    name: 'genux-docs-presentation',
     hooks: {
       'astro:config:setup': ({ config }) => {
         // Astro prefixes its own /_astro/ links with base; root builds keep an empty base.

@@ -5,15 +5,15 @@ import { defaultGeometryVariables } from './theme-builder/model';
 
 export type ThemeMode = 'light' | 'dark';
 
-export const THEME_STORAGE_KEY = 'atlas-theme';
-const THEME_EVENT = 'atlas-theme-change';
+export const THEME_STORAGE_KEY = 'genux-theme';
+const THEME_EVENT = 'genux-theme-change';
 
 /** Panel, ink, muted and field roles derive from the central input surface model;
     paper and the warm surface are the approved page values and stay independent.
     The decorative well edge and inner shadows are exported too (--field-inset-border,
     --field-inner-shadow, --field-inner-hover) together with the disabled well roles
     (--field-disabled-bg, --field-disabled-text, --field-disabled-shadow), so every owner,
-    AtlasProvider and the sidebar search included, reads the same model per :root[data-theme]
+    GenUXProvider and the sidebar search included, reads the same model per :root[data-theme]
     instead of inlining a resolved palette.
     Overlay scrim, backdrop blur, stacking and motion roles spread in from overlayThemeRoles(),
     whose single value source is theme-builder/definitions.json; the old dropdown names are

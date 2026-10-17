@@ -1,6 +1,6 @@
-import type { GenUIComponentName } from '../genui/contracts';
+import type { GenUXComponentName } from '../genux/contracts';
 
-// Code-owned adaptive coverage for every GenUI component and documented catalog slug.
+// Code-owned adaptive coverage for every GenUX component and documented catalog slug.
 // Pure metadata: no React, DOM, network or browser globals, so SSR imports stay safe.
 // The shared contract source is implemented, so entries start implemented-unverified.
 // Per-component browser verification is pending; metadata alone never marks one verified.
@@ -124,199 +124,199 @@ function contract(
 }
 
 // Generic components render through the shared surface; native adapters load one file each.
-const SURFACE = 'docs/src/react/genui/AtlasGenUISurface.tsx';
-const native = (module: string): string => `docs/src/react/genui/native/${module}.tsx`;
+const SURFACE = 'docs/src/react/genux/GenUXSurface.tsx';
+const native = (module: string): string => `docs/src/react/genux/native/${module}.tsx`;
 // Doc-only slugs have no runtime renderer; this module owns their explicit contract.
 const DOC_ONLY = 'docs/src/adaptive/component-coverage.ts';
 
 const componentCoverage = {
-  AtlasEntityCard: contract('content', 'stack-to-row', SURFACE, { activation: 'delegated' }),
-  AtlasMetricCard: contract('data', 'fluid-fill', SURFACE),
-  AtlasPurposeCard: contract('content', 'stack-to-row', SURFACE, { activation: 'delegated' }),
-  AtlasTaskSurface: contract('ai', 'stack-to-row', SURFACE, {
+  GenUXEntityCard: contract('content', 'stack-to-row', SURFACE, { activation: 'delegated' }),
+  GenUXMetricCard: contract('data', 'fluid-fill', SURFACE),
+  GenUXPurposeCard: contract('content', 'stack-to-row', SURFACE, { activation: 'delegated' }),
+  GenUXTaskSurface: contract('ai', 'stack-to-row', SURFACE, {
     activation: 'delegated',
     caret: 'delegated',
   }),
-  AtlasCollection: contract('data', 'scroll-region', SURFACE, { activation: 'delegated' }),
-  AtlasChart: contract('data', 'fluid-fill', SURFACE),
-  AtlasForm: contract('field', 'stack-to-row', SURFACE, {
+  GenUXCollection: contract('data', 'scroll-region', SURFACE, { activation: 'delegated' }),
+  GenUXChart: contract('data', 'fluid-fill', SURFACE),
+  GenUXForm: contract('field', 'stack-to-row', SURFACE, {
     activation: 'delegated',
     caret: 'delegated',
   }),
-  AtlasChoice: contract('choice', 'fluid-fill', SURFACE, {
+  GenUXChoice: contract('choice', 'fluid-fill', SURFACE, {
     activation: 'native-control',
     composite: 'combobox',
   }),
-  AtlasAction: contract('action', 'inline-intrinsic', SURFACE, { activation: 'semantic-click' }),
-  AtlasEmpty: contract('feedback', 'fluid-fill', SURFACE, { activation: 'delegated' }),
-  AtlasStack: contract('content', 'stack-to-row', SURFACE),
-  AtlasText: contract('content', 'fluid-fill', SURFACE),
-  AtlasButton: contract('action', 'inline-intrinsic', native('button'), {
+  GenUXAction: contract('action', 'inline-intrinsic', SURFACE, { activation: 'semantic-click' }),
+  GenUXEmpty: contract('feedback', 'fluid-fill', SURFACE, { activation: 'delegated' }),
+  GenUXStack: contract('content', 'stack-to-row', SURFACE),
+  GenUXText: contract('content', 'fluid-fill', SURFACE),
+  GenUXButton: contract('action', 'inline-intrinsic', native('button'), {
     activation: 'semantic-click',
   }),
-  AtlasInput: contract('field', 'fluid-fill', native('input'), {
+  GenUXInput: contract('field', 'fluid-fill', native('input'), {
     activation: 'native-control',
     caret: 'owns-caret',
   }),
-  AtlasInputNumber: contract('field', 'fluid-fill', native('input-number'), {
+  GenUXInputNumber: contract('field', 'fluid-fill', native('input-number'), {
     activation: 'native-control',
     caret: 'owns-caret',
   }),
-  AtlasSelect: contract('choice', 'fluid-fill', native('select'), {
+  GenUXSelect: contract('choice', 'fluid-fill', native('select'), {
     activation: 'native-control',
     composite: 'combobox',
   }),
-  AtlasRadio: contract('choice', 'wrap-flow', native('radio'), {
+  GenUXRadio: contract('choice', 'wrap-flow', native('radio'), {
     activation: 'native-control',
     composite: 'radio-group',
   }),
-  AtlasCheckbox: contract('choice', 'inline-intrinsic', native('checkbox'), {
+  GenUXCheckbox: contract('choice', 'inline-intrinsic', native('checkbox'), {
     activation: 'native-control',
   }),
-  AtlasSwitch: contract('choice', 'inline-intrinsic', native('switch'), {
+  GenUXSwitch: contract('choice', 'inline-intrinsic', native('switch'), {
     activation: 'native-control',
   }),
-  AtlasSlider: contract('field', 'fluid-fill', native('slider'), {
+  GenUXSlider: contract('field', 'fluid-fill', native('slider'), {
     activation: 'native-control',
     composite: 'slider',
   }),
-  AtlasCascader: contract('choice', 'fluid-fill', native('cascader'), {
+  GenUXCascader: contract('choice', 'fluid-fill', native('cascader'), {
     activation: 'native-control',
     composite: 'combobox',
   }),
-  AtlasDateTimePicker: contract('field', 'fluid-fill', native('date-time'), {
+  GenUXDateTimePicker: contract('field', 'fluid-fill', native('date-time'), {
     activation: 'native-control',
     caret: 'owns-caret',
     composite: 'combobox',
   }),
-  AtlasPagination: contract('navigation', 'wrap-flow', native('pagination'), {
+  GenUXPagination: contract('navigation', 'wrap-flow', native('pagination'), {
     activation: 'semantic-click',
   }),
-  AtlasSteps: contract('navigation', 'stack-to-row', native('steps'), {
+  GenUXSteps: contract('navigation', 'stack-to-row', native('steps'), {
     activation: 'semantic-click',
   }),
-  AtlasBreadcrumb: contract('navigation', 'wrap-flow', native('breadcrumb'), {
+  GenUXBreadcrumb: contract('navigation', 'wrap-flow', native('breadcrumb'), {
     activation: 'semantic-click',
   }),
-  AtlasAccordion: contract('content', 'disclosure', native('accordion'), {
+  GenUXAccordion: contract('content', 'disclosure', native('accordion'), {
     activation: 'semantic-click',
     composite: 'disclosure',
   }),
-  AtlasPill: contract('choice', 'wrap-flow', native('pill'), { activation: 'semantic-click' }),
-  AtlasAvatar: contract('content', 'inline-intrinsic', native('avatar')),
-  AtlasAvatarGroup: contract('content', 'wrap-flow', native('avatar-group')),
-  AtlasMediaFrame: contract('content', 'fluid-fill', native('media-frame')),
-  AtlasScreenshot: contract('content', 'fluid-fill', native('screenshot')),
-  AtlasIconList: contract('content', 'wrap-flow', native('icon-list')),
-  AtlasQuote: contract('content', 'fluid-fill', native('quote')),
-  AtlasCarousel: contract('content', 'scroll-region', native('carousel'), {
+  GenUXPill: contract('choice', 'wrap-flow', native('pill'), { activation: 'semantic-click' }),
+  GenUXAvatar: contract('content', 'inline-intrinsic', native('avatar')),
+  GenUXAvatarGroup: contract('content', 'wrap-flow', native('avatar-group')),
+  GenUXMediaFrame: contract('content', 'fluid-fill', native('media-frame')),
+  GenUXScreenshot: contract('content', 'fluid-fill', native('screenshot')),
+  GenUXIconList: contract('content', 'wrap-flow', native('icon-list')),
+  GenUXQuote: contract('content', 'fluid-fill', native('quote')),
+  GenUXCarousel: contract('content', 'scroll-region', native('carousel'), {
     activation: 'semantic-click',
     composite: 'carousel',
   }),
-  AtlasRichMenu: contract('navigation', 'stack-to-row', native('rich-menu'), {
+  GenUXRichMenu: contract('navigation', 'stack-to-row', native('rich-menu'), {
     activation: 'semantic-click',
     composite: 'menu',
   }),
-  AtlasUpload: contract('field', 'fluid-fill', native('upload'), { activation: 'native-control' }),
-  AtlasDrawer: contract('layer', 'overlay-adaptive', native('drawer'), {
+  GenUXUpload: contract('field', 'fluid-fill', native('upload'), { activation: 'native-control' }),
+  GenUXDrawer: contract('layer', 'overlay-adaptive', native('drawer'), {
     activation: 'semantic-click',
     composite: 'dialog',
   }),
-  AtlasToast: contract('feedback', 'overlay-adaptive', native('toast')),
-  AtlasAlert: contract('feedback', 'fluid-fill', native('alert'), { activation: 'semantic-click' }),
-  AtlasNotification: contract('feedback', 'overlay-adaptive', native('notification'), {
+  GenUXToast: contract('feedback', 'overlay-adaptive', native('toast')),
+  GenUXAlert: contract('feedback', 'fluid-fill', native('alert'), { activation: 'semantic-click' }),
+  GenUXNotification: contract('feedback', 'overlay-adaptive', native('notification'), {
     activation: 'semantic-click',
   }),
-  AtlasModal: contract('layer', 'overlay-adaptive', native('modal'), {
-    activation: 'semantic-click',
-    composite: 'dialog',
-  }),
-  AtlasPopconfirm: contract('layer', 'overlay-adaptive', native('popconfirm'), {
+  GenUXModal: contract('layer', 'overlay-adaptive', native('modal'), {
     activation: 'semantic-click',
     composite: 'dialog',
   }),
-  AtlasSplitter: contract('content', 'split-panes', native('splitter'), {
+  GenUXPopconfirm: contract('layer', 'overlay-adaptive', native('popconfirm'), {
+    activation: 'semantic-click',
+    composite: 'dialog',
+  }),
+  GenUXSplitter: contract('content', 'split-panes', native('splitter'), {
     composite: 'separator',
     pointerResize: true,
   }),
-  AtlasAutoComplete: contract('field', 'fluid-fill', native('auto-complete'), {
+  GenUXAutoComplete: contract('field', 'fluid-fill', native('auto-complete'), {
     activation: 'native-control',
     caret: 'owns-caret',
     composite: 'combobox',
   }),
-  AtlasDropdown: contract('navigation', 'inline-intrinsic', native('dropdown'), {
+  GenUXDropdown: contract('navigation', 'inline-intrinsic', native('dropdown'), {
     activation: 'semantic-click',
     composite: 'menu',
   }),
-  AtlasSegmented: contract('choice', 'scroll-region', native('segmented'), {
+  GenUXSegmented: contract('choice', 'scroll-region', native('segmented'), {
     activation: 'native-control',
     composite: 'radio-group',
   }),
-  AtlasRecordCollection: contract('data', 'scroll-region', native('record-collection'), {
+  GenUXRecordCollection: contract('data', 'scroll-region', native('record-collection'), {
     activation: 'delegated',
   }),
-  AtlasRecordDisplay: contract('data', 'stack-to-row', native('record-display')),
-  AtlasRecordForm: contract('field', 'stack-to-row', native('record-form'), {
+  GenUXRecordDisplay: contract('data', 'stack-to-row', native('record-display')),
+  GenUXRecordForm: contract('field', 'stack-to-row', native('record-form'), {
     activation: 'delegated',
     caret: 'delegated',
   }),
-  AtlasEditableGrid: contract('data', 'scroll-region', native('editable-grid'), {
+  GenUXEditableGrid: contract('data', 'scroll-region', native('editable-grid'), {
     activation: 'delegated',
     caret: 'delegated',
     composite: 'grid',
   }),
-  AtlasRepeatingRecords: contract('data', 'stack-to-row', native('repeating-records'), {
+  GenUXRepeatingRecords: contract('data', 'stack-to-row', native('repeating-records'), {
     activation: 'delegated',
     caret: 'delegated',
   }),
-  AtlasConnectedWorkspace: contract('data', 'split-panes', native('connected-workspace'), {
+  GenUXConnectedWorkspace: contract('data', 'split-panes', native('connected-workspace'), {
     activation: 'delegated',
     caret: 'delegated',
   }),
-  AtlasEmptyState: contract('feedback', 'fluid-fill', native('empty-state'), {
+  GenUXEmptyState: contract('feedback', 'fluid-fill', native('empty-state'), {
     activation: 'delegated',
   }),
-  AtlasSeriesChart: contract('data', 'fluid-fill', native('series-chart')),
-  AtlasPasswordInput: contract('field', 'fluid-fill', native('password-input'), {
+  GenUXSeriesChart: contract('data', 'fluid-fill', native('series-chart')),
+  GenUXPasswordInput: contract('field', 'fluid-fill', native('password-input'), {
     activation: 'native-control',
     caret: 'owns-caret',
   }),
-  AtlasTextArea: contract('field', 'fluid-fill', native('text-area'), {
+  GenUXTextArea: contract('field', 'fluid-fill', native('text-area'), {
     activation: 'native-control',
     caret: 'owns-caret',
   }),
-  AtlasSearchInput: contract('field', 'fluid-fill', native('search-input'), {
+  GenUXSearchInput: contract('field', 'fluid-fill', native('search-input'), {
     activation: 'native-control',
     caret: 'owns-caret',
   }),
-  AtlasDateTimeMultiple: contract('field', 'fluid-fill', native('date-multiple'), {
+  GenUXDateTimeMultiple: contract('field', 'fluid-fill', native('date-multiple'), {
     activation: 'native-control',
     caret: 'owns-caret',
     composite: 'combobox',
   }),
-  AtlasRadioCards: contract('choice', 'stack-to-row', native('radio-cards'), {
+  GenUXRadioCards: contract('choice', 'stack-to-row', native('radio-cards'), {
     activation: 'native-control',
     composite: 'radio-group',
   }),
-  AtlasCheckboxCards: contract('choice', 'stack-to-row', native('checkbox-cards'), {
+  GenUXCheckboxCards: contract('choice', 'stack-to-row', native('checkbox-cards'), {
     activation: 'native-control',
     composite: 'checkbox-group',
   }),
-  AtlasSwitchCards: contract('choice', 'stack-to-row', native('switch-cards'), {
+  GenUXSwitchCards: contract('choice', 'stack-to-row', native('switch-cards'), {
     activation: 'native-control',
   }),
-} satisfies Record<GenUIComponentName, ComponentAdaptiveContract>;
+} satisfies Record<GenUXComponentName, ComponentAdaptiveContract>;
 
 export const ADAPTIVE_COMPONENT_COVERAGE: Readonly<
-  Record<GenUIComponentName, ComponentAdaptiveContract>
+  Record<GenUXComponentName, ComponentAdaptiveContract>
 > = Object.freeze(componentCoverage);
 
 export type DocSlugCoverage =
-  | { readonly kind: 'genui'; readonly component: GenUIComponentName }
+  | { readonly kind: 'genux'; readonly component: GenUXComponentName }
   | { readonly kind: 'doc-only'; readonly contract: ComponentAdaptiveContract };
 
-const genui = (component: GenUIComponentName): DocSlugCoverage =>
-  Object.freeze({ kind: 'genui', component });
+const genux = (component: GenUXComponentName): DocSlugCoverage =>
+  Object.freeze({ kind: 'genux', component });
 const docOnly = (value: ComponentAdaptiveContract): DocSlugCoverage =>
   Object.freeze({ kind: 'doc-only', contract: value });
 
@@ -325,54 +325,60 @@ const docOnly = (value: ComponentAdaptiveContract): DocSlugCoverage =>
 // still carry an explicit contract. Every public catalog slug must appear here; the
 // assertion below fails closed on missing, extra or duplicated slugs.
 const docSlugCoverage = {
-  button: genui('AtlasButton'),
-  input: genui('AtlasInput'),
-  autocomplete: genui('AtlasAutoComplete'),
-  cascader: genui('AtlasCascader'),
-  select: genui('AtlasSelect'),
-  checkbox: genui('AtlasCheckbox'),
-  radio: genui('AtlasRadio'),
-  switch: genui('AtlasSwitch'),
-  slider: genui('AtlasSlider'),
-  accordion: genui('AtlasAccordion'),
-  form: genui('AtlasForm'),
-  drawer: genui('AtlasDrawer'),
-  pill: genui('AtlasPill'),
-  dropdown: genui('AtlasDropdown'),
-  pagination: genui('AtlasPagination'),
-  steps: genui('AtlasSteps'),
-  breadcrumb: genui('AtlasBreadcrumb'),
-  splitter: genui('AtlasSplitter'),
+  button: genux('GenUXButton'),
+  input: genux('GenUXInput'),
+  autocomplete: genux('GenUXAutoComplete'),
+  cascader: genux('GenUXCascader'),
+  select: genux('GenUXSelect'),
+  checkbox: genux('GenUXCheckbox'),
+  radio: genux('GenUXRadio'),
+  switch: genux('GenUXSwitch'),
+  slider: genux('GenUXSlider'),
+  accordion: genux('GenUXAccordion'),
+  form: genux('GenUXForm'),
+  drawer: genux('GenUXDrawer'),
+  pill: genux('GenUXPill'),
+  dropdown: genux('GenUXDropdown'),
+  pagination: genux('GenUXPagination'),
+  steps: genux('GenUXSteps'),
+  breadcrumb: genux('GenUXBreadcrumb'),
+  splitter: genux('GenUXSplitter'),
   card: docOnly(contract('content', 'stack-to-row', DOC_ONLY, { activation: 'delegated' })),
-  'data-table': genui('AtlasEditableGrid'),
-  'collection-views': genui('AtlasRecordCollection'),
-  'record-details': genui('AtlasRecordDisplay'),
-  'record-forms': genui('AtlasRecordForm'),
-  'record-workspace': genui('AtlasConnectedWorkspace'),
-  toast: genui('AtlasToast'),
-  alert: genui('AtlasAlert'),
-  notification: genui('AtlasNotification'),
-  modal: genui('AtlasModal'),
-  popconfirm: genui('AtlasPopconfirm'),
-  'date-time': genui('AtlasDateTimePicker'),
-  'empty-state': genui('AtlasEmptyState'),
-  avatar: genui('AtlasAvatar'),
-  media: genui('AtlasMediaFrame'),
+  'data-table': genux('GenUXEditableGrid'),
+  'collection-views': genux('GenUXRecordCollection'),
+  'record-details': genux('GenUXRecordDisplay'),
+  'record-forms': genux('GenUXRecordForm'),
+  'record-workspace': genux('GenUXConnectedWorkspace'),
+  toast: genux('GenUXToast'),
+  alert: genux('GenUXAlert'),
+  notification: genux('GenUXNotification'),
+  modal: genux('GenUXModal'),
+  popconfirm: genux('GenUXPopconfirm'),
+  'date-time': genux('GenUXDateTimePicker'),
+  'empty-state': genux('GenUXEmptyState'),
+  avatar: genux('GenUXAvatar'),
+  media: genux('GenUXMediaFrame'),
   'content-patterns': docOnly(contract('content', 'stack-to-row', DOC_ONLY)),
-  carousel: genui('AtlasCarousel'),
-  upload: genui('AtlasUpload'),
-  'rich-menu': genui('AtlasRichMenu'),
-  chart: genui('AtlasSeriesChart'),
+  carousel: genux('GenUXCarousel'),
+  upload: genux('GenUXUpload'),
+  'rich-menu': genux('GenUXRichMenu'),
+  chart: genux('GenUXSeriesChart'),
   listy: docOnly(contract('data', 'scroll-region', DOC_ONLY, { activation: 'delegated' })),
   badge: docOnly(
     contract('content', 'inline-intrinsic', DOC_ONLY, { activation: 'semantic-click' }),
+  ),
+  fab: docOnly(
+    contract('action', 'overlay-adaptive', 'docs/src/react/GenUXFab.tsx', {
+      activation: 'semantic-click',
+      composite: 'menu',
+    }),
   ),
 } satisfies Record<string, DocSlugCoverage>;
 
 export const DOC_SLUG_COVERAGE: Readonly<Record<string, DocSlugCoverage>> =
   Object.freeze(docSlugCoverage);
 
-export function isAdaptiveComponentName(name: string): name is GenUIComponentName {
+export function isAdaptiveComponentName(name: string): name is GenUXComponentName {
   return Object.hasOwn(ADAPTIVE_COMPONENT_COVERAGE, name);
 }
 
@@ -440,20 +446,20 @@ function checkContract(label: string, value: ComponentAdaptiveContract, problems
 }
 
 /**
- * Fails closed when the supplied GenUI names or catalog slugs differ from the mapping:
+ * Fails closed when the supplied GenUX names or catalog slugs differ from the mapping:
  * missing, extra and duplicated records all throw, and every contract is validated.
  */
 export function assertAdaptiveCoverage(names: readonly string[], slugs: readonly string[]): void {
   const problems: string[] = [];
-  compareKeys('GenUI component', names, Object.keys(ADAPTIVE_COMPONENT_COVERAGE), problems);
+  compareKeys('GenUX component', names, Object.keys(ADAPTIVE_COMPONENT_COVERAGE), problems);
   compareKeys('catalog slug', slugs, Object.keys(DOC_SLUG_COVERAGE), problems);
   for (const [name, value] of Object.entries(ADAPTIVE_COMPONENT_COVERAGE)) {
     checkContract(name, value, problems);
   }
   for (const [slug, entry] of Object.entries(DOC_SLUG_COVERAGE)) {
-    if (entry.kind === 'genui') {
+    if (entry.kind === 'genux') {
       if (!isAdaptiveComponentName(entry.component)) {
-        problems.push(`catalog slug ${slug}: unknown GenUI component ${entry.component}`);
+        problems.push(`catalog slug ${slug}: unknown GenUX component ${entry.component}`);
       }
     } else if (entry.kind === 'doc-only') {
       checkContract(`catalog slug ${slug}`, entry.contract, problems);

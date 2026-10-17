@@ -1,9 +1,9 @@
 import { useId, useState } from 'react';
 import { Switch } from 'antd';
-import AtlasProvider from './AtlasProvider';
-import AtlasRichMenu, { type AtlasRichMenuGroup } from './AtlasRichMenu';
+import GenUXProvider from './GenUXProvider';
+import GenUXRichMenu, { type GenUXRichMenuGroup } from './GenUXRichMenu';
 import ExamplePreview from './ExamplePreview';
-import { TweakerSettings } from './AtlasTweaker';
+import { TweakerSettings } from './GenUXTweaker';
 import { useI18n } from './useI18n';
 
 function RichMenuExample() {
@@ -12,7 +12,7 @@ function RichMenuExample() {
   const unavailableId = useId();
   // Presentation only: hidden items are left out of the menu, never enabled.
   const [showUnavailable, setShowUnavailable] = useState(true);
-  const allGroups: AtlasRichMenuGroup[] = [
+  const allGroups: GenUXRichMenuGroup[] = [
     {
       id: 'report-tools',
       label: t('Report tools'),
@@ -51,15 +51,15 @@ function RichMenuExample() {
     .find(item => item.id === selected)?.label;
   return (
     <ExamplePreview id="rich-menu-workspace-shortcuts" title={t('Workspace shortcuts')}>
-      <div className="atlas-rich-menu-demo">
+      <div className="genux-rich-menu-demo">
         <TweakerSettings title="Rich menu settings">
-          <div className="atlas-tweaker-option">
+          <div className="genux-tweaker-option">
             <label htmlFor={unavailableId}>{t('Show unavailable actions')}</label>
             <Switch id={unavailableId} checked={showUnavailable} onChange={setShowUnavailable} />
           </div>
         </TweakerSettings>
-        <AtlasRichMenu label={t('Workspace shortcuts')} groups={groups} onAction={setSelected} />
-        <p className="atlas-rich-menu-status" role="status">
+        <GenUXRichMenu label={t('Workspace shortcuts')} groups={groups} onAction={setSelected} />
+        <p className="genux-rich-menu-status" role="status">
           {selectedLabel ? t('Selected: {label}', { label: selectedLabel }) : ''}
         </p>
       </div>
@@ -70,8 +70,8 @@ function RichMenuExample() {
 /** Local-only grouped shortcuts; choosing an action updates nearby status text. */
 export default function RichMenuDemo({ documentation = false }: { documentation?: boolean }) {
   return (
-    <AtlasProvider appearance={documentation ? 'docs' : undefined}>
+    <GenUXProvider appearance={documentation ? 'docs' : undefined}>
       <RichMenuExample />
-    </AtlasProvider>
+    </GenUXProvider>
   );
 }

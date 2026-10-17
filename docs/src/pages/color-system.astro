@@ -8,7 +8,7 @@ import { tokenColorPresets } from '../data/button-palette';
 import colorStyles from '../styles/color-system.css?url';
 import sliderStyles from '../styles/slider.css?url';
 const ssrStyles = extractDemoStyles(ColorSystemDemo, {
-  dynamicVariableKeys: ['css-var-atlas-color-preview', ...colorFamilyVariableKeys],
+  dynamicVariableKeys: ['css-var-genux-color-preview', ...colorFamilyVariableKeys],
   documentation: true,
 });
 const sections = [
@@ -20,7 +20,7 @@ const sections = [
 
 <DocsLayout
   title="Color system"
-  description="Choose an HWB seed, inspect the Ant Design palette, test Atlas controls with the same color and review the generated color families."
+  description="Choose an HWB seed, inspect the Ant Design palette, test GenUX controls with the same color and review the generated color families."
   slug="color-system"
 >
   <Fragment slot="head">
@@ -60,9 +60,9 @@ const sections = [
         <h2 id="color-lab-title" data-i18n="Color workspace">
           Color workspace
         </h2>
-        <p data-i18n="Explore a local preview. Export the chosen settings to use them in a project; changing this preview does not replace approved Atlas palettes.">
+        <p data-i18n="Explore a local preview. Export the chosen settings to use them in a project; changing this preview does not replace approved GenUX palettes.">
           Explore a local preview. Export the chosen settings to use them in a project; changing
-          this preview does not replace approved Atlas palettes.
+          this preview does not replace approved GenUX palettes.
         </p>
         <div class="live-preview">
           <ColorSystemDemo documentation client:load />

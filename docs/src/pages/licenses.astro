@@ -1,9 +1,9 @@
 ---
 import DocsLayout from '../layouts/DocsLayout.astro';
 import DocumentationNav from '../components/DocumentationNav.astro';
-import atlas from '../data/atlas.json';
+import genux from '../data/genux.json';
 import colorLicense from '../../../node_modules/@ant-design/colors/LICENSE?raw';
-const iconLicenses = Object.entries(atlas.icons).map(([key, library]) => ({
+const iconLicenses = Object.entries(genux.icons).map(([key, library]) => ({
   id: key + '-license',
   label: library.label + ' · ' + library.version,
   license: library.license,
@@ -39,13 +39,13 @@ const sections = [
   >
     <h2 id="outfit-license-title">Outfit</h2>
     <p>
-      <span data-i18n="Outfit is distributed under the SIL Open Font License 1.1. The full license text comes from the original atlas font source.">
+      <span data-i18n="Outfit is distributed under the SIL Open Font License 1.1. The full license text comes from the original genux font source.">
         Outfit is distributed under the SIL Open Font License 1.1. The full license text comes from
-        the original atlas font source.
+        the original genux font source.
       </span>
     </p>
     <a href="https://github.com/Outfitio/Outfit-Fonts/blob/main/OFL.txt">Outfit OFL 1.1</a>
-    <pre class="license-text"><code>{atlas.outfitLicense}</code></pre>
+    <pre class="license-text"><code>{genux.outfitLicense}</code></pre>
   </section>
   {iconLicenses.map(({ id, label, license }) => (
     <section id={id} class="doc-section" data-doc-section={id} aria-labelledby={id + '-title'}>

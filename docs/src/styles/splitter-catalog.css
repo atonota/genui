@@ -1,79 +1,79 @@
-.atlas-demo .splitter-catalog {
+.genux-demo .splitter-catalog {
   display: grid;
   gap: var(--space-section);
   min-width: 0;
 }
-.atlas-demo .splitter-navigation {
+.genux-demo .splitter-navigation {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-sm) var(--space-xl);
 }
-.atlas-demo .splitter-navigation a,
-.atlas-demo .splitter-workspace-links a {
+.genux-demo .splitter-navigation a,
+.genux-demo .splitter-workspace-links a {
   display: flex;
   align-items: center;
   justify-content: space-between;
   min-height: var(--target-min);
   gap: var(--space-md);
 }
-.atlas-demo .splitter-section,
-.atlas-demo .splitter-section > header,
-.atlas-demo .splitter-review,
-.atlas-demo .splitter-record-list {
+.genux-demo .splitter-section,
+.genux-demo .splitter-section > header,
+.genux-demo .splitter-review,
+.genux-demo .splitter-record-list {
   display: grid;
   align-content: start;
   gap: var(--space-md);
   min-width: 0;
 }
-.atlas-demo .splitter-section {
+.genux-demo .splitter-section {
   gap: var(--space-xl);
   scroll-margin-block-start: var(--space-lg);
 }
-.atlas-demo .splitter-section :is(h3, h4, p) {
+.genux-demo .splitter-section :is(h3, h4, p) {
   margin: 0;
 }
-.atlas-demo .splitter-section h3 {
+.genux-demo .splitter-section h3 {
   font-size: var(--text-section);
 }
-.atlas-demo .splitter-section h4 {
+.genux-demo .splitter-section h4 {
   font-size: var(--text-large);
 }
-.atlas-demo .splitter-section > header > p:last-child,
-.atlas-demo .splitter-helper,
-.atlas-demo .splitter-keyboard-guide,
-.atlas-demo .splitter-workspace-links p {
+.genux-demo .splitter-section > header > p:last-child,
+.genux-demo .splitter-helper,
+.genux-demo .splitter-keyboard-guide,
+.genux-demo .splitter-workspace-links p {
   color: var(--muted);
 }
-.atlas-demo .splitter-record-list > .atlas-button {
+.genux-demo .splitter-record-list > .genux-button {
   width: 100%;
   justify-content: flex-start;
   height: auto;
   text-align: start;
   white-space: normal;
 }
-.atlas-demo .splitter-review > .atlas-pill {
+.genux-demo .splitter-review > .genux-pill {
   justify-self: start;
 }
-.atlas-demo .splitter-facts {
+.genux-demo .splitter-facts {
   display: grid;
   gap: var(--space-md);
   margin: 0;
 }
-.atlas-demo .splitter-facts > div {
+.genux-demo .splitter-facts > div {
   display: grid;
   gap: var(--space-xs);
 }
-.atlas-demo .splitter-facts dt {
+.genux-demo .splitter-facts dt {
   color: var(--muted);
 }
-.atlas-demo .splitter-facts dd {
+.genux-demo .splitter-facts dd {
   margin: 0;
 }
-.atlas-demo .splitter-draft-copy {
+.genux-demo .splitter-draft-copy {
   overflow-wrap: anywhere;
   white-space: pre-wrap;
 }
-.atlas-demo .splitter-workspace-links {
+.genux-demo .splitter-workspace-links {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
   gap: var(--space-xl);

@@ -1,17 +1,17 @@
-import AtlasProvider from '../../src/react/AtlasProvider';
-import AtlasPill from '../../src/react/AtlasPill';
+import GenUXProvider from '../../src/react/GenUXProvider';
+import GenUXPill from '../../src/react/GenUXPill';
 
 export default function PillSemantics() {
   return (
-    <AtlasProvider appearance="docs">
-      <AtlasPill
+    <GenUXProvider appearance="docs">
+      <GenUXPill
         data-case="object"
         color="#f00"
         styles={{ root: { backgroundColor: '#123456', color: '#ffffff', borderColor: '#abcdef' } }}
       >
         Object override
-      </AtlasPill>
-      <AtlasPill
+      </GenUXPill>
+      <GenUXPill
         data-case="function"
         color="#ee4444"
         styles={({ props }) => ({
@@ -22,17 +22,17 @@ export default function PillSemantics() {
         })}
       >
         Function override
-      </AtlasPill>
-      <AtlasPill
+      </GenUXPill>
+      <GenUXPill
         data-case="style"
         styles={{ root: { backgroundColor: '#123456' } }}
         style={{ backgroundColor: '#345678' }}
       >
         Explicit style
-      </AtlasPill>
-      <AtlasPill data-case="managed" color="#f00">
+      </GenUXPill>
+      <GenUXPill data-case="managed" color="#f00">
         Managed custom seed
-      </AtlasPill>
-    </AtlasProvider>
+      </GenUXPill>
+    </GenUXProvider>
   );
 }

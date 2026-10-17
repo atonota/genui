@@ -4,14 +4,14 @@ import DocumentationNav from '../components/DocumentationNav.astro';
 import ThemeBuilder from '../react/ThemeBuilder';
 import { extractDemoStyles } from '../ssr/styles';
 const ssrStyles = extractDemoStyles(ThemeBuilder, {
-  dynamicVariableKeys: ['css-var-atlas-theme-preview'],
+  dynamicVariableKeys: ['css-var-genux-theme-preview'],
   documentation: true,
 });
 ---
 
 <DocsLayout
   title="Theme Builder"
-  description="Edit Atlas theme tokens for light and dark modes, preview them live and export a validated JSON recipe."
+  description="Edit GenUX theme tokens for light and dark modes, preview them live and export a validated JSON recipe."
   slug="theme-builder"
 >
   <Fragment slot="head">
@@ -24,9 +24,9 @@ const ssrStyles = extractDemoStyles(ThemeBuilder, {
     <h1 data-i18n="Theme Builder">Theme Builder</h1>
     <p
       class="lead"
-      data-i18n="Adjust Atlas tokens for light and dark modes, preview the result and apply it to these docs. Export the recipe as JSON to reuse it."
+      data-i18n="Adjust GenUX tokens for light and dark modes, preview the result and apply it to these docs. Export the recipe as JSON to reuse it."
     >
-      Adjust Atlas tokens for light and dark modes, preview the result and apply it to these docs.
+      Adjust GenUX tokens for light and dark modes, preview the result and apply it to these docs.
       Export the recipe as JSON to reuse it.
     </p>
     <p>
@@ -50,8 +50,8 @@ const ssrStyles = extractDemoStyles(ThemeBuilder, {
       </h2>
       <ThemeBuilder client:load />
       <noscript>
-        <p data-i18n="Theme editing requires JavaScript. Atlas default tokens remain in use.">
-          Theme editing requires JavaScript. Atlas default tokens remain in use.
+        <p data-i18n="Theme editing requires JavaScript. GenUX default tokens remain in use.">
+          Theme editing requires JavaScript. GenUX default tokens remain in use.
         </p>
       </noscript>
     </section>

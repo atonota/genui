@@ -60,7 +60,7 @@
   "Contextual surface · function styles": "Bağlama uygun yüzey · işlev stilleri",
   "A function reads native component props to resolve semantic styles as the menu opens and closes.": "İşlev, menü açılıp kapanırken semantik stilleri belirlemek için yerel bileşen özelliklerini okur.",
   "Groups give the menu a reading order. Submenus open by click or keyboard; unavailable branches remain disabled.": "Gruplar menüye okuma sırası kazandırır. Alt menüler tıklama veya klavyeyle açılır; kullanılamayan dallar devre dışı kalır.",
-  "AtlasDropdown adds a named keyboard trigger, native menu focus and one explicit action callback to the installed Dropdown and Menu.": "AtlasDropdown kurulu Dropdown ve Menu bileşenlerine adlandırılmış klavye tetikleyicisi, yerel menü odağı ve açık tek eylem geri çağrısı ekler.",
+  "GenUXDropdown adds a named keyboard trigger, native menu focus and one explicit action callback to the installed Dropdown and Menu.": "GenUXDropdown kurulu Dropdown ve Menu bileşenlerine adlandırılmış klavye tetikleyicisi, yerel menü odağı ve açık tek eylem geri çağrısı ekler.",
   "Visible trigger label and accessible menu name.": "Görünür tetikleyici etiketi ve erişilebilir menü adı.",
   "Native action items, groups, dividers, disabled choices and submenus.": "Yerel eylem öğeleri, gruplar, ayırıcılar, devre dışı seçimler ve alt menüler.",
   "Called once for an enabled leaf action. The consumer owns its outcome and any confirmation.": "Etkin bir son eylem için bir kez çağrılır. Sonuç ve varsa onay tüketiciye aittir.",
@@ -73,6 +73,6 @@
   "Menu panels stay within the available viewport and scroll inside. Focus uses one visible edge marker.": "Menü panelleri görünüm alanında kalır ve içeride kaydırılır. Odak görünür tek kenar işareti kullanır.",
   "All examples have local outcomes. They do not sign out an account, publish data or call a server.": "Tüm örneklerin sonucu yereldir. Hesaptan çıkış yapmaz, veri yayımlamaz veya sunucu çağırmaz.",
   "The page separates action hierarchy from surface styling and nested organization. Shared tokens own text, target sizes and motion.": "Sayfa eylem hiyerarşisini, yüzey stilini ve alt menü düzenini ayrı ele alır. Metin, hedef boyutları ve hareket ortak tokenlarla yönetilir.",
-  "Shared Atlas skin": "Ortak Atlas görünümü",
-  "Managed by Atlas": "Atlas tarafından yönetilir"
+  "Shared GenUX skin": "Ortak GenUX görünümü",
+  "Managed by GenUX": "GenUX tarafından yönetilir"
 }

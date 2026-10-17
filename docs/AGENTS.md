@@ -1,5 +1,123 @@
 # Astro documentation maintenance contract
 
+## GenUX local checkout — human decision 2026-10-17
+
+Newest entry; it changes only the physical local project directory.
+`decisions/current.json`, its precedence and every other entry below are
+unchanged.
+
+- The canonical local checkout is `/Users/w6x/Developer/genux`. For this task
+  it overrides only the older keep-the-local-checkout exception.
+- The root moves the existing directory once. A temporary `genui` symlink may
+  keep running processes and private Temporal tooling working; it is a
+  compatibility link, not another checkout, and holds no duplicate source. The
+  old `button-atlas` link points directly to the canonical `genux` directory.
+- Localhost keeps serving the same current files on port 4324. No user service
+  restart, deletion, history, identity, license or visibility change; styles,
+  geometry, focus, motion, Grid and Pages contracts are unchanged. Proposal,
+  move, local checks, CI and live stay distinct states.
+
+## GenUX public destination — human decision 2026-10-17
+
+Newest entry; it changes only the public repository and Pages destination.
+`decisions/current.json`, its precedence and every other entry below are
+unchanged.
+
+- The human explicitly authorizes https://atonota.github.io/genux/ and the
+  rename of the public repository atonota/genui to atonota/genux; for this task
+  it overrides only the older keep-the-repository-address and Pages-base
+  exception.
+- The Pages base is `/genux`. GenUX product links use `genuxPageHref` from
+  [foundation navigation](src/data/foundation-navigation.ts) with
+  `import.meta.env.BASE_URL`: `/genux/` locally, `/genux/genux/` on Pages, so
+  the bare base stays the homepage. Navigation data keeps `/genux/`.
+- The canonical local checkout is now `/Users/w6x/Developer/genux` per the
+  newest local checkout entry above; license, visibility, history and Git
+  guard are unchanged; the external rename and push happen at the root after
+  review.
+
+## Inline preview wheel chaining — human-reported regression 2026-10-17
+
+Concrete regression exception only; `decisions/current.json`, its precedence
+and every other entry below are unchanged.
+
+- A wheel over an inline device mockup's empty screen, bezel or inner
+  boundary reaches the page. `.example-preview-fit` and
+  `.example-preview-screen` (`preview-workbench.css`) and
+  `[data-preview-viewport]` (`preview-document.css`) keep
+  `overscroll-behavior: contain` and add `overscroll-behavior-block: auto`, so
+  native vertical chaining applies.
+- True inner overflow still scrolls first. Inline (horizontal) containment,
+  Fit/Actual, code panels, controls and the expanded modal's outer `contain`
+  stay; geometry, colors, type and motion are unchanged. No JS wheel handling,
+  `preventDefault`, forwarding or iframe.
+- Coverage extends the existing second `component-preview` browser case with
+  one real-wheel block on `button-depth-flat-example` (screen blank and bezel
+  edge); the case count stays 2 with no new matrix, config or baseline.
+
+## GenUX naming — human decision 2026-10-17
+
+Newest entry; it changes only the product name. `decisions/current.json`, its
+precedence, the FAB entry below and every visual, geometry, motion,
+typography, focus, adaptive and security contract are unchanged.
+
+- The project is GenUX: canonical code and export prefix `GenUX`; lowercase
+  `genux` for the package, CSS variables, classes, attributes, events, storage
+  keys and file paths; UI wordmark `Gen UX`. Every former project-prefix
+  reference is removed and the project identity is GenUX.
+- The surface component is `GenUXSurface`, its model type
+  `GenUXSurfaceModel` (avoiding a symbol collision) and the chat provider
+  `GenUXChatProvider`. Former public component names are intentionally not
+  retained as aliases.
+- Stored preferences migrate on first read to `genux` keys without changing
+  values or expiry and never overwrite an existing `genux` value; the former
+  namespace survives only as character-code migration metadata. Coverage is
+  ONE focused storage-migration unit case plus the existing type, lint, build,
+  public package and registry checks and the existing 320 and desktop browser
+  smoke where available; no new matrix or deep baselines.
+- The existing GitHub repository address, Pages base path and canonical
+  checkout directory remain the actual infrastructure; no repository rename or
+  publication is implied. Historical Git, Temporal and private evidence stay
+  immutable and the live coordinator is not restarted.
+- This decision overrides older keep-the-old-name instructions only; a
+  separate mechanical rename updates the remaining older prose. The rename
+  accepts no pending FAB easing/backdrop exception, criterion or general gate;
+  proposal, source, local checks, CI, main and live stay distinct states.
+
+## FAB maintenance — human task 2026-10-17
+
+Newest entry; it adds FAB maintenance rules only. `decisions/current.json` and
+its precedence are unchanged, and proposal authors never edit the record.
+
+- `FAB-PLAN.md` is normative: its 63 Given/When/Then criteria and frozen API
+  bindings stay unchanged. The actual `src/fab/` source, the public `GenUXFab`
+  export and the 41st docs slug are an implemented candidate; the GenUX runtime
+  count of 61 is separate and unchanged.
+- Temporal authoring success or source integration is not criterion
+  acceptance, main or live. Root requires per-row source and actual behavior
+  evidence; failures and not_run stay explicit. Source authors claim no PASS
+  and commit no private evidence or absolute attachment paths.
+- Minimum coverage stays 14 node tests (6 FAB, 3 motion/model, 5 hover guard)
+  and 3 FAB browser cases in the 3 engines (9 runs), within 60s per case and
+  300s per suite. Extend existing cases only for a concrete defect; new
+  optional testing patterns are not mandated.
+- Compose the existing Button, IconButton, Badge and overlay/Modal masters.
+  Previews stay inline in the four device references with no iframe; the
+  logical 320 component boundary is distinct from the fixed mockup dimensions,
+  and local theme, code and draft share the same instance. Colors, type,
+  radius and device geometry are unchanged.
+- `FabGroup.layout` supports the six dial arms and explicitly rejects nested
+  menu, sheet and multi-directional groups; all nine top-level layouts remain.
+- Fixed coordinates accept only axis-aligned positive per-axis scale and
+  translation; rotated, skewed, flipped or perspective owners raise explicit
+  errors.
+- Controlled async admission and settlement ownership stay separate; the
+  Tweaker blocks new input, retains admitted outcomes and never steals focus.
+  Hover is owned by the actual trigger, actions and gaps with no interceptor.
+- Defaults use the central Cubic motion and central scrim roles. The FAB
+  easing/backdrop human exception is still pending; the renderer rejects
+  unsupported alternatives instead of silently aliasing them.
+
 ## Inline device previews and recovery — human decision 2026-10-16
 
 Newest authoritative entry. Current human decisions live only in
@@ -87,9 +205,9 @@ of the laptop entry below, whose other rules stay.
   selected-profile, theme, code and state checks. Conductor receipts record
   actual results; local checks, CI and publication remain separate evidence.
 
-## Capability-first adaptive GenUI and explicit TV focus — human task 2026-10-16
+## Capability-first adaptive GenUX and explicit TV focus — human task 2026-10-16
 
-Newest direct human task: all GenUI components follow `ADAPTIVE-PLAN.md`. The
+Newest direct human task: all GenUX components follow `ADAPTIVE-PLAN.md`. The
 source architecture is implemented; per-component verification and publication
 are separate. Source authors run no check; conductor receipts under
 `adaptive-20261016` and the actual GitHub status are authoritative, no blanket
@@ -105,8 +223,8 @@ DONE.
   key may open the SAME ringless mode via `requestSpatialInputModality`
   (`src/input-modality.ts`, existing bridge event, single owner). Width never
   means TV; generic web arrows never open the mode.
-- `src/genui/adaptive.ts` derives `arrowsMoveVisualFocus` from
-  `allowsSpatialVisualFocus`; `src/react/genui/AtlasGenUISurface.tsx` emits
+- `src/genux/adaptive.ts` derives `arrowsMoveVisualFocus` from
+  `allowsSpatialVisualFocus`; `src/react/genux/GenUXSurface.tsx` emits
   `data-adaptive-*` on its existing root and native boundary only.
 - Phone continuity: `AdaptiveProvider` retains a measured phone journey until
   its continuity reset or `useAdaptive().releaseJourney`; no height or pointer
@@ -176,9 +294,9 @@ Results are PENDING: no check was run and no test was added.
   `data-doc-panel`; `src/components/docs-page.ts` hides inactive sections only
   after load, syncs `?tab=` and legacy hashes, roves arrow/Home/End keys and
   filters section/contents links. No-JS pages show every section.
-- DocsPageTools, DocsInstall (package.json versions, GenUI not on npm) and the
+- DocsPageTools, DocsInstall (package.json versions, GenUX not on npm) and the
   ApiReference one-property-per-row split are new; repository links render only
-  with `PUBLIC_GENUI_REPOSITORY_URL`.
+  with `PUBLIC_GENUX_REPOSITORY_URL`.
 - PENDING: translations, inspector, tests, build gate and browser checks.
 
 ## Black dark documentation shell and canonical sidebar search — human task 2026-10-16
@@ -195,19 +313,19 @@ Results are PENDING; this entry claims no executed check and no DONE.
   `!important`. Saved Theme Builder recipes are not wiped or migrated.
 - The static SSR native `#component-search` keeps its label, i18n,
   autocomplete, DocsLayout filter and Drawer move (no island, hydration or JS)
-  inside a canonical `.atlas-input-frame[data-atlas-input=text][data-size=md]`
+  inside a canonical `.genux-input-frame[data-genux-input=text][data-size=md]`
   rendered by DocsNav from `inputSurfaceAliasVariables`, `inputPaddingInline`
-  and the md atlas size profile. `src/styles/atlas-input.css` is the single
-  paint owner (native-child reset covers `input.atlas-input-native`);
+  and the md genux size profile. `src/styles/genux-input.css` is the single
+  paint owner (native-child reset covers `input.genux-input-native`);
   focus-fields.css owns the Tab-only bottom marker; forced colors use the
   frame rules. Sidebar well copies in nav.css and shell.css are removed and the
   legacy placeholder rules in docs-accessibility.css only reach unframed inputs.
-- Correction to the initial quiet search choice: AtlasInputFrame takes an
+- Correction to the initial quiet search choice: GenUXInputFrame takes an
   optional `variant` typed from AntD `InputProps['variant']` (default
-  `filled`, emitted as `data-variant`), forwarded by the AtlasInput wrappers
-  and AtlasInputNumber. Only `[data-variant=underlined]` in
-  `src/styles/atlas-input.css` paints the rest bottom edge with
-  `--atlas-input-border` (fallback `--field-border`) at the unchanged 1px
+  `filled`, emitted as `data-variant`), forwarded by the GenUXInput wrappers
+  and GenUXInputNumber. Only `[data-variant=underlined]` in
+  `src/styles/genux-input.css` paints the rest bottom edge with
+  `--genux-input-border` (fallback `--field-border`) at the unchanged 1px
   width; fill, inset shadow, radius, height and type stay, and status,
   disabled and forced colors still override it. The `filled` master look is
   unchanged; DocsNav opts the search into `underlined` with no paint copy.
@@ -326,7 +444,7 @@ below as current scope, which stay history. This entry claims no executed check.
   rail stays 15rem/16rem with the 16px container inset.
 - `preview-workbench.css` is in every component route's `routeSheets`, so SSR
   links and copied Astro examples agree. Resources name the workbench adapter,
-  stylesheet, code endpoint and extractor; no GenUI capability is implied.
+  stylesheet, code endpoint and extractor; no GenUX capability is implied.
 - Test accounting (authorized scope, not results): browser specs 27 -> 28 with
   `browser/component-preview.spec.ts`, 2 cases; source test files 80 unchanged,
   the presentation test only updates its expected order. One final read-only
@@ -344,7 +462,7 @@ history. Rules belong to `/standards/`, definition-generated values to
   every one of the 40 component pages. Saved 51/57/60/61/64 recipes gain only
   missing defaults; HEX uppercase canonicalization is unchanged. Native AntD
   6.6.6 and existing dependencies only; no new package.
-- Sizes: Listy 16 actual patterns on shared `AtlasListyItem`; Listy and
+- Sizes: Listy 16 actual patterns on shared `GenUXListyItem`; Listy and
   Cascader rows compact 32/40/48 px (superseding the earlier Cascader regular
   48 px statement). Standard Avatar/Button/Input 48/56/64 px; Select items stay
   regular; rich descriptions grow. Badge outer 20/26/32 px including border,
@@ -371,7 +489,7 @@ history. Rules belong to `/standards/`, definition-generated values to
   the outer row owns compact height. Section gap >= 16 px via semantic main
   spacing; TOC targets a 256 px rail with 16 px padding.
 - Raw reference HTML and 31 images are local reference only, not published or
-  copied; no navy colors. Current neutral GenUI roles stay. No fake AI.
+  copied; no navy colors. Current neutral GenUX roles stay. No fake AI.
 - Test accounting (frozen authorized scope, not results): source files 80 -> 80,
   existing `neutral-field-surfaces` 1 -> 2 for the actual blue-shadow
   regression (only the new case executes). Browser files 26 -> 27: new
@@ -381,10 +499,10 @@ history. Rules belong to `/standards/`, definition-generated values to
   local Pages control and HTTP alias checks are separate. No new matrix, review
   round, catalog scan or frozen59 backlog. Logs stay local; one final
   independent diff review pending. Not runtime, CI or Pages proof.
-- Publication: public MIT GenUI `main` at `atonota/genui`, karacaismail author
+- Publication: public MIT GenUX `main` at `atonota/genux`, karacaismail author
   and committer guard preserved. New work UNCOMMITTED; supplied fresh Pages
   artifact control reported GREEN, actual Pages deployment NOT YET LIVE. Local
-  http://127.0.0.1:4324/ and https://atonota.github.io/genui stay separate.
+  http://127.0.0.1:4324/ and https://atonota.github.io/genux stay separate.
   Source API: Pages-only machine-prefix redaction plus credential fail guard;
   old intentional Avatar/Media error fixtures stay on an exact allowlist only
   under that guard. No publication-complete claim; the live-host
@@ -418,7 +536,7 @@ component sections and frozen59. Badge is not a new registry entry.
 - Supplied local receipts report `/components` GET 404 -> 200, canonical slash
   and declared redirect source, plus a 51-page root build PASS. No checks were
   run in this proposal. Explicit Pages authorization is
-  https://atonota.github.io/genui; retain http://127.0.0.1:4324/ locally.
+  https://atonota.github.io/genux; retain http://127.0.0.1:4324/ locally.
   Another owner handles deployment source. Local build, remote commit and
   actual Pages deploy need separate receipts: committed main proves neither
   preview nor deployment. Checkpoint 852f882 is earlier; new patches are
@@ -431,7 +549,7 @@ component sections and frozen59. Badge is not a new registry entry.
 - Hermes native documentation phase produces a read-only SOURCE proposal for
   master admission. Build metadata is generated after all source integration;
   do not report premature unknown-token server errors before that build.
-  Preserve MIT/public GenUI, Atlas source APIs/storage keys and karacaismail
+  Preserve MIT/public GenUX, GenUX source APIs/storage keys and karacaismail
   author/committer guard. No new dependencies, fake AI, screenshot navy palette,
   DONE/GREEN acceptance or new live-publication claim.
 
@@ -461,9 +579,9 @@ standards sections without duplicated rule text (`migrations/p1-d-standards.json
 Current policy references say UX standards for rules and Design tokens for values;
 historical log/evidence paths keep their old names as history.
 
-- Typography for this project's GenUI rules (latest direct human decision):
+- Typography for this project's GenUX rules (latest direct human decision):
   minimum 12 CSS px, standard 14, reading 16, weight >= 300, Outfit. It replaces the
-  14 px minimum in the current GenUI rules below; the four global instruction files
+  14 px minimum in the current GenUX rules below; the four global instruction files
   are not changed here.
 - Radius: one shared general radius, default 5 px, for every size family; input
   and slot use exactly the same radius when edited, superseding the concentric
@@ -472,7 +590,7 @@ historical log/evidence paths keep their old names as history.
   and Cascader rows 32/40/48 px; descriptions grow.
 - Focus, overlay (Tooltip in, Toast/Notification out), central Cubic motion, shell
   role colors, the eight component sections, the frozen 59 packages and the pending
-  live-host decision are unchanged. The physical project is now GenUI at
+  live-host decision are unchanged. The physical project is now GenUX at
   `/Users/w6x/Developer/genui`; new content does not hardcode the repository path.
   Not evidence of passing checks or rendering.
 
@@ -486,11 +604,11 @@ are GREEN; native usage reports provider `openai-codex`, model `gpt-6.1-sol`.
 The earlier install block was a misdiagnosis, resolved by a private HOME tools
 link and validated runtime permissions; no vendor install/update,
 authentication, configuration or pool change. Hermes code writes stay read-only
-proposals. Record: atlas-temporal's
+proposals. Record: genux-temporal's
 `evidence/consolidated-20261015/delivery.json`; `hermes-runtime-block.json` is
 historical. That evidence root and its one-time command records are local,
 untracked and not HTTP served. Human visual approval is PENDING; new gallery
-`http://127.0.0.1:4324/genui-update-review/`, existing consolidated 128 retained.
+`http://127.0.0.1:4324/genux-update-review/`, existing consolidated 128 retained.
 Final local gates: build 50 pages, Astro check 307 files 0 errors 0 warnings
 3 hints, lint 287 modules 70 styles 0 findings, format pass, browser TypeScript
 pass; root source admission only, not CI. Earlier passed
@@ -508,7 +626,7 @@ history and the eight documentation sections stay.
   51/57/60-token recipes stay valid. Defaults: general radius 5 px everywhere and
   the exact same slot value; compact 32/40/48 px, regular 48/56/64 px; font
   minimum 12, standard 14, reading 16 px, weight >= 300 for this project only.
-  `Atlas*` source APIs stay backward compatible; storage keys are unchanged.
+  `GenUX*` source APIs stay backward compatible; storage keys are unchanged.
 - Tests: `tests/` keeps 80 source files; one font case was added to its existing
   file (2 -> 3 cases). Browser specs went 21 -> 26 files with 8 cases (7 for
   explicit new requests plus 1 actual cross-theme radius defect regression); no
@@ -522,7 +640,7 @@ history and the eight documentation sections stay.
 - Open, non-blocking: the old slot-marker and well-shadow review finding is
   recorded, pending a future human decision. Dark-shell sidebar search measures
   fill contrast 1.07 and boundary 4.67; report only, not recolored.
-- Physical project: `/Users/w6x/Developer/genui`, MIT, public `atonota/genui`,
+- Physical project: `/Users/w6x/Developer/genui`, MIT, public `atonota/genux`,
   `main` initialized. Publication is proven only by Git remote ref verification
   recorded in the local delivery receipt; no future push is claimed.
 - Color roles supersede the earlier pale `#fffefa` / `#ded9cc` and dark `#242424`
@@ -536,7 +654,7 @@ history and the eight documentation sections stay.
 - One new DocsShell owns shell styles, navigation and layout; form
   fieldset/legend grouping and Card rules are unchanged.
 - Input slot chain: control height is the total border-box height 48/56/64 px;
-  control border, slot inset and slot size derive from the AtlasButton size
+  control border, slot inset and slot size derive from the GenUXButton size
   model through the nested content-box formula. Radius is the one shared general
   radius: input and slot use exactly the same value (superseding the former
   concentric radius subtraction). Standalone Buttons are unchanged.
@@ -564,7 +682,7 @@ history and the eight documentation sections stay.
   `outline: 2px solid CanvasText`, and only with that central keyboard mode AND
   `:focus-visible`. The human directly authorized this exception; the four global
   instruction files were updated through breadcrumb-alignment-core-02.
-- A local Stylelint plugin pinned to 17.16 (`atlas/focus-no-surround`,
+- A local Stylelint plugin pinned to 17.16 (`genux/focus-no-surround`,
   `../tools/stylelint-focus-plugin.mjs`) is implemented and runs in `docs:lint`;
   docs lint passed. It checks authored stylesheets, not rendered runtime focus.
 - Light/dark palette switching is an atomic commit, not component state motion:
@@ -574,21 +692,21 @@ history and the eight documentation sections stay.
   motion is instant. Documented in the Design tokens motion section, the UX
   standards `motion` section and `UX-STANDARDS.md`, without a new test.
 
-## Frozen GenUI/Atlas backlog — human instruction 2026-10-15
+## Frozen GenUX/GenUX backlog — human instruction 2026-10-15
 
 The application backlog is exactly the 59 recorded packages; do not rescan the
 catalog or invent speculative packages. Only a new human request or an observed
 concrete defect in integrated code may extend it, with its evidence recorded.
-All 49 registered native adapters share `tests/genui-native-conformance.test.mjs`:
+All 49 registered native adapters share `tests/genux-native-conformance.test.mjs`:
 one scenario, explicit rows, one specific-check function per row. The existing
 Date/Cascader extensions remain in their original rows. The non-component
 record-field schema bridge retains its existing infrastructure check, as do bridge
 and query-neutral. Remove separate adapter tests only after their relocated
 assertions pass. Report 59-package states and actual before/after file counts.
 
-## Shared GenUI conformance — human instruction 2026-10-15
+## Shared GenUX conformance — human instruction 2026-10-15
 
-Use `tests/genui-native-conformance.test.mjs`: one scenario with 34 explicit adapter
+Use `tests/genux-native-conformance.test.mjs`: one scenario with 34 explicit adapter
 rows for original packages 3–36. Each row checks serializable payloads, controlled
 values or read-only rejection, invalid properties and default-denied host actions.
 Do not retain 34 separate adapter test files: move their distinct DOM/defect
@@ -612,9 +730,9 @@ concrete defect can justify one targeted regression; record the exception explic
 Coordinate the frozen counts across every actor. Continue implementation without a
 numerical correction stop or permission/budget loop; never label unverified code DONE.
 All AI jobs must run through Temporal workflow/activity on localhost:7233. No external
-CLI dispatch loop, scheduled starts, cron, launchd or automations. The Atlas worker-pool
+CLI dispatch loop, scheduled starts, cron, launchd or automations. The GenUX worker-pool
 automation is confirmed PAUSED. Existing provider limits, source boundaries and gates
-remain binding. See evidence/ux-completion-test-freeze.json in atlas-temporal for exact
+remain binding. See evidence/ux-completion-test-freeze.json in genux-temporal for exact
 counts, existing selected checks and the discrepancy between requested and actual UX
 row counts. Report package/status/RED/GREEN/counts/workflow IDs at delivery.
 
@@ -636,7 +754,7 @@ instructions in these records. Do not ask for a test-budget increase.
 
 [UX-STANDARDS.md](UX-STANDARDS.md) maps all 49 main Refactoring UI topics and
 the concluding practice section, their subrecommendations, the existing source,
-explicit Atlas adaptations and missing shared components. Apply its MUST/SHOULD/MAY
+explicit GenUX adaptations and missing shared components. Apply its MUST/SHOULD/MAY
 distinctions without replacing approved font/weight/tracking/background/input/
 focus/motion decisions. Source presence and written coverage do not prove runtime
 or product-wide adoption. The latest human clarification (2026-10-15) requires
@@ -649,8 +767,8 @@ Higher-level user and project instructions apply.
 
 ## Documentation typography and measurement
 
-- Project override (2026-10-15, latest direct human GenUI decision): current
-  GenUI rules use minimum 12, standard 14 and reading 16 CSS px with weight >= 300;
+- Project override (2026-10-15, latest direct human GenUX decision): current
+  GenUX rules use minimum 12, standard 14 and reading 16 CSS px with weight >= 300;
   see the UX standards entry above. Global baseline: the user's 2026-10-14 global
   decision removes the former 1rem minimum:
   all readable text must be at least 14 CSS px. Larger existing text and heading
@@ -704,9 +822,9 @@ Higher-level user and project instructions apply.
   native typed-search hiding preserved. Color preview actions use opaque faces so
   their chosen text/face contrast is not weakened by alpha against the local panel.
 
-- Card uses shared native `AtlasCard`, `EntityCard`, `MetricCard` and purpose
+- Card uses shared native `GenUXCard`, `EntityCard`, `MetricCard` and purpose
   composites. The route has five linked groups: foundations, catalog, interactions,
-  data states and the optional GenUI lab. Purpose is independent of generation mode;
+  data states and the optional GenUX lab. Purpose is independent of generation mode;
   23 purposes and 37 domain recipes share a serializable controlled model. Never nest
   Card inside Card; a Task surface composes Table/Chart/Form/Choice/Action blocks.
   Native Card supports small/medium: sm maps to small and md/lg to medium, with
@@ -720,7 +838,7 @@ Higher-level user and project instructions apply.
   family variable keys come from `colorFamilyVariableKeys` and must be excluded
   from static SSR theme overrides while retaining native first-paint styles. Keep
   each preview's field, selection, action and slider state mounted across channel,
-  theme, locale and size changes. Color controls and sample handles use AtlasSlider.
+  theme, locale and size changes. Color controls and sample handles use GenUXSlider.
   Achromatic compositions truthfully converge to one neutral instead of inventing
   color differences. Preview changes stay local and do not replace saved settings.
 
@@ -732,7 +850,7 @@ Higher-level user and project instructions apply.
   across closing, preserve settings/drafts, support Escape and return keyboard
   focus to the opener after releasing the native trap, without waiting for exit
   motion. An active example dialog retains its own focus on return. All example
-  overlays use `AtlasOverlay`: their focus/Escape ownership suspends while Tweaker
+  overlays use `GenUXOverlay`: their focus/Escape ownership suspends while Tweaker
   is open, and their header exposes the same settings action for keyboard users.
   Mount the panel lazily on first opening, then retain its portal target and
   controls. Its Escape handler owns the top visible layer before native window
@@ -777,7 +895,7 @@ Higher-level user and project instructions apply.
   supplied objects only. Non-readable SurfaceState kinds must gate their content
   and actions; partial/stale may retain the supplied snapshot with an explanation.
   Unknown operation outcomes block blind repeat submission.
-- API tables distinguish actual Atlas exports from underlying AntD settings.
+- API tables distinguish actual GenUX exports from underlying AntD settings.
   Keep machine view IDs stable: the old `gantt` label is “Gantt · date spans” and
   `editable` is “Row editing”; the new EditableGrid implements actual cell drafts.
   Do not imply specialized Gantt/tree prerequisites, file parsing, AI extraction,
@@ -790,9 +908,9 @@ Higher-level user and project instructions apply.
 - The Data table, Collection views, Record details and Record forms pages are
   experimental web components. The user explicitly excluded Storybook from this
   delivery. Do not promote them to stories or `COMPONENT_DECISIONS` without a
-  separate user decision. The standalone Downloads atlas is also outside scope.
+  separate user decision. The standalone Downloads genux is also outside scope.
 - Reference HTML/screenshots supply data organization and view alternatives,
-  not visual identity or approval. Reuse existing Atlas components/tokens, with
+  not visual identity or approval. Reuse existing GenUX components/tokens, with
   English default and Turkish secondary. The 32 open reference decision cards
   remain open; no new engine, AI/backend, permission or persistence claim follows.
 - Workspace examples share the typed fixture and pure operations in
@@ -810,10 +928,10 @@ Higher-level user and project instructions apply.
 
 - Smooth entry and exit are mandatory. Human and AI contributions use the same
   acceptance gates. `src/data/motion.json` is the single source; `docs:data`
-  generates `src/styles/atlas-motion.css`, and AtlasProvider consumes the same
+  generates `src/styles/genux-motion.css`, and GenUXProvider consumes the same
   JSON. Normal motion uses easeInOutCubic (.65,0,.35,1), positive semantic durations
   and zero initial delay. Linear/steps/one-way easing, none/zero duration and inline
-  motion overrides are prohibited. New controls inherit `.atlas-control`;
+  motion overrides are prohibited. New controls inherit `.genux-control`;
   native AntD, portals and child elements use the shared curve. The `docs:test`
   source guard covers new authored styles and is mandatory in `docs:verify`.
   The body and hit area stay fixed when transitions start or reverse. Values,
@@ -825,7 +943,7 @@ Higher-level user and project instructions apply.
   `src/i18n.ts` owns the locale store, translation, formatting and normalization;
   React consumes it through `src/react/useI18n.ts`. English phrase keys are the
   source. Turkish dictionaries under `src/locales/tr/` load only after Turkish
-  is selected or restored from an explicit `atlas-locale` preference. Do not add
+  is selected or restored from an explicit `genux-locale` preference. Do not add
   a React island to foundation pages for locale controls. Storage failure must not
   prevent language changes. Guard stale asynchronous language requests.
 - Put `data-i18n` only on static leaf text, never on a parent containing controls,
@@ -849,8 +967,8 @@ Higher-level user and project instructions apply.
 ## Approved Button source and rendering
 
 - Documentation opts in explicitly through `documentation` entry props and
-  `AtlasProvider appearance='docs'`; its inherited appearance context defaults to
-  `approved`. Shared `atlasTheme`, unopted Provider/Button calls, Storybook and
+  `GenUXProvider appearance='docs'`; its inherited appearance context defaults to
+  `approved`. Shared `genuxTheme`, unopted Provider/Button calls, Storybook and
   explicit palette choices keep their approved identity. `src/data/docs-brand.ts`
   owns the exact documentation seed `#0099ff` and official Ant Design palette roles.
   The same opt-in is passed during both light/dark SSR extraction and hydration;
@@ -874,10 +992,10 @@ Higher-level user and project instructions apply.
 - The docs-only tactile adapter uses 116.667 ms for both press and release, 30%
   faster than the previous 166.667 ms profile, below Switch selection320ms.
   Root/decorative layers share central tokens and reduced motion wins.
-- `AtlasButtonGroup` wraps exactly2/3 equal native radio choices with one selected.
+- `GenUXButtonGroup` wraps exactly2/3 equal native radio choices with one selected.
   It shares canonical radii/sizes, keyboard arrows and the selected white surface.
   Search/icon-only examples use the same master, without dashed/dotted surfaces.
-- Drawer/Form actions use the shared `AtlasButton`. Documentation flat actions,
+- Drawer/Form actions use the shared `GenUXButton`. Documentation flat actions,
   including Quantity icon actions, use zero border width in every state: a
   transparent reserved border reveals the darker lower body as a surrounding edge.
   Explicit Outline actions retain their functional border. Field borders and the
@@ -889,26 +1007,26 @@ Higher-level user and project instructions apply.
 - Shared `--control-transition-properties` lists only background-color,
   border-color, color, opacity and box-shadow paint changes. Native
   `transition:all` must not animate outer geometry. New custom control roots
-  use `.atlas-control`; hover does not change padding, margin, dimensions, font
+  use `.genux-control`; hover does not change padding, margin, dimensions, font
   or transforms. Intentional movement belongs to an absolute thumb/decorative
-  layer. Mark new layers with `.atlas-motion-layer` and keep hit areas fixed.
+  layer. Mark new layers with `.genux-motion-layer` and keep hit areas fixed.
   The interaction-stability guard rejects unrestricted authored transitions and
   hover geometry changes, including in new components.
 - The five public Button states live in
-  `atlas.decisions.buttons.state_variants`; five others are experiments.
+  `genux.decisions.buttons.state_variants`; five others are experiments.
   Components and Storybook decision galleries share the AntD renderer. A busy
   line does not claim a real progress percentage.
 - Button `width_variants` content/wide/full are approved; narrow is experimental.
-  Three size/padding decisions and three widths use the same AtlasButton and
+  Three size/padding decisions and three widths use the same GenUXButton and
   ButtonDimensions gallery. Wide has a 175 px equivalent minimum and fits narrow
   containers; full is native block. Unknown widths fall back to content. Do not
   infer palette/tone approval or add a React island to foundation decisions.
-- `AtlasIconButton` delegates to `AtlasButton`; icon and aria-label are
+- `GenUXIconButton` delegates to `GenUXButton`; icon and aria-label are
   required. Square size/radius/busy/disabled/bottom-lip behavior comes from the same
   model. Resolve native disabled with `disabled ?? componentDisabled` while
   preserving state-derived blocking. Number fields pass this override to both
   actions. Icon focus uses one bottom mark in readable Button foreground rather
-  than relying on empty text. `AtlasIcon` uses the existing catalog and Phosphor
+  than relying on empty text. `GenUXIcon` uses the existing catalog and Phosphor
   core 2.1.1 regular minus/trash; keep its MIT notice on the license page.
   WebButtonDemo SSR/hydration must match. Default ButtonDemo/Storybook and the
   canonical decision/icon model remain intact.
@@ -926,14 +1044,14 @@ Higher-level user and project instructions apply.
   inherit this input shadow/radius. Placeholder opacity is .7 normally and .5 on
   focus/active, with the shared symmetric curve and reduced-motion exception.
   Center number-stepper text.
-- `AtlasPill` uses installed AntD Tag close/disabled/keyboard contracts and the
+- `GenUXPill` uses installed AntD Tag close/disabled/keyboard contracts and the
   four Button radii. Minimum visible height is 32px; close target is 32px,
   or 44px for coarse input. Phosphor X is 20px. Documentation text is at least 14px
   and wraps. WebSelectDemo and the Select Storybook story use this master for
   tagging/multiple through `tagRender`;
   preserve native search/Enter/Backspace and focus through the public Select ref.
   The user approved aligning this Select story with the documentation through
-  `pillTags:true` and `atlasSharedPreview:true`; retain the demo's native fallback.
+  `pillTags:true` and `genuxSharedPreview:true`; retain the demo's native fallback.
   Master flex display must not override `ant-tag-hidden`:
   successful close hides it; `preventDefault()` cancels hiding. Manage spacing
   in the native `.ant-select-content` flex parent with `gap:var(--space-xs)`
@@ -969,7 +1087,7 @@ Higher-level user and project instructions apply.
   text. SSR/hydration uses the same WebRadioDemo. Default Radio Storybook and the
   decision list remain intact pending explicit approval.
 - The web Input page shares WebInputDemo across SSR extraction and hydration.
-  NumberStepper composes real AtlasIconButton sibling actions with
+  NumberStepper composes real GenUXIconButton sibling actions with
   `InputNumber controls={false}`; do not put buttons inside native upIcon/downIcon.
   There is no public step command; do not synthesize key/DOM click hacks. Preserve
   native editing/arrow keys. One button click means one step. Pinned mini-decimal
@@ -980,7 +1098,7 @@ Higher-level user and project instructions apply.
   a callback. ArrowDown never removes at the minimum. The web example clears
   quantity locally without deleting a real cart/service. The Input Storybook
   story uses this master with `numberMode:'spinner'` and
-  `atlasSharedPreview:true`; retain the demo's native fallback and public API.
+  `genuxSharedPreview:true`; retain the demo's native fallback and public API.
 - NumberStepper has three siblings within one visible wrapper. Shared fill,
   padding/radius and thin inset depth belong to the outer wrapper. Inner InputNumber
   is transparent without its own shadow. Preserve the minmax(0,1fr) center column,
@@ -1039,12 +1157,12 @@ Higher-level user and project instructions apply.
   Keep `cssVar.key` stable across SSR/client. Static foundation pages must not carry
   React or demo bundles. The interactive `/color-system/` route is the explicit
   exception: it owns ColorSystemDemo and route-only color CSS. Its nested
-  `css-var-atlas-color-preview` key is excluded from static root-theme variable
+  `css-var-genux-color-preview` key is excluded from static root-theme variable
   overrides so changing its seed can update tokens; normal SSR extraction remains.
   Approved palettes and Storybook stay unchanged. Each demo imports its own primitives.
 - The selected theme must be ready for first paint. `src/ssr/styles.ts` collects
   global/component variables from separate light/dark caches at build. Normal
-  `data-atlas-theme-tokens` head CSS scopes every selector to the root theme.
+  `data-genux-theme-tokens` head CSS scopes every selector to the root theme.
   Preserve canonical CSS-in-JS hashes/cache maps. Do not copy runtime ownership
   metadata onto the new scoped variables. Temporary hydration variables must not
   override the selected theme.
@@ -1082,7 +1200,7 @@ Higher-level user and project instructions apply.
   itself, not inner control keys. Copyable code follows the same contract.
 - `npm run docs:verify` runs formatting → strict Astro/TSX → behavior → static
   route build → production/link/font/SSR/import-graph tests → Playwright types/test
-  discovery. `npm run verify` covers the legacy atlas. Discovery is not browser
+  discovery. `npm run verify` covers the legacy genux. Discovery is not browser
   execution. `npm run docs:browser` is the separate real browser matrix; do not
   report PASS without results.
 - Do not blindly update visual references. Prepare before/after/diff evidence and
@@ -1108,16 +1226,16 @@ Higher-level user and project instructions apply.
   exports. Do not duplicate demos/providers/tokens or create a second decision list.
   Use one demo per story and no inline duplicates with fixed IDs.
 - Input and Select are explicitly aligned with the documentation: their existing
-  stories set `atlasSharedPreview:true`, and only their content receives a
+  stories set `genuxSharedPreview:true`, and only their content receives a
   `.live-preview` wrapper. Input uses `numberMode:'spinner'`; Select uses
   `pillTags:true`. Preserve the default Demo APIs and native fallbacks. Other
   stories stay outside this scope; Checkbox, Radio and Switch web experiments
   remain unapproved for Storybook. Shared changes require checking default Demo
   output and Storybook imports.
-- Preview CSS order matches Astro: docs.css → atlas-shadows.css → components.css,
+- Preview CSS order matches Astro: docs.css → genux-shadows.css → components.css,
   followed by preview chrome styles and web.css. The toolbar stays outside
   `.live-preview`.
-  Demos already own AtlasProvider; do not add a second provider. Astro SSR extraction
+  Demos already own GenUXProvider; do not add a second provider. Astro SSR extraction
   stays outside Storybook.
 - storybook:check, storybook:build and storybook:verify are separate integration
   gates and do not replace docs:verify or browser/pixel review. Browser smoke follows
@@ -1126,7 +1244,7 @@ Higher-level user and project instructions apply.
 ## Light/dark appearance and popup layers
 
 - `src/theme.ts` owns shared semantic appearance tokens and the preference store.
-  Astro head bootstrap and Storybook preview share `atlas-theme`. Interaction
+  Astro head bootstrap and Storybook preview share `genux-theme`. Interaction
   works with storage disabled; theme changes preserve demos/state without remounting.
 - AntD ConfigProvider light/dark algorithms use a stable CSS variable key and the
   same component tree; portals/popups inherit the theme. Decisions remain unchanged.
@@ -1164,7 +1282,7 @@ The documentation header, shell, footer and main content use the available viewp
 
 ## Color system
 
-- `AtlasSlider` is the shared native Ant Design 6.6.6 Slider adapter used by
+- `GenUXSlider` is the shared native Ant Design 6.6.6 Slider adapter used by
   `/components/slider/` and Color. Its public union and ref preserve native single,
   range, orientation, reverse, keyboard and ARIA contracts. `slider.css` is linked
   only by those routes. Visible thumbs derive the existing Radio size; interaction
@@ -1200,7 +1318,7 @@ The documentation header, shell, footer and main content use the available viewp
   No 216-color quantization or custom palette engine. Main hue resets only fine offset;
   the fine 72-degree window keeps a stable anchor and wraps through zero. W/B inputs
   remain independent, normalized only during conversion.
-- Color editing is a local preview and export tool. The UI uses the existing Atlas
+- Color editing is a local preview and export tool. The UI uses the existing GenUX
   theme, tokens, keyboard focus, mobile layout, motion and English/Turkish i18n.
   Preview seed/theme changes retain sample field state. Saved/imported selections
   are validated and derived data is recalculated; storage failure is visible and
@@ -1211,7 +1329,7 @@ The documentation header, shell, footer and main content use the available viewp
 
 ## Shared profiles and click feedback
 
-`AtlasSizeProfile.tsx` and `AtlasProvider` own sm/md/lg, native componentSize and
+`GenUXSizeProfile.tsx` and `GenUXProvider` own sm/md/lg, native componentSize and
 height tokens; nested providers inherit the same selected profile. Field state and
 DOM nodes must survive profile/theme/locale changes. Every Button is at least 48 px;
 Circle Radio/Checkbox/Switch use the separate 32/40/50px visual profile from
@@ -1264,11 +1382,11 @@ production ownership/budget gates remain required. Browser/visual proof stays
 
 ## Documentation Pill master and color collections (2026-10-14)
 
-`AtlasPill` uses native AntD6.6.6 Tag with independent filled (default), solid and
+`GenUXPill` uses native AntD6.6.6 Tag with independent filled (default), solid and
 outlined variants. An unassigned documentation Pill derives its seed from the current
 ConfigProvider theme. Explicit native color takes precedence over colorIndex, then
 scoped colorKey, then the theme fallback. Native Tag owns close/disabled/link and
-object/function semantic styles. `AtlasCheckablePill` uses controlled CheckableTag
+object/function semantic styles. `GenUXCheckablePill` uses controlled CheckableTag
 with native click/Space checkbox behavior; selection and removal stay separate.
 Approved default filled styling retains the former ink/surface CSS-variable fallbacks.
 
@@ -1281,7 +1399,7 @@ Checkable targets retain48px; close targets retain32px precise/44px coarse floor
 Focus is one immediate, non-surrounding marker. All normal paint motion uses shared
 positive Cubic tokens; native wave remains disabled in favor of shared click feedback.
 
-`AtlasPillColorScope` owns one allocator per logical automatic collection. Consumers
+`GenUXPillColorScope` owns one allocator per logical automatic collection. Consumers
 supply stable raw keys and each Pill supplies colorKey; input components contain no
 color-selection logic. Randomness runs after client commit, never in render/state
 updaters, keeping SSR and initial hydration identical. The first assignment is random;
@@ -1375,7 +1493,7 @@ discovery does not prove browser-suite or CI execution.
 
 ## Shared Splitter and workspace composition (2026-10-14)
 
-- `AtlasSplitter` renders the installed native Splitter/Panel and owns two stable,
+- `GenUXSplitter` renders the installed native Splitter/Panel and owns two stable,
   named, bounded panels. The caller owns records, selection, drafts and actions.
   Auto starts stacked at320px and uses measured container area for horizontal
   composition; changing orientation keeps the same content tree mounted.
@@ -1391,7 +1509,7 @@ discovery does not prove browser-suite or CI execution.
   consume this master. Page/profile changes must preserve owned state. Tables
   retain contained horizontal scroll; form commit/cancel and inspection remain
   separate. Splitter geometry never commits data.
-- `atlas-splitter.css` loads only on Splitter/Data workspace routes; presentation
+- `genux-splitter.css` loads only on Splitter/Data workspace routes; presentation
   CSS `splitter-catalog.css` belongs to Splitter alone. No second mobile content
   tree, Storybook promotion, new runtime engine or server persistence is implied.
 - Targeted regression: `node --test docs/tests/splitter.test.mjs
@@ -1401,7 +1519,7 @@ docs/tests/splitter-page.test.mjs docs/tests/workspace-splitter.test.mjs`.
 
 ## Breadcrumb and Card presentation (2026-10-14)
 
-- `AtlasBreadcrumb` uses native Breadcrumb/Dropdown/Menu. Ancestors have real
+- `GenUXBreadcrumb` uses native Breadcrumb/Dropdown/Menu. Ancestors have real
   hrefs, the current page is readable non-link `aria-current=page`, and sibling
   menus have a separate named button with native arrows, Enter/Space activation
   and immediate Escape focus return. Preserve one real anchor activation; no
@@ -1417,7 +1535,7 @@ docs/tests/card.test.mjs`, source motion and production route/style ownership.
 
 ## Dropdown action menus (2026-10-14)
 
-- `AtlasDropdown` renders native Dropdown/Menu. Root and submenu popups retain
+- `GenUXDropdown` renders native Dropdown/Menu. Root and submenu popups retain
   native focus refs, bounded viewport alignment and owned scrolling; a plain
   popupRender div must not replace the native Menu.focus ref. Menus open by
   click/Enter/Space/Down, arrows traverse choices/levels and Escape returns focus.
@@ -1432,16 +1550,16 @@ docs/tests/card.test.mjs`, source motion and production route/style ownership.
   meaningful disabled, action-once, submenu, outside-dismiss and native autofocus
   coverage. Production ownership, types and browser checks remain separate.
 
-## Backend-independent GenUI contracts (2026-10-14)
+## Backend-independent GenUX contracts (2026-10-14)
 
-- GenUI core is backend-independent. Frappe compatibility belongs in an explicit
+- GenUX core is backend-independent. Frappe compatibility belongs in an explicit
   adapter, not in component contracts, rendering or the core query interface. UI
   remains Ant Design with native X Cards/A2UIv0.9 and X SDK2.9.0. Do not add
   FastAPI/SQLAlchemy or a second renderer. The lab is a recorded local stream,
   not a connected language model or live service. Server authentication, tenant
   scope and query authorization remain server duties. Existing Frappe coupling
   in definitions.ts is migration work, not proof that this boundary is complete.
-- `genui/policy.ts` validates bounded plain JSON, versions, local catalog allowlists,
+- `genux/policy.ts` validates bounded plain JSON, versions, local catalog allowlists,
   safe identifier bindings, component schemas, purpose requirements and graph
   structure before native rendering. No arbitrary HTML/CSS/JS, remote catalog,
   model-authored provenance, SQL, tenant override or unrestricted Frappe method.
@@ -1461,14 +1579,14 @@ docs/tests/card.test.mjs`, source motion and production route/style ownership.
   `createFrappeQuerySource` defines constant server method contracts; this checkout
   does not install those methods or prove server permissions. Storage failure remains
   visible with memory fallback. Frontpage outputs are read-only.
-- Regressions: card/card-primitives/card-workspace, genui-runtime/genui-definitions/
-  genui-sdk, shared component motion, strict docs types/lint/format, built route/asset
+- Regressions: card/card-primitives/card-workspace, genux-runtime/genux-definitions/
+  genux-sdk, shared component motion, strict docs types/lint/format, built route/asset
   ownership, and browser contracts. Distinguish recorded/JSDOM/build evidence from
   actual browser/device/network/CI and live Frappe/model evidence.
 
 ## Shared Pagination (2026-10-14)
 
-- `AtlasPagination` composes existing AtlasButton surfaces with native branded AntD
+- `GenUXPagination` composes existing GenUXButton surfaces with native branded AntD
   Select/Input. It owns no records or fetching. Hosts control current/total/pageSize
   and one onChange callback. Boundary pages1/2 and last-1/last appear once, alongside
   current±1. Gaps are descriptive, noninteractive ellipses; single missing pages are
@@ -1508,10 +1626,10 @@ docs/tests/card.test.mjs`, source motion and production route/style ownership.
 
 ## Shared Steps (2026-10-14)
 
-- `AtlasSteps` renders installed native AntD6.6.6 Steps with modern orientation,
+- `GenUXSteps` renders installed native AntD6.6.6 Steps with modern orientation,
   titlePlacement and items.content APIs. Host owns current, data and validation;
   callbacks/ReactNode slots belong to the trusted UI adapter, not model JSON.
-  This documentation component is not a registered/live GenUI capability.
+  This documentation component is not a registered/live GenUX capability.
 - Auto starts vertically in SSR, measures its container (640px minimum inline
   area) and retains a stacked journey below480px viewport height. Explicit
   Horizontal is a preferred wide layout; narrow containers still stack. Preserve
@@ -1531,11 +1649,11 @@ docs/tests/card.test.mjs`, source motion and production route/style ownership.
   the shared initially closed Tweaker. Local confirmation is not a server save.
 - Gates: steps/steps-page tests, component-motion, strict docs type/snippet checks,
   lint/format/build/site ownership and browser contracts. Browser discovery alone
-  is not runtime, device or CI proof. Storybook/legacy/GenUI registries stay separate.
+  is not runtime, device or CI proof. Storybook/legacy/GenUX registries stay separate.
 
 ## Shared AutoComplete (2026-10-14)
 
-- `AtlasAutoComplete` uses installed native AntD6.6.6 editable AutoComplete, with
+- `GenUXAutoComplete` uses installed native AntD6.6.6 editable AutoComplete, with
   immediate controlled onChange and explicit suggestion onSelect. It accepts local
   suggestion data with unique keys/values and optional grouping, description,
   metadata, keywords and disabled state. Custom values remain usable without a match.
@@ -1557,14 +1675,14 @@ docs/tests/card.test.mjs`, source motion and production route/style ownership.
 - Master/catalog CSS belongs only to AutoComplete until a real consumer is added.
   Gates: autocomplete/autocomplete-page tests, shared component motion, strict docs
   type/snippet checks, lint/format/build/site ownership and browser contracts. Browser
-  discovery is not execution. No new packages, Storybook approval or GenUI registration.
+  discovery is not execution. No new packages, Storybook approval or GenUX registration.
 
-## GenUI native Atlas direction and Cascader (2026-10-14)
+## GenUX native GenUX direction and Cascader (2026-10-14)
 
-- User direction: every Atlas component is to become GenUI native through an
+- User direction: every GenUX component is to become GenUX native through an
   explicit serializable contract, validated state/events, approved capability
   registry and trusted native adapter. A React export or catalog entry alone is
-  not a GenUI capability. Existing registry has12 names; do not claim all controls
+  not a GenUX capability. Existing registry has12 names; do not claim all controls
   are registered yet. Core must work without Frappe, while an optional Frappe
   adapter preserves fixed method, parameter, tenant, authorization and cancellation
   boundaries. No generic remote-method/URL dispatcher or serialized callback.
@@ -1578,10 +1696,10 @@ docs/tests/card.test.mjs`, source motion and production route/style ownership.
   Contain columns at320px and keep active keyboard column visible; no surrounding
   focus ring. Central motion/reduced-motion gate applies.
 - Cascader is unfinished until native behavior, SSR/types/snippets, route-only assets,
-  browser UX and independent QA pass. GenUI registration is a separate explicit
+  browser UX and independent QA pass. GenUX registration is a separate explicit
   contract/policy/runtime/adapter step; do not flatten hierarchical values into
-  AtlasChoice or hijack unrelated query tools.
-- Temporal controller lives at /Users/w6x/Developer/atlas-temporal. Master plans and
+  GenUXChoice or hijack unrelated query tools.
+- Temporal controller lives at /Users/w6x/Developer/genux-temporal. Master plans and
   reviews tests; Claude authors proposals; actual test execution/RED/GREEN and
   integration require evidence.51 configured slots is not51 proven active agents.
   Never weaken acceptance tests, suppress user hooks or bypass the Git guard.
@@ -1600,7 +1718,7 @@ docs/tests/card.test.mjs`, source motion and production route/style ownership.
   routes fail closed. Add a rule to the JSON and the standard page together.
 - `tools/docs-presentation.mjs` exports `validateBuiltPage(html,{path})` and
   `validateBuild(outputDirectory)` using the installed JSDOM. The
-  `atlas-docs-presentation` integration in `docs/astro.config.mjs` runs it at
+  `genux-docs-presentation` integration in `docs/astro.config.mjs` runs it at
   `astro:build:done` on every generated HTML page and fails the build on findings.
   It inspects built markup only; it is not computed-style, browser, device or CI proof.
 - Every documentation page has one h1. Each `section[data-doc-section]` has an
@@ -1621,9 +1739,9 @@ docs/tests/card.test.mjs`, source motion and production route/style ownership.
   full contract: local API with a usable https ant.design official reference, Astro
   integration with a trusted island example and guide link, and resources naming
   catalog, route/layout, React adapter, styles/tokens, AGENTS instructions, tests and
-  GenUI `docs/src/genui/contracts.ts`, `docs/src/genui/policy.ts` and the trusted
+  GenUX `docs/src/genux/contracts.ts`, `docs/src/genux/policy.ts` and the trusted
   renderer, with capability status stated separately. Catalog presence is not
-  GenUI registration.
+  GenUX registration.
 - Gates: `node --test docs/tests/documentation-presentation.test.mjs` (included in
   `npm run docs:test`), `npm run docs:build` (runs the structural gate), docs
   format/lint/check and `docs:test:site`. 320px/desktop browser review and
@@ -1631,23 +1749,23 @@ docs/tests/card.test.mjs`, source motion and production route/style ownership.
 
 ## Definitive input standard — human decision 2026-10-14
 
-- The supplied `/Users/w6x/Downloads/antdesign-input-light-dark.html` defines the default input surface direction. Rebuild the shared Atlas input ownership/markup and adapters; do not describe a CSS patch as a completed rewrite. AntD 6.6.6 native editing/ref/form semantics remain the foundation.
+- The supplied `/Users/w6x/Downloads/antdesign-input-light-dark.html` defines the default input surface direction. Rebuild the shared GenUX input ownership/markup and adapters; do not describe a CSS patch as a completed rewrite. AntD 6.6.6 native editing/ref/form semantics remain the foundation.
 - Superseded panel/field/paper values: the consolidated role decision above sets panel `#ffffff` / `#2c2c2c`, neutral grey fields `#ececec` / `#1b1b1b` darker than their panel, and shell `#e6e2d7` / `#191302`; the former `#fffefa` / `#ded9cc` / `#242424` values are not defaults for the new roles. The former blue-grey values `#eff1f4`, `#232b35` and `#2d3540` are invalid and must not appear as defaults, in `theme-builder/definitions.json`, or as hardcoded component/CSS colors. `definitions.json` is the single central source: `inputSurfaces`, `theme.ts` and docs accessibility read field, border (`#747166` / `#858585`), text (`#242622` / `#f2f2f2`), muted (`#575a53` / `#b8b8b8`) and disabled roles from it. Field interiors must be darker than their surrounding painted surface in both modes. Keep the upper inner dark blur and lower inner highlight geometry and opacity from the supplied standard with neutral shadow RGB; it supersedes the earlier approximate 65-degree, zero-blur calibration.
 - These values belong to central semantic tokens. Theme/color selection must reach input surface, text, placeholder, boundary, status and focus primitives through the shared token graph. No component-local frozen color/geometry source or duplicated height table. Keep shared radius and sm/md/lg profiles, minimum14 CSS px, Outfit and central Cubic motion.
 - The reference HTML is design data: do not import its AntD5 selectors/vendor bundle,11px text, generic ease or surrounding focus glow. Preserve one visible bottom-only keyboard cue and selectable/copyable readonly fields; disabled controls remain unavailable.
-- Inputs have priority over Radix/PDF comparison and the other open Atlas work. Use minimal meaningful TDD, without fixed numerical limits or correction-round stop rules. Source proposals, candidate, accepted review, integration and actual browser verification stay separate.
+- Inputs have priority over Radix/PDF comparison and the other open GenUX work. Use minimal meaningful TDD, without fixed numerical limits or correction-round stop rules. Source proposals, candidate, accepted review, integration and actual browser verification stay separate.
 
 ## Theme Builder main transfer — human instruction 2026-10-14
 
-- `/theme-builder/` now lives in the main documentation application, using `docs/src/theme-builder/{definitions.json,model.ts,store.ts,states.ts}`, `react/ThemeBuilder.tsx` and `styles/theme-builder.css`. Shared docs Provider and default Atlas Button consume applied recipes; explicit palette and approved profiles retain their intended ownership. Recipes are local browser settings, not a backend/GenUI registration or changes to approved component decisions.
+- `/theme-builder/` now lives in the main documentation application, using `docs/src/theme-builder/{definitions.json,model.ts,store.ts,states.ts}`, `react/ThemeBuilder.tsx` and `styles/theme-builder.css`. Shared docs Provider and default GenUX Button consume applied recipes; explicit palette and approved profiles retain their intended ownership. Recipes are local browser settings, not a backend/GenUX registration or changes to approved component decisions.
 - The human explicitly requested moving the existing candidate after disclosure of failures. This is source integration, not validated DONE. Preserve the existing type/browser gates: the three-argument `extractDemoStyles` call is a known TS failure and preview primary paint failed two browser scenarios. No extra correction cycle or test expansion was authorized.
-- Main build and destination HTTP200 passed; full acceptance, final independent QA and CI are not proven. Transfer hashes/backups and prior failure evidence are in `/Users/w6x/Developer/atlas-temporal/evidence/theme-builder-main-transfer.json`. Do not label those failures passing or silently remove assertions.
+- Main build and destination HTTP200 passed; full acceptance, final independent QA and CI are not proven. Transfer hashes/backups and prior failure evidence are in `/Users/w6x/Developer/genux-temporal/evidence/theme-builder-main-transfer.json`. Do not label those failures passing or silently remove assertions.
 
 ## Token definitions and standards — human request 2026-10-14
 
 - Historical (2026-10-14): `/token-standards/` was the read-only reference for the then 51 Theme Builder definitions. Current: values live on `/tokens/` (Design tokens) and rules on `/standards/` (UX standards); the legacy route resolves there. Generate catalog rows from `docs/src/theme-builder/definitions.json` via `tokenDefinitions`; units, defaults, bounds and choices must not be maintained as a second numeric catalog. Shared state/measurement/surface/layer metadata comes from `states.ts`; motion remains central.
-- Keep the sidebar and `/tokens/` links, Turkish dictionary and existing token-kind route registration. Machine identifiers and CSS bindings remain literal. Presets are not current browser-applied values; documented standards do not prove complete component runtime bindings or GenUI registration.
-- Verification commands for this route: `npm run docs:build`, `npm run docs:lint`, `node --test docs/tests/documentation-presentation.test.mjs` and the six changed source files' Prettier check. Actual Chromium320 evidence and independent CLI review are recorded separately in `/Users/w6x/Developer/atlas-temporal/evidence/token-standards-integration.json`. Existing Theme Builder TS/paint failures and unrelated Cascader formatting failures remain open; never promote the full application gates to PASS from this page's checks.
+- Keep the sidebar and `/tokens/` links, Turkish dictionary and existing token-kind route registration. Machine identifiers and CSS bindings remain literal. Presets are not current browser-applied values; documented standards do not prove complete component runtime bindings or GenUX registration.
+- Verification commands for this route: `npm run docs:build`, `npm run docs:lint`, `node --test docs/tests/documentation-presentation.test.mjs` and the six changed source files' Prettier check. Actual Chromium320 evidence and independent CLI review are recorded separately in `/Users/w6x/Developer/genux-temporal/evidence/token-standards-integration.json`. Existing Theme Builder TS/paint failures and unrelated Cascader formatting failures remain open; never promote the full application gates to PASS from this page's checks.
 
 ## Latest human background correction — 2026-10-15
 
@@ -1663,16 +1781,16 @@ Shared native selection examples preserve full label/card hit areas, disabled ch
 
 `DepartmentSelectExample.tsx` uses native AntD search/options, explicit local creation for a new normalized name, duplicate prevention and a permanently available clear action returning focus to Select. These examples are local demonstrations, not backend writes. New prose belongs in the three `ux-*.json` Turkish dictionaries.
 
-Bounded verification: ONE new `docs/browser/ux-guidance.spec.ts`, THREE scenarios, shared two correction cycles exhausted and 61,952ms focused checks. Date and Department scenarios PASS; combined selection scenario FAIL at a root-scoped nested Switch title locator before Switch acceptance. Existing unmodified selection regression file: three PASS. Do not mark new UX DONE or silently fix/skip the failed oracle without authorization. Build39 and lint143 PASS; docs:check retains the separate Theme Builder TS2554 failure. Browser TypeScript/discovery lists510 cases across10 files; discovery is not execution. Independent terminal review02 is BLOCKED on that same test gap, with the prior five source findings addressed. Evidence: `/Users/w6x/Developer/atlas-temporal/evidence/ux-guidance-outcome.json`. No broader matrix, CI or device proof is established.
+Bounded verification: ONE new `docs/browser/ux-guidance.spec.ts`, THREE scenarios, shared two correction cycles exhausted and 61,952ms focused checks. Date and Department scenarios PASS; combined selection scenario FAIL at a root-scoped nested Switch title locator before Switch acceptance. Existing unmodified selection regression file: three PASS. Do not mark new UX DONE or silently fix/skip the failed oracle without authorization. Build39 and lint143 PASS; docs:check retains the separate Theme Builder TS2554 failure. Browser TypeScript/discovery lists510 cases across10 files; discovery is not execution. Independent terminal review02 is BLOCKED on that same test gap, with the prior five source findings addressed. Evidence: `/Users/w6x/Developer/genux-temporal/evidence/ux-guidance-outcome.json`. No broader matrix, CI or device proof is established.
 
 ## Native Ant Design X Hybrid UI first slice — 2026-10-15
 
-- `@ant-design/x` is pinned to2.9.0 alongside existing X Cards/X SDK2.9.0 and AntD6.6.6/React19.2.0. The optional Card GenUI lab uses native Sender, Bubble.List, Prompts and XProvider with its existing SDK/runtime and stable Atlas input adapter. Do/Do+Chat/Chat are presentation-emphasis profiles, not separate pipelines or live AI services.
-- One mounted composer/canvas and host session own scope, input, SDK messages, request and revision. Preparing an order review selects the recorded scenario and focuses the composer; explicit submission starts the existing recorded stream. Task table selection/review-note drafts survive profile changes. Prompts use an actual AtlasButton for keyboard access. Keep the restored global palette/blur and shared input/focus tokens intact.
+- `@ant-design/x` is pinned to2.9.0 alongside existing X Cards/X SDK2.9.0 and AntD6.6.6/React19.2.0. The optional Card GenUX lab uses native Sender, Bubble.List, Prompts and XProvider with its existing SDK/runtime and stable GenUX input adapter. Do/Do+Chat/Chat are presentation-emphasis profiles, not separate pipelines or live AI services.
+- One mounted composer/canvas and host session own scope, input, SDK messages, request and revision. Preparing an order review selects the recorded scenario and focuses the composer; explicit submission starts the existing recorded stream. Task table selection/review-note drafts survive profile changes. Prompts use an actual GenUXButton for keyboard access. Keep the restored global palette/blur and shared input/focus tokens intact.
 - The lab remains a labelled local recorded fixture without a connected model/server. No arbitrary generated HTML, new catalog capability, server permission, persistence or live execution claim follows. This is a first Hybrid UI example, not adoption of all official patterns or all X components.
 - Source integration is **acceptance blocked**: final Chromium320 scenario1(state continuity) and scenario2(order review) PASS. Scenario3(resource/focus/sizing/dark/resize) FAIL before its later assertions: Astro still links/requests the feature CSS before opening the lab. The native lab JavaScript entry was observed only after opening; transitive resource isolation is not proven.
-- The new browser test also introduces THREE TS2339 errors by using obsolete `d`/`n` properties against es-module-lexer3.0.3's Import API. Do not hide, skip or weaken this failed gate. Main docs types retain the separate existing Theme Builder TS2554; motion retains the old atlas-feedback.css failure. Build39 and lint143 PASS.
-- Shared budget: ONE new behavioral testfile `docs/browser/hybrid-ui.spec.ts`, THREE scenarios, TWO of TWO correction cycles exhausted. Measured browser/control checks62,991ms. No additional fix/test expansion is authorized; preserve failures and record unexecuted later checks as not_run. Independent terminal review and outcome: `/Users/w6x/Developer/atlas-temporal/evidence/hybrid-ui-outcome.json`.
+- The new browser test also introduces THREE TS2339 errors by using obsolete `d`/`n` properties against es-module-lexer3.0.3's Import API. Do not hide, skip or weaken this failed gate. Main docs types retain the separate existing Theme Builder TS2554; motion retains the old genux-feedback.css failure. Build39 and lint143 PASS.
+- Shared budget: ONE new behavioral testfile `docs/browser/hybrid-ui.spec.ts`, THREE scenarios, TWO of TWO correction cycles exhausted. Measured browser/control checks62,991ms. No additional fix/test expansion is authorized; preserve failures and record unexecuted later checks as not_run. Independent terminal review and outcome: `/Users/w6x/Developer/genux-temporal/evidence/hybrid-ui-outcome.json`.
 - Official design reference: https://x.ant.design/docs/spec/hybrid-ui-design-cn/ . Actual checks are docs:build, docs:lint, docs:check, browser TypeScript, existing component-motion gate and the SAME three focused browser scenarios. Build success and source imports do not prove conditional CSS delivery, cross-browser behavior, physical devices or CI.
 
 ## Form grouping standard — human instruction 2026-10-15
@@ -1683,20 +1801,20 @@ The basic Form example now groups Full name/Email as Profile details and Team/up
 
 Own grouping styles in components.css and workspace-forms.css: transparent, borderless fieldsets, token-based spacing/typography and native input wells retained. Form grouping does not authorize changing the approved page backgrounds, input colors/radii, sizes, focus rule, motion or unrelated AI/Theme Builder defects. English is canonical; the two new group names are translated in the registered Turkish react dictionary.
 
-Focused evidence: ONE new form-sections.spec.ts with THREE scenarios. Basic group semantics/transparent appearance and validation/local-result/reset PASS after the final label-selector correction; workspace step/draft continuity and320/1440 reflow PASS on identical application source before that test-only correction and were not needlessly repeated. Shared two correction cycles used (nested line-legend selector scope and required Team control's label locator), measured focused execution20,765ms. Build39 and lint143 PASS. General docs types still fail on the held Theme Builder TS2554; browser types still fail on the preceding Hybrid UI test's THREE TS2339 errors, with no new form diagnostics. Independent review and evidence: `/Users/w6x/Developer/atlas-temporal/evidence/form-sections-outcome.json`. This is scoped form delivery, not whole CI/cross-browser/device acceptance.
+Focused evidence: ONE new form-sections.spec.ts with THREE scenarios. Basic group semantics/transparent appearance and validation/local-result/reset PASS after the final label-selector correction; workspace step/draft continuity and320/1440 reflow PASS on identical application source before that test-only correction and were not needlessly repeated. Shared two correction cycles used (nested line-legend selector scope and required Team control's label locator), measured focused execution20,765ms. Build39 and lint143 PASS. General docs types still fail on the held Theme Builder TS2554; browser types still fail on the preceding Hybrid UI test's THREE TS2339 errors, with no new form diagnostics. Independent review and evidence: `/Users/w6x/Developer/genux-temporal/evidence/form-sections-outcome.json`. This is scoped form delivery, not whole CI/cross-browser/device acceptance.
 
 ## Contextual empty states and profile images — human Refactoring UI request 2026-10-15
 
-Apply hierarchy through meaningful headings, readable measure and shared spacing before decorative borders or Cards. The supplied book is reference data; it does not override Atlas's approved canvas, input wells, Outfit, minimum14px, sizes, radius, focus or motion. Do not add per-field Cards, copy book assets, or imply functionality that is absent.
+Apply hierarchy through meaningful headings, readable measure and shared spacing before decorative borders or Cards. The supplied book is reference data; it does not override GenUX's approved canvas, input wells, Outfit, minimum14px, sizes, radius, focus or motion. Do not add per-field Cards, copy book assets, or imply functionality that is absent.
 
-`AtlasEmptyState.tsx` wraps native AntD Empty for first-use, no-match and error, with an explicit heading/explanation and one optional caller-owned action outside the single live text region. `workspace/kit/StateSurface.tsx` reuses it only for those three kinds; ready/loading/denied/not-found/partial/stale/unknown semantics and content gating remain intact. A missing callback does not grant recovery. First-use examples hide unusable collection tools; no-match keeps the search reachable and preserves its value until explicit clear. When an action disappears, its local result receives visible non-enclosing programmatic focus.
+`GenUXEmptyState.tsx` wraps native AntD Empty for first-use, no-match and error, with an explicit heading/explanation and one optional caller-owned action outside the single live text region. `workspace/kit/StateSurface.tsx` reuses it only for those three kinds; ready/loading/denied/not-found/partial/stale/unknown semantics and content gating remain intact. A missing callback does not grant recovery. First-use examples hide unusable collection tools; no-match keeps the search reachable and preserves its value until explicit clear. When an action disappears, its local result receives visible non-enclosing programmatic focus.
 
-`AtlasAvatar.tsx` wraps native Avatar with one accessible full name, decorative inner image, inherited canonical sm/md/lg dimensions, fixed image cover and initials fallback; whitespace-only names use a question mark with Unknown person as the accessible name. Initials remain >=14px. Uploaded images never determine the control geometry; color never invents online/role status. `atlas-avatar.css` is linked by its owning page. Both new pages follow the shared component documentation contract and registered `content-ux.json` Turkish dictionary. No backend/upload/cropping service, Storybook promotion or GenUI registration is implied.
+`GenUXAvatar.tsx` wraps native Avatar with one accessible full name, decorative inner image, inherited canonical sm/md/lg dimensions, fixed image cover and initials fallback; whitespace-only names use a question mark with Unknown person as the accessible name. Initials remain >=14px. Uploaded images never determine the control geometry; color never invents online/role status. `genux-avatar.css` is linked by its owning page. Both new pages follow the shared component documentation contract and registered `content-ux.json` Turkish dictionary. No backend/upload/cropping service, Storybook promotion or GenUX registration is implied.
 
-Focused verification uses ONE `docs/browser/refactoring-ui.spec.ts` with THREE scenarios, five-minute shared ceiling and two corrective batches. The first-use/create/focus and Avatar image-failure/geometry/name scenarios passed in green01; the recovery scenario passed after correcting its supplied action-label lookup in green02 on unchanged application source. Build41/ECA structure and lint148 pass. General docs/browser type gates retain earlier ThemeBuilder/Hybrid failures; kit translation-subset and feedback motion failures remain disclosed. Full CI, other engines/devices and complete PDF adoption are unproven. Actual logs/outcome live in `/Users/w6x/Developer/atlas-temporal/evidence/refactoring-ui-outcome.json`. Do not rerun passing checks without a relevant source change or concrete defect. Continue authorized fixes under the current minimal-TDD policy; historical correction counters do not block implementation.
+Focused verification uses ONE `docs/browser/refactoring-ui.spec.ts` with THREE scenarios, five-minute shared ceiling and two corrective batches. The first-use/create/focus and Avatar image-failure/geometry/name scenarios passed in green01; the recovery scenario passed after correcting its supplied action-label lookup in green02 on unchanged application source. Build41/ECA structure and lint148 pass. General docs/browser type gates retain earlier ThemeBuilder/Hybrid failures; kit translation-subset and feedback motion failures remain disclosed. Full CI, other engines/devices and complete PDF adoption are unproven. Actual logs/outcome live in `/Users/w6x/Developer/genux-temporal/evidence/refactoring-ui-outcome.json`. Do not rerun passing checks without a relevant source change or concrete defect. Continue authorized fixes under the current minimal-TDD policy; historical correction counters do not block implementation.
 
 Refactoring UI delivery acceptance remains **INCOMPLETE** after independent review: Avatar catalog page links its CSS, but copied React/auto-generated Astro usage examples omit the required stylesheet. Paired-name duplication and structured resource inventory omissions are also open. Two corrective batches are exhausted; do not silently fix/waive these or mark the whole delivery DONE. Outcome and review02 above are authoritative.
 
 Neutral warm field palette (human decision applied 2026-10-15): `theme-builder/definitions.json` is the single central source for field `#ececec` / `#1b1b1b` (the earlier light `#ded9cc` is superseded by the consolidated role decision), border `#747166` / `#858585`, text `#242622` / `#f2f2f2` and muted `#575a53` / `#b8b8b8`; disabled roles keep their own `definitions.json` values, with disabled text equal to muted, so every text role keeps at least 4.5:1 and the field border at least 3:1 on field, panel and canvas. Panel and field surfaces are neutral greys with equal RGB channels in both modes; the warm shell canvas (`#e6e2d7` / `#191302`, R >= G >= B, no blue overshoot) is a separate role. Shell `#e6e2d7` / `#191302` and panels `#ffffff` / `#2c2c2c` follow the consolidated role decision; brand, status, motion, font, radius, shadow geometry and explicit custom recipes are unchanged. TDD exception for this regression: exactly one new node:test file with one scenario, `docs/tests/neutral-field-surfaces.test.mjs`, bundles the real theme, input-surface, accessibility, Theme Builder model and color-system modules with esbuild, fails against the former blue-grey sources and passes after the central change; no further test waves or fixtures are added for it.
-Decorative inset paint edge (human correction applied 2026-10-15; supersedes the earlier forced bright four-side field perimeter, which was a paint-role confusion and is not an approved look): the field well rests on the decorative `insetBorder` role from `inputSurfaces` (light neutral ink `rgba(26, 26, 26, 0.035)`, dark neutral white `rgba(255, 255, 255, 0.02)`), exposed as `--atlas-input-inset-border` on the provider and as the `--field-inset-border`, `--field-inner-shadow` and `--field-inner-hover` root aliases from `theme.ts` for owners outside AtlasProvider such as the sidebar search. This edge is decorative and carries no 3:1 contrast claim; the functional `--field-border` token (`#747166` / `#858585`) and its 3:1 contract are unchanged for checkbox, radio and other functional boundaries. At rest every physical border width of a field equals `--field-border-width`: no reserved thick bottom stripe and no surrounding contrast frame. Focus paints exactly one immediate bottom-only marker (`--focus-marker` tall) as a background layer inside the well over the retained reference inner shadow, so geometry never shifts; no ring, glow or sidebar label underline doubles it. Text keeps at least 4.5:1 and focus/status cues at least 3:1; `definitions.json`, surfaces, sizes, radius and layout are unchanged.
-Overlay backdrop standard (permanent human decision applied 2026-10-15; standard and central implementation integrated; runtime acceptance and human visual approval tracked separately): every user-opened upper layer, meaning Dropdown, Select, AutoComplete, Cascader, DatePicker, TimePicker, range pickers, rich menus, Popconfirm, Popover, Drawer, Modal and the Tweaker, dims the page behind it with a neutral scrim and a fixed 1 px background blur. A non-modal panel and its bound trigger stay sharp above the scrim; Drawer and Modal blur the whole background including the trigger. Toast and Notification are excluded. Tooltip is included by the latest human decision: the scrim and blur apply only while a Tooltip is actually visible after hover or keyboard focus, its existing delay is preserved, and the Tooltip popup and its trigger stay sharp. Closing keeps the clip, stacking and trigger cut-out until the fade ends; the controller stays safe to import during SSR and paints through a single body pseudo-element. Native outside click, Escape, focus return, the 14 CSS px minimum and readability are preserved. `docs/src/theme-builder/definitions.json` is the single role source for the six `overlay` group tokens `overlay-scrim-color`, `overlay-scrim-opacity`, `overlay-backdrop-blur`, `overlay-scrim-z`, `overlay-trigger-z` and `overlay-popup-z` (black scrim in both themes, opacity 0.12 light / 0.24 dark, fixed 1px blur, base layers 1040 / 1041 / 1050), raising the catalog from 51 to 57 definitions; the helper, root and resolver in `docs/src/theme-builder/model.ts` and `docs/src/theme.ts` generate `--overlay-scrim` RGBA, `--overlay-backdrop-blur` and the z roles, and the documentation catalog is generated from `tokenDefinitions`, never hardcoded. Motion aliases `--overlay-open-duration: var(--press-duration)`, `--overlay-close-duration: var(--release-duration)` and `--overlay-easing: var(--motion-easing)` point at the central symmetric Cubic contract and introduce no new timing; reduced motion is instant. `--dropdown-scrim`, `--dropdown-backdrop-blur`, `--dropdown-backdrop-z` and `--dropdown-trigger-z` remain compatibility aliases only with no duplicated values. Existing modal caller z values are preserved and `layerOrder` metadata is not a universal claim. Theme Builder compatibility: a complete valid 51-token custom recipe stays valid, only the six new roles are filled from factory defaults, strict unknown/partial rejection, the storage key and version 1 are unchanged. New layered components MUST consume the semantic standard and MUST join the existing shared table in `docs/browser/drawer-feedback.spec.ts` with one row; no separate spec file or new wave. The rule is documented in `docs/src/pages/standards.astro` (`layers`, legacy anchor `overlay-standard`), its values in `docs/src/pages/tokens.astro`, and in `docs/UX-STANDARDS.md` (the former `token-standards.astro` location is history); this entry records the decision and is not evidence that runtime, browser scenarios or screenshots passed. The central helper `data/overlay-tokens.ts` and the controller `overlay-backdrop.ts` are the single runtime owners of the overlay roles; the one existing shared table in `docs/browser/drawer-feedback.spec.ts` is the only browser oracle and gains no separate spec file or case wave. The initial real RED is `overlay-backdrop-red-full.log`; the outcome record is `/Users/w6x/Developer/atlas-temporal/evidence/overlay-backdrop-delivery-20261015.json`, written by the root conductor after the checks finish. Current runtime acceptance is recorded in the linked outcome receipt; this source documentation is not evidence of passing browser or CI checks or of human visual approval.
+Decorative inset paint edge (human correction applied 2026-10-15; supersedes the earlier forced bright four-side field perimeter, which was a paint-role confusion and is not an approved look): the field well rests on the decorative `insetBorder` role from `inputSurfaces` (light neutral ink `rgba(26, 26, 26, 0.035)`, dark neutral white `rgba(255, 255, 255, 0.02)`), exposed as `--genux-input-inset-border` on the provider and as the `--field-inset-border`, `--field-inner-shadow` and `--field-inner-hover` root aliases from `theme.ts` for owners outside GenUXProvider such as the sidebar search. This edge is decorative and carries no 3:1 contrast claim; the functional `--field-border` token (`#747166` / `#858585`) and its 3:1 contract are unchanged for checkbox, radio and other functional boundaries. At rest every physical border width of a field equals `--field-border-width`: no reserved thick bottom stripe and no surrounding contrast frame. Focus paints exactly one immediate bottom-only marker (`--focus-marker` tall) as a background layer inside the well over the retained reference inner shadow, so geometry never shifts; no ring, glow or sidebar label underline doubles it. Text keeps at least 4.5:1 and focus/status cues at least 3:1; `definitions.json`, surfaces, sizes, radius and layout are unchanged.
+Overlay backdrop standard (permanent human decision applied 2026-10-15; standard and central implementation integrated; runtime acceptance and human visual approval tracked separately): every user-opened upper layer, meaning Dropdown, Select, AutoComplete, Cascader, DatePicker, TimePicker, range pickers, rich menus, Popconfirm, Popover, Drawer, Modal and the Tweaker, dims the page behind it with a neutral scrim and a fixed 1 px background blur. A non-modal panel and its bound trigger stay sharp above the scrim; Drawer and Modal blur the whole background including the trigger. Toast and Notification are excluded. Tooltip is included by the latest human decision: the scrim and blur apply only while a Tooltip is actually visible after hover or keyboard focus, its existing delay is preserved, and the Tooltip popup and its trigger stay sharp. Closing keeps the clip, stacking and trigger cut-out until the fade ends; the controller stays safe to import during SSR and paints through a single body pseudo-element. Native outside click, Escape, focus return, the 14 CSS px minimum and readability are preserved. `docs/src/theme-builder/definitions.json` is the single role source for the six `overlay` group tokens `overlay-scrim-color`, `overlay-scrim-opacity`, `overlay-backdrop-blur`, `overlay-scrim-z`, `overlay-trigger-z` and `overlay-popup-z` (black scrim in both themes, opacity 0.12 light / 0.24 dark, fixed 1px blur, base layers 1040 / 1041 / 1050), raising the catalog from 51 to 57 definitions; the helper, root and resolver in `docs/src/theme-builder/model.ts` and `docs/src/theme.ts` generate `--overlay-scrim` RGBA, `--overlay-backdrop-blur` and the z roles, and the documentation catalog is generated from `tokenDefinitions`, never hardcoded. Motion aliases `--overlay-open-duration: var(--press-duration)`, `--overlay-close-duration: var(--release-duration)` and `--overlay-easing: var(--motion-easing)` point at the central symmetric Cubic contract and introduce no new timing; reduced motion is instant. `--dropdown-scrim`, `--dropdown-backdrop-blur`, `--dropdown-backdrop-z` and `--dropdown-trigger-z` remain compatibility aliases only with no duplicated values. Existing modal caller z values are preserved and `layerOrder` metadata is not a universal claim. Theme Builder compatibility: a complete valid 51-token custom recipe stays valid, only the six new roles are filled from factory defaults, strict unknown/partial rejection, the storage key and version 1 are unchanged. New layered components MUST consume the semantic standard and MUST join the existing shared table in `docs/browser/drawer-feedback.spec.ts` with one row; no separate spec file or new wave. The rule is documented in `docs/src/pages/standards.astro` (`layers`, legacy anchor `overlay-standard`), its values in `docs/src/pages/tokens.astro`, and in `docs/UX-STANDARDS.md` (the former `token-standards.astro` location is history); this entry records the decision and is not evidence that runtime, browser scenarios or screenshots passed. The central helper `data/overlay-tokens.ts` and the controller `overlay-backdrop.ts` are the single runtime owners of the overlay roles; the one existing shared table in `docs/browser/drawer-feedback.spec.ts` is the only browser oracle and gains no separate spec file or case wave. The initial real RED is `overlay-backdrop-red-full.log`; the outcome record is `/Users/w6x/Developer/genux-temporal/evidence/overlay-backdrop-delivery-20261015.json`, written by the root conductor after the checks finish. Current runtime acceptance is recorded in the linked outcome receipt; this source documentation is not evidence of passing browser or CI checks or of human visual approval.

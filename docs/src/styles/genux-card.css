@@ -1,0 +1,235 @@
+/* Native Card primitives: shared by the catalog, workspaces and the GenUX registry. */
+.genux-demo .genux-card-native.ant-card {
+  --card-radius: var(--radius);
+  --card-padding: var(--space-lg);
+  --card-media-height: calc(var(--genux-component-height) * 1.75);
+  --card-inline-media: calc(var(--genux-component-height) * 2);
+  min-width: 0;
+  max-width: 100%;
+  color: var(--ink);
+  background: var(--panel);
+  border-radius: var(--card-radius);
+  box-shadow: none;
+  font-family: var(--font-body);
+  font-size: var(--text);
+  line-height: var(--line-height);
+  container-type: inline-size;
+  transition-property: background-color, color, border-color, opacity;
+  transition-duration: var(--motion-duration-standard);
+  transition-timing-function: var(--motion-easing);
+  transition-delay: var(--motion-delay);
+}
+.genux-demo .genux-card-native[data-card-profile='sm'],
+.genux-demo .genux-card-native[data-card-density='compact'] {
+  --card-padding: var(--space-md);
+}
+.genux-demo .genux-card-native[data-card-profile='lg']:not([data-card-density='compact']) {
+  --card-padding: var(--space-xl);
+}
+.genux-demo .genux-card-native.ant-card-bordered {
+  border-color: var(--line);
+}
+.genux-demo .genux-card-native[data-card-selected='true'] {
+  background: var(--soft);
+}
+.genux-demo .genux-card-native > .ant-card-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-lg);
+  min-width: 0;
+  padding: var(--card-padding);
+  border-radius: inherit;
+}
+.genux-demo .genux-card-native > .ant-card-body::before,
+.genux-demo .genux-card-native > .ant-card-body::after {
+  display: none;
+}
+.genux-card-native :is(h3, h4, h5, p, dl, ol, ul, figure) {
+  margin: 0;
+}
+.genux-card-native :is(h3, h4, h5) {
+  font-size: var(--text-large);
+  font-weight: var(--font-weight-label);
+  line-height: var(--line-height);
+}
+.genux-card-heading,
+.genux-card-header-slot,
+.genux-card-actions,
+.genux-card-task-moves {
+  display: flex;
+  align-items: start;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  min-width: 0;
+}
+.genux-card-name {
+  flex: 1 1 160px;
+  min-width: 0;
+}
+.genux-card-name,
+.genux-card-content,
+.genux-card-footer,
+.genux-card-task,
+.genux-card-fields,
+.genux-card-fields > div,
+.genux-card-pricing,
+.genux-card-metric {
+  display: grid;
+  gap: var(--space-sm);
+  min-width: 0;
+}
+.genux-card-content,
+.genux-card-footer {
+  gap: var(--space-md);
+}
+.genux-card-native
+  :is(
+    .genux-card-description,
+    .genux-card-eyebrow,
+    .genux-card-item-detail,
+    .genux-card-metric-period,
+    .genux-card-metric-label,
+    .genux-card-source,
+    .genux-card-action-reason,
+    dt,
+    .genux-card-price-interval
+  ) {
+  color: var(--muted);
+}
+.genux-card-native :is(p, dd, li, h3, h4, h5) {
+  overflow-wrap: break-word;
+}
+.genux-card-media-slot {
+  min-width: 0;
+}
+.genux-card-visual {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: var(--space-xs);
+  min-height: var(--card-media-height);
+  padding: var(--space-md);
+  background: var(--surface);
+  color: var(--ink);
+  border-radius: var(--card-radius);
+}
+.genux-card-visual > span:first-child {
+  font-size: var(--text-section);
+}
+.genux-card-visual-caption {
+  color: var(--muted);
+  text-align: center;
+}
+.genux-card-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 120px), 1fr));
+  gap: var(--space-md);
+}
+.genux-card-facts > div {
+  display: grid;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+.genux-card-facts dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+.genux-card-native .genux-card-metric-value {
+  font-size: var(--text-section);
+  font-variant-numeric: tabular-nums;
+}
+.genux-card-delta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs) var(--space-sm);
+}
+.genux-card-change-meaning {
+  color: var(--muted);
+}
+.genux-card-metrics,
+.genux-card-items {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: var(--space-lg);
+}
+.genux-card-items > li {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+.genux-card-items > li > div {
+  flex: 1 1 160px;
+  min-width: 0;
+}
+.genux-card-pricing ul {
+  padding-inline-start: var(--space-lg);
+}
+.genux-card-task progress {
+  width: 100%;
+  max-width: 100%;
+  accent-color: var(--accent);
+}
+.genux-card-source {
+  display: grid;
+  gap: var(--space-xs);
+}
+.genux-card-field-error {
+  color: var(--error);
+}
+.genux-card-details-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition-property: grid-template-rows, opacity;
+  transition-duration: var(--motion-duration-standard);
+  transition-timing-function: var(--motion-easing);
+  transition-delay: var(--motion-delay);
+}
+.genux-card-details-panel > div {
+  min-height: 0;
+  overflow: hidden;
+}
+.genux-card-details-panel[data-open='true'] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.genux-card-skeleton {
+  display: grid;
+  gap: var(--space-sm);
+}
+.genux-card-skeleton[hidden] {
+  display: none;
+}
+.genux-card-skeleton > span {
+  height: var(--text);
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  animation: genux-pulse var(--motion-duration-pulse) var(--motion-easing) infinite;
+  animation-delay: var(--motion-delay);
+}
+.genux-card-skeleton > span:last-child {
+  width: 70%;
+}
+@container (min-width: 480px) {
+  .genux-card-native:is([data-card-layout='horizontal'], [data-card-layout='auto'])
+    > .ant-card-body:has(.genux-card-media-slot) {
+    grid-template-columns: minmax(0, var(--card-inline-media)) minmax(0, 1fr);
+  }
+  .genux-card-native:is([data-card-layout='horizontal'], [data-card-layout='auto'])
+    .genux-card-heading,
+  .genux-card-native:is([data-card-layout='horizontal'], [data-card-layout='auto'])
+    .genux-card-footer {
+    grid-column: 1 / -1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .genux-card-skeleton > span {
+    animation-play-state: paused;
+  }
+  .genux-card-details-panel {
+    transition-duration: 0ms;
+  }
+}

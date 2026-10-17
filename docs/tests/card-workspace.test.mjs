@@ -252,7 +252,7 @@ test('legacy EntityCards preserve the palette identity of all four raw-status va
   const path = new URL(fixture, import.meta.url);
   await writeFile(
     path,
-    `import CollectionViews from '../src/react/workspace/CollectionViews'; import AtlasProvider from '../src/react/AtlasProvider'; export default function Palette(props){ return <AtlasProvider appearance="docs"><CollectionViews {...props}/></AtlasProvider>; }`,
+    `import CollectionViews from '../src/react/workspace/CollectionViews'; import GenUXProvider from '../src/react/GenUXProvider'; export default function Palette(props){ return <GenUXProvider appearance="docs"><CollectionViews {...props}/></GenUXProvider>; }`,
   );
   t.after(() => unlink(path));
   const h = await mountPattern(
@@ -263,7 +263,7 @@ test('legacy EntityCards preserve the palette identity of all four raw-status va
   t.after(() => h.dispose());
   const fills = new Set();
   for (const [status, expected] of Object.entries(statuses)) {
-    const pill = h.document.querySelector(`[data-card-id="raw-${status}"] .atlas-pill`);
+    const pill = h.document.querySelector(`[data-card-id="raw-${status}"] .genux-pill`);
     assert.ok(pill, status);
     assert.equal(pill.dataset.pillColor, expected, `${status} retains the stable shared preset`);
     fills.add(pill.style.getPropertyValue('--pill-bg'));
@@ -272,7 +272,7 @@ test('legacy EntityCards preserve the palette identity of all four raw-status va
   await h.act(() => h.setLocale('tr'));
   for (const [status, expected] of Object.entries(statuses)) {
     assert.equal(
-      h.document.querySelector(`[data-card-id="raw-${status}"] .atlas-pill`).dataset.pillColor,
+      h.document.querySelector(`[data-card-id="raw-${status}"] .genux-pill`).dataset.pillColor,
       expected,
     );
   }
@@ -286,7 +286,7 @@ test('EntityCard collection currency totals retain their distinct stable palette
   t.after(() => h.dispose());
   const readCurrencies = () =>
     new Map(
-      [...h.document.querySelectorAll('.atlas-pill')]
+      [...h.document.querySelectorAll('.genux-pill')]
         .filter(pill => /^(USD|EUR):/.test(pill.textContent.trim()))
         .map(pill => [pill.textContent.trim().slice(0, 3), pill.dataset.pillColor]),
     );
@@ -327,7 +327,7 @@ test('legacy ordinary List retains its existing presentation', async t => {
     legacyProps({ view: 'list' }),
   );
   t.after(() => h.dispose());
-  assert.equal(h.document.querySelector('[data-atlas-card]'), null);
+  assert.equal(h.document.querySelector('[data-genux-card]'), null);
   assert.ok(h.document.querySelector('.collection-record-content'));
   assert.ok(h.document.getElementById('collection-open-ORDER-LEGACY'));
 });

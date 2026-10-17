@@ -9,7 +9,7 @@ test('shared documentation size profiles preserve input drafts and expose exactl
     documentation: true,
   });
   t.after(() => h.dispose());
-  const owner = h.document.querySelector('.atlas-demo[data-size-profile]');
+  const owner = h.document.querySelector('.genux-demo[data-size-profile]');
   const input = h.document.querySelector('#input-filled');
   await h.type(input, 'Preserved entry');
   await h.click(h.document.querySelector('[data-tweaker-trigger]'));
@@ -23,7 +23,7 @@ test('shared documentation size profiles preserve input drafts and expose exactl
     await h.click(options[index]);
     assert.equal(owner.dataset.sizeProfile, profile);
     assert.equal(
-      owner.style.getPropertyValue('--atlas-component-height'),
+      owner.style.getPropertyValue('--genux-component-height'),
       [48, 56, 64][index] + 'px',
     );
     assert.equal(h.document.querySelector('#input-filled'), input);
@@ -40,8 +40,8 @@ test('NumberStepper native size overrides align the field and both actions witho
   await writeFile(
     fixture,
     `import {useState} from 'react';
-import AtlasProvider from '../src/react/AtlasProvider';
-import {AtlasSizeContext} from '../src/react/AtlasSizeProfile';
+import GenUXProvider from '../src/react/GenUXProvider';
+import {GenUXSizeContext} from '../src/react/GenUXSizeProfile';
 import NumberStepper from '../src/react/NumberStepper';
 function Quantity({size, name}) {
   const [value,setValue]=useState(7);
@@ -49,7 +49,7 @@ function Quantity({size, name}) {
 }
 export default function Fixture({appearance}) {
   const [parentSize,setParentSize]=useState('md');
-  return <AtlasSizeContext.Provider value={parentSize}><AtlasProvider appearance={appearance}><Quantity size="small" name="Small quantity"/><Quantity size="medium" name="Medium quantity"/><Quantity size="large" name="Large quantity"/><Quantity size="middle" name="Compatible middle quantity"/><Quantity name="Shared quantity"/>{appearance==='approved'&&<button data-parent-size-change onClick={()=>setParentSize('lg')}>Change parent size</button>}</AtlasProvider></AtlasSizeContext.Provider>;
+  return <GenUXSizeContext.Provider value={parentSize}><GenUXProvider appearance={appearance}><Quantity size="small" name="Small quantity"/><Quantity size="medium" name="Medium quantity"/><Quantity size="large" name="Large quantity"/><Quantity size="middle" name="Compatible middle quantity"/><Quantity name="Shared quantity"/>{appearance==='approved'&&<button data-parent-size-change onClick={()=>setParentSize('lg')}>Change parent size</button>}</GenUXProvider></GenUXSizeContext.Provider>;
 }`,
   );
   t.after(() => unlink(fixture));
@@ -57,20 +57,20 @@ export default function Fixture({appearance}) {
     await t.test(appearance, async () => {
       const h = await mountPattern('default', fixture, { appearance });
       try {
-        const owner = h.document.querySelector('.atlas-demo[data-size-profile]');
+        const owner = h.document.querySelector('.genux-demo[data-size-profile]');
         assert.equal(owner.dataset.sizeProfile, 'md');
         const fields = [...h.document.querySelectorAll('input[role="spinbutton"]')];
         const units = pixels => (appearance === 'docs' ? `${pixels}px` : `${pixels / 16}rem`);
         const assertDimensions = (input, pixels) => {
-          const wrapper = input.closest('.atlas-number-stepper');
+          const wrapper = input.closest('.genux-number-stepper');
           const height = units(pixels);
-          for (const property of ['--atlas-component-height', '--field-height', '--control-height'])
+          for (const property of ['--genux-component-height', '--field-height', '--control-height'])
             assert.equal(
               wrapper.style.getPropertyValue(property),
               height,
               `${input.getAttribute('aria-label')} must own ${property} so parent sizing cannot stretch its field`,
             );
-          for (const action of wrapper.querySelectorAll('.atlas-icon-button')) {
+          for (const action of wrapper.querySelectorAll('.genux-icon-button')) {
             assert.equal(action.style.minHeight, height);
             assert.equal(action.style.height, height);
             assert.equal(action.style.width, height);
@@ -106,7 +106,7 @@ export default function Fixture({appearance}) {
         for (const mode of ['dark', 'light']) {
           await h.act(() => {
             h.document.documentElement.dataset.theme = mode;
-            h.window.dispatchEvent(new h.window.Event('atlas-theme-change'));
+            h.window.dispatchEvent(new h.window.Event('genux-theme-change'));
           });
           assert.equal(h.document.activeElement, fields[0]);
           assert.equal(fields[0].value, '12');

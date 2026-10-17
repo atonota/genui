@@ -29,7 +29,7 @@ test('Tweaker starts closed, owns Button settings and retains the same controls 
   const panel = h.document.getElementById(trigger.getAttribute('aria-controls'));
   assert.ok(panel);
   assert.equal(
-    panel.closest('.atlas-tweaker-panel').style.zIndex,
+    panel.closest('.genux-tweaker-panel').style.zIndex,
     '2001',
     'native zIndex prop keeps settings above example overlays',
   );
@@ -38,7 +38,7 @@ test('Tweaker starts closed, owns Button settings and retains the same controls 
   assert.ok(panel.querySelector('[data-size-control]'));
   assert.equal(h.document.querySelector('.button-playground #button-label'), null);
   await h.type(text, 'Tweaked action');
-  const preview = h.document.querySelector('.playground-preview .atlas-button');
+  const preview = h.document.querySelector('.playground-preview .genux-button');
   assert.equal(preview.textContent.trim(), 'Tweaked action');
   const dialog = panel.closest('[role="dialog"]');
   assert.equal(dialog.getAttribute('aria-modal'), 'true');
@@ -58,7 +58,7 @@ test('Tweaker starts closed, owns Button settings and retains the same controls 
   await openTweaker(h);
   assert.equal(panel.querySelector('#button-label'), text, 'the portal target does not remount');
   assert.equal(text.value, 'Tweaked action');
-  assert.equal(h.document.querySelector('.playground-preview .atlas-button'), preview);
+  assert.equal(h.document.querySelector('.playground-preview .genux-button'), preview);
   await h.act(async () => h.setLocale('tr'));
   assert.equal(trigger.getAttribute('aria-label'), 'Tweaker’ı aç');
   assert.equal(text.value, 'Tweaked action');
@@ -78,7 +78,7 @@ test('Tweaker changes shared size and Form layout without replacing or clearing 
   assert.equal(h.document.querySelector('[data-size-profile]').dataset.sizeProfile, 'sm');
   await selectOption(h, panel.querySelector('.form-layout-control input'), 'Horizontal');
   assert.ok(
-    panel.closest('.atlas-tweaker-panel').querySelector(':scope > .atlas-select-popup'),
+    panel.closest('.genux-tweaker-panel').querySelector(':scope > .genux-select-popup'),
     'settings dropdowns render in the same top layer',
   );
   assert.ok(h.document.querySelector('form.ant-form-horizontal'));
@@ -135,9 +135,9 @@ test('Tweaker changes shared size and Form layout without replacing or clearing 
 // exercises their event order; these synthetic values are not layout evidence.
 const overlayFixture = `
 import {useState} from 'react';
-import AtlasProvider from '../src/react/AtlasProvider';
-import {Drawer,Modal} from '../src/react/AtlasOverlay';
-import {TweakerSettings} from '../src/react/AtlasTweaker';
+import GenUXProvider from '../src/react/GenUXProvider';
+import {Drawer,Modal} from '../src/react/GenUXOverlay';
+import {TweakerSettings} from '../src/react/GenUXTweaker';
 Object.defineProperty(HTMLElement.prototype,'offsetParent',{configurable:true,get(){return this.isConnected && !this.closest('[style*="display: none"]') ? document.body : null;}});
 const originalStyle=globalThis.getComputedStyle;
 globalThis.getComputedStyle=window.getComputedStyle=(element)=>{
@@ -146,7 +146,7 @@ globalThis.getComputedStyle=window.getComputedStyle=(element)=>{
 };
 export function OverlayFixture(){
  const [container,setContainer]=useState('inline');
- return <AtlasProvider appearance="docs">
+ return <GenUXProvider appearance="docs">
   <button data-background>Background action</button>
   <button onClick={()=>setContainer('modal')}>Open example modal</button>
   <TweakerSettings title="Presentation">
@@ -160,16 +160,16 @@ export function OverlayFixture(){
   <Drawer title="Example drawer" open={container==='drawer'} onClose={()=>setContainer('inline')} focusable={{trap:true,focusTriggerAfterClose:true}}>
    <input data-example-drawer defaultValue="Drawer draft"/>
   </Drawer>
- </AtlasProvider>;
+ </GenUXProvider>;
 }
-export function NestedFixture(){return <AtlasProvider>
- <AtlasProvider appearance="docs">
+export function NestedFixture(){return <GenUXProvider>
+ <GenUXProvider appearance="docs">
   <TweakerSettings title="Outer"><input data-outer-setting/></TweakerSettings>
-  <AtlasProvider><TweakerSettings title="Inner"><input data-inner-setting/></TweakerSettings></AtlasProvider>
-  <AtlasProvider appearance="approved"><TweakerSettings><input data-approved-setting/></TweakerSettings></AtlasProvider>
- </AtlasProvider>
+  <GenUXProvider><TweakerSettings title="Inner"><input data-inner-setting/></TweakerSettings></GenUXProvider>
+  <GenUXProvider appearance="approved"><TweakerSettings><input data-approved-setting/></TweakerSettings></GenUXProvider>
+ </GenUXProvider>
  <input data-approved-sibling/>
-</AtlasProvider>;}
+</GenUXProvider>;}
 `;
 
 async function mountFixture(t, name) {
@@ -208,7 +208,7 @@ test('native overlays share one focus owner and Escape closes Tweaker even when 
   );
   await h.act(async () => h.document.querySelector('[data-background]').focus());
   assert.ok(
-    panel.closest('.atlas-tweaker-panel').contains(h.document.activeElement),
+    panel.closest('.genux-tweaker-panel').contains(h.document.activeElement),
     'only Tweaker retains focus',
   );
   await h.act(async () => setting.focus());
@@ -217,7 +217,7 @@ test('native overlays share one focus owner and Escape closes Tweaker even when 
   );
   await h.waitFor(
     () =>
-      h.document.querySelector('.atlas-overlay-active') === null &&
+      h.document.querySelector('.genux-overlay-active') === null &&
       h.document.querySelector('[data-example-drawer]'),
     'preview drawer mounts while suspended',
   );
@@ -228,7 +228,7 @@ test('native overlays share one focus owner and Escape closes Tweaker even when 
   });
   assert.equal(trigger.getAttribute('aria-expanded'), 'false');
   assert.ok(
-    h.document.querySelector('.atlas-overlay-active.ant-drawer-open'),
+    h.document.querySelector('.genux-overlay-active.ant-drawer-open'),
     'Escape leaves the preview drawer open',
   );
   const hiddenAncestor = h.document
@@ -239,11 +239,11 @@ test('native overlays share one focus owner and Escape closes Tweaker even when 
     'the resumed dialog is exposed again: ' + hiddenAncestor?.outerHTML.slice(0, 350),
   );
   assert.ok(
-    h.document.activeElement.closest('.atlas-overlay-active'),
+    h.document.activeElement.closest('.genux-overlay-active'),
     'the preview native trap resumes after closing settings',
   );
   const headerOpener = h.document.querySelector(
-    '.atlas-overlay-active [aria-label="Open tweaker"]',
+    '.genux-overlay-active [aria-label="Open tweaker"]',
   );
   await h.click(headerOpener);
   assert.equal(trigger.getAttribute('aria-expanded'), 'true');
@@ -265,7 +265,7 @@ test('an explicit docs boundary inside approved gets one independent Tweaker whi
   assert.ok(panel.querySelector('[data-inner-setting]'));
   assert.equal(panel.querySelector('[data-approved-setting]'), null);
   await h.click([...panel.querySelectorAll('[data-size-control] input')].at(-1));
-  const docs = h.document.querySelector('[data-atlas-appearance="docs"]');
+  const docs = h.document.querySelector('[data-genux-appearance="docs"]');
   assert.equal(docs.dataset.sizeProfile, 'lg');
   assert.equal(
     h.document.querySelector('[data-approved-sibling]').closest('[data-size-profile]').dataset

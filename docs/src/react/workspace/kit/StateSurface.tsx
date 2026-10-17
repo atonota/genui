@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
-import AtlasButton from '../../AtlasButton';
-import AtlasEmptyState from '../../AtlasEmptyState';
+import GenUXButton from '../../GenUXButton';
+import GenUXEmptyState from '../../GenUXEmptyState';
 import { useI18n } from '../../useI18n';
 import { isReadableSurface, type SurfaceState } from './contracts';
 
@@ -31,7 +31,7 @@ export function StateSurface({
   if (state.kind === 'empty' || state.kind === 'no-match' || state.kind === 'error') {
     return (
       <div className="kit-state-surface" data-surface-state={state.kind}>
-        <AtlasEmptyState
+        <GenUXEmptyState
           kind={state.kind}
           title={t(labels[state.kind])}
           description={state.message ? t(state.message) : undefined}
@@ -62,7 +62,7 @@ export function StateSurface({
         <Heading>{t(labels[state.kind])}</Heading>
         {state.message && <p>{t(state.message)}</p>}
         {state.onRecover && (
-          <AtlasButton text={t(state.recoveryLabel ?? 'Try again')} onClick={state.onRecover} />
+          <GenUXButton text={t(state.recoveryLabel ?? 'Try again')} onClick={state.onRecover} />
         )}
       </div>
       {informational && children}

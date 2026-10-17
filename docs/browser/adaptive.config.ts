@@ -5,14 +5,14 @@ import { defineConfig } from '@playwright/test';
 const projectRoot = fileURLToPath(new URL('../..', import.meta.url));
 const browsers = ['chromium', 'firefox', 'webkit'] as const;
 
-// ATLAS_SOURCE_STAGE only names an evidence folder, so separators and dots are dropped.
+// GENUX_SOURCE_STAGE only names an evidence folder, so separators and dots are dropped.
 function evidenceStage(value = ''): string {
   const stage = value.replace(/[^A-Za-z0-9_-]+/g, '-').replace(/^-+|-+$/g, '');
   return stage.slice(0, 64) || 'local';
 }
 
 const evidenceRoot = join(projectRoot, 'evidence', 'adaptive-browser');
-const stageRoot = join(evidenceRoot, evidenceStage(process.env.ATLAS_SOURCE_STAGE));
+const stageRoot = join(evidenceRoot, evidenceStage(process.env.GENUX_SOURCE_STAGE));
 const resultsRoot = join(stageRoot, 'results');
 const reportFolder = join(stageRoot, 'report');
 

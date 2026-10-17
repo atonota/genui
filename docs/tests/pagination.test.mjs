@@ -78,7 +78,7 @@ async function fixture(t, body) {
   const file = `docs/tests/.pagination-${randomUUID()}.tsx`;
   await writeFile(
     file,
-    `import {useState} from 'react'; import AtlasProvider from '../src/react/AtlasProvider'; import AtlasPagination from '../src/react/AtlasPagination'; ${body}`,
+    `import {useState} from 'react'; import GenUXProvider from '../src/react/GenUXProvider'; import GenUXPagination from '../src/react/GenUXPagination'; ${body}`,
   );
   const h = await mountPattern('default', file);
   t.after(async () => {
@@ -92,7 +92,7 @@ const named = (h, label) => h.document.querySelector(`button[aria-label="${label
 test('controlled endpoint actions update once and focus remains on the reached page', async t => {
   const h = await fixture(
     t,
-    `export default function Demo(){const [current,setCurrent]=useState(42);const [calls,setCalls]=useState(0);return <AtlasProvider appearance="docs"><AtlasPagination current={current} total={500} pageSize={10} onChange={page=>{setCurrent(page);setCalls(n=>n+1)}}/><output>{calls}</output></AtlasProvider>}`,
+    `export default function Demo(){const [current,setCurrent]=useState(42);const [calls,setCalls]=useState(0);return <GenUXProvider appearance="docs"><GenUXPagination current={current} total={500} pageSize={10} onChange={page=>{setCurrent(page);setCalls(n=>n+1)}}/><output>{calls}</output></GenUXProvider>}`,
   );
   assert.deepEqual(
     [...h.document.querySelectorAll('[data-pagination-page]')].map(el =>
@@ -101,7 +101,7 @@ test('controlled endpoint actions update once and focus remains on the reached p
     [1, 2, 41, 42, 43, 49, 50],
   );
   assert.equal(h.document.querySelectorAll('button[aria-current="page"]').length, 1);
-  assert.equal(h.document.querySelectorAll('.atlas-pagination-gap button').length, 0);
+  assert.equal(h.document.querySelectorAll('.genux-pagination-gap button').length, 0);
   const last = named(h, 'Last page');
   last.focus();
   await h.click(last);
@@ -118,7 +118,7 @@ test('controlled endpoint actions update once and focus remains on the reached p
 test('quick jump validates explicitly, commits once and never creates or submits a nested form', async t => {
   const h = await fixture(
     t,
-    `export default function Demo(){const [current,setCurrent]=useState(42);const [calls,setCalls]=useState(0);return <AtlasProvider appearance="docs"><form onSubmit={e=>{e.preventDefault();throw new Error('Unexpected outer submit')}}><AtlasPagination current={current} total={500} pageSize={10} onChange={page=>{setCurrent(page);setCalls(n=>n+1)}}/><output>{calls}</output></form></AtlasProvider>}`,
+    `export default function Demo(){const [current,setCurrent]=useState(42);const [calls,setCalls]=useState(0);return <GenUXProvider appearance="docs"><form onSubmit={e=>{e.preventDefault();throw new Error('Unexpected outer submit')}}><GenUXPagination current={current} total={500} pageSize={10} onChange={page=>{setCurrent(page);setCalls(n=>n+1)}}/><output>{calls}</output></form></GenUXProvider>}`,
   );
   assert.equal(h.document.querySelectorAll('form').length, 1);
   const input = h.document.querySelector('input[aria-label="Go to page"]');
@@ -146,7 +146,7 @@ test('quick jump validates explicitly, commits once and never creates or submits
 test('branded page-size selection preserves the visible record and leaves an unfinished jump intact', async t => {
   const h = await fixture(
     t,
-    `export default function Demo(){const [current,setCurrent]=useState(42);const [size,setSize]=useState(10);return <AtlasProvider appearance="docs"><AtlasPagination current={current} total={500} pageSize={size} onChange={(page,nextSize)=>{setCurrent(page);setSize(nextSize)}}/></AtlasProvider>}`,
+    `export default function Demo(){const [current,setCurrent]=useState(42);const [size,setSize]=useState(10);return <GenUXProvider appearance="docs"><GenUXPagination current={current} total={500} pageSize={size} onChange={(page,nextSize)=>{setCurrent(page);setSize(nextSize)}}/></GenUXProvider>}`,
   );
   const input = h.document.querySelector('input[aria-label="Go to page"]');
   await h.type(input, '12');
@@ -167,7 +167,7 @@ test('branded page-size selection preserves the visible record and leaves an unf
 test('zero and disabled results expose no active navigation or editable jumps', async t => {
   for (const props of [{ total: 0 }, { total: 500, disabled: true }]) {
     let calls = 0;
-    const h = await mountPattern('default', 'docs/src/react/AtlasPagination.tsx', {
+    const h = await mountPattern('default', 'docs/src/react/GenUXPagination.tsx', {
       current: 42,
       pageSize: 10,
       onChange: () => calls++,
@@ -188,7 +188,7 @@ test('zero and disabled results expose no active navigation or editable jumps', 
 test('an invalid jump is hidden while results are empty and retained when results return', async t => {
   const h = await fixture(
     t,
-    `export default function Demo(){const [total,setTotal]=useState(500);return <AtlasProvider appearance="docs"><button onClick={()=>setTotal(0)}>Empty results</button><button onClick={()=>setTotal(500)}>Restore results</button><AtlasPagination current={42} total={total} pageSize={10} onChange={()=>{}}/></AtlasProvider>}`,
+    `export default function Demo(){const [total,setTotal]=useState(500);return <GenUXProvider appearance="docs"><button onClick={()=>setTotal(0)}>Empty results</button><button onClick={()=>setTotal(500)}>Restore results</button><GenUXPagination current={42} total={total} pageSize={10} onChange={()=>{}}/></GenUXProvider>}`,
   );
   const input = h.document.querySelector('input[aria-label="Go to page"]');
   await h.type(input, '51');
@@ -205,10 +205,10 @@ test('an invalid jump is hidden while results are empty and retained when result
   assert.match(h.document.querySelector('[role="alert"]').textContent, /1 to 50/);
 });
 
-test('all five surfaces use existing AtlasButton types with one semantic current page', async t => {
+test('all five surfaces use existing GenUXButton types with one semantic current page', async t => {
   const h = await fixture(
     t,
-    `const types=['solid','outline','tint','text','link'] as const; export default function Demo(){return <AtlasProvider appearance="docs">{types.map(type=><section key={type} data-type={type}><AtlasPagination current={4} total={80} pageSize={10} onChange={()=>{}} buttonType={type} activeButtonType={type} showSizeChanger={false} showQuickJumper={false}/></section>)}</AtlasProvider>}`,
+    `const types=['solid','outline','tint','text','link'] as const; export default function Demo(){return <GenUXProvider appearance="docs">{types.map(type=><section key={type} data-type={type}><GenUXPagination current={4} total={80} pageSize={10} onChange={()=>{}} buttonType={type} activeButtonType={type} showSizeChanger={false} showQuickJumper={false}/></section>)}</GenUXProvider>}`,
   );
   for (const section of h.document.querySelectorAll('[data-type]')) {
     const type = section.dataset.type;
@@ -216,11 +216,11 @@ test('all five surfaces use existing AtlasButton types with one semantic current
     assert.equal(section.querySelector('[aria-current="page"]').dataset.fill, type);
     assert.ok(
       [...section.querySelectorAll('button')].every(
-        button => button.classList.contains('atlas-button') && button.dataset.fill === type,
+        button => button.classList.contains('genux-button') && button.dataset.fill === type,
       ),
     );
     assert.equal(
-      section.querySelectorAll('[data-page-current="true"] .atlas-pagination-current-marker')
+      section.querySelectorAll('[data-page-current="true"] .genux-pagination-current-marker')
         .length,
       1,
     );

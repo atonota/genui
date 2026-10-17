@@ -1,2 +1,2 @@
-export { AtlasCard, type AtlasCardProps, type CardAppearanceProps } from './AtlasCard';
+export { GenUXCard, type GenUXCardProps, type CardAppearanceProps } from './GenUXCard';
 export { PurposeCard, EntityCard, MetricCard, type PurposeCardProps } from './PurposeCard';

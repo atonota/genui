@@ -8,7 +8,7 @@ import { build, version as esbuildVersion } from 'esbuild';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const vendor = join(root, 'src/vendor');
 const banner =
-  '/*! Atlas dropdown adapter. Zag.js 1.46.0 and dependencies; third-party MIT licenses embedded below. */';
+  '/*! GenUX dropdown adapter. Zag.js 1.46.0 and dependencies; third-party MIT licenses embedded below. */';
 // The HTML extraction retained this host comment outside the original bundle.
 const wrapper = '\n/* Offline headless dropdown: Zag 1.46.0; MIT notices retained below. */\n';
 const sha256 = value => createHash('sha256').update(value).digest('hex');
@@ -66,10 +66,10 @@ async function check() {
   const result = await build({
     absWorkingDir: root,
     entryPoints: ['src/vendor/adapter.mjs'],
-    outfile: 'atlas-dropdowns.min.js',
+    outfile: 'genux-dropdowns.min.js',
     bundle: true,
     format: 'iife',
-    globalName: 'AtlasDropdowns',
+    globalName: 'GenUXDropdowns',
     platform: 'browser',
     target: ['es2020'],
     minify: true,

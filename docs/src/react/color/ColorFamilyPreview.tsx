@@ -1,9 +1,9 @@
 import { useId, useMemo, useState, type CSSProperties } from 'react';
 import { Button, Checkbox, ConfigProvider, Select, Switch } from 'antd';
-import Input from '../AtlasInput';
-import AtlasPill from '../AtlasPill';
-import AtlasSlider from '../AtlasSlider';
-import AtlasIcon from '../AtlasIcon';
+import Input from '../GenUXInput';
+import GenUXPill from '../GenUXPill';
+import GenUXSlider from '../GenUXSlider';
+import GenUXIcon from '../GenUXIcon';
 import { useI18n } from '../useI18n';
 import { colorPreviewTheme, type ColorPreviewFamily } from '../../data/color-preview';
 import type { ColorSelection } from '../../data/color-system';
@@ -66,7 +66,7 @@ export default function ColorFamilyPreview({
         <div className="color-family-actions">
           <Button
             type="primary"
-            className="atlas-button color-preview-button"
+            className="genux-button color-preview-button"
             onClick={() => setResult(true)}
           >
             {t('Apply')}
@@ -75,16 +75,16 @@ export default function ColorFamilyPreview({
             {t('Reset action')}
           </Button>
         </div>
-        <div className="atlas-pill-list">
-          <AtlasPill color={family.seedHex} icon={<AtlasIcon name="check" />}>
+        <div className="genux-pill-list">
+          <GenUXPill color={family.seedHex} icon={<GenUXIcon name="check" />}>
             {t('Filled')}
-          </AtlasPill>
-          <AtlasPill color={family.seedHex} variant="solid">
+          </GenUXPill>
+          <GenUXPill color={family.seedHex} variant="solid">
             {t('Solid')}
-          </AtlasPill>
-          <AtlasPill color={family.seedHex} variant="outlined">
+          </GenUXPill>
+          <GenUXPill color={family.seedHex} variant="outlined">
             {t('Outlined')}
-          </AtlasPill>
+          </GenUXPill>
         </div>
         <div className="color-family-fields">
           <label htmlFor={`${id}-name`}>{t('Name')}</label>
@@ -127,7 +127,7 @@ export default function ColorFamilyPreview({
           <p id={`${id}-amount-label`}>
             {t('Preview amount')} · {value}
           </p>
-          <AtlasSlider
+          <GenUXSlider
             value={value}
             onChange={setValue}
             ariaLabelForHandle={t('Amount for {color}', { color: label })}

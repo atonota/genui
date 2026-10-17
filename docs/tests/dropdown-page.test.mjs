@@ -11,7 +11,7 @@ const items = [
 
 test('an optional native semantic callback can return undefined without losing the owned popup', async t => {
   const actions = [];
-  const h = await mountPattern('default', 'docs/src/react/AtlasDropdown.tsx', {
+  const h = await mountPattern('default', 'docs/src/react/GenUXDropdown.tsx', {
     label: 'Optional styles',
     items,
     onAction: key => actions.push(key),
@@ -21,16 +21,16 @@ test('an optional native semantic callback can return undefined without losing t
   t.after(() => h.dispose());
   await h.click(h.document.querySelector('button'));
   await h.waitFor(
-    () => h.document.querySelector('.atlas-dropdown-popup [role="menuitem"]'),
+    () => h.document.querySelector('.genux-dropdown-popup [role="menuitem"]'),
     'owned native popup remains present',
   );
-  await h.click(h.document.querySelector('.atlas-dropdown-popup [role="menuitem"]'));
+  await h.click(h.document.querySelector('.genux-dropdown-popup [role="menuitem"]'));
   assert.deepEqual(actions, ['review']);
 });
 
 test('action Dropdown exposes a named button and opens on ArrowDown with immediate menu relationships', async t => {
   const actions = [];
-  const h = await mountPattern('default', 'docs/src/react/AtlasDropdown.tsx', {
+  const h = await mountPattern('default', 'docs/src/react/GenUXDropdown.tsx', {
     label: 'Workspace actions',
     items,
     onAction: key => actions.push(key),
@@ -90,7 +90,7 @@ test('action Dropdown exposes a named button and opens on ArrowDown with immedia
 
 test('pointer, Enter and Space dispatch each native menu action once; disabled items remain inert', async t => {
   const actions = [];
-  const h = await mountPattern('default', 'docs/src/react/AtlasDropdown.tsx', {
+  const h = await mountPattern('default', 'docs/src/react/GenUXDropdown.tsx', {
     label: 'Workspace actions',
     items,
     onAction: key => actions.push(key),
@@ -149,7 +149,7 @@ test('pointer, Enter and Space dispatch each native menu action once; disabled i
 
 test('an outside pointer closes the native menu without dispatching an action or stealing focus', async t => {
   const actions = [];
-  const h = await mountPattern('default', 'docs/src/react/AtlasDropdown.tsx', {
+  const h = await mountPattern('default', 'docs/src/react/GenUXDropdown.tsx', {
     label: 'Workspace actions',
     items,
     onAction: key => actions.push(key),
@@ -181,7 +181,7 @@ test('an outside pointer closes the native menu without dispatching an action or
 
 test('native cascading menus open deliberately, brand their portal and preserve disabled groups', async t => {
   const actions = [];
-  const h = await mountPattern('default', 'docs/src/react/AtlasDropdown.tsx', {
+  const h = await mountPattern('default', 'docs/src/react/GenUXDropdown.tsx', {
     label: 'Organize workspace',
     items: [
       {
@@ -230,10 +230,10 @@ test('native cascading menus open deliberately, brand their portal and preserve 
   await h.click(move);
   assert.equal(move.getAttribute('aria-expanded'), 'true');
   await h.waitFor(
-    () => h.document.querySelector('.atlas-dropdown-subpopup [role="menuitem"]'),
+    () => h.document.querySelector('.genux-dropdown-subpopup [role="menuitem"]'),
     'native submenu portal opens',
   );
-  const subpopup = h.document.querySelector('.atlas-dropdown-subpopup');
+  const subpopup = h.document.querySelector('.genux-dropdown-subpopup');
   assert.equal(subpopup.querySelector('[inert]'), null);
   const planning = [...subpopup.querySelectorAll('[role="menuitem"]')].find(
     item => item.textContent === 'Planning',
@@ -246,7 +246,7 @@ test('native cascading menus open deliberately, brand their portal and preserve 
 
 test('resize reveals an off-viewport owned submenu without replacing focus, open keys or action state', async t => {
   const actions = [];
-  const h = await mountPattern('default', 'docs/src/react/AtlasDropdown.tsx', {
+  const h = await mountPattern('default', 'docs/src/react/GenUXDropdown.tsx', {
     label: 'Organize workspace',
     items: [
       { key: 'move', label: 'Move to folder', children: [{ key: 'planning', label: 'Planning' }] },
@@ -262,11 +262,11 @@ test('resize reveals an off-viewport owned submenu without replacing focus, open
   await h.waitFor(() => h.document.activeElement === move, 'native root menu autofocus settles');
   await h.click(move);
   await h.waitFor(
-    () => h.document.querySelector('.atlas-dropdown-subpopup [role="menuitem"]'),
+    () => h.document.querySelector('.genux-dropdown-subpopup [role="menuitem"]'),
     'owned submenu appears',
   );
-  const planning = h.document.querySelector('.atlas-dropdown-subpopup [role="menuitem"]');
-  assert.ok(planning.closest('[data-atlas-dropdown-owner]'));
+  const planning = h.document.querySelector('.genux-dropdown-subpopup [role="menuitem"]');
+  assert.ok(planning.closest('[data-genux-dropdown-owner]'));
   // Synthetic rects model the observed desktop-to-phone page reflow. They
   // exercise ownership and event order, not browser alignment or layout proof.
   let offscreen = false;
@@ -331,7 +331,7 @@ test('object and function semantic APIs render their actual native roles and loc
     [...catalog.querySelectorAll(':scope > nav a')].map(link => link.hash),
     ['#dropdown-basic', '#dropdown-surfaces', '#dropdown-cascading'],
   );
-  const triggers = [...catalog.querySelectorAll('button.atlas-dropdown-trigger')];
+  const triggers = [...catalog.querySelectorAll('button.genux-dropdown-trigger')];
   assert.equal(triggers.length, 4);
   await h.click(triggers[0]);
   const note = [...h.document.querySelectorAll('[role="menuitem"]')].find(
@@ -341,10 +341,10 @@ test('object and function semantic APIs render their actual native roles and loc
   assert.match(catalog.querySelector('[role="status"]').textContent, /1 local notes/);
   assert.equal(catalog.querySelectorAll('.dropdown-notes li').length, 1);
   await h.click(triggers[1]);
-  const quiet = h.document.querySelector('.atlas-dropdown-quiet');
+  const quiet = h.document.querySelector('.genux-dropdown-quiet');
   assert.equal(quiet.style.borderRadius, 'var(--radius)');
   assert.equal(
-    quiet.querySelector('.atlas-dropdown-quiet-item').style.borderRadius,
+    quiet.querySelector('.genux-dropdown-quiet-item').style.borderRadius,
     'var(--radius-sm)',
   );
   await h.act(() =>
@@ -353,9 +353,9 @@ test('object and function semantic APIs render their actual native roles and loc
     ),
   );
   await h.click(triggers[2]);
-  const contextual = h.document.querySelector('.atlas-dropdown-context-open');
+  const contextual = h.document.querySelector('.genux-dropdown-context-open');
   assert.equal(contextual.style.boxShadow, 'var(--shadow-soft)');
-  assert.ok(contextual.querySelector('.atlas-dropdown-context-content'));
+  assert.ok(contextual.querySelector('.genux-dropdown-context-content'));
   const ready = [...contextual.querySelectorAll('[role="menuitem"]')].find(
     item => item.textContent === 'Mark ready for review',
   );
@@ -364,15 +364,15 @@ test('object and function semantic APIs render their actual native roles and loc
   await h.act(() => h.setLocale('tr'));
   assert.equal(catalog.querySelectorAll('.dropdown-notes li').length, 1);
   assert.match(catalog.querySelector('.dropdown-facts').textContent, /İncelemeye hazır/);
-  assert.equal(catalog.querySelectorAll('button.atlas-dropdown-trigger')[2], triggers[2]);
+  assert.equal(catalog.querySelectorAll('button.genux-dropdown-trigger')[2], triggers[2]);
   await h.act(() => {
     h.document.documentElement.dataset.theme = 'dark';
-    h.window.dispatchEvent(new h.window.Event('atlas-theme-change'));
+    h.window.dispatchEvent(new h.window.Event('genux-theme-change'));
   });
   assert.equal(catalog.querySelectorAll('.dropdown-notes li').length, 1);
   await h.click(h.document.querySelector('[data-tweaker-trigger]'));
   await h.click(h.document.querySelectorAll('[data-size-control] input[type="radio"]')[2]);
   assert.equal(catalog.closest('[data-size-profile]').dataset.sizeProfile, 'lg');
-  assert.equal(catalog.querySelectorAll('button.atlas-dropdown-trigger')[2], triggers[2]);
+  assert.equal(catalog.querySelectorAll('button.genux-dropdown-trigger')[2], triggers[2]);
   assert.equal(catalog.querySelectorAll('.dropdown-notes li').length, 1);
 });

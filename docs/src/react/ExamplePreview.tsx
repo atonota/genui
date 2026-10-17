@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { useAtlasAppearance } from './AtlasAppearance';
+import { useGenUXAppearance } from './GenUXAppearance';
 import { usePreviewContext } from './PreviewContext';
 import PreviewWorkbench from './PreviewWorkbench';
 
@@ -14,7 +14,7 @@ export type ExamplePreviewProps = {
 /** Docs pages render the actual example on the same page inside its device mockup workbench;
     the standalone preview document renders only its example. */
 export default function ExamplePreview({ id, title, children }: ExamplePreviewProps) {
-  const appearance = useAtlasAppearance();
+  const appearance = useGenUXAppearance();
   const preview = usePreviewContext();
   // Inside a preview document only the selected example renders.
   if (preview) return preview.exampleId === id ? <div data-preview-content>{children}</div> : null;

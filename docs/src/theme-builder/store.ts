@@ -1,14 +1,15 @@
 import { getThemeSnapshot, THEME_STORAGE_KEY, type ThemeMode } from '../theme';
 import { parseRecipe, parseStoredRecipe, resolveThemeBuilder, type ThemeRecipe } from './model';
+import { formerNamespaceName, readMigratedItem, removeMigratedItem } from '../storage-migration';
 
-export const THEME_BUILDER_STORAGE_KEY = 'atlas-theme-builder-v1';
-const THEME_EVENT = 'atlas-theme-change';
-const BUILDER_ATTRIBUTE = 'data-atlas-builder';
+export const THEME_BUILDER_STORAGE_KEY = 'genux-theme-builder-v1';
+const THEME_EVENT = 'genux-theme-change';
+const BUILDER_ATTRIBUTE = 'data-genux-builder';
 const MAX_RECIPE_BYTES = 32 * 1024;
 /** A saved recipe is kept for 30 days after its last edit; the defaults return afterwards. */
 export const THEME_BUILDER_RETENTION_MS = 30 * 24 * 60 * 60 * 1000;
 // The same key wraps recipes with their save time; raw recipes predate retention.
-const STORAGE_FORMAT = 'atlas-theme-builder';
+const STORAGE_FORMAT = 'genux-theme-builder';
 const STORAGE_VERSION = 2;
 const MAX_CLOCK_SKEW_MS = 60 * 1000;
 const MAX_STORED_BYTES = MAX_RECIPE_BYTES + 1024;
@@ -212,7 +213,9 @@ function readStoredText(text: string, now: number): StoredRecipe {
   }
   const { format, version, savedAt, expiresAt, recipe } = parsed;
   // A newer storage format is left for the code that wrote it.
-  if (format !== STORAGE_FORMAT || version !== STORAGE_VERSION) return { kind: 'ignore' };
+  // Envelopes saved under the previous namespace keep their format name and save time.
+  const knownFormat = format === STORAGE_FORMAT || format === formerNamespaceName(STORAGE_FORMAT);
+  if (!knownFormat || version !== STORAGE_VERSION) return { kind: 'ignore' };
   if (
     Object.keys(parsed).length !== 5 ||
     typeof savedAt !== 'number' ||
@@ -233,7 +236,7 @@ function readStoredText(text: string, now: number): StoredRecipe {
 function readStoredRecipe(): StoredRecipe | null {
   let text: string | null;
   try {
-    text = window.localStorage.getItem(THEME_BUILDER_STORAGE_KEY);
+    text = readMigratedItem(window.localStorage, THEME_BUILDER_STORAGE_KEY);
   } catch {
     return null;
   }
@@ -241,7 +244,8 @@ function readStoredRecipe(): StoredRecipe | null {
   const stored = readStoredText(text, Date.now());
   if (stored.kind === 'discard') {
     try {
-      window.localStorage.removeItem(THEME_BUILDER_STORAGE_KEY);
+      // Both keys go, so an older previous-namespace recipe cannot return on the next load.
+      removeMigratedItem(window.localStorage, THEME_BUILDER_STORAGE_KEY);
     } catch {
       // The discarded recipe is still not applied when storage cannot be cleared.
     }
@@ -338,7 +342,8 @@ export function resetThemeBuilder(): void {
   // A mode owner resets only its memory-local recipe.
   if (modeOwner === null && typeof window !== 'undefined') {
     try {
-      window.localStorage.removeItem(THEME_BUILDER_STORAGE_KEY);
+      // The approved previous key goes too, so the next load cannot restore an older recipe.
+      removeMigratedItem(window.localStorage, THEME_BUILDER_STORAGE_KEY);
     } catch {
       // Resetting the document still works when browser storage is unavailable.
     }

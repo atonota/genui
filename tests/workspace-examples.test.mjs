@@ -225,7 +225,7 @@ test('workspace styles remain scoped and reject unsafe motion on new controls', 
   assert.ok(scrollFocus.nodes.some(node => node.prop === 'border-block-end-color'));
   assert.ok(!scrollFocus.nodes.some(node => /width|padding|box-shadow|outline/.test(node.prop)));
   const tokens = new Map();
-  for (const source of ['atlas.css', 'forms.css', 'workspace.css']) {
+  for (const source of ['genux.css', 'forms.css', 'workspace.css']) {
     const sourceSheet = postcss.parse(
       await readFile(new URL('../src/styles/' + source, import.meta.url), 'utf8'),
     );

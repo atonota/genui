@@ -172,7 +172,7 @@ test('field issues are linked, correction removes an error and a disabled value 
   const disabled = h.document.querySelector('[data-autocomplete-example="disabled"]');
   const disabledInput = field(disabled, 'Assigned team');
   assert.equal(disabledInput.disabled, true);
-  assert.equal(disabledInput.value, 'Atlas Studio');
+  assert.equal(disabledInput.value, 'GenUX Studio');
   assert.match(disabled.textContent, /Team assignment is unavailable/);
   const warning = field(h.document, 'Team to review');
   await h.type(warning, 'A custom team');
@@ -197,9 +197,9 @@ test('size, suggestion detail, theme and locale preserve mounted fields, selecte
   assert.equal(primary.querySelector('[data-autocomplete-context]').dataset.selectedKey, 'pill');
   await h.act(async () => {
     h.document.documentElement.dataset.theme = 'dark';
-    h.window.dispatchEvent(new h.window.Event('atlas-theme-change'));
+    h.window.dispatchEvent(new h.window.Event('genux-theme-change'));
   });
-  assert.equal(h.document.querySelector('.atlas-demo').dataset.themeMode, 'dark');
+  assert.equal(h.document.querySelector('.genux-demo').dataset.themeMode, 'dark');
   assert.equal(field(primary, 'Find in the documentation'), search);
   assert.equal(search.value, 'Pill');
   assert.equal(team.value, 'Keep this team');

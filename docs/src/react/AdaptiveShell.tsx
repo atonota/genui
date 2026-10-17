@@ -17,8 +17,8 @@ import {
 } from '../adaptive/delivery';
 import { resolveAdaptive, type AdaptiveOptions } from '../adaptive/policy';
 import { AdaptiveContext, useAdaptive, type AdaptiveContextValue } from './AdaptiveProvider';
-import AtlasButton from './AtlasButton';
-import AtlasPortalScope from './AtlasPortalScope';
+import GenUXButton from './GenUXButton';
+import GenUXPortalScope from './GenUXPortalScope';
 import { useI18n } from './useI18n';
 
 export type AdaptivePurpose = 'reading' | 'form' | 'data';
@@ -201,7 +201,7 @@ export default function AdaptiveShell({
     >
       {navigation !== undefined && (
         <div className="adaptive-shell-bar">
-          <AtlasButton
+          <GenUXButton
             id={toggleId}
             fill="text"
             text={t('Navigation')}
@@ -240,14 +240,14 @@ export default function AdaptiveShell({
               : ''}
         </span>
         {delivery.status === 'error' && (
-          <AtlasButton text={t('Retry')} onClick={() => void controller?.retry()} />
+          <GenUXButton text={t('Retry')} onClick={() => void controller?.retry()} />
         )}
       </div>
     </div>
   );
   // The plain host is a stable container-query parent outside the root, so main.parentElement
   // stays the root; the seeded style is its sibling and never shifts the root's slot. Inside an
-  // AtlasProvider the portal scope adds no box: the effective surface owns its popups through
+  // GenUXProvider the portal scope adds no box: the effective surface owns its popups through
   // this Shell's own themed body portal, registered to this root.
   return (
     <AdaptiveContext.Provider value={adaptive}>
@@ -258,9 +258,9 @@ export default function AdaptiveShell({
             dangerouslySetInnerHTML={{ __html: inlineStyle(seedStyle.cssText) }}
           />
         )}
-        <AtlasPortalScope ownerRef={rootRef} adaptive={adaptive}>
+        <GenUXPortalScope ownerRef={rootRef} adaptive={adaptive}>
           {shell}
-        </AtlasPortalScope>
+        </GenUXPortalScope>
       </div>
     </AdaptiveContext.Provider>
   );

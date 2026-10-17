@@ -57,7 +57,7 @@ test('the documentation SSR stylesheet paints exact light paper before bootstrap
   assert.equal(canvasBackground, 'var(--paper)', 'the canvas keeps its central semantic token');
   for (const mode of [undefined, 'light', 'dark']) {
     const dom = new JSDOM(`<!doctype html><html${mode ? ` data-theme="${mode}"` : ''}>
-<head><style>${theme.layoutThemeStyleText}</style></head><body data-atlas-surface="docs"></body></html>`);
+<head><style>${theme.layoutThemeStyleText}</style></head><body data-genux-surface="docs"></body></html>`);
     t.after(() => dom.window.close());
     const values = dom.window.getComputedStyle(dom.window.document.documentElement);
     assert.equal(values.getPropertyValue('--paper'), mode === 'dark' ? '#242424' : '#e6e2d7');
@@ -87,7 +87,7 @@ test('documentation accessibility roles also apply to the light no-JavaScript fa
   for (const mode of [undefined, 'light', 'dark']) {
     const dom = new JSDOM(`<!doctype html><html${mode ? ` data-theme="${mode}"` : ''}>
 <head><style>${theme.layoutThemeStyleText}\n${theme.docsAccessibilityStyleText}</style></head>
-<body data-atlas-surface="docs"></body></html>`);
+<body data-genux-surface="docs"></body></html>`);
     t.after(() => dom.window.close());
     const values = dom.window.getComputedStyle(dom.window.document.body);
     const colors = theme.docsAccessibleThemeColors[mode ?? 'light'];

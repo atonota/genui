@@ -1,15 +1,15 @@
-/* Page composition only. Native card skin and purpose structure live in atlas-card.css. */
-.atlas-demo .card-catalog {
+/* Page composition only. Native card skin and purpose structure live in genux-card.css. */
+.genux-demo .card-catalog {
   --card-catalog-column-min: 280px;
   --card-reading-width: 720px;
   display: grid;
   gap: var(--space-section);
   min-width: 0;
 }
-.atlas-demo .card-catalog :is(h3, h4, h5, p) {
+.genux-demo .card-catalog :is(h3, h4, h5, p) {
   margin: 0;
 }
-.atlas-demo .card-navigation {
+.genux-demo .card-navigation {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-xs) var(--space-xl);
@@ -17,80 +17,80 @@
   margin: 0;
   padding: 0;
 }
-.atlas-demo .card-navigation a {
+.genux-demo .card-navigation a {
   display: flex;
   align-items: center;
   min-height: var(--target-min);
 }
-.atlas-demo .card-section {
+.genux-demo .card-section {
   display: grid;
   gap: var(--space-xl);
   min-width: 0;
   scroll-margin-block-start: var(--space-lg);
 }
-.atlas-demo .card-section > header {
+.genux-demo .card-section > header {
   display: grid;
   gap: var(--space-xs);
 }
-.atlas-demo .card-section h3 {
+.genux-demo .card-section h3 {
   font-size: var(--text-section);
 }
-.atlas-demo .card-section :is(h4, h5) {
+.genux-demo .card-section :is(h4, h5) {
   font-size: var(--text-large);
   font-weight: var(--font-weight-label);
 }
-.atlas-demo .card-section > header p {
+.genux-demo .card-section > header p {
   max-width: var(--card-reading-width);
   color: var(--muted);
 }
-.atlas-demo .card-foundation-grid {
+.genux-demo .card-foundation-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--card-catalog-column-min)), 1fr));
   align-items: start;
   gap: var(--space-xl);
   min-width: 0;
 }
-.atlas-demo .card-foundation-grid > * {
+.genux-demo .card-foundation-grid > * {
   min-width: 0;
 }
-.atlas-demo :is(.card-feedback, .card-caption) {
+.genux-demo :is(.card-feedback, .card-caption) {
   color: var(--muted);
   max-width: var(--card-reading-width);
 }
-.atlas-demo .card-recipe-pickers {
+.genux-demo .card-recipe-pickers {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--card-catalog-column-min)), 1fr));
   gap: var(--space-md);
   min-width: 0;
 }
-.atlas-demo .card-recipe-pickers label {
+.genux-demo .card-recipe-pickers label {
   display: grid;
   gap: var(--space-xs);
   min-width: 0;
 }
-.atlas-demo .card-recipe-preview {
+.genux-demo .card-recipe-preview {
   display: grid;
   gap: var(--space-md);
   max-width: var(--card-reading-width);
   min-width: 0;
 }
-.atlas-demo :is(.card-interaction-stack, .card-interaction-example) {
+.genux-demo :is(.card-interaction-stack, .card-interaction-example) {
   display: grid;
   gap: var(--space-lg);
   min-width: 0;
 }
-.atlas-demo .card-interaction-stack {
+.genux-demo .card-interaction-stack {
   gap: var(--space-section);
 }
-.atlas-demo .card-interaction-example > [data-atlas-card] {
+.genux-demo .card-interaction-example > [data-genux-card] {
   max-width: var(--card-reading-width);
 }
-.atlas-demo .card-task-board {
+.genux-demo .card-task-board {
   display: grid;
   gap: var(--space-lg);
   min-width: 0;
 }
-.atlas-demo .card-task-board > section {
+.genux-demo .card-task-board > section {
   display: grid;
   align-content: start;
   gap: var(--space-md);
@@ -99,29 +99,29 @@
   background: var(--surface);
   border-radius: var(--radius);
 }
-.atlas-demo .card-task-item {
+.genux-demo .card-task-item {
   display: grid;
   gap: var(--space-xs);
   min-width: 0;
 }
-.atlas-demo .card-task-item [data-task-grip] {
+.genux-demo .card-task-item [data-task-grip] {
   justify-self: start;
   touch-action: none;
 }
-.atlas-demo .card-task-board[data-dragging='true'] {
+.genux-demo .card-task-board[data-dragging='true'] {
   cursor: grabbing;
 }
-.atlas-demo .card-state-preview {
+.genux-demo .card-state-preview {
   max-width: var(--card-reading-width);
   min-width: 0;
 }
-.atlas-demo .card-genui-intro {
+.genux-demo .card-genux-intro {
   display: grid;
   justify-items: start;
   gap: var(--space-md);
   max-width: var(--card-reading-width);
 }
-.atlas-demo .card-genui-disclosure {
+.genux-demo .card-genux-disclosure {
   display: grid;
   grid-template-rows: 0fr;
   opacity: 0;
@@ -131,11 +131,11 @@
   transition-timing-function: var(--motion-easing);
   transition-delay: var(--motion-delay);
 }
-.atlas-demo .card-genui-disclosure[data-open='true'] {
+.genux-demo .card-genux-disclosure[data-open='true'] {
   grid-template-rows: 1fr;
   opacity: 1;
 }
-.atlas-demo .card-genui-disclosure > div {
+.genux-demo .card-genux-disclosure > div {
   min-height: 0;
   min-width: 0;
   overflow: hidden;
@@ -164,7 +164,7 @@
   overflow-wrap: anywhere;
 }
 @media (min-width: 1100px) {
-  .atlas-demo .card-task-board {
+  .genux-demo .card-task-board {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }

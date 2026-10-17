@@ -9,7 +9,7 @@ async function mountFixture(t, body) {
   await writeFile(
     file,
     `import {useState} from 'react';
-import AtlasProvider from '../src/react/AtlasProvider';
+import GenUXProvider from '../src/react/GenUXProvider';
 import RecordCollection from '../src/react/workspace/kit/RecordCollection';
 import EditableGrid from '../src/react/workspace/kit/EditableGrid';
 const records=Array.from({length:23},(_,index)=>({id:'record-'+(index+1),title:'Record '+String(index+1).padStart(2,'0'),amount:index+1,group:index<12?'included':'other'}));
@@ -54,7 +54,7 @@ function firstCollectionId(h) {
 test('controlled collection exposes end and near-end destinations and updates its host once', async t => {
   const h = await mountFixture(
     t,
-    `export default function Fixture(){const[query,setQuery]=useState({search:'',filters:[],sort:[]});const[page,setPage]=useState(6);const[changes,setChanges]=useState([]);return <AtlasProvider><RecordCollection {...collection} query={query} onQueryChange={setQuery} page={page} onPageChange={value=>{setChanges(previous=>[...previous,value]);setPage(value)}}/><output data-page-changes="">{JSON.stringify(changes)}</output></AtlasProvider>}`,
+    `export default function Fixture(){const[query,setQuery]=useState({search:'',filters:[],sort:[]});const[page,setPage]=useState(6);const[changes,setChanges]=useState([]);return <GenUXProvider><RecordCollection {...collection} query={query} onQueryChange={setQuery} page={page} onPageChange={value=>{setChanges(previous=>[...previous,value]);setPage(value)}}/><output data-page-changes="">{JSON.stringify(changes)}</output></GenUXProvider>}`,
   );
   const nav = () => pagination(h, 'Collection pages');
   named(nav(), 'First page');
@@ -97,7 +97,7 @@ test('controlled collection exposes end and near-end destinations and updates it
 test('uncontrolled collection resets pages for query and group changes and uses the scoped total', async t => {
   const h = await mountFixture(
     t,
-    `const groups=[{id:'included',label:'Included',kind:'exclusive',matches:record=>record.group==='included'}];export default function Fixture(){const[query,setQuery]=useState({search:'',filters:[],sort:[]});return <AtlasProvider><RecordCollection {...collection} groups={groups} query={query} onQueryChange={setQuery}/></AtlasProvider>}`,
+    `const groups=[{id:'included',label:'Included',kind:'exclusive',matches:record=>record.group==='included'}];export default function Fixture(){const[query,setQuery]=useState({search:'',filters:[],sort:[]});return <GenUXProvider><RecordCollection {...collection} groups={groups} query={query} onQueryChange={setQuery}/></GenUXProvider>}`,
   );
   const nav = () => pagination(h, 'Collection pages');
   await h.click(named(nav(), 'Last page'));
@@ -122,7 +122,7 @@ test('uncontrolled collection resets pages for query and group changes and uses 
 test('editable grid closes an editor on direct page changes while retaining valid drafts', async t => {
   const h = await mountFixture(
     t,
-    `export default function Fixture(){const[drafts,setDrafts]=useState({});return <AtlasProvider><EditableGrid records={records} fields={fields} pageSize={2} drafts={drafts} onDraftsChange={setDrafts} onCommit={()=>{}} onCancel={()=>{}}/><output data-drafts="">{JSON.stringify(drafts)}</output></AtlasProvider>}`,
+    `export default function Fixture(){const[drafts,setDrafts]=useState({});return <GenUXProvider><EditableGrid records={records} fields={fields} pageSize={2} drafts={drafts} onDraftsChange={setDrafts} onCommit={()=>{}} onCancel={()=>{}}/><output data-drafts="">{JSON.stringify(drafts)}</output></GenUXProvider>}`,
   );
   const nav = () => pagination(h, 'Editable grid pages');
   await h.click(h.document.querySelector('[data-edit-trigger="record-1::title"]'));
@@ -146,7 +146,7 @@ test('editable grid closes an editor on direct page changes while retaining vali
 test('editable grid disables every destination while a raw numeric input is invalid or an operation is blocked', async t => {
   const h = await mountFixture(
     t,
-    `export default function Fixture(){const[drafts,setDrafts]=useState({});const[operation,setOperation]=useState({kind:'idle'});return <AtlasProvider><button data-operation="pending" onClick={()=>setOperation({kind:'pending'})}>Pending</button><button data-operation="unknown" onClick={()=>setOperation({kind:'unknown'})}>Unknown</button><button data-operation="idle" onClick={()=>setOperation({kind:'idle'})}>Idle</button><EditableGrid records={records} fields={fields} pageSize={2} drafts={drafts} onDraftsChange={setDrafts} onCommit={()=>{}} onCancel={()=>{}} operation={operation}/></AtlasProvider>}`,
+    `export default function Fixture(){const[drafts,setDrafts]=useState({});const[operation,setOperation]=useState({kind:'idle'});return <GenUXProvider><button data-operation="pending" onClick={()=>setOperation({kind:'pending'})}>Pending</button><button data-operation="unknown" onClick={()=>setOperation({kind:'unknown'})}>Unknown</button><button data-operation="idle" onClick={()=>setOperation({kind:'idle'})}>Idle</button><EditableGrid records={records} fields={fields} pageSize={2} drafts={drafts} onDraftsChange={setDrafts} onCommit={()=>{}} onCancel={()=>{}} operation={operation}/></GenUXProvider>}`,
   );
   const nav = () => pagination(h, 'Editable grid pages');
   const assertBlocked = () => {
@@ -180,7 +180,7 @@ test('editable grid disables every destination while a raw numeric input is inva
 test('workspace pagination names follow locale changes while retaining pages and editor drafts', async t => {
   const h = await mountFixture(
     t,
-    `export default function Fixture(){const[query,setQuery]=useState({search:'',filters:[],sort:[]});const[drafts,setDrafts]=useState({});return <AtlasProvider><RecordCollection {...collection} query={query} onQueryChange={setQuery}/><EditableGrid records={records} fields={fields} pageSize={2} drafts={drafts} onDraftsChange={setDrafts} onCommit={()=>{}} onCancel={()=>{}}/></AtlasProvider>}`,
+    `export default function Fixture(){const[query,setQuery]=useState({search:'',filters:[],sort:[]});const[drafts,setDrafts]=useState({});return <GenUXProvider><RecordCollection {...collection} query={query} onQueryChange={setQuery}/><EditableGrid records={records} fields={fields} pageSize={2} drafts={drafts} onDraftsChange={setDrafts} onCommit={()=>{}} onCancel={()=>{}}/></GenUXProvider>}`,
   );
   const collectionNav = pagination(h, 'Collection pages');
   const gridNav = pagination(h, 'Editable grid pages');

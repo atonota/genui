@@ -19,7 +19,7 @@ const globals = Object.fromEntries(
     'IntersectionObserver',
     'Blob',
     'URL',
-    'AtlasDropdowns',
+    'GenUXDropdowns',
     'Event',
     'CustomEvent',
     'MutationObserver',
@@ -43,7 +43,7 @@ const eslint = new ESLint({
   ],
 });
 const results = await eslint.lintText(script.replace(vendor, ''), {
-  filePath: 'atlas.authored.js',
+  filePath: 'genux.authored.js',
 });
 const formatter = await eslint.loadFormatter('stylish');
 process.stdout.write(formatter.format(results));
