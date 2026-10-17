@@ -12,10 +12,12 @@ unchanged.
   `--preview-screen-surface`, declared only in
   `docs/src/styles/preview-document.css`. This is an explicit exception to the
   older color freeze for this surface alone.
-- The standalone preview body, `[data-preview-document]`,
-  `.example-preview-screen` and the preview GenUXProvider owner read only that
-  role, with no canvas, panel or paper fallback. A local `data-theme` sets it
-  regardless of the host's mode.
+- The standalone preview body, `[data-preview-document]` and
+  `.example-preview-screen` read only that role. A local `data-theme` sets it
+  regardless of the host's mode. The nested GenUXProvider consumes the same
+  role; its `--paper` fallback exists only for non-device preview contexts
+  such as AdaptiveLab, which have no screen role. Every actual device declares
+  the locked role, so its provider never reaches that compatibility fallback.
 - The role is not customizable: no Theme Builder token, recipe or alias to
   canvas or panel, and unrelated work must not change it. Shell, inputs, field
   fills, component panels, hardware frames, the Grid switch and guide paint,

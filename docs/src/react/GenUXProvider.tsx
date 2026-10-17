@@ -419,11 +419,13 @@ export default function GenUXProvider({
     ...previewPaintVariables,
     // A preview owner paints the locked screen surface (preview-document.css) and its ink, so its
     // content never sits on a host canvas or shell of either mode; ordinary owners stay
-    // transparent and inherit.
+    // transparent and inherit. Every device screen declares the locked role on an ancestor, so the
+    // fallback never applies inside a device; it serves only non-device preview owners (the
+    // AdaptiveLab frame), which keep this owner's local mode paper instead of a transparent box.
     ...(previewPaintVariables
       ? {
           colorScheme: mode,
-          backgroundColor: 'var(--preview-screen-surface)',
+          backgroundColor: 'var(--preview-screen-surface, var(--paper))',
           color: 'var(--ink)',
         }
       : {}),

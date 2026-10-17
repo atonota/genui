@@ -414,9 +414,9 @@ async function checkPreviewScreenSurface({ facts, files, read }) {
   }
   // Inspect the actual owner style initializer, including conditional/later literal spreads.
   // Counting the good literal elsewhere in the module would miss a competing late paint.
-  for (const [provider, styleName] of [
-    ['docs/src/react/GenUXProvider.tsx', 'sizeStyle'],
-    ['docs/src/react/PreviewWorkbench.tsx', 'screenStyle'],
+  for (const [provider, styleName, expectedPaint] of [
+    ['docs/src/react/GenUXProvider.tsx', 'sizeStyle', `var(${role}, var(--paper))`],
+    ['docs/src/react/PreviewWorkbench.tsx', 'screenStyle', value],
   ]) {
     const source = parseScript(provider, await read(provider));
     const styles = [];
@@ -442,7 +442,7 @@ async function checkPreviewScreenSurface({ facts, files, read }) {
       paints.length !== 1 ||
       propertyName(paints[0]) !== 'backgroundColor' ||
       !ts.isStringLiteralLike(paints[0].initializer) ||
-      paints[0].initializer.text !== value
+      paints[0].initializer.text !== expectedPaint
     )
       violations.push(
         `${provider} ${styleName} must paint only ${role}, with no competing inline paint`,
