@@ -67,6 +67,39 @@ const OBSERVED_ATTRIBUTES: readonly string[] = [
 ];
 // Root and ancestor attributes that can change the inherited writing direction: semantic dir, RTL classes, inline style.
 const DIRECTION_ATTRIBUTES: readonly string[] = ['dir', 'class', 'style'];
+// Host-only fit proportions DeviceFrame writes inline on a mockup's scaler; they only scale the whole device.
+const SCALER_SELECTOR = '.example-preview-scaler';
+const SCALER_FIT: ReadonlySet<string> = new Set([
+  '--preview-scale',
+  '--preview-fit-width',
+  '--preview-fit-height',
+]);
+
+/** Inline declarations parsed off-document: each property to its value and priority, order-insensitive. */
+function declarationsOf(cssText: string, doc: Document): Map<string, string> {
+  const probe = doc.createElement('div').style;
+  probe.cssText = cssText;
+  return new Map(
+    Array.from(probe, (name): [string, string] => [
+      name,
+      `${probe.getPropertyValue(name)}!${probe.getPropertyPriority(name)}`,
+    ]),
+  );
+}
+
+/** Whether a scaler style record changed nothing but its host fit proportions since its old value. */
+function scalerFitOnly(record: MutationRecord): boolean {
+  const { target } = record;
+  if (record.attributeName !== 'style' || !(target instanceof HTMLElement)) return false;
+  if (!target.matches(SCALER_SELECTOR)) return false;
+  const doc = target.ownerDocument;
+  const before = declarationsOf(record.oldValue ?? '', doc);
+  const after = declarationsOf(target.getAttribute('style') ?? '', doc);
+  const changed = [...new Set([...before.keys(), ...after.keys()])].filter(
+    name => before.get(name) !== after.get(name),
+  );
+  return changed.length > 0 && changed.every(name => SCALER_FIT.has(name));
+}
 
 type Size = Readonly<{ width: number; height: number }>;
 // Client px per local CSS px on each axis; only axis-aligned translation and positive scale are representable.
@@ -943,7 +976,8 @@ const keyboardOpen = (viewport: VisualViewport): boolean =>
 
 /**
  * Docs-only dormancy of an inline preview document: no positive client box, or one wholly outside its owner document's
- * viewport, while focus stays outside it. Its FAB then skips the cloning pass; a focused preview keeps measuring.
+ * viewport, while focus stays outside it. Its background invalidations then reuse cached intrinsic sizes instead of
+ * cloning; a focused preview keeps measuring in full.
  */
 function previewDormant(preview: HTMLElement): boolean {
   const doc = preview.ownerDocument;
@@ -960,6 +994,20 @@ function previewDormant(preview: HTMLElement): boolean {
   );
 }
 
+/** Which work an invalidation may skip: full always clones; background may reuse a dormant preview's intrinsics. */
+type Invalidation = 'full' | 'background';
+/**
+ * Intrinsic sizes one full pass read from the measurement copies, valid only for the same usable measure and height,
+ * direction, action ids and projected data stamp.
+ */
+type Intrinsics = Readonly<{
+  key: string;
+  trigger: Size;
+  triggerLabel: Size | null;
+  status: Size | null;
+  actions: readonly FabMeasuredAction[];
+}>;
+
 function measureLayer(
   root: HTMLElement,
   boundary: HTMLElement | null,
@@ -971,7 +1019,9 @@ function measureLayer(
   previewed: boolean,
   spatial: boolean,
   previous: Measured,
-): Measured {
+  stamp: string | null,
+  cache: Intrinsics | null,
+): Readonly<{ measured: Measured; intrinsics: Intrinsics | null; reused: boolean }> {
   const style = window.getComputedStyle(root);
   const viewport = window.visualViewport;
   const { x, y, width } = frame.bounds;
@@ -987,7 +1037,22 @@ function measureLayer(
   const bottom = inset(style, 'bottom');
   const left = inset(style, 'left');
   const fallback = actionSize(config);
-  const host = root.querySelector<HTMLElement>('.genux-fab-trigger');
+  // Labels and explicit rows share the current usable measure, never the width last written to the root.
+  const rowMeasure = Math.max(0, width - left - right - 2 * PAD);
+  const rtl = style.direction === 'rtl';
+  // A compatible cache stands in for every measurement copy; any other pass clones and reads them afresh.
+  const key =
+    stamp === null
+      ? null
+      : JSON.stringify([
+          rowMeasure,
+          Math.max(0, height - top - bottom),
+          rtl,
+          actions.map(action => action.id),
+          stamp,
+        ]);
+  const reused = cache !== null && key !== null && cache.key === key ? cache : null;
+  const host = reused ? null : root.querySelector<HTMLElement>('.genux-fab-trigger');
   // The trigger reads a settled copy beside its live host, so an easing icon or press layer never inflates it.
   const triggerCopy = host ? triggerMirror(host) : null;
   // Extended content sizes the trigger: read its intrinsic width, never the width last written to the host.
@@ -997,18 +1062,20 @@ function measureLayer(
   // the current usable measure alone, so a shortened label shrinks and a widened boundary recovers. A removed label
   // measures as none; a hidden one keeps its last size.
   const outerLabel = root.querySelector<HTMLElement>(':scope > .genux-fab-label');
-  // Labels and explicit rows share the current usable measure, never the width last written to the root.
-  const rowMeasure = Math.max(0, width - left - right - 2 * PAD);
-  const labelCopy = hasBox(outerLabel) ? labelMirror(outerLabel, rowMeasure) : null;
-  let triggerLabel: Size | null = outerLabel ? previous.triggerLabel : null;
+  const labelCopy = !reused && hasBox(outerLabel) ? labelMirror(outerLabel, rowMeasure) : null;
+  let triggerLabel: Size | null = reused
+    ? reused.triggerLabel
+    : outerLabel
+      ? previous.triggerLabel
+      : null;
   // A visible status card reads a settled copy at its intrinsic wrapped size, bounded by the same usable measure; an
   // empty or unrendered card measures as none.
   const statusNode = root.querySelector<HTMLElement>(':scope > .genux-fab-status');
   const statusCopy =
-    statusNode && hasBox(statusNode) && statusShown(statusNode)
+    !reused && statusNode && hasBox(statusNode) && statusShown(statusNode)
       ? statusMirror(statusNode, rowMeasure)
       : null;
-  let status: Size | null = null;
+  let status: Size | null = reused ? reused.status : null;
   // The drag toolbar's wrapped native box: only the root width it wraps in, never a geometry this hook writes onto
   // it, sizes it. A removed or hidden toolbar measures as none.
   const toolbar = root.querySelector<HTMLElement>(':scope > .genux-fab-drag');
@@ -1031,7 +1098,9 @@ function measureLayer(
     config.layout === 'floating-menu' ||
     config.layout === 'sheet' ||
     config.adaptation === 'sheet';
-  const plans = actions.map((action): Plan => {
+  // A reused cache reads no action at all, so no copy is planned.
+  const unread: readonly FabAction[] = reused ? [] : actions;
+  const plans = unread.map((action): Plan => {
     const element = hosts.get(action.id);
     const live = hasBox(element) ? element : null;
     if (!live) return { action, element: null, mirror: null };
@@ -1046,8 +1115,8 @@ function measureLayer(
     return { action, element: live, mirror };
   });
   const stage = plans.some(plan => plan.mirror?.beside === false) ? dialStage(root, config) : null;
-  let trigger: Size = previous.trigger;
-  let measured: readonly FabMeasuredAction[] = [];
+  let trigger: Size = reused ? reused.trigger : previous.trigger;
+  let measured: readonly FabMeasuredAction[] = reused ? reused.actions : [];
   try {
     if (host && triggerCopy) host.after(triggerCopy);
     if (outerLabel && labelCopy) outerLabel.after(labelCopy);
@@ -1069,7 +1138,7 @@ function measureLayer(
     }
     if (hasBox(labelCopy)) triggerLabel = boxOf(labelCopy);
     if (hasBox(statusCopy)) status = boxOf(statusCopy);
-    measured = plans.map(plan => readAction(plan, previous, fallback));
+    if (!reused) measured = plans.map(plan => readAction(plan, previous, fallback));
   } finally {
     triggerCopy?.remove();
     labelCopy?.remove();
@@ -1102,7 +1171,6 @@ function measureLayer(
         ? toLocal(root.getBoundingClientRect(), paint)
         : previous.origin
       : bounds;
-  const rtl = style.direction === 'rtl';
   // The drag toolbar paints at the root's top inline-end corner, root-local px being paint px; its wrapped native box
   // joins the obstacles, so the trigger, its label, the actions and every drag clear it.
   const toolbarRect: FabRect | null = toolbarSize
@@ -1113,7 +1181,7 @@ function measureLayer(
         height: toolbarSize.height,
       }
     : null;
-  return {
+  const result: Measured = {
     bounds,
     origin: { x: placed.x, y: placed.y },
     anchor: anchor ? toLocal(anchor.getBoundingClientRect(), paint) : null,
@@ -1125,6 +1193,12 @@ function measureLayer(
     rtl,
     offscreen: box ? box.bottom <= 0 || box.top >= window.innerHeight : false,
     previewed,
+  };
+  return {
+    measured: result,
+    intrinsics:
+      reused ?? (key === null ? null : { key, trigger, triggerLabel, status, actions: measured }),
+    reused: reused !== null,
   };
 }
 
@@ -1262,70 +1336,97 @@ export function useFabPosition(
   const previewRef = useRef(false);
   // What the last measurement pass resolved for the paint frame; the owner chain observer compares against it.
   const paintTrackRef = useRef<PaintTrack | null>(null);
+  // Intrinsic sizes of the last valid full pass, set before React commits it, so a queued background pass never reads
+  // pending state; a full pass without a valid measurement drops them.
+  const intrinsicsRef = useRef<Intrinsics | null>(null);
   const suppressClickRef = useRef(false);
   useIsomorphicLayoutEffect(() => {
     latest.current = { props, config, actions, open, requestOpen, spatial };
     measuredRef.current = measured;
   });
 
-  const measure = useCallback(() => {
-    const root = rootRef.current;
-    if (!root) return;
-    const { props: current, config: options, actions: list, spatial: remote } = latest.current;
-    const boundary = findBoundary(root, current, options);
-    // Inside a mockup a fixed layer must not escape to the host page; it lays out absolutely in the preview.
-    const previewDocument =
-      root.parentElement?.closest<HTMLElement>(previewDocumentSelector) ?? null;
-    const previewed = previewDocument !== null;
-    const positioning =
-      previewed && options.positioning === 'fixed' ? 'absolute' : options.positioning;
-    // Rotated, skewed, flipped or perspective owners cannot map through per-axis frames; the render rejects them.
-    const aligned = axisAlignedChain(root);
-    setUnsupported(!aligned);
-    if (!aligned) {
-      paintTrackRef.current = { boundary, positioning, aligned, owner: null, key: '' };
-      return;
-    }
-    const frame = frameOf(boundary, positioning);
-    const owner = paintOwnerOf(root, boundary, positioning);
-    const paint = paintFrameOf(root, boundary, frame, positioning, owner);
-    // The owner chain observer compares against exactly what this pass resolved.
-    paintTrackRef.current = { boundary, positioning, aligned, owner, key: frameKey(paint) };
-    setBoundaryElement(boundary);
-    setPaintElement(owner);
-    setAnchorElement(options.anchor === 'element' ? (current.anchorRef?.current ?? null) : null);
-    previewRef.current = previewed;
-    frameRef.current = paint;
-    // An unfocused preview document out of the host viewport, or without a box, skips the cloning pass and keeps its
-    // last valid geometry; only the cheap preview and offscreen flags follow, so a fixed layer never escapes the
-    // mockup. Tracking above stays bound, so scroll, resize and the position loop measure it once it shows again.
-    if (previewDocument && previewDormant(previewDocument)) {
-      const box = boundary?.getBoundingClientRect();
-      const offscreen = box ? box.bottom <= 0 || box.top >= window.innerHeight : false;
-      setMeasured(prev =>
-        prev.previewed === previewed && prev.offscreen === offscreen
-          ? prev
-          : { ...prev, previewed, offscreen },
+  const measure = useCallback(
+    (mode: Invalidation = 'full') => {
+      const root = rootRef.current;
+      if (!root) return;
+      const {
+        props: current,
+        config: options,
+        actions: list,
+        spatial: remote,
+        open: isOpen,
+      } = latest.current;
+      const boundary = findBoundary(root, current, options);
+      // Inside a mockup a fixed layer must not escape to the host page; it lays out absolutely in the preview.
+      const previewDocument =
+        root.parentElement?.closest<HTMLElement>(previewDocumentSelector) ?? null;
+      const previewed = previewDocument !== null;
+      const positioning =
+        previewed && options.positioning === 'fixed' ? 'absolute' : options.positioning;
+      // Rotated, skewed, flipped or perspective owners cannot map through per-axis frames; the render rejects them.
+      const aligned = axisAlignedChain(root);
+      setUnsupported(!aligned);
+      if (!aligned) {
+        intrinsicsRef.current = null;
+        paintTrackRef.current = { boundary, positioning, aligned, owner: null, key: '' };
+        return;
+      }
+      const frame = frameOf(boundary, positioning);
+      const owner = paintOwnerOf(root, boundary, positioning);
+      const paint = paintFrameOf(root, boundary, frame, positioning, owner);
+      // The owner chain observer compares against exactly what this pass resolved.
+      paintTrackRef.current = { boundary, positioning, aligned, owner, key: frameKey(paint) };
+      setBoundaryElement(boundary);
+      setPaintElement(owner);
+      setAnchorElement(options.anchor === 'element' ? (current.anchorRef?.current ?? null) : null);
+      previewRef.current = previewed;
+      frameRef.current = paint;
+      // Docs-only: a background invalidation of an unfocused preview document out of the host viewport, or without a
+      // box, reuses the last valid intrinsic sizes instead of cloning; bounds, origin, anchor, obstacles, direction, the
+      // toolbar and the preview and offscreen flags still measure, so placement and movement stay current. Every other
+      // pass, and any pass without a compatible cache, clones in full.
+      const cache =
+        mode === 'background' && previewDocument && previewDormant(previewDocument)
+          ? intrinsicsRef.current
+          : null;
+      const anatomy = anatomyKey(current, options, list);
+      const stamp = typeof anatomy === 'string' ? JSON.stringify([anatomy, isOpen, remote]) : null;
+      const {
+        measured: next,
+        intrinsics,
+        reused,
+      } = measureLayer(
+        root,
+        boundary,
+        frame,
+        paint,
+        current,
+        options,
+        list,
+        previewed,
+        remote,
+        measuredRef.current,
+        stamp,
+        cache,
       );
-      return;
-    }
-    const next = measureLayer(
-      root,
-      boundary,
-      frame,
-      paint,
-      current,
-      options,
-      list,
-      previewed,
-      remote,
-      measuredRef.current,
-    );
-    // A collapsed or hidden boundary measures empty; keep the last valid layout so geometry never sees zero.
-    if (!(next.bounds.width > 0 && next.bounds.height > 0)) return;
-    // Only numeric changes commit state, so measuring after every render cannot loop.
-    setMeasured(prev => (JSON.stringify(prev) === JSON.stringify(next) ? prev : next));
-  }, [rootRef]);
+      // A collapsed or hidden boundary measures empty; keep the last valid layout so geometry never sees zero.
+      if (!(next.bounds.width > 0 && next.bounds.height > 0)) {
+        // A full pass without a valid measurement leaves no intrinsic sizes to trust.
+        if (!reused) intrinsicsRef.current = null;
+        // The last positive geometry stays; only the latest preview and offscreen flags commit onto it.
+        setMeasured(prev =>
+          prev.previewed === next.previewed && prev.offscreen === next.offscreen
+            ? prev
+            : { ...prev, previewed: next.previewed, offscreen: next.offscreen },
+        );
+        return;
+      }
+      intrinsicsRef.current = intrinsics;
+      // Only numeric changes commit state, so measuring after every render cannot loop.
+      setMeasured(prev => (JSON.stringify(prev) === JSON.stringify(next) ? prev : next));
+    },
+    [rootRef],
+  );
 
   // Measurement invalidates on geometry-relevant data, never on fresh object or callback identities; content the data
   // cannot see (fonts, tokens, translated text, busy visuals) reaches it through the observers below.
@@ -1346,14 +1447,22 @@ export function useFabPosition(
     const root = rootRef.current;
     if (!root) return undefined;
     let pending = 0;
+    // A full request pending for the same frame outranks a background one.
+    let pendingFull = false;
     // Scrolls and content mutations coalesce to at most one measurement per animation frame.
-    const schedule = () => {
+    const schedule = (mode: Invalidation) => {
+      if (mode === 'full') pendingFull = true;
       if (pending !== 0) return;
       pending = window.requestAnimationFrame(() => {
         pending = 0;
-        measure();
+        const full = pendingFull;
+        pendingFull = false;
+        measure(full ? 'full' : 'background');
       });
     };
+    // Listener wrappers, so an event argument never reaches measure as its invalidation.
+    const measureFull = () => measure('full');
+    const measureBackground = () => measure('background');
     const observer =
       typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(() => measure());
     const fixed = [
@@ -1404,7 +1513,7 @@ export function useFabPosition(
             );
             if (relevant.length === 0) return;
             if (relevant.some(record => record.type === 'childList')) bind();
-            schedule();
+            schedule('full');
           });
     mutations?.observe(root, {
       subtree: true,
@@ -1415,10 +1524,11 @@ export function useFabPosition(
     });
     // Owner direction (semantic dir, RTL classes, inline direction) and the paint frame owner (an ancestor that starts
     // or stops capturing a fixed layer, a new offset parent, a moved or rescaled owner) change on the root or any
-    // ancestor without touching the data key. One observer watches only that chain, no subtree; a record measures
-    // again only when the computed direction, the axis-aligned verdict, the effective owner or its numeric frame
-    // differs from what the last pass resolved, even while no owner was tracked, so this hook's own root style writes
-    // never feed back.
+    // ancestor without touching the data key. One observer watches only that chain, no subtree. An ancestor record
+    // always measures again in full, since inherited typography and wrapping can change while every box stays put; a
+    // root record measures again only when the computed direction, the axis-aligned verdict, the effective owner or
+    // its numeric frame differs from what the last pass resolved, even while no owner was tracked, so this hook's own
+    // root style writes never feed back.
     const view = root.ownerDocument.defaultView ?? window;
     const paintChanged = (): boolean => {
       const track = paintTrackRef.current;
@@ -1435,17 +1545,33 @@ export function useFabPosition(
     const directions =
       typeof MutationObserver === 'undefined'
         ? null
-        : new MutationObserver(() => {
+        : new MutationObserver(records => {
+            // Ancestor dir, class or style changes can restyle inherited typography and wrapping while every box and
+            // the direction stay put, so they always remeasure in full, except a preview scaler whose style changed
+            // only in its host fit proportions. Only root and those scaler records reach the checks below, which
+            // filter this hook's own root style writes.
+            if (records.some(record => record.target !== root && !scalerFitOnly(record))) {
+              schedule('full');
+              return;
+            }
+            const fitOnly = records.some(record => record.target !== root);
             const rtl = view.getComputedStyle(root).direction === 'rtl';
-            if (rtl !== measuredRef.current.rtl || paintChanged()) schedule();
+            // A direction change remeasures in full; a paint frame or host fit change alone is a background
+            // invalidation.
+            if (rtl !== measuredRef.current.rtl) schedule('full');
+            else if (fitOnly || paintChanged()) schedule('background');
           });
     for (let node: HTMLElement | null = root; node; node = node.parentElement) {
-      directions?.observe(node, { attributes: true, attributeFilter: [...DIRECTION_ATTRIBUTES] });
+      directions?.observe(node, {
+        attributes: true,
+        attributeOldValue: true,
+        attributeFilter: [...DIRECTION_ATTRIBUTES],
+      });
     }
     const viewport = window.visualViewport;
     // Scroll does not bubble: one capture listener sees every scrolling ancestor of the anchor, obstacles and
-    // boundary.
-    const onAncestorScroll = schedule;
+    // boundary. Host page scrolls and resizes are background invalidations.
+    const onAncestorScroll = () => schedule('background');
     const onFocusIn = () => setFocused(true);
     const onFocusOut = (event: FocusEvent) =>
       setFocused(event.relatedTarget instanceof Node && root.contains(event.relatedTarget));
@@ -1453,31 +1579,31 @@ export function useFabPosition(
     // any resize or scroll; measuring synchronously applies the focused-preview exception before a key moves the layer.
     const previewDocument =
       root.parentElement?.closest<HTMLElement>(previewDocumentSelector) ?? null;
-    window.addEventListener('resize', measure);
-    window.addEventListener('orientationchange', measure);
-    viewport?.addEventListener('resize', measure);
-    viewport?.addEventListener('scroll', measure);
+    window.addEventListener('resize', measureBackground);
+    window.addEventListener('orientationchange', measureBackground);
+    viewport?.addEventListener('resize', measureBackground);
+    viewport?.addEventListener('scroll', measureBackground);
     root.ownerDocument.addEventListener('scroll', onAncestorScroll, {
       capture: true,
       passive: true,
     });
     root.addEventListener('focusin', onFocusIn);
     root.addEventListener('focusout', onFocusOut);
-    previewDocument?.addEventListener('focusin', measure);
+    previewDocument?.addEventListener('focusin', measureFull);
     return () => {
       observer?.disconnect();
       mutations?.disconnect();
       directions?.disconnect();
       observed.clear();
-      window.removeEventListener('resize', measure);
-      window.removeEventListener('orientationchange', measure);
-      viewport?.removeEventListener('resize', measure);
-      viewport?.removeEventListener('scroll', measure);
+      window.removeEventListener('resize', measureBackground);
+      window.removeEventListener('orientationchange', measureBackground);
+      viewport?.removeEventListener('resize', measureBackground);
+      viewport?.removeEventListener('scroll', measureBackground);
       root.ownerDocument.removeEventListener('scroll', onAncestorScroll, { capture: true });
       if (pending !== 0) window.cancelAnimationFrame(pending);
       root.removeEventListener('focusin', onFocusIn);
       root.removeEventListener('focusout', onFocusOut);
-      previewDocument?.removeEventListener('focusin', measure);
+      previewDocument?.removeEventListener('focusin', measureFull);
     };
   }, [rootRef, measure, open, props.obstacles, boundaryElement, anchorElement]);
 
@@ -1760,7 +1886,8 @@ export function useFabPosition(
       const next = read();
       if (next.some((value, index) => value !== last[index])) {
         last = next;
-        measure();
+        // Position-only moves are background invalidations; cheap geometry still follows every pass.
+        measure('background');
       }
       frame = window.requestAnimationFrame(tick);
     };
