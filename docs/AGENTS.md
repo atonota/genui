@@ -1,5 +1,15 @@
 # Astro documentation maintenance contract
 
+## Right-edge Tweaker — human decision 2026-10-17
+
+- The documentation Tweaker opens from a viewport-fixed right-edge tab centered
+  vertically, with the existing settings icon and vertical `Tweaker` label.
+- Preview toolbars contain no Tweaker action. The last focused example remains
+  the settings target; expanded previews offer the same tab inside their native
+  dialog, closing Expand before opening the existing settings drawer.
+- Preserve the screen surfaces, Grid switch, device geometry, state and focus
+  contracts. Do not restore the obsolete component-page CSS that hid the tab.
+
 ## Transparent playground preview — human decision 2026-10-17
 
 Newest entry; it changes only the playground preview wrapper.

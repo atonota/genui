@@ -131,6 +131,24 @@ test('MacBook preview geometry holds from 320 Fit to 2160 Actual', async ({ page
   await expect(screen).toBeVisible();
   await expect(screen.locator('[data-preview-hydrated=true]')).toBeAttached();
 
+  // The viewport-edge settings tab replaces every per-example toolbar action.
+  const tweaker = page.getByRole('button', { name: 'Open tweaker', exact: true });
+  await expect(preview.locator('.example-preview-toolbar [data-tweaker-trigger]')).toHaveCount(0);
+  await expect(tweaker).toBeVisible();
+  await expect(tweaker.locator('[data-icon-name="settings"]')).toHaveCount(1);
+  await expect(tweaker.locator('.genux-button-content > span')).toHaveCSS(
+    'writing-mode',
+    'vertical-rl',
+  );
+  const tab = await tweaker.boundingBox();
+  if (!tab) throw new Error('The Tweaker tab has no visible hit area.');
+  expect(Math.abs(tab.x + tab.width - 320)).toBeLessThanOrEqual(1);
+  expect(Math.abs(tab.y + tab.height / 2 - 360)).toBeLessThanOrEqual(1);
+  await tweaker.click();
+  await expect(page.getByRole('dialog', { name: 'Tweaker', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Close tweaker', exact: true }).click();
+  await expect(tweaker).toBeFocused();
+
   // A form draft and a node expando survive only while the same input element stays mounted.
   const workspace = content.getByRole('textbox', { name: /workspace name/i });
   await expect(workspace).toBeEditable();

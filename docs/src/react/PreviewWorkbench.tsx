@@ -14,6 +14,7 @@ import { Switch } from 'antd';
 import GenUXButton from './GenUXButton';
 import GenUXSegmented from './GenUXSegmented';
 import GenUXIcon from './GenUXIcon';
+import { TweakerDockButton } from './GenUXTweaker';
 import DeviceFrame, { type DeviceFrameZoom } from './DeviceFrame';
 import InlinePreview from './InlinePreview';
 import {
@@ -331,6 +332,11 @@ export default function PreviewWorkbench({ id, title, children }: PreviewWorkben
         else present(false);
       }}
     >
+      {expanded && (
+        <div className="genux-tweaker-trigger">
+          <TweakerDockButton onClick={openTweaker} />
+        </div>
+      )}
       <div className="example-preview-toolbar">
         <p className="example-preview-title" id={titleId}>
           {t(title)}
@@ -425,13 +431,6 @@ export default function PreviewWorkbench({ id, title, children }: PreviewWorkben
                 onClick={() => present(!expanded)}
               />
             )}
-            <GenUXButton
-              fill="outline"
-              size="sm"
-              text={t('Tweaker')}
-              aria-label={t('Open tweaker')}
-              onClick={openTweaker}
-            />
             <a href={frame.standaloneSrc} target="_blank" rel="noopener">
               {t('Open alone')}
             </a>

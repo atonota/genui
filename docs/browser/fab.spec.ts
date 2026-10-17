@@ -704,11 +704,11 @@ test('FAB documentation and defaults are available', async ({ page }, testInfo) 
     await savedFocus.evaluate(element => element?.focus({ preventScroll: true }));
     await savedFocus.dispose();
   }
-  // Geometry: Multi directional chosen through this preview's own toolbar Tweaker fans each named group out its own way.
+  // Geometry: Multi directional chosen through the focused preview's right-edge Tweaker fans each named group out its own way.
   const geometryCase = fabCase(page, 'geometry');
   const geometryFab = geometryCase.locator('.genux-fab').first();
   const geometryTrigger = triggerOf(geometryCase);
-  const geometryOpener = geometryCase.getByRole('button', { name: 'Open tweaker', exact: true });
+  const geometryOpener = page.getByRole('button', { name: 'Open tweaker', exact: true });
   const geometryCloseTweaker = page.getByRole('button', { name: 'Close tweaker', exact: true });
   // Only the two layouts this journey requests; each lies along the real list order from the other.
   const layoutKeys = { 'Multi directional': 'ArrowDown', Linear: 'ArrowUp' } as const;
@@ -721,7 +721,7 @@ test('FAB documentation and defaults are available', async ({ page }, testInfo) 
     }
     await geometryTrigger.focus();
     await geometryOpener.click();
-    // The toolbar button carries no expanded state; the visible Tweaker drawer is the evidence.
+    // The right-edge tab opens the visible Tweaker drawer.
     await expect(geometryCloseTweaker).toBeVisible();
     const layout = page.getByRole('combobox', { name: 'Layout', exact: true });
     await expect(layout).toBeVisible();
@@ -1036,13 +1036,16 @@ test('FAB documentation and defaults are available', async ({ page }, testInfo) 
   // closeOnScroll set in the Tweaker decides what scrolling the Scroll case region does; it never runs an action.
   const scrollCase = fabCase(page, 'scroll');
   const scrollTrigger = triggerOf(scrollCase);
-  const scrollOpener = scrollCase.getByRole('button', { name: 'Open tweaker', exact: true });
+  const scrollOpener = page.getByRole('button', { name: 'Open tweaker', exact: true });
   const scrollCloseTweaker = page.getByRole('button', { name: 'Close tweaker', exact: true });
   const region = scrollCase.getByRole('region', { name: 'Scrollable records', exact: true });
   const counter = page.locator('.genux-fab-demo-status');
   const counted = (await counter.textContent()) ?? '';
   const setCloseOnScroll = async (value: boolean) => {
-    if (!(await scrollCloseTweaker.isVisible())) await scrollOpener.click();
+    if (!(await scrollCloseTweaker.isVisible())) {
+      await scrollTrigger.focus();
+      await scrollOpener.click();
+    }
     await expect(scrollCloseTweaker).toBeVisible();
     const flag = page.getByRole('switch', { name: 'Close on scroll', exact: true });
     await expect(flag).toBeVisible();
@@ -1334,13 +1337,13 @@ test('FAB actions preserve confirmation, async errors and keyboard state', async
   await expectDragUntouched();
 
   // Modal menu: this preview's shared native Modal traps focus, honours closeOnOutside and closeOnEscape,
-  // and a nested confirmation takes Escape first. Flags are set through the Tweaker this preview's own toolbar opens.
-  const opener = actionsCase.getByRole('button', { name: 'Open tweaker', exact: true });
+  // and a nested confirmation takes Escape first. Flags are set through the Tweaker the focused preview's right-edge tab opens.
+  const opener = page.getByRole('button', { name: 'Open tweaker', exact: true });
   const closeTweaker = page.getByRole('button', { name: 'Close tweaker', exact: true });
   const setFlags = async (values: Readonly<Record<string, boolean>>) => {
     await trigger.focus();
     await opener.click();
-    // The toolbar button carries no expanded state; the visible Tweaker drawer is the evidence.
+    // The right-edge tab opens the visible Tweaker drawer.
     await expect(closeTweaker).toBeVisible();
     for (const [name, value] of Object.entries(values)) {
       const flag = page.getByRole('switch', { name, exact: true });
@@ -1452,7 +1455,7 @@ test('FAB actions preserve confirmation, async errors and keyboard state', async
   const setTrigger = async (label: string) => {
     await trigger.focus();
     await opener.click();
-    // The toolbar button carries no expanded state; the visible Tweaker drawer is the evidence.
+    // The right-edge tab opens the visible Tweaker drawer.
     await expect(closeTweaker).toBeVisible();
     await expect(triggerField).toBeVisible();
     const previous = (await triggerSelect.innerText()).trim();
@@ -1843,13 +1846,13 @@ test('FAB previews adapt without losing drafts or page theme', async ({ page }, 
   expect(await trigger.evaluate(element => getComputedStyle(element).outlineStyle)).toBe('none');
 
   // Viewport anchor: an open menu's backdrop covers this preview's own mockup screen, never only its stage.
-  // Choices go through this preview's own toolbar Tweaker and its labelled branded Selects.
-  const tweakerOpener = adaptive.getByRole('button', { name: 'Open tweaker', exact: true });
+  // Choices go through the focused preview's right-edge Tweaker and its labelled branded Selects.
+  const tweakerOpener = page.getByRole('button', { name: 'Open tweaker', exact: true });
   const tweakerClose = page.getByRole('button', { name: 'Close tweaker', exact: true });
   const setTweakerChoices = async (values: Readonly<Record<string, string>>) => {
     await trigger.focus();
     await tweakerOpener.click();
-    // The toolbar button carries no expanded state; the visible Tweaker drawer is the evidence.
+    // The right-edge tab opens the visible Tweaker drawer.
     await expect(tweakerClose).toBeVisible();
     for (const [name, label] of Object.entries(values)) {
       const field = page.getByRole('combobox', { name, exact: true });
@@ -1899,12 +1902,12 @@ test('FAB previews adapt without losing drafts or page theme', async ({ page }, 
   await setTweakerChoices({ Anchor: 'Container', Positioning: 'Absolute', Backdrop: 'None' });
 
   // Shape via the Tweaker: all options are offered and circle and square change the rendered corners.
-  // This preview's own toolbar opens the Tweaker for its example; focus starts on this preview's FAB.
+  // The right-edge tab opens the Tweaker for the focused example; focus starts on this preview's FAB.
   await trigger.focus();
-  const opener = adaptive.getByRole('button', { name: 'Open tweaker', exact: true });
+  const opener = page.getByRole('button', { name: 'Open tweaker', exact: true });
   await expect(opener).toBeVisible();
   await opener.click();
-  // The toolbar button carries no expanded state; the visible Tweaker drawer is the evidence.
+  // The right-edge tab opens the visible Tweaker drawer.
   const closeTweaker = page.getByRole('button', { name: 'Close tweaker', exact: true });
   await expect(closeTweaker).toBeVisible();
   const shape = page.getByLabel('Shape', { exact: true });

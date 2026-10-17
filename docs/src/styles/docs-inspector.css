@@ -120,11 +120,6 @@ dialog[data-docs-inspector][open]::backdrop {
     color: var(--panel-ink, var(--ink));
   }
 }
-/* The page-level Tweaker trigger does not drive the iframe previews; the Inspector replaces it
-   and each preview document keeps its own Tweaker. Its reserved narrow inset goes with it. */
-[data-component-detail] [data-tweaker-trigger] {
-  display: none;
-}
 @media (width < 54.6875rem) {
   [data-docs-shell] .docs-main:has(dialog[data-docs-inspector]) {
     padding-inline-end: var(--inset-container-sm, 16px);

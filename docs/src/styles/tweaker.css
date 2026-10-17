@@ -3,8 +3,26 @@
   position: fixed;
   inset-inline-end: env(safe-area-inset-right, 0px);
   inset-block-start: 50%;
-  margin-block-start: calc(var(--genux-tweaker-trigger-size) / -2);
+  translate: 0 -50%;
   z-index: var(--genux-tweaker-layer);
+}
+/* Keep the label upright along the viewport edge, independently of preview scaling. */
+.genux-tweaker-trigger .genux-tweaker-tab {
+  inline-size: var(--genux-tweaker-trigger-size);
+  min-inline-size: var(--genux-tweaker-trigger-size);
+  padding-block: var(--space-md);
+  --button-padding-inline: var(--space-xs);
+}
+.genux-tweaker-tab > .genux-button-content {
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+.genux-tweaker-tab > .genux-button-content > span {
+  writing-mode: vertical-rl;
+}
+/* The native expanded dialog owns the reachable copy while its top layer is open. */
+:root:has(.example-preview:modal) [data-tweaker-page-trigger] {
+  visibility: hidden;
 }
 .genux-tweaker-panel .ant-drawer-header {
   padding: var(--space-md);

@@ -12,6 +12,7 @@ import {
 import { createPortal } from 'react-dom';
 import { ConfigProvider, Drawer } from 'antd';
 import GenUXIconButton from './GenUXIconButton';
+import GenUXButton, { type GenUXButtonProps } from './GenUXButton';
 import ThemeTokenEditors from './ThemeTokenEditors';
 import { useI18n } from './useI18n';
 import { useGenUXAppearance } from './GenUXAppearance';
@@ -28,12 +29,47 @@ const TweakerContext = createContext<TweakerContextValue | null>(null);
 export const useHasTweaker = () => useContext(TweakerContext) !== null;
 export const useTweakerOpen = () => useContext(TweakerContext)?.open ?? false;
 
+/** The page edge and expanded preview use the same labelled settings tab. */
+export function TweakerDockButton({
+  onClick,
+  open = false,
+  panelId,
+}: {
+  onClick: GenUXButtonProps['onClick'];
+  open?: boolean;
+  panelId?: string;
+}) {
+  const { t } = useI18n();
+  return (
+    <GenUXButton
+      icon="settings"
+      size="sm"
+      text={t('Tweaker')}
+      slotClassName="genux-tweaker-tab"
+      aria-label={t('Open tweaker')}
+      aria-expanded={open}
+      aria-haspopup="dialog"
+      aria-controls={panelId}
+      data-tweaker-trigger=""
+      onClick={onClick}
+    />
+  );
+}
+
 /** The fixed opener and dialog-header shortcut share one settings owner. */
 export function TweakerOpenButton({ fixed = false }: { fixed?: boolean }) {
   const context = useContext(TweakerContext);
   const { t } = useI18n();
   const appearance = useGenUXAppearance();
   if (!context || appearance !== 'docs') return null;
+  if (fixed)
+    return (
+      <TweakerDockButton
+        open={context.open}
+        panelId={context.panelId}
+        onClick={event => context.onOpen(event.currentTarget)}
+      />
+    );
   return (
     <GenUXIconButton
       icon="settings"
@@ -43,7 +79,6 @@ export function TweakerOpenButton({ fixed = false }: { fixed?: boolean }) {
       aria-expanded={context.open}
       aria-haspopup="dialog"
       aria-controls={context.panelId}
-      data-tweaker-trigger={fixed ? '' : undefined}
       onClick={event => context.onOpen(event.currentTarget)}
     />
   );
@@ -153,7 +188,7 @@ export default function GenUXTweaker({
   return (
     <TweakerContext.Provider value={context}>
       {children}
-      <div className="genux-tweaker-trigger" ref={trigger}>
+      <div className="genux-tweaker-trigger" data-tweaker-page-trigger="" ref={trigger}>
         <TweakerOpenButton fixed />
       </div>
       <Drawer
