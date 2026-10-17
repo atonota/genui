@@ -43,10 +43,12 @@ const fabCase = (page: Page, name: string) => page.locator(`[data-fab-case=${nam
 const triggerOf = (scope: Locator) => scope.locator('.genux-fab .genux-fab-trigger button').first();
 // The server-rendered page is inert until React hydrates the demo; InlinePreview's own effect marks its preview
 // document hydrated, so no action or input lands on server markup that hydration would reset.
+// Hydration follows the initial navigation, so it waits on the explicit 15 s navigation budget, not the 5 s expect default.
 const expectHydrated = (page: Page) =>
   expect(fabCase(page, 'foundations').locator('[data-preview-document]').first()).toHaveAttribute(
     'data-preview-hydrated',
     'true',
+    { timeout: 15_000 },
   );
 
 /** Collects uncaught application errors; failed network requests are not page errors. */
@@ -1699,6 +1701,14 @@ test('FAB previews adapt without losing drafts or page theme', async ({ page }, 
 
   // Wide host: the MacBook renders 1:1 inline, so this preview offers no Expand.
   await page.setViewportSize({ width: 1920, height: 1080 });
+  // CI run 39017172767: the heavy 1920 resize render on a shared runner held a correct overflow read of 0 past the
+  // 5 s poll. Two animation frames let resize, layout and ResizeObserver settle before the unchanged check.
+  await page.evaluate(
+    () =>
+      new Promise<void>(resolve =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+      ),
+  );
   await expectBoundedOverflow(page);
   await chooseRadio(adaptive, 'MacBook 13');
   await expect(adaptive.locator('[data-preview-expand]')).toHaveCount(0);
