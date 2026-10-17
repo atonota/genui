@@ -591,7 +591,119 @@ test('FAB documentation and defaults are available', async ({ page }, testInfo) 
     .toEqual({ phase: 'closed', connected: true, visibility: 'hidden' });
 
   // Geometry starts on a known wide host before its own phone and wide recovery journey.
-  await page.setViewportSize({ width: 1920, height: 1080 });
+  // Dormancy audit on the Scroll preview document: it lies fully offscreen, and its real Scrollable records region
+  // ([data-fab-scroll=true], tabIndex 0) sits inside the preview but outside the FAB root. While the document holds no
+  // focus, this first wide resize must never clone a data-fab-measure layer into it; native focus then moved into that
+  // region, with no scroll or box change, must invalidate the dormancy and measure again. A page-side observer counts
+  // every added measurement copy, and every sampled animation frame rechecks that the setup still holds.
+  const dormantDocument = fabCase(page, 'scroll').locator('[data-preview-document]').first();
+  const dormantRegion = dormantDocument.locator('[data-fab-scroll=true]').first();
+  const dormantFrames = 20;
+  const expectDormantOffscreen = async (message: string) => {
+    const box = await dormantDocument.boundingBox();
+    const viewport = page.viewportSize();
+    expect(box, 'the scroll preview document has a box').not.toBeNull();
+    expect(viewport, 'the page has a viewport').not.toBeNull();
+    expect(
+      box !== null &&
+        viewport !== null &&
+        (box.y >= viewport.height ||
+          box.y + box.height <= 0 ||
+          box.x >= viewport.width ||
+          box.x + box.width <= 0),
+      message,
+    ).toBe(true);
+  };
+  // Real animation frames; each one rechecks that the document is offscreen and whether it holds focus.
+  const sampleDormancy = (focusInside: boolean) =>
+    dormantDocument.evaluate(
+      async (element, { inside, frames }) => {
+        const state = { frames: 0, offscreen: 0, focus: 0 };
+        for (let frame = 0; frame < frames; frame += 1) {
+          await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+          const box = element.getBoundingClientRect();
+          state.frames += 1;
+          if (
+            box.top >= window.innerHeight ||
+            box.bottom <= 0 ||
+            box.left >= window.innerWidth ||
+            box.right <= 0
+          )
+            state.offscreen += 1;
+          if (element.contains(document.activeElement) === inside) state.focus += 1;
+        }
+        return state;
+      },
+      { inside: focusInside, frames: dormantFrames },
+    );
+  const everyFrame = { frames: dormantFrames, offscreen: dormantFrames, focus: dormantFrames };
+  await expectDormantOffscreen('the scroll preview document lies entirely outside the viewport');
+  expect(
+    await dormantDocument.evaluate(element => element.contains(document.activeElement)),
+    'the scroll preview document holds no focus',
+  ).toBe(false);
+  // The real focus target: a focusable region inside the preview document, outside its FAB root.
+  expect(
+    await dormantRegion.evaluate(element => ({
+      role: element.getAttribute('role'),
+      tabIndex: (element as HTMLElement).tabIndex,
+      outsideFab: element.closest('.genux-fab') === null,
+    })),
+  ).toEqual({ role: 'region', tabIndex: 0, outsideFab: true });
+  // The element focused before the audit gets its focus back, so later keyboard and mount checks stay unperturbed.
+  const savedFocus = await page.evaluateHandle(() =>
+    document.activeElement instanceof HTMLElement ? document.activeElement : null,
+  );
+  const measureProbe = await dormantDocument.evaluateHandle(element => {
+    let count = 0;
+    const observer = new MutationObserver(records =>
+      records.forEach(record =>
+        record.addedNodes.forEach(node => {
+          if (!(node instanceof Element)) return;
+          if (node.matches('[data-fab-measure]')) count += 1;
+          count += node.querySelectorAll('[data-fab-measure]').length;
+        }),
+      ),
+    );
+    observer.observe(element, { childList: true, subtree: true });
+    return { read: () => count, stop: () => observer.disconnect() };
+  });
+  try {
+    await page.setViewportSize({ width: 1920, height: 1080 });
+    // Twenty real animation frames let resize, layout and ResizeObserver work run before the count is read.
+    expect(
+      await sampleDormancy(false),
+      'the unfocused scroll preview document stays offscreen and unfocused on every frame',
+    ).toEqual(everyFrame);
+    const resizeCopies = await measureProbe.evaluate(probe => probe.read());
+    expect(
+      resizeCopies,
+      'the unfocused offscreen scroll preview clones no data-fab-measure layer on the host resize',
+    ).toBe(0);
+
+    // Real native focus without scrolling: the document box never moves, only its focus changes.
+    await dormantRegion.evaluate(element =>
+      (element as HTMLElement).focus({ preventScroll: true }),
+    );
+    await expect(dormantRegion).toBeFocused();
+    await expectDormantOffscreen(
+      'focus without scrolling leaves the scroll preview document offscreen',
+    );
+    expect(
+      await sampleDormancy(true),
+      'the focused scroll preview document stays offscreen and focused on every frame',
+    ).toEqual(everyFrame);
+    const focusCopies = (await measureProbe.evaluate(probe => probe.read())) - resizeCopies;
+    expect(
+      focusCopies,
+      'focus inside the offscreen scroll preview invalidates its dormancy and measures again',
+    ).toBeGreaterThan(0);
+  } finally {
+    await measureProbe.evaluate(probe => probe.stop());
+    await measureProbe.dispose();
+    await savedFocus.evaluate(element => element?.focus({ preventScroll: true }));
+    await savedFocus.dispose();
+  }
   // Geometry: Multi directional chosen through this preview's own toolbar Tweaker fans each named group out its own way.
   const geometryCase = fabCase(page, 'geometry');
   const geometryFab = geometryCase.locator('.genux-fab').first();

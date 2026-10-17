@@ -941,6 +941,25 @@ function readAction(
 const keyboardOpen = (viewport: VisualViewport): boolean =>
   Math.round(viewport.height * viewport.scale) < window.innerHeight;
 
+/**
+ * Docs-only dormancy of an inline preview document: no positive client box, or one wholly outside its owner document's
+ * viewport, while focus stays outside it. Its FAB then skips the cloning pass; a focused preview keeps measuring.
+ */
+function previewDormant(preview: HTMLElement): boolean {
+  const doc = preview.ownerDocument;
+  const active = doc.activeElement;
+  if (active && preview.contains(active)) return false;
+  const rect = preview.getBoundingClientRect();
+  if (!(rect.width > 0 && rect.height > 0)) return true;
+  const view = doc.defaultView ?? window;
+  return (
+    rect.bottom <= 0 ||
+    rect.right <= 0 ||
+    rect.top >= view.innerHeight ||
+    rect.left >= view.innerWidth
+  );
+}
+
 function measureLayer(
   root: HTMLElement,
   boundary: HTMLElement | null,
@@ -1255,7 +1274,9 @@ export function useFabPosition(
     const { props: current, config: options, actions: list, spatial: remote } = latest.current;
     const boundary = findBoundary(root, current, options);
     // Inside a mockup a fixed layer must not escape to the host page; it lays out absolutely in the preview.
-    const previewed = Boolean(root.parentElement?.closest(previewDocumentSelector));
+    const previewDocument =
+      root.parentElement?.closest<HTMLElement>(previewDocumentSelector) ?? null;
+    const previewed = previewDocument !== null;
     const positioning =
       previewed && options.positioning === 'fixed' ? 'absolute' : options.positioning;
     // Rotated, skewed, flipped or perspective owners cannot map through per-axis frames; the render rejects them.
@@ -1275,6 +1296,19 @@ export function useFabPosition(
     setAnchorElement(options.anchor === 'element' ? (current.anchorRef?.current ?? null) : null);
     previewRef.current = previewed;
     frameRef.current = paint;
+    // An unfocused preview document out of the host viewport, or without a box, skips the cloning pass and keeps its
+    // last valid geometry; only the cheap preview and offscreen flags follow, so a fixed layer never escapes the
+    // mockup. Tracking above stays bound, so scroll, resize and the position loop measure it once it shows again.
+    if (previewDocument && previewDormant(previewDocument)) {
+      const box = boundary?.getBoundingClientRect();
+      const offscreen = box ? box.bottom <= 0 || box.top >= window.innerHeight : false;
+      setMeasured(prev =>
+        prev.previewed === previewed && prev.offscreen === offscreen
+          ? prev
+          : { ...prev, previewed, offscreen },
+      );
+      return;
+    }
     const next = measureLayer(
       root,
       boundary,
@@ -1415,6 +1449,10 @@ export function useFabPosition(
     const onFocusIn = () => setFocused(true);
     const onFocusOut = (event: FocusEvent) =>
       setFocused(event.relatedTarget instanceof Node && root.contains(event.relatedTarget));
+    // Docs-only: focus entering the nearest inline preview document, outside this root too, lifts its dormancy without
+    // any resize or scroll; measuring synchronously applies the focused-preview exception before a key moves the layer.
+    const previewDocument =
+      root.parentElement?.closest<HTMLElement>(previewDocumentSelector) ?? null;
     window.addEventListener('resize', measure);
     window.addEventListener('orientationchange', measure);
     viewport?.addEventListener('resize', measure);
@@ -1425,6 +1463,7 @@ export function useFabPosition(
     });
     root.addEventListener('focusin', onFocusIn);
     root.addEventListener('focusout', onFocusOut);
+    previewDocument?.addEventListener('focusin', measure);
     return () => {
       observer?.disconnect();
       mutations?.disconnect();
@@ -1438,6 +1477,7 @@ export function useFabPosition(
       if (pending !== 0) window.cancelAnimationFrame(pending);
       root.removeEventListener('focusin', onFocusIn);
       root.removeEventListener('focusout', onFocusOut);
+      previewDocument?.removeEventListener('focusin', measure);
     };
   }, [rootRef, measure, open, props.obstacles, boundaryElement, anchorElement]);
 
