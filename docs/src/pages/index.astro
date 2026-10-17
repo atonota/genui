@@ -60,7 +60,7 @@ const foundations = [
     </span>
   </p>
   <div class="intro-actions">
-    <a class="docs-action" href="/components/button/">
+    <a class="docs-action" href="/components/">
       <span data-i18n="Explore components">Explore components</span>
     </a>
     <a href="/getting-started/">
@@ -84,18 +84,23 @@ const foundations = [
       </p>
     </div>
     <div class="component-index">
-      {components.map((item, index) => (
-        <a href={'/components/' + item.slug + '/'} class="component-link">
-          <span class="component-number">{String(index + 1).padStart(2, '0')}</span>
-          <h3 data-i18n={item.title}>{item.title}</h3>
-          <p data-i18n={item.summary}>{item.summary}</p>
-          <span class="component-cta">
-            <span data-i18n="Examples and API">Examples and API</span>{' '}
-            <span aria-hidden="true">→</span>
-          </span>
-        </a>
-      ))}
+      {components
+        .filter(item => ['button', 'input', 'select', 'card', 'drawer', 'fab'].includes(item.slug))
+        .map((item, index) => (
+          <a href={'/components/' + item.slug + '/'} class="component-link">
+            <span class="component-number">{String(index + 1).padStart(2, '0')}</span>
+            <h3 data-i18n={item.title}>{item.title}</h3>
+            <p data-i18n={item.summary}>{item.summary}</p>
+            <span class="component-cta">
+              <span data-i18n="Examples and API">Examples and API</span>{' '}
+              <span aria-hidden="true">→</span>
+            </span>
+          </a>
+        ))}
     </div>
+    <p>
+      <a href="/components/">Browse the complete component catalog</a>
+    </p>
   </section>
   <section
     id="shared-foundation"

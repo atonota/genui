@@ -1,3 +1,5 @@
+import { routeHref, urlPolicy } from './url-policy';
+
 // Shared information architecture for foundation pages: menu groups, page titles and breadcrumb ancestors.
 export interface FoundationLink {
   slug: string;
@@ -11,32 +13,28 @@ export interface FoundationGroup {
 }
 
 export const foundationGroups: readonly FoundationGroup[] = [
-  {
-    label: 'Start',
-    links: [
-      { slug: '', href: '/', label: 'Overview' },
-      { slug: 'getting-started', href: '/getting-started/', label: 'Getting started' },
-    ],
-  },
+  { label: 'Start', ids: ['', 'components', 'getting-started', 'guides'] },
   {
     label: 'Foundations',
-    links: [
-      { slug: 'tokens', href: '/tokens/', label: 'Design tokens' },
-      { slug: 'standards', href: '/standards/', label: 'UX standards' },
-      { slug: 'color-system', href: '/color-system/', label: 'Color system' },
-      { slug: 'theme-builder', href: '/theme-builder/', label: 'Theme Builder' },
-      { slug: 'genux', href: '/genux/', label: 'GenUX' },
-      { slug: 'adaptive', href: '/adaptive/', label: 'Adaptive UI' },
+    ids: [
+      'foundations',
+      'tokens',
+      'standards',
+      'genux',
+      'adaptive',
+      'tools',
+      'color-system',
+      'theme-builder',
     ],
   },
-  {
-    label: 'Project',
-    links: [
-      { slug: 'decisions', href: '/decisions/', label: 'Decision log' },
-      { slug: 'documentation', href: '/documentation/', label: 'Documentation standard' },
-    ],
-  },
-];
+  { label: 'Project', ids: ['project', 'decisions', 'documentation', 'url-policy'] },
+].map(group => ({
+  label: group.label,
+  links: group.ids.map(id => {
+    const page = urlPolicy.pages.find(entry => entry.id === id)!;
+    return { slug: page.id, href: page.path, label: page.label };
+  }),
+}));
 
 export const foundationLinks: readonly FoundationLink[] = foundationGroups.flatMap(
   group => group.links,
@@ -53,8 +51,7 @@ export function findFoundation(
   return undefined;
 }
 
-/** Href of the GenUX product route under a trusted Astro base: '/genux/' at the local root and
-    '/genux/genux/' under the Pages base, so it never collides with the bare hosting base. */
+/** Canonical guide route under either local or Pages hosting. */
 export function genuxPageHref(base = '/'): string {
-  return `${base.replace(/\/+$/, '')}/genux/`;
+  return routeHref('genux', base);
 }

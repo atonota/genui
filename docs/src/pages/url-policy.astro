@@ -1,0 +1,123 @@
+---
+import DocsLayout from '../layouts/DocsLayout.astro';
+import DocumentationNav from '../components/DocumentationNav.astro';
+import PageBreadcrumb from '../components/shell/PageBreadcrumb.astro';
+import { canonicalUrl, urlPolicy } from '../data/url-policy';
+const sections = [
+  { id: 'addresses', label: 'Address contract' },
+  { id: 'discovery', label: 'Search and AI discovery' },
+  { id: 'migration', label: 'Migration and extension' },
+];
+---
+
+<DocsLayout
+  title="URL policy"
+  description="GenUX URL contract: stable readable addresses, canonical ownership, search discovery and compatible route migrations."
+  slug="url-policy"
+>
+  <PageBreadcrumb
+    items={[
+      { label: 'Overview', href: '/' },
+      { label: 'Project', href: '/project/' },
+    ]}
+    current="URL policy"
+  />
+  <h1>URL policy</h1>
+  <p class="lead">
+    People should be able to read, share and revisit an address. Each published document has one
+    stable canonical URL, shared by navigation, metadata and discovery feeds.
+  </p>
+  <DocumentationNav items={sections} />
+  <section id="addresses" data-doc-section="addresses" aria-labelledby="addresses-title">
+    <h2 id="addresses-title">Address contract</h2>
+    <ul>
+      <li>
+        Use lowercase, meaningful English words separated by hyphens. Documentation routes end in a
+        slash; files retain their extensions.
+      </li>
+      <li>
+        Keep existing descriptive addresses stable. Categories organize navigation without forcing a
+        migration of every child URL.
+      </li>
+      <li>
+        Components live at <code>/components/&lt;component-name&gt;/</code>. Use fragments for
+        sections within a document.
+      </li>
+      <li>
+        View controls, filters and <code>?tab=</code> state do not create separate canonical
+        documents. The canonical address excludes query strings and fragments.
+      </li>
+      <li>
+        The public base is <a href={canonicalUrl('/')}>{canonicalUrl('/')}</a>. Local preview and
+        public hosting use the same logical routes.
+      </li>
+    </ul>
+  </section>
+  <section id="discovery" data-doc-section="discovery" aria-labelledby="discovery-title">
+    <h2 id="discovery-title">Search and AI discovery</h2>
+    <p>
+      References and directory links are rendered in HTML. Each document has a descriptive title,
+      summary and absolute canonical address. Structured data describes the visible page and
+      breadcrumbs.
+    </p>
+    <p>
+      <a href="/sitemap.xml">Sitemap</a> lists canonical documentation only.{' '}
+      <a href="/url-manifest.json">URL manifest</a> exposes route ownership and aliases.{' '}
+      <a href="/llms.txt">Text discovery index</a> is a convenience for agents, not a search-engine
+      requirement or a ranking guarantee.
+    </p>
+    <p>
+      Isolated previews and retired aliases remain outside the sitemap and carry noindex.
+      Code/source resources are supporting files, not additional documentation pages.
+    </p>
+    <p>
+      English is the server-rendered canonical language. The Turkish display toggle uses the same
+      URL. Separate language routes and reciprocal hreflang will be added only when actual
+      translated HTML is published.
+    </p>
+    <p>
+      GitHub project Pages cannot control the host-root robots.txt. A file below /genux/ does not
+      set crawler policy for atonota.github.io. Search discovery and model training permissions are
+      separate decisions.
+    </p>
+  </section>
+  <section id="migration" data-doc-section="migration" aria-labelledby="migration-title">
+    <h2 id="migration-title">Migration and extension</h2>
+    <p>
+      Register a new document in the shared URL policy, admit its page type, link it from a relevant
+      directory and verify the generated public-base artifact. Retire a route only with an explicit
+      direct alias to a real canonical target.
+    </p>
+    <ul>
+      {Object.entries(urlPolicy.aliases).map(([old, target]) => (
+        <li>
+          <code>{old}</code> → <a href={target}>{target}</a>
+        </li>
+      ))}
+    </ul>
+    <p>
+      Aliases on static GitHub Pages use client navigation and a no-script refresh with a fallback
+      link. They are not HTTP 301 responses. Existing token-section fragment mappings are preserved.
+      An old repository’s hosting path requires a redirect deployed in that repository.
+    </p>
+    <p>
+      Unknown paths show a recovery page with HTTP 404 rather than silently replacing every missing
+      document with the homepage.
+    </p>
+    <p>
+      References:{' '}
+      <a href="https://developers.google.com/search/docs/crawling-indexing/url-structure">
+        Google URL structure
+      </a>
+      ,{' '}
+      <a href="https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls">
+        canonicalization
+      </a>
+      ,{' '}
+      <a href="https://developers.google.com/search/docs/appearance/ai-features">
+        AI search guidance
+      </a>
+      , <a href="https://developers.openai.com/api/docs/bots">OpenAI crawler controls</a>.
+    </p>
+  </section>
+</DocsLayout>

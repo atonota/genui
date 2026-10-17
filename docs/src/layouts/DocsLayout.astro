@@ -15,6 +15,7 @@ import '../styles/docs-accessibility.css';
 import '../styles/documentation.css';
 import '../styles/genux-input.css';
 import '../styles/theme-builder.css';
+import { canonicalUrl, logicalPath, publicRoot, structuredJson } from '../data/url-policy';
 import DocsShell from '../components/shell/DocsShell.astro';
 import '../styles/focus-01.css';
 import '../styles/adaptive-components.scss';
@@ -22,8 +23,21 @@ interface Props {
   title: string;
   description: string;
   slug?: string;
+  noindex?: boolean;
 }
-const { title, description, slug = '' } = Astro.props;
+const { title, description, slug = '', noindex = false } = Astro.props;
+const canonical = noindex
+  ? undefined
+  : canonicalUrl(logicalPath(Astro.url.pathname, import.meta.env.BASE_URL));
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: title,
+  description,
+  url: canonical,
+  inLanguage: 'en',
+  isPartOf: { '@type': 'WebSite', name: 'GenUX', url: publicRoot },
+};
 ---
 
 <!doctype html>
@@ -32,6 +46,19 @@ const { title, description, slug = '' } = Astro.props;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} data-i18n-content={description} />
+    {noindex ? (
+      <meta name="robots" content="noindex, follow" />
+    ) : (
+      <>
+        <link rel="canonical" href={canonical} />
+        <meta property="og:url" content={canonical} />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="GenUX" />
+        <meta property="og:title" content={`${title} · GenUX`} />
+        <meta property="og:description" content={description} />
+        <script type="application/ld+json" is:inline set:html={structuredJson(schema)} />
+      </>
+    )}
     <meta name="color-scheme" content="light dark" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <style is:inline set:html={themeStyleText} />

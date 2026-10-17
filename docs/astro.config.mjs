@@ -1,3 +1,4 @@
+import docsUrlPolicy from '../tools/docs-url-policy.mjs';
 import { readFile, rename, rm, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -554,8 +555,10 @@ export default defineConfig({
     docsPresentation(),
     adaptiveOwnershipPrune(serverStyles),
     ...(pages ? [docsPages()] : []),
+    docsUrlPolicy(),
   ],
   output: 'static',
+  trailingSlash: 'always',
   server: { host: '127.0.0.1', port: 4321 },
   devToolbar: { enabled: false },
   build: { inlineStylesheets: 'auto' },

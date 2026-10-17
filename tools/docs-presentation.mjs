@@ -2,6 +2,7 @@ import { access, readdir, readFile, writeFile } from 'node:fs/promises';
 import { relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { JSDOM } from 'jsdom';
+import urlPolicy from '../docs/src/data/url-policy.json' with { type: 'json' };
 import { collectPreviewCode } from './docs-preview-code.mjs';
 
 // Structural ECA gate for built documentation HTML. It inspects generated markup only;
@@ -231,7 +232,12 @@ function localUrl(href, path) {
   if (!href) return null;
   try {
     const url = new URL(href, `${siteOrigin}${path}`);
-    return url.origin === siteOrigin ? url : null;
+    if (url.origin === siteOrigin) return url;
+    if (url.origin === urlPolicy.origin && url.pathname.startsWith(`${urlPolicy.base}/`)) {
+      url.pathname = url.pathname.slice(urlPolicy.base.length);
+      return url;
+    }
+    return null;
   } catch {
     return null;
   }

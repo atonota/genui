@@ -101,7 +101,7 @@ const componentPage = Boolean(slug) && Astro.routePattern === '/components/[slug
         ?.setAttribute('aria-checked', String(document.documentElement.dataset.theme === 'dark'));
     </script>
     <nav class="header-primary" aria-label="Primary" data-i18n-aria-label="Primary">
-      <a href="/">
+      <a href="/components/">
         <span data-i18n="Components">Components</span>
       </a>
       <a href={genuxPageHref(import.meta.env.BASE_URL)}>GenUX</a>

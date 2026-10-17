@@ -1,4 +1,5 @@
 ---
+import { canonicalUrl } from '../data/url-policy';
 import { STANDARDS_ROUTE, TOKENS_ROUTE, legacyTokenTargets } from '../data/token-redirects';
 
 // Redirect page only: /tokens/ is canonical and legacy hashes resolve through the shared mapping.
@@ -13,7 +14,7 @@ const title = 'Token definitions and standards moved';
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex" />
     <title>{title}</title>
-    <link rel="canonical" href={TOKENS_ROUTE} />
+    <link rel="canonical" href={canonicalUrl(TOKENS_ROUTE)} />
     <script is:inline define:vars={{ targets, fallback: TOKENS_ROUTE }}>
       let id = '';
       try {

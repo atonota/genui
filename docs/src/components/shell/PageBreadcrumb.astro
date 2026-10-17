@@ -1,10 +1,23 @@
 ---
+import { canonicalUrl, logicalPath, structuredJson } from '../../data/url-policy';
 // Shell breadcrumb: ancestor items, then the current page marked with aria-current.
 interface Props {
   items: readonly { label: string; href?: string }[];
   current: string;
 }
 const { items, current } = Astro.props;
+const linked = items.filter((item): item is { label: string; href: string } => Boolean(item.href));
+const breadcrumbs = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    ...linked.map(item => ({ name: item.label, item: canonicalUrl(item.href) })),
+    {
+      name: current,
+      item: canonicalUrl(logicalPath(Astro.url.pathname, import.meta.env.BASE_URL)),
+    },
+  ].map((item, index) => ({ '@type': 'ListItem', position: index + 1, ...item })),
+};
 ---
 
 <nav class="page-breadcrumb" aria-label="Breadcrumb" data-i18n-aria-label="Breadcrumb">
@@ -27,3 +40,5 @@ const { items, current } = Astro.props;
     </li>
   </ol>
 </nav>
+
+<script type="application/ld+json" is:inline set:html={structuredJson(breadcrumbs)} />

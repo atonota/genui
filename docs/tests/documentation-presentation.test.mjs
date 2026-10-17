@@ -38,7 +38,15 @@ const foundationKinds = {
   '/getting-started/': 'guide',
   '/tokens/': 'tokens',
   '/standards/': 'ux-standards',
-  '/genux/': 'genux',
+  '/ai-ui/': 'genux',
+  '/adaptive/': 'adaptive-lab',
+  '/components/': 'catalog',
+  '/guides/': 'hub',
+  '/foundations/': 'hub',
+  '/tools/': 'hub',
+  '/project/': 'hub',
+  '/url-policy/': 'url-policy',
+  '/404.html': 'not-found',
   '/color-system/': 'color-lab',
   '/theme-builder/': 'color-lab',
   '/decisions/': 'decisions',
@@ -46,7 +54,7 @@ const foundationKinds = {
   '/documentation/': 'standard',
 };
 // Retired routes only redirect to their canonical documentation route.
-const redirectTargets = { '/token-standards/': '/tokens/', '/components/': '/' };
+const redirectTargets = { '/token-standards/': '/tokens/', '/genux/': '/ai-ui/' };
 const pageKinds = [...new Set([...Object.values(foundationKinds), 'redirect', 'component'])];
 const resourceSources = {
   catalog: ['docs/src/data/catalog.ts'],
@@ -309,6 +317,7 @@ const validSite = ruleIds => ({
   'index.html': foundationPage(),
   'getting-started/index.html': guidePage(),
   'tokens/index.html': foundationPage(),
+  'ai-ui/index.html': foundationPage(),
   'documentation/index.html': standardPage(ruleIds),
   'components/timeline/index.html': componentPage(),
   ...Object.fromEntries(
@@ -409,8 +418,8 @@ test('future component routes are admitted only through the complete contract', 
   await rejects(partial, '/components/timeline/', 'component-section-missing');
   await rejects(componentPage(), '/components', 'page-kind-unknown');
   await rejects(componentPage(), '/components/Timeline/', 'page-kind-unknown');
-  // The component index is a declared redirect, never a component page.
-  await rejects(componentPage(), '/components/', 'redirect-metadata-invalid');
+  // The catalog is a real directory; it does not require the component-specific contract.
+  assert.deepEqual(await check(foundationPage(), '/components/'), []);
   await rejects(componentPage(), '/components/timeline/history/', 'page-kind-unknown');
 });
 

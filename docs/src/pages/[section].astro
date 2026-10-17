@@ -1,0 +1,38 @@
+---
+import DocsLayout from '../layouts/DocsLayout.astro';
+import DocumentationNav from '../components/DocumentationNav.astro';
+import PageBreadcrumb from '../components/shell/PageBreadcrumb.astro';
+import { urlPolicy } from '../data/url-policy';
+const groups: Record<string, string> = {
+  guides: 'Guides',
+  foundations: 'Foundations',
+  tools: 'Tools',
+  project: 'Project',
+};
+export function getStaticPaths() {
+  return ['guides', 'foundations', 'tools', 'project'].map(section => ({ params: { section } }));
+}
+const { section = '' } = Astro.params;
+const page = urlPolicy.pages.find(entry => entry.id === section)!;
+const links = urlPolicy.pages.filter(
+  entry => entry.group === groups[section] && entry.id !== section,
+);
+---
+
+<DocsLayout title={page.label} description={page.description} slug={page.id}>
+  <PageBreadcrumb items={[{ label: 'Overview', href: '/' }]} current={page.label} />
+  <h1>{page.label}</h1>
+  <p class="lead">{page.description}</p>
+  <DocumentationNav items={[{ id: 'directory', label: page.label }]} />
+  <section id="directory" data-doc-section="directory" aria-labelledby="directory-title">
+    <h2 id="directory-title">Explore {page.label.toLowerCase()}</h2>
+    <div class="component-index">
+      {links.map(link => (
+        <a class="component-link" href={link.path}>
+          <h3>{link.label}</h3>
+          <p>{link.description}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+</DocsLayout>

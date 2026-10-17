@@ -23,7 +23,7 @@
     "genux": {
       "label": "GenUX",
       "description": "GenUX contract, policy and registration status reference.",
-      "routes": ["/genux/"]
+      "routes": ["/ai-ui/"]
     },
     "color-lab": {
       "label": "Color lab",
@@ -53,13 +53,36 @@
     "redirect": {
       "label": "Legacy redirect",
       "description": "Retired route that only redirects to its declared canonical target. Legacy fragments are mapped by docs/src/data/token-redirects.ts.",
-      "routes": ["/token-standards/", "/components/"],
-      "targets": { "/token-standards/": "/tokens/", "/components/": "/" }
+      "routes": ["/token-standards/", "/genux/"],
+      "targets": {
+        "/token-standards/": "/tokens/",
+        "/genux/": "/ai-ui/"
+      }
     },
     "component": {
       "label": "Component",
       "description": "Any generated route of the form /components/<slug>/ is a component page and must pass the full common contract.",
       "routePattern": "^/components/[a-z0-9]+(?:-[a-z0-9]+)*/$"
+    },
+    "catalog": {
+      "label": "Component catalog",
+      "description": "Browsable server-rendered component directory.",
+      "routes": ["/components/"]
+    },
+    "hub": {
+      "label": "Section directory",
+      "description": "Task-oriented guide, foundation, tool and project entry points.",
+      "routes": ["/guides/", "/foundations/", "/tools/", "/project/"]
+    },
+    "url-policy": {
+      "label": "URL policy",
+      "description": "Canonical route ownership and migration policy.",
+      "routes": ["/url-policy/"]
+    },
+    "not-found": {
+      "label": "Page not found",
+      "description": "Noindex recovery page, served with HTTP 404 by Pages.",
+      "routes": ["/404.html"]
     }
   },
   "componentSections": [

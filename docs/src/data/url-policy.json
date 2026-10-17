@@ -1,0 +1,130 @@
+{
+  "origin": "https://atonota.github.io",
+  "base": "/genux",
+  "language": "en",
+  "pages": [
+    {
+      "id": "",
+      "path": "/",
+      "label": "Overview",
+      "group": "Start",
+      "description": "Discover the GenUX component system and choose your next step."
+    },
+    {
+      "id": "components",
+      "path": "/components/",
+      "label": "Component catalog",
+      "group": "Start",
+      "description": "Browse components by purpose, with live examples, APIs and source references."
+    },
+    {
+      "id": "guides",
+      "path": "/guides/",
+      "label": "Guides",
+      "group": "Start",
+      "description": "Set up GenUX and understand validated, registered AI interfaces."
+    },
+    {
+      "id": "foundations",
+      "path": "/foundations/",
+      "label": "Foundations",
+      "group": "Foundations",
+      "description": "Shared design tokens, interaction standards and adaptive behavior."
+    },
+    {
+      "id": "tools",
+      "path": "/tools/",
+      "label": "Tools",
+      "group": "Foundations",
+      "description": "Explore palettes and configure themes using shared design tokens."
+    },
+    {
+      "id": "getting-started",
+      "path": "/getting-started/",
+      "label": "Getting started",
+      "group": "Guides",
+      "description": "Install the library and integrate components in React and Astro."
+    },
+    {
+      "id": "tokens",
+      "path": "/tokens/",
+      "label": "Design tokens",
+      "group": "Foundations",
+      "description": "Semantic color, typography, spacing, radius and motion reference."
+    },
+    {
+      "id": "standards",
+      "path": "/standards/",
+      "label": "UX standards",
+      "group": "Foundations",
+      "description": "Shared interaction, focus, motion, overlay and measurement rules."
+    },
+    {
+      "id": "color-system",
+      "path": "/color-system/",
+      "label": "Color system",
+      "group": "Tools",
+      "description": "Explore palettes, semantic color roles and contrast."
+    },
+    {
+      "id": "theme-builder",
+      "path": "/theme-builder/",
+      "label": "Theme Builder",
+      "group": "Tools",
+      "description": "Configure and preview the shared theme."
+    },
+    {
+      "id": "genux",
+      "path": "/ai-ui/",
+      "label": "GenUX",
+      "group": "Guides",
+      "description": "Validated intent, component registration and deterministic AI interface rendering."
+    },
+    {
+      "id": "adaptive",
+      "path": "/adaptive/",
+      "label": "Adaptive UI",
+      "group": "Foundations",
+      "description": "Capability-first layout and input adaptation with explicit verification limits."
+    },
+    {
+      "id": "project",
+      "path": "/project/",
+      "label": "Project",
+      "group": "Project",
+      "description": "Project decisions, documentation contracts and URL policy."
+    },
+    {
+      "id": "decisions",
+      "path": "/decisions/",
+      "label": "Decision log",
+      "group": "Project",
+      "description": "Approved design and engineering decisions."
+    },
+    {
+      "id": "documentation",
+      "path": "/documentation/",
+      "label": "Documentation standard",
+      "group": "Project",
+      "description": "Page types, source references and documentation admission rules."
+    },
+    {
+      "id": "url-policy",
+      "path": "/url-policy/",
+      "label": "URL policy",
+      "group": "Project",
+      "description": "Stable addresses, canonical ownership, discovery and migration rules."
+    },
+    {
+      "id": "licenses",
+      "path": "/licenses/",
+      "label": "Licenses",
+      "group": "Project",
+      "description": "Third-party license notices."
+    }
+  ],
+  "aliases": {
+    "/genux/": "/ai-ui/",
+    "/token-standards/": "/tokens/"
+  }
+}

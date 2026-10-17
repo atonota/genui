@@ -15,24 +15,31 @@ const FOUNDATION_GROUPS: NavGroup[] = [
     name: 'Start',
     links: [
       { label: 'Overview', path: '/' },
+      { label: 'Component catalog', path: '/components/' },
       { label: 'Getting started', path: '/getting-started/' },
+      { label: 'Guides', path: '/guides/' },
     ],
   },
   {
     name: 'Foundations',
     links: [
+      { label: 'Foundations', path: '/foundations/' },
       { label: 'Design tokens', path: '/tokens/' },
       { label: 'UX standards', path: '/standards/' },
+      { label: 'GenUX', path: '/ai-ui/' },
+      { label: 'Adaptive UI', path: '/adaptive/' },
+      { label: 'Tools', path: '/tools/' },
       { label: 'Color system', path: '/color-system/' },
       { label: 'Theme Builder', path: '/theme-builder/' },
-      { label: 'GenUX', path: '/genux/' },
     ],
   },
   {
     name: 'Project',
     links: [
+      { label: 'Project', path: '/project/' },
       { label: 'Decision log', path: '/decisions/' },
       { label: 'Documentation standard', path: '/documentation/' },
+      { label: 'URL policy', path: '/url-policy/' },
     ],
   },
 ];

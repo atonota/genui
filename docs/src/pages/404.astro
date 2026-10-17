@@ -1,0 +1,28 @@
+---
+import DocumentationNav from '../components/DocumentationNav.astro';
+import DocsLayout from '../layouts/DocsLayout.astro';
+---
+
+<DocsLayout
+  title="Page not found"
+  description="Find a GenUX component, guide or project reference."
+  noindex
+>
+  <h1>Page not found</h1>
+  <p>The requested address does not match a published document.</p>
+  <DocumentationNav items={[{ id: 'recovery', label: 'Find your next step' }]} />
+  <section id="recovery" data-doc-section="recovery" aria-labelledby="recovery-title">
+    <h2 id="recovery-title">Find your next step</h2>
+    <ul>
+      <li>
+        <a href="/components/">Browse components</a>
+      </li>
+      <li>
+        <a href="/guides/">Read the guides</a>
+      </li>
+      <li>
+        <a href="/">GenUX overview</a>
+      </li>
+    </ul>
+  </section>
+</DocsLayout>
