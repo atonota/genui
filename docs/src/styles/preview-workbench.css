@@ -595,3 +595,71 @@ dialog.example-preview {
     --preview-motion-duration: 0ms;
   }
 }
+
+/* Alone is the same mounted example in a native modal, without the device decoration. */
+.example-preview[data-preview-alone] {
+  --preview-alone-window-inline-size: 64rem;
+  --preview-alone-window-block-size: 80dvh;
+  --preview-alone-block-size: 100dvh;
+  --preview-alone-inset: var(--inset-container-sm, 16px);
+  --preview-alone-content-height: calc(
+    var(--preview-alone-block-size) - 2 * var(--preview-alone-inset) - var(--preview-control-size) -
+      var(--preview-gap)
+  );
+  background-color: var(--preview-screen-surface);
+  inline-size: 100%;
+  block-size: var(--preview-alone-block-size);
+  justify-items: stretch;
+  transition-property: inline-size, block-size, padding;
+  transition-duration: var(--preview-motion-duration);
+  transition-timing-function: var(--preview-motion-easing);
+  padding: var(--preview-alone-inset);
+  gap: var(--preview-gap);
+  grid-template-rows: var(--preview-control-size) minmax(0, 1fr);
+  overflow: hidden;
+}
+.example-preview[data-preview-alone='window'] {
+  --preview-alone-block-size: var(--preview-alone-window-block-size);
+  inline-size: min(
+    var(--preview-alone-window-inline-size),
+    calc(100% - 2 * var(--preview-alone-inset))
+  );
+  margin: auto;
+}
+.example-alone-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+}
+.example-preview[data-preview-alone] > .example-preview-toolbar,
+.example-preview[data-preview-alone] .example-preview-caption,
+.example-preview[data-preview-alone] .example-preview-base {
+  display: none;
+}
+.example-preview[data-preview-alone]
+  :is(
+    .example-preview-fit,
+    .example-preview-scaler,
+    .example-preview-device,
+    .example-preview-bezel
+  ) {
+  display: contents;
+}
+.example-preview[data-preview-alone] .example-preview-bezel::before,
+.example-preview[data-preview-alone] .example-preview-bezel::after,
+.example-preview[data-preview-alone] .example-preview-screen::before,
+.example-preview[data-preview-alone] .example-preview-screen::after {
+  display: none;
+}
+.example-preview[data-preview-alone] .example-preview-screen {
+  inline-size: 100%;
+  block-size: var(--preview-alone-content-height);
+  max-inline-size: 100%;
+  border-radius: 0;
+}
+@media (min-width: 40rem) {
+  .example-preview[data-preview-alone] {
+    --preview-alone-inset: var(--inset-container-md, 24px);
+  }
+}

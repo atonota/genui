@@ -179,7 +179,7 @@ export default function PreviewSource({ id, profile, settings, active }: Props) 
         </p>
         <p>
           {t(
-            'This code renders the selected profile on the page through an internal repository entry and requires the canonical documentation styles, so it works only inside this repository. Use Open alone for a standalone view and the Integration tab for the public product API.',
+            'This code renders the selected profile on the page through an internal repository entry and requires the canonical documentation styles, so it works only inside this repository. Use Alone for a fullscreen modal and the Integration tab for the public product API.',
           )}{' '}
           <a href="#code">{t('Go to Integration usage code')}</a>
         </p>

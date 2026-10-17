@@ -174,6 +174,30 @@ test('MacBook preview geometry holds from 320 Fit to 2160 Actual', async ({ page
     await expect(preview).toHaveAttribute('data-preview-profile', 'large');
   };
 
+  // Alone is an in-page modal; fullscreen/window/close keep this same input node and draft.
+  const alone = preview.getByRole('button', { name: 'Alone', exact: true });
+  const route = page.url();
+  await alone.click();
+  await expect(preview).toHaveAttribute('data-preview-alone', 'fullscreen');
+  expect(await preview.evaluate(el => el.matches(':modal'))).toBe(true);
+  await expect(preview.getByRole('button', { name: 'Close preview', exact: true })).toBeVisible();
+  await expectDraftKept();
+  await preview.getByRole('button', { name: 'Collapse fullscreen', exact: true }).click();
+  await expect(preview).toHaveAttribute('data-preview-alone', 'window');
+  expect(await preview.evaluate(el => el.matches(':modal'))).toBe(true);
+  await preview.getByRole('button', { name: 'Fullscreen', exact: true }).click();
+  await expect(preview).toHaveAttribute('data-preview-alone', 'fullscreen');
+  await preview.getByRole('button', { name: 'Close preview', exact: true }).click();
+  await expect(preview).not.toHaveAttribute('data-preview-alone');
+  await expect(alone).toBeFocused();
+  await alone.click();
+  await page.keyboard.press('Escape');
+  await expect(preview).not.toHaveAttribute('data-preview-alone');
+  await expect(alone).toBeFocused();
+  await expectDraftKept();
+  expect(page.url()).toBe(route);
+  expect(page.context().pages()).toHaveLength(1);
+
   // The logical screen is read as layout lengths (offsetWidth), so the stage scale never changes
   // it; the drawn container margin is converted back by the screen's own drawn scale.
   const viewport = preview.locator('[data-preview-viewport]');

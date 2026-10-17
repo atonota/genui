@@ -12,6 +12,7 @@ import {
 } from 'react';
 import { Switch } from 'antd';
 import GenUXButton from './GenUXButton';
+import GenUXIconButton from './GenUXIconButton';
 import GenUXSegmented from './GenUXSegmented';
 import GenUXIcon from './GenUXIcon';
 import { TweakerDockButton } from './GenUXTweaker';
@@ -144,6 +145,9 @@ export default function PreviewWorkbench({ id, title, children }: PreviewWorkben
   const [zoom, setZoom] = useState<DeviceFrameZoom>('fit');
   const [scale, setScale] = useState(100);
   const [expanded, setExpanded] = useState(false);
+  const [alone, setAlone] = useState<'fullscreen' | 'window' | null>(null);
+  const returnAlone = useRef(false);
+  const aloneOpen = alone !== null;
   const stageRef = useRef<HTMLDivElement>(null);
   const codePanelRef = useRef<HTMLDivElement>(null);
   // Close events queued by our own mode switches are not user closes.
@@ -257,6 +261,10 @@ export default function PreviewWorkbench({ id, title, children }: PreviewWorkben
     else dialog.show();
     // Leaving Expand may remove its button (wide MacBook), so that return follows the render.
     returnFocus.current = !modal && expanded;
+    if (!modal && alone) {
+      returnAlone.current = true;
+      setAlone(null);
+    }
     setExpanded(modal);
     if (!modal && !expanded) focusReturnTarget(dialog);
   };
@@ -290,12 +298,19 @@ export default function PreviewWorkbench({ id, title, children }: PreviewWorkben
       frame = requestAnimationFrame(() => {
         if (ownCloses.current > 0 && frames > 0) settle(frames - 1);
         else if (settings) openFrameSettings();
-        else focusReturnTarget(dialogRef.current);
+        else if (returnAlone.current) {
+          returnAlone.current = false;
+          focusInOwnWindow(dialogRef.current?.querySelector('[data-preview-alone-open]'));
+        } else focusReturnTarget(dialogRef.current);
       });
     };
     settle(3);
     return () => cancelAnimationFrame(frame);
   }, [expanded, openFrameSettings]);
+
+  useIsomorphicLayoutEffect(() => {
+    if (alone) focusInOwnWindow(dialogRef.current?.querySelector('[data-preview-alone-close]'));
+  }, [aloneOpen]);
 
   const caption = (
     <p className="example-preview-caption">
@@ -309,7 +324,7 @@ export default function PreviewWorkbench({ id, title, children }: PreviewWorkben
     <dialog
       ref={dialogRef}
       open
-      className="example-preview"
+      className={alone ? 'example-preview example-preview-screen' : 'example-preview'}
       role={expanded ? undefined : 'group'}
       aria-modal={expanded || undefined}
       aria-labelledby={titleId}
@@ -320,6 +335,9 @@ export default function PreviewWorkbench({ id, title, children }: PreviewWorkben
       data-preview-device={frame.device}
       data-preview-orientation={screen.orientation}
       data-preview-expanded={String(expanded)}
+      data-preview-alone={alone ?? undefined}
+      data-theme={alone ? frame.theme : undefined}
+      style={alone ? screenStyle : undefined}
       data-preview-macbook-wide={String(wide)}
       onPointerDown={() => frame.focus()}
       onFocusCapture={() => frame.focus()}
@@ -337,7 +355,26 @@ export default function PreviewWorkbench({ id, title, children }: PreviewWorkben
           <TweakerDockButton onClick={openTweaker} />
         </div>
       )}
-      <div className="example-preview-toolbar">
+      {alone && (
+        <div className="example-alone-header">
+          <GenUXIconButton
+            icon={alone === 'fullscreen' ? 'minus' : 'arrows-out-simple'}
+            size="sm"
+            aria-label={t(alone === 'fullscreen' ? 'Collapse fullscreen' : 'Fullscreen')}
+            title={t(alone === 'fullscreen' ? 'Collapse fullscreen' : 'Fullscreen')}
+            onClick={() => setAlone(alone === 'fullscreen' ? 'window' : 'fullscreen')}
+          />
+          <GenUXIconButton
+            icon="x"
+            size="sm"
+            data-preview-alone-close=""
+            aria-label={t('Close preview')}
+            title={t('Close preview')}
+            onClick={() => present(false)}
+          />
+        </div>
+      )}
+      <div className="example-preview-toolbar" hidden={alone !== null} inert={alone !== null}>
         <p className="example-preview-title" id={titleId}>
           {t(title)}
         </p>
@@ -431,9 +468,17 @@ export default function PreviewWorkbench({ id, title, children }: PreviewWorkben
                 onClick={() => present(!expanded)}
               />
             )}
-            <a href={frame.standaloneSrc} target="_blank" rel="noopener">
-              {t('Open alone')}
-            </a>
+            <GenUXButton
+              fill="link"
+              size="sm"
+              text={t('Alone')}
+              data-preview-alone-open=""
+              onClick={() => {
+                setView('preview');
+                setAlone('fullscreen');
+                present(true);
+              }}
+            />
           </div>
         )}
       </div>
@@ -464,6 +509,7 @@ export default function PreviewWorkbench({ id, title, children }: PreviewWorkben
                 theme={frame.theme}
                 orientation={screen.orientation}
                 grid={frame.grid}
+                fluid={alone !== null}
               >
                 {children}
               </InlinePreview>

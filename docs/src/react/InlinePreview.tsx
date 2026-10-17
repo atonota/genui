@@ -19,6 +19,8 @@ export type InlinePreviewProps = {
   theme: ThemeMode;
   orientation?: PreviewOrientation;
   grid: boolean;
+  /** Alone uses the available modal surface while keeping the same mounted demo. */
+  fluid?: boolean;
   /** The actual demo; rendered on this page, never fetched, embedded or cloned. */
   children: ReactNode;
 };
@@ -43,6 +45,7 @@ export default function InlinePreview({
   theme,
   orientation,
   grid,
+  fluid = false,
   children,
 }: InlinePreviewProps) {
   const parent = usePreviewContext();
@@ -84,10 +87,16 @@ export default function InlinePreview({
     };
   }, [options.surface]);
   const documentStyle = {
-    '--preview-document-width': `${screen.widthPx}px`,
-    '--preview-document-height': `${screen.heightPx}px`,
-    '--preview-document-container-width': `${screen.containerWidthPx}px`,
-    '--preview-document-container-margin': `${(screen.widthPx - screen.containerWidthPx) / 2}px`,
+    '--preview-document-width': fluid ? '100%' : `${screen.widthPx}px`,
+    '--preview-document-height': fluid
+      ? 'var(--preview-alone-content-height)'
+      : `${screen.heightPx}px`,
+    '--preview-document-container-width': fluid
+      ? `min(100%, ${screen.containerWidthPx}px)`
+      : `${screen.containerWidthPx}px`,
+    '--preview-document-container-margin': fluid
+      ? 'auto'
+      : `${(screen.widthPx - screen.containerWidthPx) / 2}px`,
     // The per-profile gutter stays in preview-document.css.
     '--preview-document-gutter': 'var(--preview-grid-gutter)',
   } as CSSProperties;
@@ -110,7 +119,7 @@ export default function InlinePreview({
       >
         <AdaptiveProvider
           options={options}
-          viewport={{ width: screen.widthPx, height: screen.heightPx }}
+          viewport={fluid ? undefined : { width: screen.widthPx, height: screen.heightPx }}
         >
           <GenUXProvider appearance="docs">
             <div data-preview-viewport="">

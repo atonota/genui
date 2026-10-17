@@ -36,7 +36,7 @@
   "Preview usage": "Önizleme kullanımı",
   "Copy usage code": "Kullanım kodunu kopyala",
   "Usage code copied": "Kullanım kodu kopyalandı",
-  "This code renders the selected profile on the page through an internal repository entry and requires the canonical documentation styles, so it works only inside this repository. Use Open alone for a standalone view and the Integration tab for the public product API.": "Bu kod seçili profili dahili bir depo giriş noktası üzerinden sayfada oluşturur ve kanonik belge stillerini gerektirir; bu nedenle yalnızca bu depo içinde çalışır. Tek başına görünüm için Tek başına aç bağlantısını, herkese açık ürün API'si için Entegrasyon sekmesini kullanın.",
+  "This code renders the selected profile on the page through an internal repository entry and requires the canonical documentation styles, so it works only inside this repository. Use Alone for a fullscreen modal and the Integration tab for the public product API.": "Bu kod seçili profili dahili bir depo giriş noktası üzerinden sayfada oluşturur ve kanonik belge stillerini gerektirir; bu nedenle yalnızca bu depo içinde çalışır. Tam ekran modal için Alone düğmesini, herkese açık ürün API'si için Entegrasyon sekmesini kullanın.",
   "Go to Integration usage code": "Entegrasyon kullanım koduna git",
   "Install prerequisites": "Ön koşulları kurun",
   "Install the pinned Ant Design and React versions GenUX is built on, then use the adapters and styles listed under Source and resources.": "GenUX'nin üzerine kurulduğu sabitlenmiş Ant Design ve React sürümlerini kurun, ardından Kaynak kod ve kaynaklar bölümünde listelenen adaptörleri ve stilleri kullanın.",
@@ -119,5 +119,9 @@
   "Components built on real Ant Design.": "Gerçek Ant Design üzerine kurulu bileşenler.",
   "GenUX · Technical component documentation": "GenUX · Teknik bileşen belgeleri",
   "Preview theme applied only to this example.": "Önizleme teması yalnızca bu örneğe uygulandı.",
-  "Changes here affect only this example. The global Theme Builder is separate.": "Buradaki değişiklikler yalnızca bu örneği etkiler. Genel Tema Oluşturucu ayrıdır."
+  "Changes here affect only this example. The global Theme Builder is separate.": "Buradaki değişiklikler yalnızca bu örneği etkiler. Genel Tema Oluşturucu ayrıdır.",
+  "Alone": "Alone",
+  "Collapse fullscreen": "Tam ekranı küçült",
+  "Fullscreen": "Tam ekran",
+  "Close preview": "Önizlemeyi kapat"
 }

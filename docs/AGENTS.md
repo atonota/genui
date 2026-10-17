@@ -1,5 +1,14 @@
 # Astro documentation maintenance contract
 
+## Alone modal — human decision 2026-10-17
+
+- The preview action reads exactly `Alone` and opens the same mounted component
+  in a native fullscreen modal on this page; it opens no tab, route or iframe.
+- Top-right controls toggle fullscreen/windowed modal and close the modal;
+  Escape closes it and returns focus to `Alone`. Drafts survive each transition.
+- Only Alone hides the device decoration. Inline/Expand geometry, Grid, Tweaker
+  and locked white/dark screen surfaces remain unchanged.
+
 ## Right-edge Tweaker — human decision 2026-10-17
 
 - The documentation Tweaker opens from a viewport-fixed right-edge tab centered
