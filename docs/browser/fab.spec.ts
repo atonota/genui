@@ -33,14 +33,21 @@ const SHAPE_COUNT = 6;
 const APPEARANCE_COUNT = 10;
 const MIN_TEXT = 14;
 const MIN_TARGET = 48;
-// CI run 39010639428 traced one case spending its whole 60 s on cumulative native input (Enter 10.5 s, Reject 5.0 s,
-// Online 6.6 + 3.9 s) with no failed predicate. Each case gets 90 s; the 300 s global budget, zero retries and the
-// expect and action timeouts stay unchanged.
-const FAB_CASE_TIMEOUT = 90_000;
+// CI run 39015675304 traced the three long Chromium journeys passing every functional check until the cumulative 90 s
+// cap near their end, with no failed predicate. Each case gets 120 s of aggregate allowance; zero retries and the
+// action, expect and navigation timeouts stay unchanged.
+const FAB_CASE_TIMEOUT = 120_000;
 
 const fabCase = (page: Page, name: string) => page.locator(`[data-fab-case=${name}]`);
 // The .genux-fab-trigger wrapper is a DIV; the native control is the button inside it.
 const triggerOf = (scope: Locator) => scope.locator('.genux-fab .genux-fab-trigger button').first();
+// The server-rendered page is inert until React hydrates the demo; InlinePreview's own effect marks its preview
+// document hydrated, so no action or input lands on server markup that hydration would reset.
+const expectHydrated = (page: Page) =>
+  expect(fabCase(page, 'foundations').locator('[data-preview-document]').first()).toHaveAttribute(
+    'data-preview-hydrated',
+    'true',
+  );
 
 /** Collects uncaught application errors; failed network requests are not page errors. */
 function capturePageErrors(page: Page): string[] {
@@ -357,6 +364,7 @@ test('FAB documentation and defaults are available', async ({ page }, testInfo) 
   const response = await page.goto(FAB_ROUTE);
   expect(response, 'FAB route must respond').not.toBeNull();
   expect(response?.status()).toBe(200);
+  await expectHydrated(page);
 
   await expect(page.getByRole('heading', { name: 'FAB', exact: true }).first()).toBeVisible();
 
@@ -963,6 +971,7 @@ test('FAB actions preserve confirmation, async errors and keyboard state', async
   test.setTimeout(FAB_CASE_TIMEOUT);
   const errors = capturePageErrors(page);
   await page.goto(FAB_ROUTE);
+  await expectHydrated(page);
 
   const actionsCase = fabCase(page, 'actions');
   const fab = actionsCase.locator('.genux-fab').first();
@@ -1392,6 +1401,7 @@ test('FAB previews adapt without losing drafts or page theme', async ({ page }, 
   // Mobile first: the 320 CSS px host is accepted before wider hosts.
   await page.setViewportSize({ width: 320, height: 800 });
   await page.goto(FAB_ROUTE);
+  await expectHydrated(page);
   await expectBoundedOverflow(page);
 
   await expect(page.locator('[data-fab-case]')).toHaveCount(FAB_CASES.length);
@@ -1428,6 +1438,10 @@ test('FAB previews adapt without losing drafts or page theme', async ({ page }, 
   // The draft lives outside the preview and must survive every preview-local switch.
   const kept = 'Draft kept across preview switches';
   await draft.fill(kept);
+  // React committed the typed draft before any switch: the controlled value holds and Add action is enabled, since six
+  // actions stay below the 64 action limit. A fill hydration later reset leaves the field blank and Add action disabled.
+  await expect(draft).toHaveValue(kept);
+  await expect(addAction).toBeEnabled();
 
   await expect.poll(() => minFontSize(adaptive)).toBeGreaterThanOrEqual(MIN_TEXT);
   await expect.poll(() => targetSize(trigger)).toBeGreaterThanOrEqual(MIN_TARGET);

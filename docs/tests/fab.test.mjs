@@ -601,9 +601,13 @@ test('options expose every approved axis, keep Cubic/5px defaults and reject inv
   const ciTmp = await mkdtemp(join(tmpdir(), 'genux-fab-ci-'));
   try {
     const fabConfig = await loadFabConfig(ciTmp);
-    assert.equal(fabConfig.workers, 2, 'the FAB browser run uses two workers');
-    assert.equal(fabConfig.timeout, 60_000, 'each browser case has a 60 s budget');
-    assert.equal(fabConfig.globalTimeout, 300_000, 'the whole browser run has a 300 s budget');
+    assert.equal(fabConfig.workers, 2, 'the FAB browser engines run on two workers');
+    assert.equal(fabConfig.timeout, 60_000, 'the browser config default remains 60 s');
+    assert.equal(
+      fabConfig.globalTimeout,
+      420_000,
+      'the whole browser run has a finite 420 s global budget',
+    );
     assert.equal(fabConfig.retries, 0, 'a failure is never retried into a pass');
     const projects = fabConfig.projects ?? [];
     assert.deepEqual(

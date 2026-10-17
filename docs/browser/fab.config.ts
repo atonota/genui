@@ -26,10 +26,11 @@ export default defineConfig({
   fullyParallel: false,
   forbidOnly: Boolean(process.env.CI),
   retries: 0,
-  // Engines run side by side; fullyParallel false keeps each engine's cases serial.
+  // Two workers, as originally configured; fullyParallel false keeps each engine's cases serial.
   workers: 2,
   timeout: 60_000,
-  globalTimeout: 300_000,
+  // Finite operational run cap; queued engines also consume it. Exact CI must prove all nine cases fit.
+  globalTimeout: 420_000,
   expect: { timeout: 5_000 },
   reporter: [
     ['list'],
