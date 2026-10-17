@@ -87,18 +87,41 @@ function declarationsOf(cssText: string, doc: Document): Map<string, string> {
   );
 }
 
-/** Whether a scaler style record changed nothing but its host fit proportions since its old value. */
-function scalerFitOnly(record: MutationRecord): boolean {
+// Paint-only variables the docs overlay backdrop writes inline on <html> while a popup is open; they only clip and
+// stack the body scrim pseudo element and change every frame a popup moves.
+const OVERLAY_PAINT: ReadonlySet<string> = new Set([
+  '--genux-overlay-clip',
+  '--genux-overlay-active-z',
+]);
+
+/** Whether a style record changed something, and nothing outside the given declarations, since its old value. */
+function styleChangedOnly(record: MutationRecord, names: ReadonlySet<string>): boolean {
   const { target } = record;
   if (record.attributeName !== 'style' || !(target instanceof HTMLElement)) return false;
-  if (!target.matches(SCALER_SELECTOR)) return false;
   const doc = target.ownerDocument;
   const before = declarationsOf(record.oldValue ?? '', doc);
   const after = declarationsOf(target.getAttribute('style') ?? '', doc);
   const changed = [...new Set([...before.keys(), ...after.keys()])].filter(
     name => before.get(name) !== after.get(name),
   );
-  return changed.length > 0 && changed.every(name => SCALER_FIT.has(name));
+  return changed.length > 0 && changed.every(name => names.has(name));
+}
+
+/** Whether a scaler style record changed nothing but its host fit proportions since its old value. */
+function scalerFitOnly(record: MutationRecord): boolean {
+  return (
+    record.target instanceof HTMLElement &&
+    record.target.matches(SCALER_SELECTOR) &&
+    styleChangedOnly(record, SCALER_FIT)
+  );
+}
+
+/** Whether a document root style record changed nothing but the overlay scrim paint variables. */
+function overlayPaintOnly(record: MutationRecord): boolean {
+  return (
+    record.target === record.target.ownerDocument?.documentElement &&
+    styleChangedOnly(record, OVERLAY_PAINT)
+  );
 }
 
 type Size = Readonly<{ width: number; height: number }>;
@@ -1545,7 +1568,10 @@ export function useFabPosition(
     const directions =
       typeof MutationObserver === 'undefined'
         ? null
-        : new MutationObserver(records => {
+        : new MutationObserver(all => {
+            // The overlay scrim's own clip and z writes on <html> never restyle layout or typography.
+            const records = all.filter(record => !overlayPaintOnly(record));
+            if (records.length === 0) return;
             // Ancestor dir, class or style changes can restyle inherited typography and wrapping while every box and
             // the direction stay put, so they always remeasure in full, except a preview scaler whose style changed
             // only in its host fit proportions. Only root and those scaler records reach the checks below, which

@@ -420,11 +420,18 @@ export default function PreviewWorkbench({ id, title, children }: PreviewWorkben
                 fill="outline"
                 size="sm"
                 data-preview-expand=""
+                icon={expanded ? 'x' : 'arrows-out-simple'}
                 text={expanded ? t('Close expanded preview') : t('Expand')}
                 onClick={() => present(!expanded)}
               />
             )}
-            <GenUXButton fill="outline" size="sm" text={t('Open tweaker')} onClick={openTweaker} />
+            <GenUXButton
+              fill="outline"
+              size="sm"
+              text={t('Tweaker')}
+              aria-label={t('Open tweaker')}
+              onClick={openTweaker}
+            />
             <a href={frame.standaloneSrc} target="_blank" rel="noopener">
               {t('Open alone')}
             </a>
