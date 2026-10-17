@@ -33,6 +33,10 @@ const SHAPE_COUNT = 6;
 const APPEARANCE_COUNT = 10;
 const MIN_TEXT = 14;
 const MIN_TARGET = 48;
+// CI run 39010639428 traced one case spending its whole 60 s on cumulative native input (Enter 10.5 s, Reject 5.0 s,
+// Online 6.6 + 3.9 s) with no failed predicate. Each case gets 90 s; the 300 s global budget, zero retries and the
+// expect and action timeouts stay unchanged.
+const FAB_CASE_TIMEOUT = 90_000;
 
 const fabCase = (page: Page, name: string) => page.locator(`[data-fab-case=${name}]`);
 // The .genux-fab-trigger wrapper is a DIV; the native control is the button inside it.
@@ -158,13 +162,96 @@ async function selectOptionLabels(page: Page, combobox: Locator): Promise<string
   });
 }
 
+/**
+ * Clicks an option with the real pointer inside the popup this combobox names through aria-controls or aria-owns,
+ * never another Select's outgoing popup. The click waits until the option and its popup hold the same box across
+ * consecutive animation frames, and the combobox must then report the committed close.
+ */
 async function chooseOption(page: Page, combobox: Locator, label: string) {
   if ((await combobox.getAttribute('aria-expanded')) !== 'true') await combobox.click();
-  await openDropdown(page)
+  await expect(combobox).toHaveAttribute('aria-expanded', 'true');
+  const list =
+    (await combobox.getAttribute('aria-controls')) ?? (await combobox.getAttribute('aria-owns'));
+  expect(list, `the combobox choosing ${label} names its own popup list`).toBeTruthy();
+  const dropdown = page
+    .locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)')
+    .filter({ has: page.locator(`[id=${JSON.stringify(list ?? '')}]`) });
+  await expect(dropdown, 'exactly one open popup owns this combobox list').toHaveCount(1);
+  await expect(dropdown).toBeVisible();
+  const option = dropdown
     .locator('.ant-select-item-option')
     .filter({ hasText: new RegExp(`^${label}$`) })
-    .first()
-    .click();
+    .first();
+  await expect(option).toBeVisible();
+  // One evaluation compares two consecutive frames, so a popup that keeps moving keeps failing the poll.
+  await expect
+    .poll(() =>
+      option.evaluate(
+        element =>
+          new Promise<boolean>(resolve => {
+            const popup = element.closest('.ant-select-dropdown') ?? element;
+            const read = () =>
+              [element, popup]
+                .map(node => {
+                  const box = node.getBoundingClientRect();
+                  return [box.left, box.top, box.width, box.height].join(' ');
+                })
+                .join('|');
+            requestAnimationFrame(() => {
+              const first = read();
+              requestAnimationFrame(() => resolve(read() === first));
+            });
+          }),
+      ),
+    )
+    .toBe(true);
+  await option.click();
+  await expect(combobox).not.toHaveAttribute('aria-expanded', 'true');
+}
+
+/**
+ * Evidence photo, never a pixel assertion: once the target and its own preview screen keep the same box across two
+ * consecutive animation frames, only the part of the target inside the viewport is captured, so a tall preview group
+ * never waits on the locator screenshot's auto-scroll stability check.
+ */
+async function captureVisible(page: Page, target: Locator, path: string) {
+  await target.evaluate(element =>
+    element.scrollIntoView({ block: 'start', inline: 'nearest', behavior: 'instant' }),
+  );
+  await expect
+    .poll(() =>
+      target.evaluate(
+        element =>
+          new Promise<boolean>(resolve => {
+            const screen = element.querySelector('[data-preview-document]') ?? element;
+            const read = () =>
+              [element, screen]
+                .map(node => {
+                  const box = node.getBoundingClientRect();
+                  return [box.left, box.top, box.width, box.height].join(' ');
+                })
+                .join('|');
+            requestAnimationFrame(() => {
+              const first = read();
+              requestAnimationFrame(() => resolve(read() === first));
+            });
+          }),
+      ),
+    )
+    .toBe(true);
+  const box = await target.boundingBox();
+  const viewport = page.viewportSize();
+  expect(box, 'the evidence target has a box').not.toBeNull();
+  expect(viewport, 'the page has a viewport').not.toBeNull();
+  const left = Math.max(box?.x ?? 0, 0);
+  const top = Math.max(box?.y ?? 0, 0);
+  const right = Math.min((box?.x ?? 0) + (box?.width ?? 0), viewport?.width ?? 0);
+  const bottom = Math.min((box?.y ?? 0) + (box?.height ?? 0), viewport?.height ?? 0);
+  expect(right > left && bottom > top, 'the evidence target is inside the viewport').toBe(true);
+  await page.screenshot({
+    path,
+    clip: { x: left, y: top, width: right - left, height: bottom - top },
+  });
 }
 
 const circular = (control: Locator) =>
@@ -265,6 +352,7 @@ const focusMarker = (control: Locator) =>
   });
 
 test('FAB documentation and defaults are available', async ({ page }, testInfo) => {
+  test.setTimeout(FAB_CASE_TIMEOUT);
   const errors = capturePageErrors(page);
   const response = await page.goto(FAB_ROUTE);
   expect(response, 'FAB route must respond').not.toBeNull();
@@ -406,6 +494,62 @@ test('FAB documentation and defaults are available', async ({ page }, testInfo) 
       };
     }, firstActionHandle);
 
+  // The closing phase lasts one motion duration, often less than the cross-process checks after Escape take. A page-side
+  // recorder installed before the real Escape samples the same item on every phase mutation and animation frame and
+  // keeps the first closing state, so the assertion below judges the real closing frame instead of racing it.
+  const closingProbe = '__genuxFabClosingProbe';
+  await fab.evaluate(
+    (root, { node, key }) => {
+      const item = node as Element | null;
+      const read = () => {
+        const panel = root.querySelector('.genux-fab-actions');
+        const style = panel ? getComputedStyle(panel) : null;
+        return {
+          phase: root.getAttribute('data-fab-phase'),
+          connected: item !== null && item.isConnected && panel !== null && panel.contains(item),
+          visibility: style?.visibility ?? null,
+          pointerEvents: style?.pointerEvents ?? null,
+          itemPointerEvents: item ? getComputedStyle(item).pointerEvents : null,
+        };
+      };
+      const probe = {
+        phases: [] as (string | null)[],
+        closing: null as ReturnType<typeof read> | null,
+      };
+      let stopped = false;
+      let frame = 0;
+      let observer: MutationObserver | null = null;
+      const sample = () => {
+        if (stopped) return;
+        const state = read();
+        if (probe.phases[probe.phases.length - 1] !== state.phase) probe.phases.push(state.phase);
+        if (state.phase === 'closing' && probe.closing === null) probe.closing = state;
+        // A missed closing phase stops at closed with no closing sample, so the assertion below fails.
+        if (state.phase === 'closing' || state.phase === 'closed') {
+          stopped = true;
+          observer?.disconnect();
+          cancelAnimationFrame(frame);
+        }
+      };
+      observer = new MutationObserver(sample);
+      observer.observe(root, { attributes: true, attributeFilter: ['data-fab-phase'] });
+      const tick = () => {
+        sample();
+        if (!stopped) frame = requestAnimationFrame(tick);
+      };
+      (window as unknown as Record<string, unknown>)[key] = probe;
+      tick();
+    },
+    { node: firstActionHandle, key: closingProbe },
+  );
+  const closingFrame = () =>
+    page.evaluate(key => {
+      const probe = (
+        window as unknown as Record<string, { closing: unknown; phases: unknown[] } | undefined>
+      )[key];
+      return probe?.closing ?? { missed: probe?.phases ?? null };
+    }, closingProbe);
+
   await page.keyboard.press('Escape');
   await expect(trigger).toHaveAttribute('aria-expanded', 'false');
   await expect(trigger).toBeFocused();
@@ -413,13 +557,16 @@ test('FAB documentation and defaults are available', async ({ page }, testInfo) 
   await expect(actions).toHaveAttribute('inert', '');
   await expect(actions).toHaveAttribute('aria-hidden', 'true');
   // Closing phase: the same item stays mounted and visible but takes no pointer input.
-  await expect.poll(closure).toEqual({
+  await expect.poll(closingFrame).toEqual({
     phase: 'closing',
     connected: true,
     visibility: 'visible',
     pointerEvents: 'none',
     itemPointerEvents: 'none',
   });
+  await page.evaluate(key => {
+    delete (window as unknown as Record<string, unknown>)[key];
+  }, closingProbe);
   // Closed phase: the same item is still retained, now hidden.
   await expect
     .poll(async () => {
@@ -813,7 +960,7 @@ test('FAB documentation and defaults are available', async ({ page }, testInfo) 
 });
 
 test('FAB actions preserve confirmation, async errors and keyboard state', async ({ page }) => {
-  test.setTimeout(60_000);
+  test.setTimeout(FAB_CASE_TIMEOUT);
   const errors = capturePageErrors(page);
   await page.goto(FAB_ROUTE);
 
@@ -1240,7 +1387,7 @@ test('FAB actions preserve confirmation, async errors and keyboard state', async
 });
 
 test('FAB previews adapt without losing drafts or page theme', async ({ page }, testInfo) => {
-  test.setTimeout(60_000);
+  test.setTimeout(FAB_CASE_TIMEOUT);
   const errors = capturePageErrors(page);
   // Mobile first: the 320 CSS px host is accepted before wider hosts.
   await page.setViewportSize({ width: 320, height: 800 });
@@ -1543,7 +1690,7 @@ test('FAB previews adapt without losing drafts or page theme', async ({ page }, 
   await expect(adaptive.locator('[data-preview-expand]')).toHaveCount(0);
   await expect(draft).toHaveValue(kept);
   await expectSameMount();
-  await adaptive.screenshot({ path: testInfo.outputPath('fab-macbook-1920.png') });
+  await captureVisible(page, adaptive, testInfo.outputPath('fab-macbook-1920.png'));
 
   // Default web input: ArrowDown on the closed trigger opens neither the menu nor a focus mode.
   await expect(page.locator('html')).toHaveAttribute('data-input-modality', 'pointer');
@@ -1702,6 +1849,6 @@ test('FAB previews adapt without losing drafts or page theme', async ({ page }, 
   await expectMatchingGlyphInk();
   await expectSameAppearanceMount();
 
-  await adaptive.screenshot({ path: testInfo.outputPath('fab-adaptive-1920.png') });
+  await captureVisible(page, adaptive, testInfo.outputPath('fab-adaptive-1920.png'));
   expect(errors).toEqual([]);
 });
