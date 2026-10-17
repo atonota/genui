@@ -42,38 +42,45 @@
   inline-size: 100%;
   min-inline-size: 0;
 }
-/* The title leads and the view tabs close the first row; device, theme and other settings
-   form an aligned second row after the break item. Every group wraps as a whole. */
+/* One centered control group above the device at every width. Individual controls keep
+   their hit areas and wrap around the same center when the available width is narrow. */
 .example-preview-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  gap: var(--preview-gap-tight);
+  min-inline-size: 0;
+}
+.example-preview-toolbar > .example-preview-title {
+  justify-self: start;
+  min-inline-size: 0;
+}
+.example-preview-control-group {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0 var(--preview-gap);
+  justify-content: center;
+  gap: var(--preview-gap-tight);
+  inline-size: fit-content;
+  max-inline-size: 100%;
   min-inline-size: 0;
 }
-.example-preview-toolbar::after {
-  content: '';
-  flex-basis: 100%;
-  order: 2;
+.example-preview-settings {
+  display: contents;
 }
-.example-preview-toolbar > .example-preview-title {
-  flex: 1 1 auto;
-  min-inline-size: 0;
+.example-preview-control-group > *,
+.example-preview-settings > * {
+  flex: none;
+  max-inline-size: 100%;
 }
-:is(.example-preview-view-tabs, .example-preview-controls > :last-child) {
+/* Preserve the older wrapper contract for consumers outside this workbench. */
+.example-preview-controls > :last-child {
   order: 1;
   margin-inline-start: auto;
 }
-:is(.example-preview-settings, .example-preview-controls > :not(:last-child)) {
+.example-preview-controls > :not(:last-child) {
   order: 3;
   margin-block-start: var(--preview-gap-tight);
-}
-.example-preview-settings {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--preview-gap-tight);
-  min-inline-size: 0;
 }
 /* Grid: the visible label and the compact GenUX switch align as one group; the switch keeps
    its own palette, radius and size. */

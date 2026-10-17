@@ -1,5 +1,12 @@
 # Astro documentation maintenance contract
 
+## Unified preview controls — human decision 2026-10-17
+
+- Device, theme, Grid, Rotate, Expand, Alone and Preview/Code form one centered
+  control group above the mockup. Wide screens never separate Preview/Code.
+- Controls share one row whenever they fit; narrower widths wrap whole controls
+  around the same center. Preserve target sizes, keyboard order and existing states.
+
 ## Alone modal — human decision 2026-10-17
 
 - The preview action reads exactly `Alone` and opens the same mounted component

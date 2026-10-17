@@ -378,109 +378,111 @@ export default function PreviewWorkbench({ id, title, children }: PreviewWorkben
         <p className="example-preview-title" id={titleId}>
           {t(title)}
         </p>
-        {/* One Tab stop per radiogroup: the checked native radio; the root leaves the order. */}
-        <GenUXSegmented<ExampleView>
-          className="example-preview-view-tabs"
-          aria-label={t('Example view')}
-          tabIndex={-1}
-          size="sm"
-          style={controlStyle}
-          value={view}
-          onChange={setView}
-          options={[
-            { value: 'preview', label: t('Preview') },
-            { value: 'code', label: t('Code') },
-          ]}
-        />
-        {view === 'preview' && (
-          <div className="example-preview-settings">
-            <GenUXSegmented<PreviewDevice>
-              aria-label={t('Device preview')}
-              tabIndex={-1}
-              size="sm"
-              style={controlStyle}
-              value={frame.device}
-              onChange={frame.setDevice}
-              options={previewDevices.map(item => ({
-                value: item.value,
-                label: (
-                  <IconOption
-                    icon={<DeviceGlyph device={item.value} />}
-                    label={t(deviceLabels[item.value])}
-                  />
-                ),
-              }))}
-            />
-            <GenUXSegmented<ThemeMode>
-              aria-label={t('Preview theme')}
-              tabIndex={-1}
-              size="sm"
-              style={controlStyle}
-              value={frame.theme}
-              onChange={frame.setTheme}
-              options={[
-                {
-                  value: 'light',
-                  label: <IconOption icon={<GenUXIcon name="sun" />} label={t('Light')} />,
-                },
-                {
-                  value: 'dark',
-                  label: <IconOption icon={<GenUXIcon name="moon" />} label={t('Dark')} />,
-                },
-              ]}
-            />
-            {layout.manualActual && (
+        <div className="example-preview-control-group">
+          {view === 'preview' && (
+            <div className="example-preview-settings">
+              <GenUXSegmented<PreviewDevice>
+                aria-label={t('Device preview')}
+                tabIndex={-1}
+                size="sm"
+                style={controlStyle}
+                value={frame.device}
+                onChange={frame.setDevice}
+                options={previewDevices.map(item => ({
+                  value: item.value,
+                  label: (
+                    <IconOption
+                      icon={<DeviceGlyph device={item.value} />}
+                      label={t(deviceLabels[item.value])}
+                    />
+                  ),
+                }))}
+              />
+              <GenUXSegmented<ThemeMode>
+                aria-label={t('Preview theme')}
+                tabIndex={-1}
+                size="sm"
+                style={controlStyle}
+                value={frame.theme}
+                onChange={frame.setTheme}
+                options={[
+                  {
+                    value: 'light',
+                    label: <IconOption icon={<GenUXIcon name="sun" />} label={t('Light')} />,
+                  },
+                  {
+                    value: 'dark',
+                    label: <IconOption icon={<GenUXIcon name="moon" />} label={t('Dark')} />,
+                  },
+                ]}
+              />
+              {layout.manualActual && (
+                <GenUXButton
+                  fill="outline"
+                  size="sm"
+                  text={t('Actual size 1:1')}
+                  aria-pressed={zoom === 'actual'}
+                  onClick={() => setZoom(zoom === 'fit' ? 'actual' : 'fit')}
+                />
+              )}
+              {/* The compact GenUX switch is the focusable Grid control; its label toggles it too. */}
+              <span className="example-preview-grid-switch">
+                <label htmlFor={gridSwitchId}>{t('Grid')}</label>
+                <Switch
+                  id={gridSwitchId}
+                  size="small"
+                  data-selection-size="sm"
+                  data-preview-grid-control=""
+                  checked={frame.grid}
+                  onChange={checked => frame.setGrid(checked)}
+                />
+              </span>
               <GenUXButton
                 fill="outline"
                 size="sm"
-                text={t('Actual size 1:1')}
-                aria-pressed={zoom === 'actual'}
-                onClick={() => setZoom(zoom === 'fit' ? 'actual' : 'fit')}
+                text={t('Rotate')}
+                disabled={!rotatable}
+                onClick={() => frame.rotate()}
               />
-            )}
-            {/* The compact GenUX switch is the focusable Grid control; its label toggles it too. */}
-            <span className="example-preview-grid-switch">
-              <label htmlFor={gridSwitchId}>{t('Grid')}</label>
-              <Switch
-                id={gridSwitchId}
-                size="small"
-                data-selection-size="sm"
-                data-preview-grid-control=""
-                checked={frame.grid}
-                onChange={checked => frame.setGrid(checked)}
-              />
-            </span>
-            <GenUXButton
-              fill="outline"
-              size="sm"
-              text={t('Rotate')}
-              disabled={!rotatable}
-              onClick={() => frame.rotate()}
-            />
-            {/* Close always stays while expanded; the wide MacBook already shows 1:1 inline. */}
-            {(expanded || layout.inlineExpand) && (
+              {/* Close always stays while expanded; the wide MacBook already shows 1:1 inline. */}
+              {(expanded || layout.inlineExpand) && (
+                <GenUXButton
+                  fill="outline"
+                  size="sm"
+                  data-preview-expand=""
+                  icon={expanded ? 'x' : 'arrows-out-simple'}
+                  text={expanded ? t('Close expanded preview') : t('Expand')}
+                  onClick={() => present(!expanded)}
+                />
+              )}
               <GenUXButton
-                fill="outline"
+                fill="link"
                 size="sm"
-                data-preview-expand=""
-                icon={expanded ? 'x' : 'arrows-out-simple'}
-                text={expanded ? t('Close expanded preview') : t('Expand')}
-                onClick={() => present(!expanded)}
+                text={t('Alone')}
+                data-preview-alone-open=""
+                onClick={() => {
+                  setView('preview');
+                  setAlone('fullscreen');
+                  present(true);
+                }}
               />
-            )}
-            <GenUXButton
-              fill="link"
-              size="sm"
-              text={t('Alone')}
-              data-preview-alone-open=""
-              onClick={() => {
-                setView('preview');
-                setAlone('fullscreen');
-                present(true);
-              }}
-            />
-          </div>
-        )}
+            </div>
+          )}
+          {/* One Tab stop per radiogroup: the checked native radio; the root leaves the order. */}
+          <GenUXSegmented<ExampleView>
+            className="example-preview-view-tabs"
+            aria-label={t('Example view')}
+            tabIndex={-1}
+            size="sm"
+            style={controlStyle}
+            value={view}
+            onChange={setView}
+            options={[
+              { value: 'preview', label: t('Preview') },
+              { value: 'code', label: t('Code') },
+            ]}
+          />
+        </div>
       </div>
       {/* Both views stay mounted in one cell; the inactive one is aria-hidden and inert. */}
       <div className="example-preview-views">

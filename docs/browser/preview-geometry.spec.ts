@@ -273,6 +273,22 @@ test('MacBook preview geometry holds from 320 Fit to 2160 Actual', async ({ page
 
   // From 1920 both rails stay at most 200 CSS px including padding, flush to the page edges,
   // and the component article fills the whole column between them.
+  const expectUnifiedControls = async () => {
+    const group = preview.locator('.example-preview-control-group');
+    const devices = group.getByRole('radiogroup', { name: 'Device preview', exact: true });
+    const tabs = group.locator('.example-preview-view-tabs');
+    await expect(tabs).toBeVisible();
+    const [g, d, v, w] = await Promise.all([
+      group.boundingBox(),
+      devices.boundingBox(),
+      tabs.boundingBox(),
+      preview.boundingBox(),
+    ]);
+    if (!g || !d || !v || !w) throw new Error('The shared preview controls are missing.');
+    expect(Math.abs(g.x + g.width / 2 - w.x - w.width / 2)).toBeLessThanOrEqual(1);
+    expect(Math.abs(d.y + d.height / 2 - v.y - v.height / 2)).toBeLessThanOrEqual(1);
+  };
+
   const columns = () =>
     page.evaluate(() => {
       const grid = document.querySelector('[data-docs-shell] .page-grid');
@@ -343,6 +359,7 @@ test('MacBook preview geometry holds from 320 Fit to 2160 Actual', async ({ page
     await expect.poll(logicalScreen).toEqual(expectedScreen);
     await expect(actual).toHaveCount(0);
     await expect(expand).toBeHidden();
+    await expectUnifiedControls();
     const layout = await expectColumns(width);
     await expectNoPageOverflow(page);
     await expectDraftKept();
