@@ -1,5 +1,7 @@
 # genux
 
+[Documentation](https://atonota.github.io/genux/) · [Component catalog](https://atonota.github.io/genux/components/) · [Public source](https://github.com/atonota/genux)
+
 Local consumable package for the GenUX Ant Design base UI library. It is built from the
 canonical sources in `docs/src` of this repository; no component logic is copied here.
 

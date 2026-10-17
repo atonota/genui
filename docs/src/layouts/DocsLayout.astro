@@ -15,7 +15,8 @@ import '../styles/docs-accessibility.css';
 import '../styles/documentation.css';
 import '../styles/genux-input.css';
 import '../styles/theme-builder.css';
-import { canonicalUrl, logicalPath, publicRoot, structuredJson } from '../data/url-policy';
+import { logicalPath, structuredJson } from '../data/url-policy';
+import { buildSeo } from '../data/seo';
 import DocsShell from '../components/shell/DocsShell.astro';
 import '../styles/focus-01.css';
 import '../styles/adaptive-components.scss';
@@ -26,18 +27,13 @@ interface Props {
   noindex?: boolean;
 }
 const { title, description, slug = '', noindex = false } = Astro.props;
-const canonical = noindex
+const seo = noindex
   ? undefined
-  : canonicalUrl(logicalPath(Astro.url.pathname, import.meta.env.BASE_URL));
-const schema = {
-  '@context': 'https://schema.org',
-  '@type': 'WebPage',
-  name: title,
-  description,
-  url: canonical,
-  inLanguage: 'en',
-  isPartOf: { '@type': 'WebSite', name: 'GenUX', url: publicRoot },
-};
+  : buildSeo({
+      path: logicalPath(Astro.url.pathname, import.meta.env.BASE_URL),
+      title,
+      description,
+    });
 ---
 
 <!doctype html>
@@ -50,13 +46,20 @@ const schema = {
       <meta name="robots" content="noindex, follow" />
     ) : (
       <>
-        <link rel="canonical" href={canonical} />
-        <meta property="og:url" content={canonical} />
-        <meta property="og:type" content="website" />
-        <meta property="og:site_name" content="GenUX" />
-        <meta property="og:title" content={`${title} · GenUX`} />
-        <meta property="og:description" content={description} />
-        <script type="application/ld+json" is:inline set:html={structuredJson(schema)} />
+        <meta name="robots" content={seo!.robots} />
+        <link rel="canonical" href={seo!.canonical} />
+        {Object.entries(seo!.openGraph).map(([property, content]) => (
+          <meta property={property} content={content} />
+        ))}
+        {Object.entries(seo!.twitter).map(([name, content]) => (
+          <meta name={name} content={content} />
+        ))}
+        <script
+          type="application/ld+json"
+          data-seo-graph
+          is:inline
+          set:html={structuredJson(seo!.graph)}
+        />
       </>
     )}
     <meta name="color-scheme" content="light dark" />

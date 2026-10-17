@@ -1,3 +1,4 @@
+import docsSeo from '../tools/docs-seo.mjs';
 import docsUrlPolicy from '../tools/docs-url-policy.mjs';
 import { readFile, rename, rm, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -554,6 +555,7 @@ export default defineConfig({
     adaptiveManifest(),
     docsPresentation(),
     adaptiveOwnershipPrune(serverStyles),
+    docsSeo(),
     ...(pages ? [docsPages()] : []),
     docsUrlPolicy(),
   ],

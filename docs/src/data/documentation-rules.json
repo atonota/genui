@@ -83,6 +83,11 @@
       "label": "Page not found",
       "description": "Noindex recovery page, served with HTTP 404 by Pages.",
       "routes": ["/404.html"]
+    },
+    "seo-policy": {
+      "label": "SEO policy",
+      "description": "Content, metadata, structured data and discovery admission policy.",
+      "routes": ["/seo-policy/"]
     }
   },
   "componentSections": [
@@ -398,6 +403,13 @@
       "event": "A preview document is inspected.",
       "condition": "The preview document lacks exactly one data-preview-content with native interactive markup.",
       "action": "Fail the build; mark the rendered example cluster with data-preview-content."
+    },
+    {
+      "ruleId": "preview-indexing-invalid",
+      "severity": "error",
+      "event": "An isolated preview document is inspected.",
+      "condition": "The preview lacks a unique noindex directive or carries canonical-page SEO metadata.",
+      "action": "Fail the build and restore auxiliary-document indexing protection."
     }
   ]
 }

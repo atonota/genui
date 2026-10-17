@@ -40,6 +40,7 @@ const FOUNDATION_GROUPS: NavGroup[] = [
       { label: 'Decision log', path: '/decisions/' },
       { label: 'Documentation standard', path: '/documentation/' },
       { label: 'URL policy', path: '/url-policy/' },
+      { label: 'SEO policy', path: '/seo-policy/' },
     ],
   },
 ];

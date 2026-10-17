@@ -1,0 +1,141 @@
+---
+import DocsLayout from '../layouts/DocsLayout.astro';
+import DocumentationNav from '../components/DocumentationNav.astro';
+import PageBreadcrumb from '../components/shell/PageBreadcrumb.astro';
+import { seoPolicy } from '../data/seo';
+const sections = [
+  { id: 'people', label: 'People and content' },
+  { id: 'signals', label: 'Technical signals' },
+  { id: 'ai-search', label: 'AI discovery and reuse' },
+  { id: 'experience', label: 'Experience and evidence' },
+  { id: 'lifecycle', label: 'Ownership and release' },
+];
+---
+
+<DocsLayout
+  title="SEO policy"
+  description="GenUX SEO policy: useful factual content, consistent metadata, crawlable documentation, AI discovery and verified release evidence."
+  slug="seo-policy"
+>
+  <PageBreadcrumb
+    items={[
+      { label: 'Overview', href: '/' },
+      { label: 'Project', href: '/project/' },
+    ]}
+    current="SEO policy"
+  />
+  <h1>SEO policy</h1>
+  <p class="lead">
+    Help people find, understand and use GenUX. Search engines and AI discovery receive the same
+    factual, accessible documentation that people read.
+  </p>
+  <DocumentationNav items={sections} />
+  <section id="people" data-doc-section="people" aria-labelledby="people-title">
+    <h2 id="people-title">People and content</h2>
+    <p>
+      Every document serves one real task. Start with a clear answer, then explain purpose, usage,
+      limitations, accessibility and sources. Keep essential text and links in server-rendered HTML.
+    </p>
+    <p>
+      Component examples, API mappings and source references must describe the implementation that
+      exists. Recorded demonstrations are labelled; a local fixture is not a live model or server
+      integration.
+    </p>
+    <p>
+      Editors review correctness and usefulness. A static check cannot certify either. Do not
+      fabricate authors, review dates, reviews, prices, benchmarks or citations; do not create
+      keyword-stuffed or near-identical pages solely for search traffic.
+    </p>
+  </section>
+  <section id="signals" data-doc-section="signals" aria-labelledby="signals-title">
+    <h2 id="signals-title">Technical signals</h2>
+    <p>
+      The <a href="/url-policy/">URL policy</a> owns stable addresses, canonical URLs, directories,
+      aliases, sitemap and real 404 behavior. Each canonical document has one descriptive title and
+      summary, consistent sharing metadata, explicit indexing directives and the correct source
+      language.
+    </p>
+    <p>
+      Structured data describes actual pages: directories as CollectionPage, technical references as
+      TechArticle, and general pages as WebPage. The project graph points to the actual public
+      source and existing license. It does not invent ratings, offers or a search action.
+    </p>
+    <p>
+      The shared social image is a branded fallback. Editorial images should be relevant and have
+      alternatives and intrinsic dimensions. Display controls and navigation are not the main answer
+      to a search query.
+    </p>
+    <p>
+      English is the server-rendered canonical language. Turkish display translation shares its URL.
+      Separate language addresses require actual translated HTML and reciprocal language links.
+    </p>
+  </section>
+  <section id="ai-search" data-doc-section="ai-search" aria-labelledby="ai-search-title">
+    <h2 id="ai-search-title">AI discovery and reuse</h2>
+    <p>
+      Use clear definitions, direct answers, meaningful headings and verifiable references. Machine
+      indexes point to canonical HTML; there is no special AI schema, text file or ranking
+      guarantee.
+    </p>
+    <p>
+      <a href="/llms.txt">Text discovery index</a> and <a href="/url-manifest.json">URL manifest</a>{' '}
+      are conveniences. Search-crawler access and model-training permissions are separate decisions.
+      Existing training permissions remain unchanged.
+    </p>
+    <p>
+      Do not serve hidden instructions or different factual content to crawlers. Google Search,
+      Google-Extended, OAI-SearchBot and GPTBot have distinct purposes; a project-path robots file
+      cannot govern the host.
+    </p>
+  </section>
+  <section id="experience" data-doc-section="experience" aria-labelledby="experience-title">
+    <h2 id="experience-title">Experience and evidence</h2>
+    <p>
+      Preserve readable Outfit typography, user zoom, keyboard focus, 320 CSS px access, image
+      stability and conditional asset delivery. Static SEO adds no client JavaScript or tracking
+      scripts.
+    </p>
+    <p>
+      Real-user targets at the 75th percentile, measured separately for mobile and desktop: LCP ≤{' '}
+      {seoPolicy.experienceTargets.lcpMs / 1000}s, INP ≤ {seoPolicy.experienceTargets.inpMs}ms and
+      CLS ≤ {seoPolicy.experienceTargets.cls}. A local build or screenshot does not prove these
+      metrics.
+    </p>
+    <p>
+      The <a href="/seo-report.json">build SEO report</a> records static checks and states which
+      evidence was not measured. Search indexing, AI citations and field performance remain
+      unverified until actually observed.
+    </p>
+  </section>
+  <section id="lifecycle" data-doc-section="lifecycle" aria-labelledby="lifecycle-title">
+    <h2 id="lifecycle-title">Ownership and release</h2>
+    <p>
+      Shared metadata and schema come from one SEO model. The final artifact gate rejects missing or
+      inconsistent signals, unsupported claims and a broken social image. The source{' '}
+      <a href="https://github.com/atonota/genux/blob/main/docs/SEO-POLICY.md">SEO policy</a> defines
+      maintainer and editorial responsibilities.
+    </p>
+    <p>
+      GitHub project Pages owns /genux/, not host-root robots, other repositories, Search Console or
+      response-header configuration. These require their actual host/property control. This policy
+      installs no analytics, paid services or scheduled monitoring.
+    </p>
+    <p>
+      Keep local validation, commit, CI, live publication and search-engine results separate. Review
+      factual content when the product or its references change; never manufacture automatic
+      freshness.
+    </p>
+    <p>
+      References:{' '}
+      <a href="https://developers.google.com/search/docs/appearance/ai-features">
+        Google AI features
+      </a>
+      ,{' '}
+      <a href="https://developers.google.com/search/docs/appearance/structured-data/sd-policies">
+        structured-data policies
+      </a>
+      , <a href="https://developers.openai.com/api/docs/bots">OpenAI crawlers</a> and{' '}
+      <a href="https://web.dev/articles/vitals">Web Vitals</a>.
+    </p>
+  </section>
+</DocsLayout>

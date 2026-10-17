@@ -116,6 +116,13 @@
       "description": "Stable addresses, canonical ownership, discovery and migration rules."
     },
     {
+      "id": "seo-policy",
+      "path": "/seo-policy/",
+      "label": "SEO policy",
+      "group": "Project",
+      "description": "People-first content, technical SEO, AI discovery and evidence-based publication rules."
+    },
+    {
       "id": "licenses",
       "path": "/licenses/",
       "label": "Licenses",

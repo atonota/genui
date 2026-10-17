@@ -78,5 +78,13 @@
     "@ant-design/x": "2.9.0",
     "@ant-design/x-card": "2.9.0",
     "@ant-design/x-sdk": "2.9.0"
+  },
+  "homepage": "https://atonota.github.io/genux/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/atonota/genux.git"
+  },
+  "bugs": {
+    "url": "https://github.com/atonota/genux/issues"
   }
 }

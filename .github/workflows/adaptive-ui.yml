@@ -63,6 +63,8 @@ jobs:
         run: npx tsc --noEmit --project docs/tsconfig.browser.json
       - name: Production docs build
         run: npm run docs:build
+      - name: SEO and URL admission tests
+        run: node --test docs/tests/seo-policy.test.mjs docs/tests/url-policy.test.mjs docs/tests/documentation-presentation.test.mjs
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium firefox webkit
       - name: Adaptive browser tests

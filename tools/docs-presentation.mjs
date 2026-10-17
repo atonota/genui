@@ -454,6 +454,18 @@ function renderedPreview(document, contents) {
 }
 
 function checkPreview(document, profile, findings) {
+  const robots = [...document.querySelectorAll('meta[name="robots"]')];
+  if (
+    robots.length !== 1 ||
+    !/\bnoindex\b/i.test(robots[0].content) ||
+    document.querySelector('link[rel="canonical"], [data-seo-graph]')
+  )
+    findings.push(
+      finding(
+        'preview-indexing-invalid',
+        'Isolated previews must remain noindex without canonical-page SEO metadata.',
+      ),
+    );
   const delivery = rules.previewDocuments.deliveries[profile];
   const islands = [...document.querySelectorAll('astro-island')];
   const [island] = islands;

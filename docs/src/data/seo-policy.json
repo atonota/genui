@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "site": {
+    "name": "GenUX",
+    "description": "A documented Ant Design component system with shared tokens, adaptive interfaces and validated AI UI contracts.",
+    "language": "en",
+    "locale": "en_US",
+    "repository": "https://github.com/atonota/genux",
+    "license": "https://github.com/atonota/genux/blob/main/LICENSE",
+    "robots": "index, follow, max-image-preview:large"
+  },
+  "social": {
+    "path": "/social/genux.png",
+    "width": 1200,
+    "height": 630,
+    "alt": "GenUX \u2014 component documentation, shared design tokens and adaptive interfaces."
+  },
+  "pageTypes": {
+    "collections": ["components", "guides", "foundations", "tools", "project"],
+    "technicalArticles": [
+      "getting-started",
+      "tokens",
+      "standards",
+      "genux",
+      "documentation",
+      "url-policy",
+      "seo-policy"
+    ]
+  },
+  "allowedGraphTypes": [
+    "WebSite",
+    "SoftwareSourceCode",
+    "WebPage",
+    "CollectionPage",
+    "TechArticle"
+  ],
+  "experienceTargets": {
+    "measurement": "Real users, 75th percentile, mobile and desktop reported separately",
+    "lcpMs": 2500,
+    "inpMs": 200,
+    "cls": 0.1
+  },
+  "boundaries": {
+    "hostRobots": "Host-root ownership; no project-path robots authority",
+    "trainingPermissions": "Unchanged; search discovery is separate from model-training permission",
+    "searchConsole": "External property ownership and submission; not certified by a static build",
+    "analytics": "No tracking scripts or scheduled monitoring installed"
+  }
+}

@@ -46,6 +46,7 @@ const foundationKinds = {
   '/tools/': 'hub',
   '/project/': 'hub',
   '/url-policy/': 'url-policy',
+  '/seo-policy/': 'seo-policy',
   '/404.html': 'not-found',
   '/color-system/': 'color-lab',
   '/theme-builder/': 'color-lab',

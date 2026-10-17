@@ -27,7 +27,7 @@ export const foundationGroups: readonly FoundationGroup[] = [
       'theme-builder',
     ],
   },
-  { label: 'Project', ids: ['project', 'decisions', 'documentation', 'url-policy'] },
+  { label: 'Project', ids: ['project', 'decisions', 'documentation', 'url-policy', 'seo-policy'] },
 ].map(group => ({
   label: group.label,
   links: group.ids.map(id => {
