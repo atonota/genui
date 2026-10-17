@@ -601,12 +601,16 @@ test('options expose every approved axis, keep Cubic/5px defaults and reject inv
   const ciTmp = await mkdtemp(join(tmpdir(), 'genux-fab-ci-'));
   try {
     const fabConfig = await loadFabConfig(ciTmp);
-    assert.equal(fabConfig.workers, 1, 'the FAB browser engines run serially on one worker');
+    assert.equal(
+      fabConfig.workers,
+      2,
+      'Chromium runs alone first, then Firefox and WebKit share two workers',
+    );
     assert.equal(fabConfig.timeout, 60_000, 'the browser config default remains 60 s');
     assert.equal(
       fabConfig.globalTimeout,
-      420_000,
-      'the whole browser run has a finite 420 s global budget',
+      600_000,
+      'the whole browser run has a finite 600 s global budget',
     );
     assert.equal(fabConfig.retries, 0, 'a failure is never retried into a pass');
     const projects = fabConfig.projects ?? [];
@@ -617,12 +621,30 @@ test('options expose every approved axis, keep Cubic/5px defaults and reject inv
       ['chromium', 'firefox', 'webkit'],
       'one browser project per engine',
     );
-    for (const project of projects)
+    for (const project of projects) {
       assert.deepEqual(
         { ...fabConfig.use, ...project.use }.viewport,
         { width: 1440, height: 1000 },
         `${project.name}: the desktop journeys default to a 1440x1000 viewport`,
       );
+      const engine = project.use?.browserName ?? project.name;
+      const channel = { ...fabConfig.use, ...project.use }.channel;
+      if (engine === 'chromium') {
+        assert.equal(
+          channel,
+          'chromium',
+          'Chromium runs the full new headless build, not the shell',
+        );
+        assert.deepEqual(project.dependencies ?? [], [], 'Chromium runs first with no dependency');
+      } else {
+        assert.equal(channel, undefined, `${engine}: the engine channel stays unchanged`);
+        assert.deepEqual(
+          project.dependencies,
+          ['chromium'],
+          `${engine}: runs only after the Chromium project passes`,
+        );
+      }
+    }
   } finally {
     await rm(ciTmp, { recursive: true, force: true });
   }

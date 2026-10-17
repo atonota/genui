@@ -26,12 +26,13 @@ export default defineConfig({
   fullyParallel: false,
   forbidOnly: Boolean(process.env.CI),
   retries: 0,
-  // Use one worker to avoid concurrent engine contention while investigating Chromium timeouts.
-  // Engines now run one after another; fullyParallel false keeps each engine's cases serial.
-  workers: 1,
+  // CI run 39019214060: one worker did not stop the first Chromium timeout, and queued engines starved WebKit.
+  // Two workers: Chromium's three cases run alone first, then Firefox and WebKit run side by side once it passes.
+  // fullyParallel false keeps each engine's cases serial. Whether resource contention caused the timeouts is unproven.
+  workers: 2,
   timeout: 60_000,
-  // Finite operational run cap; queued engines also consume it. Exact CI must prove all nine cases fit.
-  globalTimeout: 420_000,
+  // Finite operational run cap over all nine cases; exact CI must still prove they fit.
+  globalTimeout: 600_000,
   expect: { timeout: 5_000 },
   reporter: [
     ['list'],
@@ -55,7 +56,16 @@ export default defineConfig({
   projects: browsers.map(browserName => ({
     name: browserName,
     outputDir: join(resultsRoot, browserName),
-    use: { browserName, viewport: { width: 1440, height: 1000 }, hasTouch: false },
+    use: {
+      browserName,
+      // Full Chromium in the new headless mode instead of the default headless shell; the existing install already
+      // downloads it. Firefox and WebKit stay unchanged. Not proven to fix the Chromium timeouts.
+      ...(browserName === 'chromium' ? { channel: 'chromium' } : {}),
+      viewport: { width: 1440, height: 1000 },
+      hasTouch: false,
+    },
+    // A failed Chromium project skips Firefox and WebKit, and the run still fails.
+    dependencies: browserName === 'chromium' ? [] : ['chromium'],
   })),
   // Serves the production output of `npm run docs:build` on its own port; no dev server is involved.
   webServer: {

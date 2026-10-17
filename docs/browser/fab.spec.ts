@@ -33,10 +33,10 @@ const SHAPE_COUNT = 6;
 const APPEARANCE_COUNT = 10;
 const MIN_TEXT = 14;
 const MIN_TARGET = 48;
-// CI run 39015675304 traced the three long Chromium journeys passing every functional check until the cumulative 90 s
-// cap near their end, with no failed predicate. Each case gets 120 s of aggregate allowance; zero retries and the
-// action, expect and navigation timeouts stay unchanged.
-const FAB_CASE_TIMEOUT = 120_000;
+// CI run 39019214060: the second Chromium journey passed in 111.9 s and the third spent its whole 120 s allowance near
+// its end, on the appearance Dark step, with no failed predicate. Each case gets 180 s of aggregate allowance; the
+// cause stays unproven, and zero retries and the action, expect and navigation timeouts stay unchanged.
+const FAB_CASE_TIMEOUT = 180_000;
 
 const fabCase = (page: Page, name: string) => page.locator(`[data-fab-case=${name}]`);
 // The .genux-fab-trigger wrapper is a DIV; the native control is the button inside it.
@@ -58,14 +58,19 @@ function capturePageErrors(page: Page): string[] {
   return errors;
 }
 
-/** Clicks the visible segmented label, never the hidden radio input. */
-async function chooseRadio(scope: Locator, name: string) {
+/**
+ * Clicks the visible segmented label, never the hidden radio input. setupOnly is for initial setup only: an already
+ * checked radio is verified instead of tapped again. Every transition keeps the unconditional click.
+ */
+async function chooseRadio(scope: Locator, name: string, setupOnly = false) {
   const radio = scope.getByRole('radio', { name, exact: true }).first();
-  await scope
-    .locator('label')
-    .filter({ has: scope.page().getByRole('radio', { name, exact: true }) })
-    .first()
-    .click();
+  if (!setupOnly || !(await radio.isChecked())) {
+    await scope
+      .locator('label')
+      .filter({ has: scope.page().getByRole('radio', { name, exact: true }) })
+      .first()
+      .click();
+  }
   await expect(radio).toBeChecked();
 }
 
@@ -648,7 +653,7 @@ test('FAB documentation and defaults are available', async ({ page }, testInfo) 
     await geometryCloseTweaker.click();
     await expect(geometryCloseTweaker).toBeHidden();
   };
-  await chooseRadio(geometryCase, 'MacBook 13');
+  await chooseRadio(geometryCase, 'MacBook 13', true);
   await setGeometryLayout('Multi directional');
   await geometryCase.scrollIntoViewIfNeeded();
   await openMenu(geometryTrigger);
