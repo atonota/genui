@@ -2,13 +2,26 @@
    mockups. The fixed logical screen comes from preview/profiles through the inline
    --preview-document-* roles and content scrolls inside it. Paint, type and focus reuse the
    documentation roles from the nearest theme scope, so a nested provider keeps its local palette. */
+/* Locked screen surface (human decision 2026-10-17): every device screen is exactly white in
+   light and #222222 in dark. This is its only declaration; shell, canvas, panel and Theme
+   Builder recipes never feed it, and a local data-theme resets it over the host's mode. */
+:where(body[data-preview-body], .example-preview-screen, [data-preview-document]) {
+  --preview-screen-surface: #ffffff;
+}
+:where(
+  html[data-theme='dark'] body[data-preview-body],
+  .example-preview-screen[data-theme='dark'],
+  [data-preview-document][data-theme='dark']
+) {
+  --preview-screen-surface: #222222;
+}
 /* The body carries the shared .live-preview scope, so the original web.css controls apply as on
    the docs page; its in-page margin, padding and radius reset so the logical screen stays exact. */
 body[data-preview-body] {
   margin: 0;
   padding: 0;
   border-radius: 0;
-  background: var(--panel);
+  background: var(--preview-screen-surface);
   color: var(--ink);
 }
 
@@ -32,7 +45,7 @@ body[data-preview-body] {
   --preview-grid-columns: 4;
   --preview-grid-margin: 16px;
   --preview-grid-gutter: 12px;
-  background: var(--panel);
+  background: var(--preview-screen-surface);
   color: var(--ink);
 }
 [data-preview-document][data-profile='medium'] {

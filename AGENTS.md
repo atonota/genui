@@ -1,5 +1,30 @@
 # GenUX maintenance contract
 
+## Locked preview screen surface — human decision 2026-10-17
+
+Newest entry; it changes only the device screen surface.
+`docs/decisions/current.json` revision `human-2026-10-17-locked-preview-surface`
+(`previewScreenSurface`) is authoritative; every other decision below is
+unchanged.
+
+- Every actual device screen (phone, tablet, computer, TV) paints exactly
+  `#ffffff` in light and `#222222` in dark through one semantic role,
+  `--preview-screen-surface`, declared only in
+  `docs/src/styles/preview-document.css`. This is an explicit exception to the
+  older color freeze for this surface alone.
+- The standalone preview body, `[data-preview-document]`,
+  `.example-preview-screen` and the preview GenUXProvider owner read only that
+  role, with no canvas, panel or paper fallback. A local `data-theme` sets it
+  regardless of the host's mode.
+- The role is not customizable: no Theme Builder token, recipe or alias to
+  canvas or panel, and unrelated work must not change it. Shell, inputs, field
+  fills, component panels, hardware frames, the Grid switch and guide paint,
+  geometry, type, focus and motion are unchanged; no iframe, global root color
+  change or `!important`.
+- Authors never edit the decision record or its guard; the root adds the guard
+  and one mutation case in the existing node check. Proposal, integration,
+  guard, local checks, CI and live are PENDING until each actually runs.
+
 ## GenUX local checkout — human decision 2026-10-17
 
 Newest entry; it changes only the physical local project directory.

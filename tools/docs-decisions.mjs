@@ -255,6 +255,7 @@ const CHECKS = [
   ['rail', checkRail],
   ['adaptive-policy', checkAdaptivePolicy],
   ['theme-definitions', checkDefinitions],
+  ['preview-screen-surface', checkPreviewScreenSurface],
   ['font-minimum', checkFontMinimum],
   ['inline-preview', checkInlinePreview],
 ];
@@ -293,6 +294,179 @@ function requireFact(facts, path) {
   if (value === undefined || value === null)
     throw new Error(`the decision record is missing facts.${path}.`);
   return value;
+}
+
+/** The device canvas is separate from editable shell/panel recipes. Only a new human record
+    may change its two values; duplicate declarations or another paint owner fail admission. */
+async function checkPreviewScreenSurface({ facts, files, read }) {
+  const role = '--preview-screen-surface';
+  const value = `var(${role})`;
+  const path = 'docs/src/styles/preview-document.css';
+  const want = requireFact(facts, 'previewScreenSurface');
+  const owners = [
+    [path, 'body[data-preview-body]', 'background'],
+    [path, '[data-preview-document]', 'background'],
+    ['docs/src/styles/preview-workbench.css', '.example-preview-screen', 'background-color'],
+  ];
+  // Split only outside quoted values and functions. Qualified/ancestor selectors still target
+  // the last compound; descendants keep their own component paint. Ambiguous functional
+  // subjects mentioning a protected owner fail closed instead of adding another paint owner.
+  const protectedSubject = rule =>
+    postcss.list.comma(rule.selector).some(selector => {
+      const subject = postcss.list.split(selector, [' ', '\n', '\t', '>', '+', '~']).at(-1) ?? '';
+      if (
+        /\.example-preview-screen\b|\[data-preview-(?:document|body)\b|\[data-genux-provider-owner\b/.test(
+          subject,
+        )
+      )
+        return true;
+      if (subject.includes('&') && rule.parent.type === 'rule')
+        return protectedSubject(rule.parent);
+      return (
+        subject.includes(']') &&
+        !subject.includes('[') &&
+        /preview-(?:screen|document|body)/.test(selector)
+      );
+    });
+  const normal = selector =>
+    selector
+      .replace(/\s+/g, ' ')
+      .replace(/\s*,\s*/g, ',')
+      .replace(/\(\s+/g, '(')
+      .replace(/\s+\)/g, ')')
+      .trim();
+  const selectors = new Map(
+    [
+      [
+        ':where(body[data-preview-body], .example-preview-screen, [data-preview-document])',
+        'light',
+      ],
+      [
+        ":where(html[data-theme='dark'] body[data-preview-body], .example-preview-screen[data-theme='dark'], [data-preview-document][data-theme='dark'])",
+        'dark',
+      ],
+    ].map(([selector, mode]) => [normal(selector), mode]),
+  );
+  const violations = [];
+  const declarations = [];
+  const styles = new Map();
+  for (const file of files.filter(file => file.endsWith('.css'))) {
+    const sheet = postcss.parse(await read(file), { from: file });
+    styles.set(file, sheet);
+    sheet.walkDecls(role, declaration => {
+      const mode =
+        declaration.parent.type === 'rule'
+          ? selectors.get(normal(declaration.parent.selector))
+          : undefined;
+      if (
+        file !== path ||
+        !mode ||
+        declaration.important ||
+        declaration.parent.parent.type !== 'root'
+      )
+        violations.push(`${file}: ${role} may only be declared in its two canonical theme scopes`);
+      else {
+        declarations.push(mode);
+        if (declaration.value.toLowerCase() !== want[mode])
+          violations.push(`${role}.${mode} ${declaration.value} differs from human ${want[mode]}`);
+      }
+    });
+    sheet.walkRules(rule => {
+      if (!protectedSubject(rule)) return;
+      rule.each(declaration => {
+        if (
+          declaration.type !== 'decl' ||
+          !['background', 'background-color', 'background-image'].includes(declaration.prop)
+        )
+          return;
+        const owner = owners.find(
+          ([ownerFile, selector]) => ownerFile === file && normal(rule.selector) === selector,
+        );
+        if (
+          !owner ||
+          declaration.prop !== owner[2] ||
+          declaration.value !== value ||
+          declaration.important
+        )
+          violations.push(`${file} ${rule.selector}: competing paint may not replace ${role}`);
+      });
+    });
+  }
+  for (const mode of MODES)
+    if (declarations.filter(item => item === mode).length !== 1)
+      violations.push(`${role}.${mode} must have exactly one canonical declaration`);
+  for (const [file, selector, property] of owners) {
+    const paint = [];
+    styles.get(file)?.walkRules(rule => {
+      if (normal(rule.selector) === selector)
+        rule.walkDecls(declaration => {
+          if (['background', 'background-color'].includes(declaration.prop))
+            paint.push(declaration);
+        });
+    });
+    if (
+      paint.length !== 1 ||
+      paint[0].prop !== property ||
+      paint[0].value !== value ||
+      paint[0].important
+    )
+      violations.push(`${file} ${selector} must paint only ${role}, independently of canvas/panel`);
+  }
+  // Inspect the actual owner style initializer, including conditional/later literal spreads.
+  // Counting the good literal elsewhere in the module would miss a competing late paint.
+  for (const [provider, styleName] of [
+    ['docs/src/react/GenUXProvider.tsx', 'sizeStyle'],
+    ['docs/src/react/PreviewWorkbench.tsx', 'screenStyle'],
+  ]) {
+    const source = parseScript(provider, await read(provider));
+    const styles = [];
+    walk(source, node => {
+      if (
+        ts.isVariableDeclaration(node) &&
+        ts.isIdentifier(node.name) &&
+        node.name.text === styleName
+      )
+        styles.push(node.initializer);
+    });
+    const paints = [];
+    for (const style of styles.filter(Boolean))
+      walk(style, node => {
+        if (
+          ts.isPropertyAssignment(node) &&
+          ['background', 'backgroundColor', 'backgroundImage'].includes(propertyName(node))
+        )
+          paints.push(node);
+      });
+    if (
+      styles.length !== 1 ||
+      paints.length !== 1 ||
+      propertyName(paints[0]) !== 'backgroundColor' ||
+      !ts.isStringLiteralLike(paints[0].initializer) ||
+      paints[0].initializer.text !== value
+    )
+      violations.push(
+        `${provider} ${styleName} must paint only ${role}, with no competing inline paint`,
+      );
+  }
+  for (const file of files.filter(file => CODE_FILE.test(file)))
+    walk(parseScript(file, await read(file)), node => {
+      if (!ts.isStringLiteralLike(node) || node.text !== role) return;
+      // The literal is legitimate as the first argument of a read-only CSS getter.
+      // Object keys, computed writes and mutation calls remain rejected.
+      const call = node.parent;
+      if (
+        ts.isCallExpression(call) &&
+        call.arguments[0] === node &&
+        ts.isPropertyAccessExpression(call.expression) &&
+        call.expression.name.text === 'getPropertyValue'
+      )
+        return;
+      violations.push(`${file}: code may consume ${role} but may not write its value`);
+    });
+  const definitions = parseJson(SOURCES.definitions, await read(SOURCES.definitions));
+  if (definitions.some(definition => definition.id === 'preview-screen-surface'))
+    violations.push(`${role} must not become an editable Theme Builder definition`);
+  return violations;
 }
 
 function parseJson(path, text) {

@@ -299,7 +299,8 @@
   /* Block-axis wheel chains to the page once nothing scrolls inside; inline stays contained. */
   overscroll-behavior-block: auto;
   border-radius: var(--preview-screen-radius);
-  background-color: var(--panel);
+  /* The locked screen surface from preview-document.css, never the shell or recipe panel. */
+  background-color: var(--preview-screen-surface);
   color: var(--ink);
   transition-property: var(--control-transition-properties), inline-size, block-size, border-radius;
 }

@@ -205,7 +205,7 @@ export default function PreviewWorkbench({ id, title, children }: PreviewWorkben
         ...documentationVariables(frame.theme),
         ...resolveThemeBuilder(effectiveRecipe, frame.theme).variables,
         colorScheme: frame.theme,
-        backgroundColor: 'var(--panel)',
+        backgroundColor: 'var(--preview-screen-surface)',
         color: 'var(--ink)',
       }) as CSSProperties,
     [effectiveRecipe, frame.theme],

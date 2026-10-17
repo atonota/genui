@@ -26,6 +26,29 @@ test('decision admission keeps the current human facts and never writes', async 
   assert.equal(snapshot.path, DECISION_PATH);
   assert.equal(snapshot.digest, sha(await read(DECISION_PATH)));
   const fresh = { decisionDigest: snapshot.digest };
+
+  // The device canvas is a human-locked role, independent of editable shell/panel recipes.
+  const previewPaintPath = 'docs/src/styles/preview-document.css';
+  const previewPaint = await read(previewPaintPath);
+  await assert.rejects(
+    checkCurrentDecisions(root, [
+      {
+        path: previewPaintPath,
+        content: `${previewPaint}\n.example-preview-screen { --preview-screen-surface: #e6e2d7; }\n`,
+      },
+    ]),
+    { code: 'decision-conflict', message: /preview-screen-surface/ },
+  );
+  await assert.rejects(
+    checkCurrentDecisions(root, [
+      {
+        path: 'docs/src/styles/foreign-preview-surface.css',
+        content:
+          ".example-preview-screen[data-theme='dark'] { --preview-screen-surface: #000000; }",
+      },
+    ]),
+    { code: 'decision-conflict', message: /preview-screen-surface/ },
+  );
   const manifestEdit = {
     newFiles: [{ path: DECISION_PATH, content: await read(DECISION_PATH) }],
   };
@@ -38,6 +61,58 @@ test('decision admission keeps the current human facts and never writes', async 
   await assert.rejects(assertDecisionAdmission(root, manifestEdit, {}), {
     code: 'missing-decision-digest',
   });
+
+  // A competing paint rule is forbidden even if it leaves the locked role declarations intact.
+  await assert.rejects(
+    checkCurrentDecisions(root, [
+      {
+        path: previewPaintPath,
+        content: `${previewPaint}\n[data-preview-document][data-theme='dark'] { background: var(--panel); }\n`,
+      },
+    ]),
+    { code: 'decision-conflict', message: /preview-screen-surface/ },
+  );
+  const providerPath = 'docs/src/react/GenUXProvider.tsx';
+  const providerText = await read(providerPath);
+  const styleHead = 'const sizeStyle: CSSProperties & Record<`--${string}`, string> = {';
+  assert.equal(count(providerText, styleHead), 1);
+  await assert.rejects(
+    checkCurrentDecisions(root, [
+      {
+        path: providerPath,
+        content: providerText.replace(
+          styleHead,
+          `${styleHead}\n'--preview-screen-surface': 'var(--paper)',`,
+        ),
+      },
+    ]),
+    { code: 'decision-conflict', message: /preview-screen-surface/ },
+  );
+
+  // A late spread cannot win over the screen paint, even when the canonical literal remains.
+  const styleEnd = '  };\n  const builderTheme = useMemo(';
+  assert.equal(count(providerText, styleEnd), 1);
+  await assert.rejects(
+    checkCurrentDecisions(root, [
+      {
+        path: providerPath,
+        content: providerText.replace(
+          styleEnd,
+          "    ...(previewPaintVariables ? { backgroundColor: 'var(--panel)' } : {}),\n" + styleEnd,
+        ),
+      },
+    ]),
+    { code: 'decision-conflict', message: /preview-screen-surface/ },
+  );
+  // Read-only inspection consumes the role; it does not acquire paint ownership.
+  await checkCurrentDecisions(root, [
+    {
+      path: providerPath,
+      content:
+        providerText +
+        "\nfunction readPreviewSurface(owner: Element) { return getComputedStyle(owner).getPropertyValue('--preview-screen-surface'); }\n",
+    },
+  ]);
 
   // Author proposals never edit the human record or the guard, even when fresh.
   await assert.rejects(assertDecisionAdmission(root, manifestEdit, fresh), {

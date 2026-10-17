@@ -417,10 +417,15 @@ export default function GenUXProvider({
     // A preview owner's local mode paint comes first; accessibility, size and builder roles below
     // keep their usual precedence over it.
     ...previewPaintVariables,
-    // A preview owner also paints its own canvas and ink from those roles, so its content never
-    // sits on a host canvas of the other mode; ordinary owners stay transparent and inherit.
+    // A preview owner paints the locked screen surface (preview-document.css) and its ink, so its
+    // content never sits on a host canvas or shell of either mode; ordinary owners stay
+    // transparent and inherit.
     ...(previewPaintVariables
-      ? { colorScheme: mode, backgroundColor: 'var(--paper)', color: 'var(--ink)' }
+      ? {
+          colorScheme: mode,
+          backgroundColor: 'var(--preview-screen-surface)',
+          color: 'var(--ink)',
+        }
       : {}),
     ...(ownsTweaker ? tweakerVariables : {}),
     ...(appearance === 'docs'

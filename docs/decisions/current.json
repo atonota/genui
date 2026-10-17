@@ -1,13 +1,14 @@
 {
   "schemaVersion": 1,
-  "revision": "human-2026-10-16-recovery-2-inline",
+  "revision": "human-2026-10-17-locked-preview-surface",
   "authority": "Direct human conversation decisions; new human decisions supersede only the explicitly changed fields. Proposal authors cannot edit this record.",
   "sources": {
     "preview": "Latest user: inner content1024; earlier logicalMacBook1440 and proportionally shrink below1920;200px rails.",
     "palette": "User froze colors and expressly chose black dark shell.",
     "typography": "Latest user AGENTS instructions: Outfit and minimum14 CSSpx; supersedes older project12px entry.",
     "adaptive": "Original human task320/600/960/1280/1920; inner480/768/1600;2560+, explicitTV andTab.",
-    "inlinePreview": "Latest direct human: iframe is forbidden; components render on-page in device mockups; all components adapt to phone,tablet,computer,tv."
+    "inlinePreview": "Latest direct human: iframe is forbidden; components render on-page in device mockups; all components adapt to phone,tablet,computer,tv.",
+    "previewScreenSurface": "Latest direct human: every device screen is white in light mode and #222222 in dark mode; other shell, recipe or component changes must not alter this surface."
   },
   "facts": {
     "macbook": {
@@ -158,6 +159,10 @@
       "tablet",
       "computer",
       "tv"
-    ]
+    ],
+    "previewScreenSurface": {
+      "light": "#ffffff",
+      "dark": "#222222"
+    }
   }
 }
